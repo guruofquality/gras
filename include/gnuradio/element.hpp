@@ -14,40 +14,29 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_GNURADIO_HIER_BLOCK_HPP
-#define INCLUDED_GNURADIO_HIER_BLOCK_HPP
+#ifndef INCLUDED_GNURADIO_ELEMENT_HPP
+#define INCLUDED_GNURADIO_ELEMENT_HPP
 
 #include <gnuradio/runtime_api.h>
-#include <gnuradio/element.hpp>
 #include <gruel/pmt.h>
 
 namespace gnuradio
 {
 
-struct GR_RUNTIME_API HierBlock : Element
+struct GR_RUNTIME_API Element : boost::shared_ptr<ElementImpl>
 {
-    HierBlock(void);
 
-    void connect(const Element &elem);
+    //! Create an empty element
+    Element(void);
 
-    void disconnect(const Element &elem);
-
-    void connect(
-        const Element &src,
-        const size_t src_index,
-        const Element &sink,
-        const size_t sink_index,
-    );
-
-    void disconnect(
-        const Element &src,
-        const size_t src_index,
-        const Element &sink,
-        const size_t sink_index,
-    );
+    /*!
+     * Create an element from a shared pointer to an element.
+     * Good for that factory function/shared ptr paradigm.
+     */
+    Element(const boost::shared_ptr<Element> &elem);
 
 };
 
 } //namespace gnuradio
 
-#endif /*INCLUDED_GNURADIO_HIER_BLOCK_HPP*/
+#endif /*INCLUDED_GNURADIO_ELEMENT_HPP*/

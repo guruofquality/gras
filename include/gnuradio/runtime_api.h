@@ -32,7 +32,6 @@ namespace gnuradio
 {
 
     struct ElementImpl;
-    typedef boost::shared_ptr<ElementImpl> Element;
 
 }//namespace gnuradio
 
