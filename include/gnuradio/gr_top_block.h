@@ -14,32 +14,19 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_GNURADIO_ELEMENT_HPP
-#define INCLUDED_GNURADIO_ELEMENT_HPP
+#ifndef INCLUDED_GNURADIO_GR_TOP_BLOCK_H
+#define INCLUDED_GNURADIO_GR_TOP_BLOCK_H
 
 #include <gnuradio/runtime_api.h>
-#include <gruel/pmt.h>
+#include <gr_hier_block2.h>
 
-namespace gnuradio
+struct GR_RUNTIME_API gr_top_block : gr_hier_block2
 {
 
-struct GR_RUNTIME_API Element : boost::shared_ptr<ElementImpl>
-{
+    gr_top_block(void);
 
-    //! Create an empty element
-    Element(void);
-
-    /*!
-     * Create an element from a shared pointer to an element.
-     * Good for that factory function/shared ptr paradigm.
-     */
-    template <typename T>
-    Element(const boost::shared_ptr<T> &elem):
-        boost::shared_ptr<ElementImpl>(*reinterpret_cast<const Element*>(elem.get()))
-    {    }
+    gr_top_block(const std::string &name);
 
 };
 
-} //namespace gnuradio
-
-#endif /*INCLUDED_GNURADIO_ELEMENT_HPP*/
+#endif /*INCLUDED_GNURADIO_GR_TOP_BLOCK_H*/

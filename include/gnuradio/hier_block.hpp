@@ -36,14 +36,14 @@ struct GR_RUNTIME_API HierBlock : Element
         const Element &src,
         const size_t src_index,
         const Element &sink,
-        const size_t sink_index,
+        const size_t sink_index
     );
 
     void disconnect(
         const Element &src,
         const size_t src_index,
         const Element &sink,
-        const size_t sink_index,
+        const size_t sink_index
     );
 
 };

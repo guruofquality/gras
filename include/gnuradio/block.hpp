@@ -166,7 +166,7 @@ struct GR_RUNTIME_API Block : Element
     //! forcast requirements, can be overloaded
     virtual void forecast(
         int noutput_items,
-        gr_vector_int &ninput_items_required
+        std::vector<size_t> &ninput_items_required
     );
 
 };

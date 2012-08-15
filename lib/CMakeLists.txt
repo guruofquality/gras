@@ -8,6 +8,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 # Append gnuradio-core library sources
 ########################################################################
 list(APPEND gnuradio_core_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/gr_sys_paths.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/gr_message.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/gr_msg_queue.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/gr_msg_handler.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/element.cpp
 )
 

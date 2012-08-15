@@ -14,34 +14,26 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_GNURADIO_GR_SYNC_DECIMATOR_H
-#define INCLUDED_GNURADIO_GR_SYNC_DECIMATOR_H
+#ifndef INCLUDED_GNURADIO_GR_HIER_BLOCK2_H
+#define INCLUDED_GNURADIO_GR_HIER_BLOCK2_H
 
 #include <gnuradio/runtime_api.h>
-#include <gr_sync_block.h>
+#include <gnuradio/hier_block.hpp>
+#include <gr_io_signature.h>
 
-struct GR_RUNTIME_API gr_sync_decimator : gr_sync_block
+struct GR_RUNTIME_API gr_hier_block2 : gnuradio::HierBlock
 {
 
-    gr_sync_decimator(void);
+    gr_hier_block2(void);
 
-    gr_sync_decimator(
+    gr_hier_block2(
         const std::string &name,
         gr_io_signature_sptr input_signature,
-        gr_io_signature_sptr output_signature,
-        const size_t decim_rate
+        gr_io_signature_sptr output_signature
     );
 
-    size_t decimation(void);
-    void set_decimation(const size_t decim);
-
-    //! implements work -> calls work
-    int general_work (int noutput_items,
-                gr_vector_int &ninput_items,
-                gr_vector_const_void_star &input_items,
-                gr_vector_void_star &output_items);
-    void forecast (int noutput_items, gr_vector_int &ninput_items_required);
+    const Element &self(void);
 
 };
 
-#endif /*INCLUDED_GNURADIO_GR_SYNC_DECIMATOR_H*/
+#endif /*INCLUDED_GNURADIO_GR_HIER_BLOCK2_H*/

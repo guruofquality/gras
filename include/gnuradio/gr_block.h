@@ -20,6 +20,9 @@
 #include <gnuradio/runtime_api.h>
 #include <gnuradio/block.hpp>
 #include <gr_io_signature.h>
+#include <gr_sptr_magic.h>
+#include <gr_types.h>
+#include <gr_tags.h>
 #include <string>
 
 struct GR_RUNTIME_API gr_block : gnuradio::Block
@@ -32,6 +35,18 @@ struct GR_RUNTIME_API gr_block : gnuradio::Block
         gr_io_signature_sptr input_signature,
         gr_io_signature_sptr output_signature
     );
+
+    template <typename T> void set_msg_handler(T msg_handler){/*LOL*/}
+
+    void set_output_signature(gr_io_signature_sptr);
+
+    void set_input_signature(gr_io_signature_sptr);
+
+    gr_io_signature_sptr input_signature(void);
+
+    gr_io_signature_sptr output_signature(void);
+
+    void set_fixed_rate(bool fixed_rate);
 
     //! implements work -> calls general work
     int work(
