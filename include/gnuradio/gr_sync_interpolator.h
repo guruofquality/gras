@@ -35,24 +35,6 @@ struct GR_RUNTIME_API gr_sync_interpolator : gr_sync_block
     size_t interpolation(void);
     void set_interpolation(const size_t interp);
 
-    //! implements work -> calls work
-    int general_work (int noutput_items,
-                gr_vector_int &ninput_items,
-                gr_vector_const_void_star &input_items,
-                gr_vector_void_star &output_items);
-    void forecast (int noutput_items, gr_vector_int &ninput_items_required);
-
-   /*!
-    * \brief just like gr_block::general_work, only this arranges to call consume_each for you
-    *
-    * The user must override work to define the signal processing code
-    */
-    virtual int work(
-        int noutput_items,
-        gr_vector_const_void_star &input_items,
-        gr_vector_void_star &output_items
-    ) = 0;
-
 };
 
 #endif /*INCLUDED_GNURADIO_GR_SYNC_INTERPOLATOR_H*/

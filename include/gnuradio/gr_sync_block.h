@@ -32,11 +32,14 @@ struct GR_RUNTIME_API gr_sync_block : gr_block
     );
 
     //! implements work -> calls work
-    int general_work (int noutput_items,
-                gr_vector_int &ninput_items,
-                gr_vector_const_void_star &input_items,
-                gr_vector_void_star &output_items);
-    void forecast (int noutput_items, gr_vector_int &ninput_items_required);
+    inline int general_work(
+        int noutput_items,
+        gr_vector_int &ninput_items,
+        gr_vector_const_void_star &input_items,
+        gr_vector_void_star &output_items
+    ){
+        return this->work(noutput_items, input_items, output_items);
+    }
 
     void set_alignment(const size_t alignment);
     bool is_unaligned(void);

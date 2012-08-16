@@ -46,8 +46,6 @@ struct GR_RUNTIME_API gr_block : gnuradio::Block
 
     gr_io_signature_sptr output_signature(void);
 
-    void set_fixed_rate(bool fixed_rate);
-
     //! implements work -> calls general work
     int work(
         const InputItems &input_items,

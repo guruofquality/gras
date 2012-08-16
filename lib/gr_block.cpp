@@ -14,27 +14,21 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_GNURADIO_GR_SYNC_DECIMATOR_H
-#define INCLUDED_GNURADIO_GR_SYNC_DECIMATOR_H
+#include <gr_block.h>
 
-#include <gnuradio/runtime_api.h>
-#include <gr_sync_block.h>
-
-struct GR_RUNTIME_API gr_sync_decimator : gr_sync_block
+gr_block::gr_block(void)
 {
+    //NOP
+}
 
-    gr_sync_decimator(void);
-
-    gr_sync_decimator(
-        const std::string &name,
-        gr_io_signature_sptr input_signature,
-        gr_io_signature_sptr output_signature,
-        const size_t decim_rate
-    );
-
-    size_t decimation(void);
-    void set_decimation(const size_t decim);
-
-};
-
-#endif /*INCLUDED_GNURADIO_GR_SYNC_DECIMATOR_H*/
+gr_block::gr_block(
+    const std::string &name,
+    gr_io_signature_sptr input_signature,
+    gr_io_signature_sptr output_signature
+):
+    gnuradio::Block(name)
+{
+    this->set_auto_consume(false);
+    this->set_input_signature(input_signature);
+    this->set_output_signature(output_signature);
+}

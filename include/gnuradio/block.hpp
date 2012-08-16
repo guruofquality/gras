@@ -22,6 +22,7 @@
 #include <gnuradio/tags.hpp>
 #include <gruel/pmt.h>
 #include <vector>
+#include <string>
 
 namespace gnuradio
 {
@@ -68,6 +69,8 @@ struct GR_RUNTIME_API Block : Element
 
     Block(void);
 
+    Block(const std::string &name);
+
     /*!
      * Set the block's work mode (how it produces and consumes, and the ratio).
      * When automatic, consume is automatically called, and forecast handled.
@@ -83,19 +86,21 @@ struct GR_RUNTIME_API Block : Element
 
     std::string name(void) const;
 
-    unsigned history(void) const;
+    size_t history(const size_t which_input = 0) const;
 
-    void set_history(unsigned history);
+    void set_history(const size_t history, const size_t which_input = 0);
 
-    void set_output_multiple(int multiple);
+    void set_output_multiple(const size_t multiple, const size_t which_input = 0);
 
-    int output_multiple(void) const;
+    size_t output_multiple(const size_t which_input = 0) const;
 
-    void consume(int which_input, int how_many_items);
+    void consume(const size_t which_input, const size_t how_many_items);
 
-    void consume_each(int how_many_items);
+    void consume_each(const size_t how_many_items);
 
-    void produce(int which_output, int how_many_items);
+    void produce(const size_t which_output, const size_t how_many_items);
+
+    void set_fixed_rate(bool fixed_rate);
 
     /*!
      * The relative rate can be thought of as interpolation/decimation.
@@ -109,20 +114,20 @@ struct GR_RUNTIME_API Block : Element
      * Tag related routines from basic block
      ******************************************************************/
 
-    uint64_t nitems_read(unsigned int which_input);
+    uint64_t nitems_read(const size_t which_input);
 
-    uint64_t nitems_written(unsigned int which_output);
+    uint64_t nitems_written(const size_t which_output);
 
     tag_propagation_policy_t tag_propagation_policy(void);
 
     void set_tag_propagation_policy(tag_propagation_policy_t p);
 
     void add_item_tag(
-        unsigned int which_output, const Tag &tag
+        const size_t which_output, const Tag &tag
     );
 
     void add_item_tag(
-        unsigned int which_output,
+        const size_t which_output,
         uint64_t abs_offset,
         const pmt::pmt_t &key,
         const pmt::pmt_t &value,
@@ -131,14 +136,14 @@ struct GR_RUNTIME_API Block : Element
 
     void get_tags_in_range(
         std::vector<Tag> &tags,
-        unsigned int which_input,
+        const size_t which_input,
         uint64_t abs_start,
         uint64_t abs_end
     );
 
     void get_tags_in_range(
         std::vector<Tag> &tags,
-        unsigned int which_input,
+        const size_t which_input,
         uint64_t abs_start,
         uint64_t abs_end,
         const pmt::pmt_t &key

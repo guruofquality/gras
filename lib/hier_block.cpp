@@ -14,4 +14,11 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <gnuradio/element.hpp>
+#include <gnuradio/hier_block.hpp>
+
+using namespace gnuradio;
+
+HierBlock::HierBlock(void)
+{
+    //NOP
+}
