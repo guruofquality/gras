@@ -19,7 +19,6 @@
 
 #include <gnuradio/runtime_api.h>
 #include <gnuradio/hier_block.hpp>
-#include <gruel/pmt.h>
 
 namespace gnuradio
 {
@@ -27,6 +26,21 @@ namespace gnuradio
 struct GR_RUNTIME_API TopBlock : HierBlock
 {
     TopBlock(void);
+
+    TopBlock(const std::string &name);
+
+    void update(void);
+
+    void run(void)
+    {
+        this->start();
+        this->stop();
+        this->wait();
+    }
+
+    void start(void);
+    void stop(void);
+    void wait(void);
 };
 
 } //namespace gnuradio

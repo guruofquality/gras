@@ -19,7 +19,6 @@
 
 #include <gnuradio/runtime_api.h>
 #include <gnuradio/element.hpp>
-#include <gruel/pmt.h>
 
 namespace gnuradio
 {

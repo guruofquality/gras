@@ -23,10 +23,19 @@ gr_hier_block2::gr_hier_block2(void)
 
 gr_hier_block2::gr_hier_block2(
     const std::string &name,
-    gr_io_signature_sptr,
-    gr_io_signature_sptr
+    gr_io_signature_sptr input_signature,
+    gr_io_signature_sptr output_signature
 ):
     gnuradio::HierBlock(name)
 {
-    //NOP
+    this->set_input_signature(input_signature);
+    this->set_output_signature(output_signature);
+}
+
+gr_hier_block2_sptr gr_make_hier_block2(
+    const std::string &name,
+    gr_io_signature_sptr input_signature,
+    gr_io_signature_sptr output_signature
+){
+    return gr_hier_block2_sptr(new gr_hier_block2(name, input_signature, output_signature));
 }

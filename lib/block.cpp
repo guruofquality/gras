@@ -16,23 +16,18 @@
 
 #include "element_impl.hpp"
 #include <gnuradio/block.hpp>
-#include <boost/detail/atomic_count.hpp>
 #include <boost/bind.hpp>
 
 using namespace gnuradio;
-
-static boost::detail::atomic_count unique_id_pool(0);
 
 Block::Block(void)
 {
     //NOP
 }
 
-Block::Block(const std::string &name)
+Block::Block(const std::string &name):
+    Element(name)
 {
-    this->reset(new ElementImpl());
-    (*this)->name = name;
-    (*this)->unique_id = ++unique_id_pool;
     this->set_history(0);
     this->set_output_multiple(1);
     this->set_fixed_rate(true);
@@ -45,17 +40,6 @@ Block::Block(const std::string &name)
     //TODO other callbacks
     (*this)->block = tsbe::Block(config);
 
-}
-
-
-long Block::unique_id(void) const
-{
-    return (*this)->unique_id;
-}
-
-std::string Block::name(void) const
-{
-    return (*this)->name;
 }
 
 template <typename V, typename T>
@@ -76,28 +60,6 @@ typename V::value_type vector_get(const V &v, const size_t index)
         return v.front();
     }
     return v[index];
-}
-
-size_t Block::input_size(const size_t which_input) const
-{
-    return vector_get((*this)->input_items_sizes, which_input);
-}
-
-size_t Block::output_size(const size_t which_output) const
-{
-    return vector_get((*this)->output_items_sizes, which_output);
-}
-
-void Block::set_input_size(const size_t size, const size_t which_input)
-{
-    vector_set((*this)->input_items_sizes, size, which_input);
-    (*this)->input_signature = gr_make_io_signaturev(-1, -1, (*this)->input_items_sizes);
-}
-
-void Block::set_output_size(const size_t size, const size_t which_output)
-{
-    vector_set((*this)->output_items_sizes, size, which_output);
-    (*this)->output_signature = gr_make_io_signaturev(-1, -1, (*this)->output_items_sizes);
 }
 
 size_t Block::history(const size_t which_input) const

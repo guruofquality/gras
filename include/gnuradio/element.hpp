@@ -19,6 +19,7 @@
 
 #include <gnuradio/runtime_api.h>
 #include <gruel/pmt.h>
+#include <gr_io_signature.h>
 
 namespace gnuradio
 {
@@ -29,6 +30,8 @@ struct GR_RUNTIME_API Element : boost::shared_ptr<ElementImpl>
     //! Create an empty element
     Element(void);
 
+    Element(const std::string &name);
+
     /*!
      * Create an element from a shared pointer to an element.
      * Good for that factory function/shared ptr paradigm.
@@ -37,6 +40,18 @@ struct GR_RUNTIME_API Element : boost::shared_ptr<ElementImpl>
     Element(const boost::shared_ptr<T> &elem):
         boost::shared_ptr<ElementImpl>(*reinterpret_cast<const Element*>(elem.get()))
     {    }
+
+    long unique_id(void) const;
+
+    std::string name(void) const;
+
+    void set_output_signature(gr_io_signature_sptr);
+
+    void set_input_signature(gr_io_signature_sptr);
+
+    gr_io_signature_sptr input_signature(void) const;
+
+    gr_io_signature_sptr output_signature(void) const;
 
 };
 

@@ -14,34 +14,37 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "element_impl.hpp"
-#include <gr_block.h>
+#include <gnuradio/top_block.hpp>
 
-gr_block::gr_block(void)
+using namespace gnuradio;
+
+TopBlock::TopBlock(void)
 {
     //NOP
 }
 
-gr_block::gr_block(
-    const std::string &name,
-    gr_io_signature_sptr input_signature,
-    gr_io_signature_sptr output_signature
-):
-    gnuradio::Block(name)
+TopBlock::TopBlock(const std::string &name):
+    HierBlock(name)
 {
-    this->set_fixed_rate(false);
-    this->set_input_signature(input_signature);
-    this->set_output_signature(output_signature);
+    //TODO
 }
 
-int gr_block::work(
-    const InputItems &input_items,
-    const OutputItems &output_items
-){
-    return this->general_work(
-        (output_items.empty())? input_items[0].size() : output_items[0].size(),
-        (*this)->work_ninput_items,
-        (*this)->work_input_items,
-        (*this)->work_output_items
-    );
+void TopBlock::update(void)
+{
+    
+}
+
+void TopBlock::start(void)
+{
+    
+}
+
+void TopBlock::stop(void)
+{
+    
+}
+
+void TopBlock::wait(void)
+{
+    
 }

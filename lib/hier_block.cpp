@@ -24,10 +24,9 @@ HierBlock::HierBlock(void)
     //NOP
 }
 
-HierBlock::HierBlock(const std::string &name)
+HierBlock::HierBlock(const std::string &name):
+    Element(name)
 {
-    this->reset(new ElementImpl());
-    (*this)->name = name;
     tsbe::TopologyConfig config;
     (*this)->topology = tsbe::Topology(config);
 }

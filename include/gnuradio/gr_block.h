@@ -19,7 +19,6 @@
 
 #include <gnuradio/runtime_api.h>
 #include <gnuradio/block.hpp>
-#include <gr_io_signature.h>
 #include <gr_sptr_magic.h>
 #include <gr_types.h>
 #include <gr_tags.h>
@@ -37,14 +36,6 @@ struct GR_RUNTIME_API gr_block : gnuradio::Block
     );
 
     template <typename T> void set_msg_handler(T msg_handler){/*LOL*/}
-
-    void set_output_signature(gr_io_signature_sptr);
-
-    void set_input_signature(gr_io_signature_sptr);
-
-    gr_io_signature_sptr input_signature(void) const;
-
-    gr_io_signature_sptr output_signature(void) const;
 
     //! implements work -> calls general work
     int work(
@@ -73,5 +64,7 @@ struct GR_RUNTIME_API gr_block : gnuradio::Block
         gr_vector_void_star &output_items
     ) = 0;
 };
+
+typedef boost::shared_ptr<gr_block> gr_block_sptr;
 
 #endif /*INCLUDED_GNURADIO_GR_BLOCK_H*/
