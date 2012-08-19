@@ -17,6 +17,7 @@ list(APPEND gnuradio_core_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_msg_queue.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_msg_handler.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/block.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/block_handlers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/hier_block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_sync_block.cpp
@@ -34,7 +35,7 @@ FIND_PATH(
 
 FIND_LIBRARY(
     TSBE_LIBRARIES
-    NAMES tsbe_static
+    NAMES tsbe
     PATHS /usr/local/lib
           /usr/lib
           /usr/lib64

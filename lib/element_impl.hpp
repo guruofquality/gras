@@ -21,6 +21,7 @@
 #include <gnuradio/element.hpp>
 #include <gnuradio/block.hpp>
 #include <gr_types.h>
+#include <gr_io_signature.h>
 #include <vector>
 
 namespace gnuradio
@@ -32,10 +33,17 @@ struct ElementImpl
     std::string name;
     long unique_id;
 
+    //per port properties
     std::vector<size_t> input_items_sizes;
     std::vector<size_t> output_items_sizes;
+    gr_io_signature_sptr input_signature;
+    gr_io_signature_sptr output_signature;
     std::vector<size_t> input_history_items;
     std::vector<size_t> output_multiple_items;
+
+    //keeps track of production
+    std::vector<uint64_t> bytes_consumed;
+    std::vector<uint64_t> bytes_produced;
 
     //work buffers
     gr_vector_const_void_star work_input_items;
@@ -44,7 +52,16 @@ struct ElementImpl
     Block::InputItems input_items;
     Block::OutputItems output_items;
 
+    //tag tracking
+    std::vector<std::vector<Tag> > input_tags;
+    std::vector<std::vector<Tag> > output_tags;
+
+    Block::tag_propagation_policy_t tag_prop_policy;
+
     tsbe::Block block;
+
+    void handle_port_msg(const size_t, const tsbe::Wax &);
+    void topology_update(const tsbe::TaskInterface &);
 
     double relative_rate;
 };

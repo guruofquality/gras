@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include "element_impl.hpp"
 #include <gr_block.h>
 
 gr_block::gr_block(void)
@@ -31,4 +32,30 @@ gr_block::gr_block(
     this->set_auto_consume(false);
     this->set_input_signature(input_signature);
     this->set_output_signature(output_signature);
+}
+
+void gr_block::set_output_signature(gr_io_signature_sptr sig)
+{
+    for (size_t i = 0; i < sig->sizeof_stream_items().size(); i++)
+    {
+        this->set_output_size(sig->sizeof_stream_items()[i], i);
+    }
+}
+
+void gr_block::set_input_signature(gr_io_signature_sptr sig)
+{
+    for (size_t i = 0; i < sig->sizeof_stream_items().size(); i++)
+    {
+        this->set_input_size(sig->sizeof_stream_items()[i], i);
+    }
+}
+
+gr_io_signature_sptr gr_block::input_signature(void) const
+{
+    return (*this)->input_signature;
+}
+
+gr_io_signature_sptr gr_block::output_signature(void) const
+{
+    return (*this)->output_signature;
 }

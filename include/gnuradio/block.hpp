@@ -86,13 +86,21 @@ struct GR_RUNTIME_API Block : Element
 
     std::string name(void) const;
 
+    size_t input_size(const size_t which_input) const;
+
+    size_t output_size(const size_t which_output) const;
+
+    void set_input_size(const size_t size, const size_t which_input);
+
+    void set_output_size(const size_t size, const size_t which_output);
+
     size_t history(const size_t which_input = 0) const;
 
     void set_history(const size_t history, const size_t which_input = 0);
 
-    void set_output_multiple(const size_t multiple, const size_t which_input = 0);
+    void set_output_multiple(const size_t multiple, const size_t which_output = 0);
 
-    size_t output_multiple(const size_t which_input = 0) const;
+    size_t output_multiple(const size_t which_output = 0) const;
 
     void consume(const size_t which_input, const size_t how_many_items);
 

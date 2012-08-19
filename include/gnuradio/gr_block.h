@@ -42,9 +42,9 @@ struct GR_RUNTIME_API gr_block : gnuradio::Block
 
     void set_input_signature(gr_io_signature_sptr);
 
-    gr_io_signature_sptr input_signature(void);
+    gr_io_signature_sptr input_signature(void) const;
 
-    gr_io_signature_sptr output_signature(void);
+    gr_io_signature_sptr output_signature(void) const;
 
     //! implements work -> calls general work
     int work(
