@@ -60,6 +60,8 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
     this->work_ninput_items.resize(num_inputs);
     this->input_items.resize(num_inputs);
     this->output_items.resize(num_outputs);
+    this->consume_items.resize(num_inputs);
+    this->produce_items.resize(num_outputs);
 
     //resize tags vector to match sizes
     this->input_tags.resize(num_inputs);

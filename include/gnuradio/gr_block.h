@@ -66,10 +66,12 @@ struct GR_RUNTIME_API gr_block : gnuradio::Block
     * general_work must call consume or consume_each to indicate how many items
     * were consumed on each input stream.
     */
-    virtual int general_work (int noutput_items,
-                gr_vector_int &ninput_items,
-                gr_vector_const_void_star &input_items,
-                gr_vector_void_star &output_items) = 0;
+    virtual int general_work(
+        int noutput_items,
+        gr_vector_int &ninput_items,
+        gr_vector_const_void_star &input_items,
+        gr_vector_void_star &output_items
+    ) = 0;
 };
 
 #endif /*INCLUDED_GNURADIO_GR_BLOCK_H*/

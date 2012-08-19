@@ -71,13 +71,6 @@ struct GR_RUNTIME_API Block : Element
 
     Block(const std::string &name);
 
-    /*!
-     * Set the block's work mode (how it produces and consumes, and the ratio).
-     * When automatic, consume is automatically called, and forecast handled.
-     * \param automatic true to call consume and forecast automatically
-     */
-    void set_auto_consume(const bool automatic);
-
     /*******************************************************************
      * Basic routines from basic block
      ******************************************************************/
@@ -108,7 +101,13 @@ struct GR_RUNTIME_API Block : Element
 
     void produce(const size_t which_output, const size_t how_many_items);
 
-    void set_fixed_rate(bool fixed_rate);
+    /*!
+     * Enable fixed rate logic.
+     * When enabled, relative rate is assumed to be set,
+     * and forecast is automatically called.
+     * Also, consume will be called automatically.
+     */
+    void set_fixed_rate(const bool fixed_rate);
 
     /*!
      * The relative rate can be thought of as interpolation/decimation.

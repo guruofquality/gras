@@ -42,6 +42,7 @@ struct GR_RUNTIME_API gr_sync_block : gr_block
     }
 
     void set_alignment(const size_t alignment);
+
     bool is_unaligned(void);
 
    /*!

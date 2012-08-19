@@ -14,29 +14,19 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_GNURADIO_GR_HIER_BLOCK2_H
-#define INCLUDED_GNURADIO_GR_HIER_BLOCK2_H
+#include <gr_hier_block2.h>
 
-#include <gnuradio/runtime_api.h>
-#include <gnuradio/hier_block.hpp>
-#include <gr_io_signature.h>
-
-struct GR_RUNTIME_API gr_hier_block2 : gnuradio::HierBlock
+gr_hier_block2::gr_hier_block2(void)
 {
+    //NOP
+}
 
-    gr_hier_block2(void);
-
-    gr_hier_block2(
-        const std::string &name,
-        gr_io_signature_sptr input_signature,
-        gr_io_signature_sptr output_signature
-    );
-
-    const Element &self(void) const
-    {
-        return *this;
-    }
-
-};
-
-#endif /*INCLUDED_GNURADIO_GR_HIER_BLOCK2_H*/
+gr_hier_block2::gr_hier_block2(
+    const std::string &name,
+    gr_io_signature_sptr,
+    gr_io_signature_sptr
+):
+    gnuradio::HierBlock(name)
+{
+    //NOP
+}

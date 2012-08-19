@@ -30,7 +30,17 @@ gr_sync_block::gr_sync_block(
 ):
     gr_block(name, input_signature, output_signature)
 {
-    this->set_auto_consume(true);
+    this->set_fixed_rate(true);
+}
+
+void gr_sync_block::set_alignment(const size_t alignment)
+{
+    //TODO
+}
+
+bool gr_sync_block::is_unaligned(void)
+{
+    //TODO
 }
 
 gr_sync_interpolator::gr_sync_interpolator(void)
@@ -49,6 +59,16 @@ gr_sync_interpolator::gr_sync_interpolator(
     this->set_interpolation(interp_rate);
 }
 
+size_t gr_sync_interpolator::interpolation(void)
+{
+    return size_t(1.0*this->relative_rate());
+}
+
+void gr_sync_interpolator::set_interpolation(const size_t interp)
+{
+    this->set_relative_rate(1.0*interp);
+}
+
 gr_sync_decimator::gr_sync_decimator(void)
 {
     //NOP
@@ -63,4 +83,14 @@ gr_sync_decimator::gr_sync_decimator(
     gr_sync_block(name, input_signature, output_signature)
 {
     this->set_decimation(decim_rate);
+}
+
+size_t gr_sync_decimator::decimation(void)
+{
+    return size_t(1.0/this->relative_rate());
+}
+
+void gr_sync_decimator::set_decimation(const size_t decim)
+{
+    this->set_relative_rate(1.0/decim);
 }

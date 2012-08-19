@@ -29,7 +29,7 @@ gr_block::gr_block(
 ):
     gnuradio::Block(name)
 {
-    this->set_auto_consume(false);
+    this->set_fixed_rate(false);
     this->set_input_signature(input_signature);
     this->set_output_signature(output_signature);
 }
@@ -58,4 +58,16 @@ gr_io_signature_sptr gr_block::input_signature(void) const
 gr_io_signature_sptr gr_block::output_signature(void) const
 {
     return (*this)->output_signature;
+}
+
+int gr_block::work(
+    const InputItems &input_items,
+    const OutputItems &output_items
+){
+    return this->general_work(
+        (output_items.empty())? input_items[0].size() : output_items[0].size(),
+        (*this)->work_ninput_items,
+        (*this)->work_input_items,
+        (*this)->work_output_items
+    );
 }

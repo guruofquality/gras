@@ -14,42 +14,11 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_GNURADIO_HIER_BLOCK_HPP
-#define INCLUDED_GNURADIO_HIER_BLOCK_HPP
-
-#include <gnuradio/runtime_api.h>
 #include <gnuradio/element.hpp>
-#include <gruel/pmt.h>
 
-namespace gnuradio
+using namespace gnuradio;
+
+Element::Element(void)
 {
-
-struct GR_RUNTIME_API HierBlock : Element
-{
-    HierBlock(void);
-
-    HierBlock(const std::string &name);
-
-    void connect(const Element &elem);
-
-    void disconnect(const Element &elem);
-
-    void connect(
-        const Element &src,
-        const size_t src_index,
-        const Element &sink,
-        const size_t sink_index
-    );
-
-    void disconnect(
-        const Element &src,
-        const size_t src_index,
-        const Element &sink,
-        const size_t sink_index
-    );
-
-};
-
-} //namespace gnuradio
-
-#endif /*INCLUDED_GNURADIO_HIER_BLOCK_HPP*/
+    //NOP
+}

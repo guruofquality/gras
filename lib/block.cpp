@@ -35,6 +35,7 @@ Block::Block(const std::string &name)
     (*this)->unique_id = ++unique_id_pool;
     this->set_history(0);
     this->set_output_multiple(1);
+    this->set_fixed_rate(true);
     this->set_relative_rate(1.0);
     this->set_tag_propagation_policy(TPP_ALL_TO_ALL);
 
@@ -43,7 +44,6 @@ Block::Block(const std::string &name)
     config.update_callback = boost::bind(&ElementImpl::topology_update, this->get(), _1);
     //TODO other callbacks
     (*this)->block = tsbe::Block(config);
-
 
 }
 
@@ -118,6 +118,29 @@ size_t Block::output_multiple(const size_t which_output) const
 void Block::set_output_multiple(const size_t multiple, const size_t which_output)
 {
     vector_set((*this)->output_multiple_items, multiple, which_output);
+}
+
+void Block::consume(const size_t which_input, const size_t how_many_items)
+{
+    (*this)->consume_items[which_input] = how_many_items;
+}
+
+void Block::consume_each(const size_t how_many_items)
+{
+    for (size_t i = 0; i < (*this)->consume_items.size(); i++)
+    {
+        (*this)->consume_items[i] = how_many_items;
+    }
+}
+
+void Block::produce(const size_t which_output, const size_t how_many_items)
+{
+    (*this)->produce_items[which_output] = how_many_items;
+}
+
+void Block::set_fixed_rate(const bool fixed_rate)
+{
+    (*this)->enble_fixed_rate = fixed_rate;
 }
 
 void Block::set_relative_rate(double relative_rate)
@@ -208,4 +231,31 @@ void Block::get_tags_in_range(
             tags.push_back(input_tags[i]);
         }
     }
+}
+
+static int mylround(double x)
+{
+    return int(x + 0.5);
+}
+
+void Block::forecast(
+    int noutput_items,
+    std::vector<size_t> &ninput_items_required
+){
+    for (size_t i = 0; i < ninput_items_required.size(); i++)
+    {
+        ninput_items_required[i] =
+            (*this)->input_history_items[i] +
+            mylround((noutput_items/(*this)->relative_rate));
+    }
+}
+
+bool Block::start(void)
+{
+    return true;
+}
+
+bool Block::stop(void)
+{
+    return true;
 }

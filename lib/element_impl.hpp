@@ -18,6 +18,7 @@
 #define INCLUDED_LIBGNURADIO_ELEMENT_IMPL_HPP
 
 #include <tsbe/block.hpp>
+#include <tsbe/topology.hpp>
 #include <gnuradio/element.hpp>
 #include <gnuradio/block.hpp>
 #include <gr_types.h>
@@ -51,6 +52,8 @@ struct ElementImpl
     gr_vector_int work_ninput_items;
     Block::InputItems input_items;
     Block::OutputItems output_items;
+    std::vector<size_t> produce_items;
+    std::vector<size_t> consume_items;
 
     //tag tracking
     std::vector<std::vector<Tag> > input_tags;
@@ -59,10 +62,17 @@ struct ElementImpl
     Block::tag_propagation_policy_t tag_prop_policy;
 
     tsbe::Block block;
+    tsbe::Topology topology;
+    const tsbe::Element &get_elem(void)
+    {
+        if (block) return block;
+        return topology;
+    }
 
     void handle_port_msg(const size_t, const tsbe::Wax &);
     void topology_update(const tsbe::TaskInterface &);
 
+    bool enble_fixed_rate;
     double relative_rate;
 };
 

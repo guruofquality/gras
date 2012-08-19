@@ -4,10 +4,6 @@
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-if(LINUX)
-    list(APPEND gnuradio_core_libs numa)
-endif()
-
 ########################################################################
 # Append gnuradio-core library sources
 ########################################################################
@@ -16,11 +12,13 @@ list(APPEND gnuradio_core_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_message.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_msg_queue.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_msg_handler.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/element.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_handlers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/hier_block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_sync_block.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gr_hier_block2.cpp
 )
 
 ########################################################################
@@ -47,3 +45,7 @@ link_directories(${TSBE_LIBRARY_DIRS})
 list(APPEND gnuradio_core_libs
     ${TSBE_LIBRARIES}
 )
+
+if(LINUX)
+    list(APPEND gnuradio_core_libs numa)
+endif()
