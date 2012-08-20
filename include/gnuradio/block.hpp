@@ -158,7 +158,7 @@ struct GR_RUNTIME_API Block : Element
     typedef std::vector<Buffer<void *> > OutputItems;
 
     //! The official call into the work routine (overload please)
-    virtual int work(
+    virtual int Work(
         const InputItems &input_items,
         const OutputItems &output_items
     ) = 0;
@@ -166,7 +166,7 @@ struct GR_RUNTIME_API Block : Element
     //! forcast requirements, can be overloaded
     virtual void forecast(
         int noutput_items,
-        std::vector<size_t> &ninput_items_required
+        std::vector<int> &ninput_items_required
     );
 
 };

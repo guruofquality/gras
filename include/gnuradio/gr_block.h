@@ -38,7 +38,7 @@ struct GR_RUNTIME_API gr_block : gnuradio::Block
     template <typename T> void set_msg_handler(T msg_handler){/*LOL*/}
 
     //! implements work -> calls general work
-    int work(
+    int Work(
         const InputItems &input_items,
         const OutputItems &output_items
     );
@@ -63,6 +63,21 @@ struct GR_RUNTIME_API gr_block : gnuradio::Block
         gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items
     ) = 0;
+
+    unsigned history(void) const
+    {
+        return gnuradio::Block::history();
+    }
+
+    void set_history(unsigned history)
+    {
+        gnuradio::Block::set_history(history);
+    }
+
+    void set_alignment(const size_t alignment);
+
+    bool is_unaligned(void);
+
 };
 
 typedef boost::shared_ptr<gr_block> gr_block_sptr;

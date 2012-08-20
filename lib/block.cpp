@@ -202,7 +202,7 @@ static int mylround(double x)
 
 void Block::forecast(
     int noutput_items,
-    std::vector<size_t> &ninput_items_required
+    std::vector<int> &ninput_items_required
 ){
     for (size_t i = 0; i < ninput_items_required.size(); i++)
     {

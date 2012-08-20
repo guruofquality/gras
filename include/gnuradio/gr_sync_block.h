@@ -20,9 +20,8 @@
 #include <gnuradio/runtime_api.h>
 #include <gr_block.h>
 
-struct GR_RUNTIME_API gr_sync_block : gr_block
+struct GR_RUNTIME_API gr_sync_block : public gr_block
 {
-
     gr_sync_block(void);
 
     gr_sync_block(
@@ -40,10 +39,6 @@ struct GR_RUNTIME_API gr_sync_block : gr_block
     ){
         return this->work(noutput_items, input_items, output_items);
     }
-
-    void set_alignment(const size_t alignment);
-
-    bool is_unaligned(void);
 
    /*!
     * \brief just like gr_block::general_work, only this arranges to call consume_each for you

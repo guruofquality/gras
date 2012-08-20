@@ -33,16 +33,6 @@ gr_sync_block::gr_sync_block(
     this->set_fixed_rate(true);
 }
 
-void gr_sync_block::set_alignment(const size_t alignment)
-{
-    //TODO
-}
-
-bool gr_sync_block::is_unaligned(void)
-{
-    //TODO
-}
-
 gr_sync_interpolator::gr_sync_interpolator(void)
 {
     //NOP

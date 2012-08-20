@@ -32,7 +32,7 @@ struct GR_RUNTIME_API gr_hier_block2 : gnuradio::HierBlock
         gr_io_signature_sptr output_signature
     );
 
-    const Element &self(void) const
+    const gr_hier_block2 &self(void) const
     {
         return *this;
     }
