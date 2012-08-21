@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include "element_impl.hpp"
 #include <gr_sync_block.h>
 #include <gr_sync_interpolator.h>
 #include <gr_sync_decimator.h>
@@ -49,16 +50,6 @@ gr_sync_interpolator::gr_sync_interpolator(
     this->set_interpolation(interp_rate);
 }
 
-size_t gr_sync_interpolator::interpolation(void)
-{
-    return size_t(1.0*this->relative_rate());
-}
-
-void gr_sync_interpolator::set_interpolation(const size_t interp)
-{
-    this->set_relative_rate(1.0*interp);
-}
-
 gr_sync_decimator::gr_sync_decimator(void)
 {
     //NOP
@@ -73,14 +64,4 @@ gr_sync_decimator::gr_sync_decimator(
     gr_sync_block(name, input_signature, output_signature)
 {
     this->set_decimation(decim_rate);
-}
-
-size_t gr_sync_decimator::decimation(void)
-{
-    return size_t(1.0/this->relative_rate());
-}
-
-void gr_sync_decimator::set_decimation(const size_t decim)
-{
-    this->set_relative_rate(1.0/decim);
 }

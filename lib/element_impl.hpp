@@ -25,6 +25,11 @@
 #include <gr_io_signature.h>
 #include <vector>
 
+static inline int mylround(double x)
+{
+    return int(x + 0.5);
+}
+
 namespace gnuradio
 {
 

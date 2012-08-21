@@ -33,7 +33,6 @@
 #include <gnuradio/io_signature.hpp>
 #include <gnuradio/tags.hpp>
 #include <gr_tags.h>
-#include <gr_runtime_types.h>
 #include <gr_io_signature.h>
 #include <gr_block.h>
 #include <gr_hier_block2.h>

@@ -32,9 +32,6 @@ struct GR_RUNTIME_API gr_sync_interpolator : gr_sync_block
         const size_t interp_rate
     );
 
-    size_t interpolation(void);
-    void set_interpolation(const size_t interp);
-
 };
 
 #endif /*INCLUDED_GNURADIO_GR_SYNC_INTERPOLATOR_H*/

@@ -78,6 +78,16 @@ struct GR_RUNTIME_API gr_block : gnuradio::Block
 
     bool is_unaligned(void);
 
+    size_t fixed_rate_noutput_to_ninput(const size_t noutput_items);
+
+    size_t interpolation(void) const;
+
+    void set_interpolation(const size_t);
+
+    size_t decimation(void) const;
+
+    void set_decimation(const size_t);
+
 };
 
 typedef boost::shared_ptr<gr_block> gr_block_sptr;

@@ -32,9 +32,6 @@ struct GR_RUNTIME_API gr_sync_decimator : gr_sync_block
         const size_t decim_rate
     );
 
-    size_t decimation(void);
-    void set_decimation(const size_t decim);
-
 };
 
 #endif /*INCLUDED_GNURADIO_GR_SYNC_DECIMATOR_H*/

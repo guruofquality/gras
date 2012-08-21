@@ -55,3 +55,29 @@ bool gr_block::is_unaligned(void)
 {
     //TODO
 }
+
+size_t gr_block::fixed_rate_noutput_to_ninput(const size_t noutput_items)
+{
+    return (*this)->input_history_items[0] +
+            mylround((noutput_items/(*this)->relative_rate));
+}
+
+size_t gr_block::interpolation(void) const
+{
+    return size_t(1.0*this->relative_rate());
+}
+
+void gr_block::set_interpolation(const size_t interp)
+{
+    this->set_relative_rate(1.0*interp);
+}
+
+size_t gr_block::decimation(void) const
+{
+    return size_t(1.0/this->relative_rate());
+}
+
+void gr_block::set_decimation(const size_t decim)
+{
+    this->set_relative_rate(1.0/decim);
+}

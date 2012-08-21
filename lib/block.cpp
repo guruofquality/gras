@@ -195,11 +195,6 @@ void Block::get_tags_in_range(
     }
 }
 
-static int mylround(double x)
-{
-    return int(x + 0.5);
-}
-
 void Block::forecast(
     int noutput_items,
     std::vector<int> &ninput_items_required
