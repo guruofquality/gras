@@ -36,7 +36,7 @@ Block::Block(const std::string &name):
 
     tsbe::BlockConfig config;
     config.port_callback = boost::bind(&ElementImpl::handle_port_msg, this->get(), _1, _2);
-    config.update_callback = boost::bind(&ElementImpl::topology_update, this->get(), _1);
+    config.update_callback = boost::bind(&ElementImpl::topology_update, this->get(), _1, _2);
     //TODO other callbacks
     (*this)->block = tsbe::Block(config);
 

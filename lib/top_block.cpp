@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include "element_impl.hpp"
 #include <gnuradio/top_block.hpp>
 
 using namespace gnuradio;
@@ -26,25 +27,27 @@ TopBlock::TopBlock(void)
 TopBlock::TopBlock(const std::string &name):
     HierBlock(name)
 {
-    //TODO
+    tsbe::ExecutorConfig config;
+    config.topology = (*this)->topology;
+    (*this)->executor = tsbe::Executor(config);
 }
 
 void TopBlock::update(void)
 {
-    
+    (*this)->executor.update();
 }
 
 void TopBlock::start(void)
 {
-    
+    (*this)->executor.set_state(STATE_ACTIVE);
 }
 
 void TopBlock::stop(void)
 {
-    
+    (*this)->executor.set_state(STATE_INERT);
 }
 
 void TopBlock::wait(void)
 {
-    
+    //NOP/TODO?
 }

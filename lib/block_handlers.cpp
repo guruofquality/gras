@@ -39,7 +39,7 @@ void resize_fill_front(V &v, const size_t new_len)
     resize_fill(v, new_len, v.front());
 }
 
-void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
+void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface, const tsbe::Wax &state)
 {
     const size_t num_inputs = task_iface.get_num_inputs();
     const size_t num_outputs = task_iface.get_num_outputs();

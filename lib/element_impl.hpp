@@ -19,11 +19,15 @@
 
 #include <tsbe/block.hpp>
 #include <tsbe/topology.hpp>
+#include <tsbe/executor.hpp>
 #include <gnuradio/element.hpp>
 #include <gnuradio/block.hpp>
 #include <gr_types.h>
 #include <gr_io_signature.h>
 #include <vector>
+
+static const int STATE_INERT = 0;
+static const int STATE_ACTIVE = 1;
 
 static inline int mylround(double x)
 {
@@ -68,6 +72,7 @@ struct ElementImpl
 
     tsbe::Block block;
     tsbe::Topology topology;
+    tsbe::Executor executor;
     const tsbe::Element &get_elem(void)
     {
         if (block) return block;
@@ -75,7 +80,7 @@ struct ElementImpl
     }
 
     void handle_port_msg(const size_t, const tsbe::Wax &);
-    void topology_update(const tsbe::TaskInterface &);
+    void topology_update(const tsbe::TaskInterface &, const tsbe::Wax &);
 
     bool enble_fixed_rate;
     double relative_rate;
