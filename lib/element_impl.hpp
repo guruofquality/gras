@@ -81,6 +81,7 @@ struct ElementImpl
 
     void handle_port_msg(const size_t, const tsbe::Wax &);
     void topology_update(const tsbe::TaskInterface &, const tsbe::Wax &);
+    void handle_task(const tsbe::TaskInterface &);
 
     bool enble_fixed_rate;
     double relative_rate;

@@ -39,10 +39,24 @@ void resize_fill_front(V &v, const size_t new_len)
     resize_fill(v, new_len, v.front());
 }
 
+template <typename V, typename Sig>
+void fill_item_sizes_from_sig(V &v, const Sig &s, const size_t size)
+{
+    v.resize(size);
+    for (size_t i = 0; i < v.size(); i++)
+    {
+        v[i] = s->sizeof_stream_item(i);
+    }
+}
+
 void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface, const tsbe::Wax &state)
 {
     const size_t num_inputs = task_iface.get_num_inputs();
     const size_t num_outputs = task_iface.get_num_outputs();
+
+    //fill the item sizes from the IO signatures
+    fill_item_sizes_from_sig(this->input_items_sizes, this->input_signature, num_inputs);
+    fill_item_sizes_from_sig(this->output_items_sizes, this->output_signature, num_outputs);
 
     //resize and fill port properties
     resize_fill_front(this->input_items_sizes, num_inputs);
@@ -66,4 +80,9 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface, const t
     //resize tags vector to match sizes
     this->input_tags.resize(num_inputs);
     this->output_tags.resize(num_outputs);
+}
+
+void ElementImpl::handle_task(const tsbe::TaskInterface &)
+{
+    
 }
