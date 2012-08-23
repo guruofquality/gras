@@ -19,7 +19,7 @@
 
 #include <gnuradio/runtime_api.h>
 #include <gruel/pmt.h>
-#include <gr_io_signature.h>
+#include <gnuradio/io_signature.hpp>
 
 namespace gnuradio
 {
@@ -45,13 +45,13 @@ struct GR_RUNTIME_API Element : boost::shared_ptr<ElementImpl>
 
     std::string name(void) const;
 
-    void set_output_signature(gr_io_signature_sptr);
+    void set_output_signature(const gnuradio::IOSignature &sig);
 
-    void set_input_signature(gr_io_signature_sptr);
+    void set_input_signature(const gnuradio::IOSignature &sig);
 
-    gr_io_signature_sptr input_signature(void) const;
+    const gnuradio::IOSignature &input_signature(void) const;
 
-    gr_io_signature_sptr output_signature(void) const;
+    const gnuradio::IOSignature &output_signature(void) const;
 
 };
 

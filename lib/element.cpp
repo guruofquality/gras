@@ -32,6 +32,11 @@ Element::Element(const std::string &name)
     this->reset(new ElementImpl());
     (*this)->name = name;
     (*this)->unique_id = ++unique_id_pool;
+
+    //default io signature to something
+    IOSignature sig; sig.push_back(1);
+    this->set_input_signature(sig);
+    this->set_output_signature(sig);
 }
 
 long Element::unique_id(void) const
@@ -45,22 +50,22 @@ std::string Element::name(void) const
 }
 
 
-void Element::set_output_signature(gr_io_signature_sptr sig)
+void Element::set_output_signature(const IOSignature &sig)
 {
-    (*this)->output_signature= sig;
+    (*this)->output_signature = sig;
 }
 
-void Element::set_input_signature(gr_io_signature_sptr sig)
+void Element::set_input_signature(const IOSignature &sig)
 {
     (*this)->input_signature = sig;
 }
 
-gr_io_signature_sptr Element::input_signature(void) const
+const IOSignature &Element::input_signature(void) const
 {
     return (*this)->input_signature;
 }
 
-gr_io_signature_sptr Element::output_signature(void) const
+const IOSignature &Element::output_signature(void) const
 {
     return (*this)->output_signature;
 }

@@ -23,7 +23,6 @@
 #include <gnuradio/element.hpp>
 #include <gnuradio/block.hpp>
 #include <gr_types.h>
-#include <gr_io_signature.h>
 #include <vector>
 
 static const int STATE_INERT = 0;
@@ -46,8 +45,8 @@ struct ElementImpl
     //per port properties
     std::vector<size_t> input_items_sizes;
     std::vector<size_t> output_items_sizes;
-    gr_io_signature_sptr input_signature;
-    gr_io_signature_sptr output_signature;
+    IOSignature input_signature;
+    IOSignature output_signature;
     std::vector<size_t> input_history_items;
     std::vector<size_t> output_multiple_items;
 

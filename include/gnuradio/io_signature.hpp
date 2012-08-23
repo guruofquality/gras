@@ -32,6 +32,21 @@ struct IOSignature : std::vector<int>
         this->set_max_streams(0);
     }
 
+    IOSignature(const IOSignature *sig)
+    {
+        *this = *sig;
+    }
+
+    IOSignature* operator->(void)
+    {
+        return this;
+    };
+
+    const IOSignature* operator->(void) const
+    {
+        return this;
+    };
+
     void set_min_streams(const int val)
     {
         _min_streams = val;

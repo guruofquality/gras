@@ -19,6 +19,7 @@
 
 #include <gnuradio/runtime_api.h>
 #include <gnuradio/block.hpp>
+#include <gr_io_signature.h>
 #include <gr_sptr_magic.h>
 #include <gr_types.h>
 #include <gr_tags.h>

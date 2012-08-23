@@ -47,6 +47,7 @@ void HierBlock::connect(
     const Element &sink,
     const size_t sink_index
 ){
+    //TODO, this is the perfect place to validate IO sigs
     const tsbe::Connection conn(
         tsbe::Port(src->get_elem(), src_index),
         tsbe::Port(sink->get_elem(), sink_index)

@@ -18,18 +18,17 @@
 #define INCLUDED_GNURADIO_GR_IO_SIGNATURE_H
 
 #include <gnuradio/io_signature.hpp>
-#include <boost/shared_ptr.hpp>
 #include <vector>
 
 typedef gnuradio::IOSignature gr_io_signature;
-typedef boost::shared_ptr<gr_io_signature> gr_io_signature_sptr;
+typedef gr_io_signature gr_io_signature_sptr;
 
 inline gr_io_signature_sptr gr_make_io_signature(
     int min_streams,
     int max_streams,
     int sizeof_stream_item
 ){
-    gr_io_signature_sptr io_sig(new gnuradio::IOSignature());
+    gr_io_signature io_sig;
 
     io_sig->set_min_streams(min_streams);
     io_sig->set_max_streams(max_streams);
@@ -52,7 +51,7 @@ inline gr_io_signature_sptr gr_make_io_signature2(
     int sizeof_stream_item1,
     int sizeof_stream_item2
 ){
-    gr_io_signature_sptr io_sig(new gnuradio::IOSignature());
+    gr_io_signature io_sig;
     io_sig->set_min_streams(min_streams);
     io_sig->set_max_streams(max_streams);
     io_sig->push_back(sizeof_stream_item1);
@@ -67,7 +66,7 @@ inline gr_io_signature_sptr gr_make_io_signature3(
     int sizeof_stream_item2,
     int sizeof_stream_item3
 ){
-    gr_io_signature_sptr io_sig(new gnuradio::IOSignature());
+    gr_io_signature io_sig;
     io_sig->set_min_streams(min_streams);
     io_sig->set_max_streams(max_streams);
     io_sig->push_back(sizeof_stream_item1);
@@ -82,10 +81,10 @@ inline gr_io_signature_sptr gr_make_io_signaturev(
     int max_streams,
     const std::vector<T> &sizeof_stream_items
 ){
-    gr_io_signature_sptr io_sig(new gnuradio::IOSignature());
+    gr_io_signature io_sig;
     io_sig->set_min_streams(min_streams);
     io_sig->set_max_streams(max_streams);
-    for (size_t i = 0; i < sizeof_stream_items.size(); i++)
+    for (unsigned i = 0; i < sizeof_stream_items.size(); i++)
     {
         io_sig->push_back(sizeof_stream_items[i]);
     }
