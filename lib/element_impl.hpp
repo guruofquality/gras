@@ -72,7 +72,7 @@ struct ElementImpl
     tsbe::Block block;
     tsbe::Topology topology;
     tsbe::Executor executor;
-    const tsbe::Element &get_elem(void)
+    const tsbe::Element &get_elem(void) const
     {
         if (block) return block;
         return topology;

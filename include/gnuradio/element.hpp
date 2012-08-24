@@ -37,9 +37,10 @@ struct GR_RUNTIME_API Element : boost::shared_ptr<ElementImpl>
      * Good for that factory function/shared ptr paradigm.
      */
     template <typename T>
-    Element(const boost::shared_ptr<T> &elem):
-        boost::shared_ptr<ElementImpl>(*reinterpret_cast<const Element*>(elem.get()))
-    {    }
+    Element(const boost::shared_ptr<T> &elem)
+    {
+        *this = *elem;
+    }
 
     long unique_id(void) const;
 
