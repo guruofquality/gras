@@ -117,12 +117,12 @@ double Block::relative_rate(void) const
 
 uint64_t Block::nitems_read(const size_t which_input)
 {
-    return (*this)->bytes_consumed[which_input]/(*this)->input_items_sizes[which_input];
+    return (*this)->items_consumed[which_input];
 }
 
 uint64_t Block::nitems_written(const size_t which_output)
 {
-    return (*this)->bytes_produced[which_output]/(*this)->output_items_sizes[which_output];
+    return (*this)->items_produced[which_output];
 }
 
 Block::tag_propagation_policy_t Block::tag_propagation_policy(void)

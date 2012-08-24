@@ -91,6 +91,7 @@ struct IOSignature : std::vector<int>
 
     int sizeof_stream_item(const int index) const
     {
+        if (this->empty()) return 0;
         if (this->size() > unsigned(index))
         {
             return this->at(index);

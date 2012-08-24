@@ -51,8 +51,8 @@ struct ElementImpl
     std::vector<size_t> output_multiple_items;
 
     //keeps track of production
-    std::vector<uint64_t> bytes_consumed;
-    std::vector<uint64_t> bytes_produced;
+    std::vector<uint64_t> items_consumed;
+    std::vector<uint64_t> items_produced;
 
     //work buffers
     gr_vector_const_void_star work_input_items;

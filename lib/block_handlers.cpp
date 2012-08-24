@@ -15,6 +15,7 @@
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
+#include <algorithm>
 
 using namespace gnuradio;
 
@@ -65,8 +66,8 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface, const t
     resize_fill_front(this->output_multiple_items, num_outputs);
 
     //resize the bytes consumed/produced
-    resize_fill(this->bytes_consumed, num_inputs, 0);
-    resize_fill(this->bytes_produced, num_outputs, 0);
+    resize_fill(this->items_consumed, num_inputs, 0);
+    resize_fill(this->items_produced, num_outputs, 0);
 
     //resize all work buffers to match current connections
     this->work_input_items.resize(num_inputs);
@@ -82,7 +83,29 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface, const t
     this->output_tags.resize(num_outputs);
 }
 
-void ElementImpl::handle_task(const tsbe::TaskInterface &)
+void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
 {
-    
+    const size_t num_inputs = task_iface.get_num_inputs();
+    const size_t num_outputs = task_iface.get_num_outputs();
+
+    //sort the input tags before working
+    for (size_t i = 0; i < num_inputs; i++)
+    {
+        std::vector<Tag> &tags_i = this->input_tags[i];
+        std::sort(tags_i.begin(), tags_i.end(), Tag::offset_compare);
+    }
+
+
+    //trim the input tags that are past the consumption zone
+    for (size_t i = 0; i < num_inputs; i++)
+    {
+        std::vector<Tag> &tags_i = this->input_tags[i];
+        const size_t items_consumed_i = this->items_consumed[i];
+        size_t j = 0;
+        while (j < tags_i.size() and tags_i[j].offset < items_consumed_i)
+        {
+            j++;
+        }
+        if (j != 0) tags_i.erase(tags_i.begin(), tags_i.begin()+j);
+    }
 }
