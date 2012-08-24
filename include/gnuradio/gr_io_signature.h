@@ -28,18 +28,15 @@ inline gr_io_signature_sptr gr_make_io_signature(
     int max_streams,
     int sizeof_stream_item
 ){
-    gr_io_signature io_sig;
+    gnuradio::IOSignature io_sig(min_streams, max_streams);
 
-    io_sig->set_min_streams(min_streams);
-    io_sig->set_max_streams(max_streams);
-
-    if (io_sig->max_streams() != gr_io_signature::IO_INFINITE)
+    if (io_sig.max_streams() != gr_io_signature::IO_INFINITE)
     {
-        io_sig->resize(io_sig->max_streams(), sizeof_stream_item);
+        io_sig.resize(io_sig.max_streams(), sizeof_stream_item);
     }
     else
     {
-        io_sig->resize(1, sizeof_stream_item);
+        io_sig.resize(1, sizeof_stream_item);
     }
 
     return io_sig;
@@ -51,11 +48,9 @@ inline gr_io_signature_sptr gr_make_io_signature2(
     int sizeof_stream_item1,
     int sizeof_stream_item2
 ){
-    gr_io_signature io_sig;
-    io_sig->set_min_streams(min_streams);
-    io_sig->set_max_streams(max_streams);
-    io_sig->push_back(sizeof_stream_item1);
-    io_sig->push_back(sizeof_stream_item2);
+    gnuradio::IOSignature io_sig(min_streams, max_streams);
+    io_sig.push_back(sizeof_stream_item1);
+    io_sig.push_back(sizeof_stream_item2);
     return io_sig;
 }
 
@@ -66,12 +61,10 @@ inline gr_io_signature_sptr gr_make_io_signature3(
     int sizeof_stream_item2,
     int sizeof_stream_item3
 ){
-    gr_io_signature io_sig;
-    io_sig->set_min_streams(min_streams);
-    io_sig->set_max_streams(max_streams);
-    io_sig->push_back(sizeof_stream_item1);
-    io_sig->push_back(sizeof_stream_item2);
-    io_sig->push_back(sizeof_stream_item3);
+    gnuradio::IOSignature io_sig(min_streams, max_streams);
+    io_sig.push_back(sizeof_stream_item1);
+    io_sig.push_back(sizeof_stream_item2);
+    io_sig.push_back(sizeof_stream_item3);
     return io_sig;
 }
 
@@ -81,12 +74,10 @@ inline gr_io_signature_sptr gr_make_io_signaturev(
     int max_streams,
     const std::vector<T> &sizeof_stream_items
 ){
-    gr_io_signature io_sig;
-    io_sig->set_min_streams(min_streams);
-    io_sig->set_max_streams(max_streams);
+    gnuradio::IOSignature io_sig(min_streams, max_streams);
     for (unsigned i = 0; i < sizeof_stream_items.size(); i++)
     {
-        io_sig->push_back(sizeof_stream_items[i]);
+        io_sig.push_back(sizeof_stream_items[i]);
     }
     return io_sig;
 }
