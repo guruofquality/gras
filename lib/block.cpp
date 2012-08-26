@@ -40,6 +40,7 @@ Block::Block(const std::string &name):
     config.task_callback = boost::bind(&ElementImpl::handle_task, this->get(), _1);
     (*this)->block = tsbe::Block(config);
 
+    (*this)->block_ptr = this;
 }
 
 template <typename V, typename T>

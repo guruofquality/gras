@@ -15,8 +15,6 @@
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
-#include <boost/foreach.hpp>
-#include <algorithm>
 
 using namespace gnuradio;
 
@@ -25,6 +23,7 @@ void ElementImpl::handle_port_msg(const size_t index, const tsbe::Wax &msg)
     if (msg.type() == typeid(Tag))
     {
         this->input_tags[index].push_back(msg.cast<Tag>());
+        this->input_tags_changed[index] = true;
     }
 }
 
@@ -80,72 +79,33 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface, const t
     this->produce_items.resize(num_outputs);
 
     //resize tags vector to match sizes
+    this->input_tags_changed.resize(num_inputs);
     this->input_tags.resize(num_inputs);
     this->output_tags.resize(num_outputs);
-}
 
-void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
-{
-    const size_t num_inputs = task_iface.get_num_inputs();
-    const size_t num_outputs = task_iface.get_num_outputs();
-
-    //sort the input tags before working
+    //resize and clear that initial history
+    this->history_buffs.resize(num_inputs);
     for (size_t i = 0; i < num_inputs; i++)
     {
-        std::vector<Tag> &tags_i = this->input_tags[i];
-        std::sort(tags_i.begin(), tags_i.end(), Tag::offset_compare);
-    }
-
-    //trim the input tags that are past the consumption zone
-    for (size_t i = 0; i < num_inputs; i++)
-    {
-        std::vector<Tag> &tags_i = this->input_tags[i];
-        const size_t items_consumed_i = this->items_consumed[i];
-        size_t last = 0;
-        while (last < tags_i.size() and tags_i[last].offset < items_consumed_i)
+        tsbe::Buffer &buff = this->history_buffs[i];
+        const size_t num_bytes = this->input_items_sizes[i]*this->input_history_items[i];
+        if (not buff or buff.get_length() != num_bytes)
         {
-            last++;
+            tsbe::BufferConfig config;
+            config.memory = NULL;
+            config.length = num_bytes;
+            buff = tsbe::Buffer(config);
         }
-
-        //follow the tag propagation policy before erasure
-        switch (this->tag_prop_policy)
-        {
-        case Block::TPP_DONT: break; //well that was ez
-        case Block::TPP_ALL_TO_ALL:
-            for (size_t out_i = 0; out_i < num_outputs; out_i++)
-            {
-                for (size_t tag_i = 0; tag_i < last; tag_i++)
-                {
-                    Tag t = tags_i[tag_i];
-                    t.offset *= this->relative_rate;
-                    task_iface.post_downstream(out_i, t);
-                }
-            }
-            break;
-        case Block::TPP_ONE_TO_ONE:
-            if (i < num_outputs)
-            {
-                for (size_t tag_i = 0; tag_i < last; tag_i++)
-                {
-                    Tag t = tags_i[tag_i];
-                    t.offset *= this->relative_rate;
-                    task_iface.post_downstream(i, t);
-                }
-            }
-            break;
-        };
-
-        //now its safe to perform the erasure
-        if (last != 0) tags_i.erase(tags_i.begin(), tags_i.begin()+last);
     }
 
-    //now commit all tags in the output queue to the downstream msg handler
-    for (size_t i = 0; i < num_outputs; i++)
+    if (state.cast<TopBlockMessage>().what == TopBlockMessage::ACTIVE)
     {
-        BOOST_FOREACH(const Tag &t, this->output_tags[i])
-        {
-            task_iface.post_downstream(i, t);
-        }
-        this->output_tags[i].clear();
+        this->active = true;
+        this->handle_task(task_iface);
     }
+    if (state.cast<TopBlockMessage>().what == TopBlockMessage::INERT)
+    {
+        this->active = false;
+    }
+
 }

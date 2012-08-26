@@ -34,30 +34,30 @@ TopBlock::TopBlock(const std::string &name):
 
 void TopBlock::update(void)
 {
-    TopBlockUpdateEvent event;
-    event.state = TopBlockUpdateEvent::UPDATE;
+    TopBlockMessage event;
+    event.what = TopBlockMessage::UPDATE;
     (*this)->executor.update(event);
 }
 
 void TopBlock::set_buffer_hint(const size_t hint)
 {
-    TopBlockUpdateEvent event;
-    event.state = TopBlockUpdateEvent::HINT;
+    TopBlockMessage event;
+    event.what = TopBlockMessage::HINT;
     event.hint = hint;
     (*this)->executor.update(event);
 }
 
 void TopBlock::start(void)
 {
-    TopBlockUpdateEvent event;
-    event.state = TopBlockUpdateEvent::ACTIVE;
+    TopBlockMessage event;
+    event.what = TopBlockMessage::ACTIVE;
     (*this)->executor.update(event);
 }
 
 void TopBlock::stop(void)
 {
-    TopBlockUpdateEvent event;
-    event.state = TopBlockUpdateEvent::INERT;
+    TopBlockMessage event;
+    event.what = TopBlockMessage::INERT;
     (*this)->executor.update(event);
 }
 

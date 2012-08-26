@@ -25,7 +25,7 @@
 #include <gr_types.h>
 #include <vector>
 
-struct TopBlockUpdateEvent
+struct TopBlockMessage
 {
     enum
     {
@@ -33,7 +33,7 @@ struct TopBlockUpdateEvent
         ACTIVE,
         INERT,
         HINT,
-    } state;
+    } what;
     size_t hint;
 };
 
@@ -72,12 +72,16 @@ struct ElementImpl
     std::vector<size_t> produce_items;
     std::vector<size_t> consume_items;
 
+    //special buffer for dealing with history
+    std::vector<tsbe::Buffer> history_buffs;
+
     //tag tracking
+    std::vector<bool> input_tags_changed;
     std::vector<std::vector<Tag> > input_tags;
     std::vector<std::vector<Tag> > output_tags;
-
     Block::tag_propagation_policy_t tag_prop_policy;
 
+    //topological things
     tsbe::Block block;
     tsbe::Topology topology;
     tsbe::Executor executor;
@@ -86,11 +90,18 @@ struct ElementImpl
         if (block) return block;
         return topology;
     }
+    //gets the handlers access for forecast and work
+    Block *block_ptr;
 
+    //handlers
     void handle_port_msg(const size_t, const tsbe::Wax &);
     void topology_update(const tsbe::TaskInterface &, const tsbe::Wax &);
     void handle_task(const tsbe::TaskInterface &);
 
+    //is the fg running?
+    bool active;
+
+    //rate settings
     bool enble_fixed_rate;
     double relative_rate;
 };
