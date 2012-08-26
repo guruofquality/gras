@@ -70,3 +70,25 @@ list(APPEND gnuradio_core_libs
 if(LINUX)
     list(APPEND gnuradio_core_libs numa)
 endif()
+
+########################################################################
+# Install runtime headers
+########################################################################
+file(GLOB runtime_headers "${CMAKE_CURRENT_SOURCE_DIR}/../include/gnuradio/*")
+install(FILES
+    ${runtime_headers}
+    DESTINATION ${GR_INCLUDE_DIR}/gnuradio
+    COMPONENT "core_devel"
+)
+
+########################################################################
+# Install swig headers
+########################################################################
+if(ENABLE_PYTHON)
+file(GLOB runtime_swigs "${CMAKE_CURRENT_SOURCE_DIR}/../swig/*.i")
+install(FILES
+    ${runtime_swigs}
+    DESTINATION ${GR_INCLUDE_DIR}/gnuradio/swig
+    COMPONENT "core_swig"
+)
+endif(ENABLE_PYTHON)
