@@ -29,8 +29,37 @@ struct GR_RUNTIME_API TopBlock : HierBlock
 
     TopBlock(const std::string &name);
 
+    /*!
+     * Commit changes to the overall flow graph.
+     * Call this after modifying connections.
+     * Update is called automatically by start/stop/run.
+     */
     void update(void);
 
+    /*!
+     * Set the buffer allocation hint.
+     * This affects the size of buffers.
+     */
+    void set_buffer_hint(const size_t hint);
+
+    //! Combined hint + start
+    void start(const size_t hint)
+    {
+        this->set_buffer_hint(hint);
+        this->start();
+    }
+
+    //! Combined hint + run
+    void run(const size_t hint)
+    {
+        this->set_buffer_hint(hint);
+        this->run();
+    }
+
+    /*!
+     * Run is for finite flow graph executions.
+     * Mostly for testing purposes only.
+     */
     void run(void)
     {
         this->start();
@@ -38,8 +67,13 @@ struct GR_RUNTIME_API TopBlock : HierBlock
         this->wait();
     }
 
+    //! Start a flow graph execution (does not block)
     void start(void);
+
+    //! Stop a flow graph execution (does not block)
     void stop(void);
+
+    //! Wait for threads to exit after stop()
     void wait(void);
 };
 

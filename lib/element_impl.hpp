@@ -25,8 +25,17 @@
 #include <gr_types.h>
 #include <vector>
 
-static const int STATE_INERT = 0;
-static const int STATE_ACTIVE = 1;
+struct TopBlockUpdateEvent
+{
+    enum
+    {
+        UPDATE,
+        ACTIVE,
+        INERT,
+        HINT,
+    } state;
+    size_t hint;
+};
 
 static inline int mylround(double x)
 {
