@@ -15,6 +15,7 @@
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
+#include <boost/foreach.hpp>
 #include <algorithm>
 
 using namespace gnuradio;
@@ -95,17 +96,56 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         std::sort(tags_i.begin(), tags_i.end(), Tag::offset_compare);
     }
 
-
     //trim the input tags that are past the consumption zone
     for (size_t i = 0; i < num_inputs; i++)
     {
         std::vector<Tag> &tags_i = this->input_tags[i];
         const size_t items_consumed_i = this->items_consumed[i];
-        size_t j = 0;
-        while (j < tags_i.size() and tags_i[j].offset < items_consumed_i)
+        size_t last = 0;
+        while (last < tags_i.size() and tags_i[last].offset < items_consumed_i)
         {
-            j++;
+            last++;
         }
-        if (j != 0) tags_i.erase(tags_i.begin(), tags_i.begin()+j);
+
+        //follow the tag propagation policy before erasure
+        switch (this->tag_prop_policy)
+        {
+        case Block::TPP_DONT: break; //well that was ez
+        case Block::TPP_ALL_TO_ALL:
+            for (size_t out_i = 0; out_i < num_outputs; out_i++)
+            {
+                for (size_t tag_i = 0; tag_i < last; tag_i++)
+                {
+                    Tag t = tags_i[tag_i];
+                    t.offset *= this->relative_rate;
+                    task_iface.post_downstream(out_i, t);
+                }
+            }
+            break;
+        case Block::TPP_ONE_TO_ONE:
+            if (i < num_outputs)
+            {
+                for (size_t tag_i = 0; tag_i < last; tag_i++)
+                {
+                    Tag t = tags_i[tag_i];
+                    t.offset *= this->relative_rate;
+                    task_iface.post_downstream(i, t);
+                }
+            }
+            break;
+        };
+
+        //now its safe to perform the erasure
+        if (last != 0) tags_i.erase(tags_i.begin(), tags_i.begin()+last);
+    }
+
+    //now commit all tags in the output queue to the downstream msg handler
+    for (size_t i = 0; i < num_outputs; i++)
+    {
+        BOOST_FOREACH(const Tag &t, this->output_tags[i])
+        {
+            task_iface.post_downstream(i, t);
+        }
+        this->output_tags[i].clear();
     }
 }
