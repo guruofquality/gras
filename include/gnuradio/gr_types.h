@@ -23,6 +23,12 @@
 #ifndef INCLUDED_GR_TYPES_H
 #define INCLUDED_GR_TYPES_H
 
+#include <gnuradio/io_signature.hpp>
+#include <gnuradio/element.hpp>
+#include <gnuradio/block.hpp>
+#include <gnuradio/top_block.hpp>
+#include <gnuradio/hier_block.hpp>
+
 #include <gr_core_api.h>
 #include <boost/shared_ptr.hpp>
 #include <vector>

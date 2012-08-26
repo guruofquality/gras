@@ -17,6 +17,19 @@
 #define GR_CORE_API
 #define GR_RUNTIME_API
 
+%ignore forecast;
+%ignore general_work;
+%ignore work;
+
+//helps with funny swig error for io signature
+%ignore gnuradio::IOSignature::operator->();
+%ignore gnuradio::IOSignature::operator->() const;
+
+//not here to fight you swig, reference() is ambigi with shared ptr, but whatevs
+%ignore gri_agc_cc::reference();
+%ignore gri_agc2_ff::reference();
+%ignore gri_agc2_cc::reference();
+
 %constant int sizeof_char 	= sizeof(char);
 %constant int sizeof_short	= sizeof(short);
 %constant int sizeof_int	= sizeof(int);
