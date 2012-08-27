@@ -205,7 +205,7 @@ void Block::forecast(
     {
         ninput_items_required[i] =
             (*this)->input_history_items[i] +
-            mylround((noutput_items/(*this)->relative_rate));
+            myulround((noutput_items/(*this)->relative_rate));
     }
 }
 

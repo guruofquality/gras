@@ -29,6 +29,16 @@
 #define HERE() std::cerr << __FILE__ << ":" << __LINE__ << std::endl << std::flush;
 #define VAR(x) std::cout << #x << " = " << (x) << std::endl << std::flush;
 
+static inline unsigned long myulround(const double x)
+{
+    return (unsigned long)(x + 0.5);
+}
+
+static inline unsigned long long myullround(const double x)
+{
+    return (unsigned long long)(x + 0.5);
+}
+
 struct TopBlockMessage
 {
     enum
@@ -40,11 +50,6 @@ struct TopBlockMessage
     } what;
     size_t hint;
 };
-
-static inline int mylround(double x)
-{
-    return int(x + 0.5);
-}
 
 namespace gnuradio
 {

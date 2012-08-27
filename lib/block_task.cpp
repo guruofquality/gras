@@ -90,7 +90,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
                 for (size_t tag_i = 0; tag_i < last; tag_i++)
                 {
                     Tag t = tags_i[tag_i];
-                    t.offset *= this->relative_rate;
+                    t.offset = myullround(t.offset * this->relative_rate);
                     task_iface.post_downstream(out_i, t);
                 }
             }
@@ -101,7 +101,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
                 for (size_t tag_i = 0; tag_i < last; tag_i++)
                 {
                     Tag t = tags_i[tag_i];
-                    t.offset *= this->relative_rate;
+                    t.offset = myullround(t.offset * this->relative_rate);
                     task_iface.post_downstream(i, t);
                 }
             }
