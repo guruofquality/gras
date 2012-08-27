@@ -41,6 +41,7 @@ Block::Block(const std::string &name):
     (*this)->block = tsbe::Block(config);
 
     (*this)->block_ptr = this;
+    (*this)->hint = 0;
 }
 
 template <typename V, typename T>

@@ -16,6 +16,7 @@ list(APPEND gnuradio_core_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/element.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_task.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/block_allocator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_handlers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/hier_block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/top_block.cpp

@@ -30,6 +30,7 @@ Element::Element(void)
 Element::Element(const std::string &name)
 {
     this->reset(new ElementImpl());
+    VAR(name);
     (*this)->name = name;
     (*this)->unique_id = ++unique_id_pool;
 

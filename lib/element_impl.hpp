@@ -24,6 +24,10 @@
 #include <gnuradio/block.hpp>
 #include <gr_types.h>
 #include <vector>
+#include <iostream>
+
+#define HERE() std::cerr << __FILE__ << ":" << __LINE__ << std::endl << std::flush;
+#define VAR(x) std::cout << #x << " = " << (x) << std::endl << std::flush;
 
 struct TopBlockMessage
 {
@@ -92,10 +96,12 @@ struct ElementImpl
     }
     //gets the handlers access for forecast and work
     Block *block_ptr;
+    size_t hint; //some kind of allocation hint
 
     //handlers
     void handle_port_msg(const size_t, const tsbe::Wax &);
     void topology_update(const tsbe::TaskInterface &, const tsbe::Wax &);
+    void handle_allocation(const tsbe::TaskInterface &);
     void handle_task(const tsbe::TaskInterface &);
 
     //is the fg running?

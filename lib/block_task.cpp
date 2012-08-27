@@ -22,14 +22,22 @@ using namespace gnuradio;
 
 void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
 {
+    //------------------------------------------------------------------
+    //-- Decide if its possible to continue any processing:
+    //-- Handle task may get called for incoming buffers,
+    //-- however, not all ports may have available buffers.
+    //------------------------------------------------------------------
     const bool all_inputs_ready = (~task_iface.get_inputs_ready()).none();
     const bool all_outputs_ready = (~task_iface.get_outputs_ready()).none();
     if (not (this->active and all_inputs_ready and all_outputs_ready)) return;
 
     const size_t num_inputs = task_iface.get_num_inputs();
     const size_t num_outputs = task_iface.get_num_outputs();
+    const bool is_source = (num_inputs == 0);
 
-    //sort the input tags before working
+    //------------------------------------------------------------------
+    //-- sort the input tags before working
+    //------------------------------------------------------------------
     for (size_t i = 0; i < num_inputs; i++)
     {
         if (not this->input_tags_changed[i]) continue;
@@ -38,6 +46,11 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         this->input_tags_changed[i] = false;
     }
 
+    //------------------------------------------------------------------
+    //-- Processing time!
+    //------------------------------------------------------------------
+
+    HERE();
 
 
     //0) figure out what we have for input data
@@ -49,10 +62,14 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //block_ptr->forecast(100
 
 
+    //TODO set deactive when work returns DONE
 
+    //TODO source blocks should call work again until exhausted output buffers
 
-
-    //trim the input tags that are past the consumption zone
+    //------------------------------------------------------------------
+    //-- trim the input tags that are past the consumption zone
+    //-- and post trimmed tags to the downstream based on policy
+    //------------------------------------------------------------------
     for (size_t i = 0; i < num_inputs; i++)
     {
         std::vector<Tag> &tags_i = this->input_tags[i];
@@ -95,7 +112,9 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         if (last != 0) tags_i.erase(tags_i.begin(), tags_i.begin()+last);
     }
 
-    //now commit all tags in the output queue to the downstream msg handler
+    //------------------------------------------------------------------
+    //-- now commit all tags in the output queue to the downstream
+    //------------------------------------------------------------------
     for (size_t i = 0; i < num_outputs; i++)
     {
         BOOST_FOREACH(const Tag &t, this->output_tags[i])

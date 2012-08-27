@@ -60,8 +60,6 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface, const t
     fill_item_sizes_from_sig(this->output_items_sizes, this->output_signature, num_outputs);
 
     //resize and fill port properties
-    resize_fill_front(this->input_items_sizes, num_inputs);
-    resize_fill_front(this->output_items_sizes, num_outputs);
     resize_fill_front(this->input_history_items, num_inputs);
     resize_fill_front(this->output_multiple_items, num_outputs);
 
@@ -101,11 +99,12 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface, const t
     if (state.cast<TopBlockMessage>().what == TopBlockMessage::ACTIVE)
     {
         this->active = true;
-        this->handle_task(task_iface);
+
+        //causes initial processing kick-off for source blocks
+        this->handle_allocation(task_iface);
     }
     if (state.cast<TopBlockMessage>().what == TopBlockMessage::INERT)
     {
         this->active = false;
     }
-
 }
