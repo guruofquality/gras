@@ -1,9 +1,9 @@
 ########################################################################
-## GrRuntime
+## GRAS - The GNU Radio Advanced Scheduler
 ########################################################################
 
 Read all about the project goals here:
-https://github.com/guruofquality/grruntime/wiki
+https://github.com/guruofquality/gras/wiki
 
 ------------------------------------------------------------------------
 -- Prerequisites
@@ -14,7 +14,7 @@ https://github.com/guruofquality/grruntime/wiki
 ------------------------------------------------------------------------
 -- Get the source code
 ------------------------------------------------------------------------
-git clone https://github.com/guruofquality/grruntime.git
+git clone https://github.com/guruofquality/gras.git
 cd grruntime
 git submodule init
 git submodule update
