@@ -35,9 +35,10 @@ void resize_fill(V &v, const size_t new_len, const T &fill)
 }
 
 template <typename V>
-void resize_fill_front(V &v, const size_t new_len)
+void resize_fill_back(V &v, const size_t new_len)
 {
-    resize_fill(v, new_len, v.front());
+    if (v.empty()) v.push_back(0);
+    resize_fill(v, new_len, v.back());
 }
 
 template <typename V, typename Sig>
@@ -60,8 +61,8 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface, const t
     fill_item_sizes_from_sig(this->output_items_sizes, this->output_signature, num_outputs);
 
     //resize and fill port properties
-    resize_fill_front(this->input_history_items, num_inputs);
-    resize_fill_front(this->output_multiple_items, num_outputs);
+    resize_fill_back(this->input_history_items, num_inputs);
+    resize_fill_back(this->output_multiple_items, num_outputs);
 
     //resize the bytes consumed/produced
     resize_fill(this->items_consumed, num_inputs, 0);
@@ -73,8 +74,9 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface, const t
     this->work_ninput_items.resize(num_inputs);
     this->input_items.resize(num_inputs);
     this->output_items.resize(num_outputs);
-    this->consume_items.resize(num_inputs);
-    this->produce_items.resize(num_outputs);
+    this->consume_items.resize(num_inputs, 0);
+    this->produce_items.resize(num_outputs, 0);
+    this->input_buff_offsets.resize(num_inputs, 0);
 
     //resize tags vector to match sizes
     this->input_tags_changed.resize(num_inputs);

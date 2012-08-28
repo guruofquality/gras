@@ -104,7 +104,7 @@ void Block::produce(const size_t which_output, const size_t how_many_items)
 
 void Block::set_fixed_rate(const bool fixed_rate)
 {
-    (*this)->enble_fixed_rate = fixed_rate;
+    (*this)->enable_fixed_rate = fixed_rate;
 }
 
 void Block::set_relative_rate(double relative_rate)

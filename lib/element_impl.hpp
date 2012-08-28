@@ -27,7 +27,8 @@
 #include <iostream>
 
 #define HERE() std::cerr << __FILE__ << ":" << __LINE__ << std::endl << std::flush;
-#define VAR(x) std::cout << #x << " = " << (x) << std::endl << std::flush;
+#define VAR(x) std::cerr << #x << " = " << (x) << std::endl << std::flush;
+#define ASSERT(x) if(not (x)){HERE(); std::cerr << "assert failed: " << #x << std::endl << std::flush;}
 
 static inline unsigned long myulround(const double x)
 {
@@ -72,14 +73,21 @@ struct ElementImpl
     std::vector<uint64_t> items_consumed;
     std::vector<uint64_t> items_produced;
 
-    //work buffers
+    //work buffers for the classic interface
     gr_vector_const_void_star work_input_items;
     gr_vector_void_star work_output_items;
     gr_vector_int work_ninput_items;
+
+    //work buffers for the new work interface
     Block::InputItems input_items;
     Block::OutputItems output_items;
+
+    //track work's calls to produce and consume
     std::vector<size_t> produce_items;
     std::vector<size_t> consume_items;
+
+    //state for partial input buffer consumption
+    std::vector<size_t> input_buff_offsets;
 
     //special buffer for dealing with history
     std::vector<tsbe::Buffer> history_buffs;
@@ -113,7 +121,7 @@ struct ElementImpl
     bool active;
 
     //rate settings
-    bool enble_fixed_rate;
+    bool enable_fixed_rate;
     double relative_rate;
 };
 
