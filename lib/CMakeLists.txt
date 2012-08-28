@@ -82,14 +82,6 @@ install(FILES
     COMPONENT "core_devel"
 )
 
-#also copy these to the build dir for swig docs
-foreach(header ${runtime_headers})
-    execute_process(
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/runtime/
-        COMMAND ${CMAKE_COMMAND} -E copy ${header} ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/runtime/
-    )
-endforeach(header)
-
 ########################################################################
 # Install swig headers
 ########################################################################
@@ -100,4 +92,11 @@ install(FILES
     DESTINATION ${GR_INCLUDE_DIR}/gnuradio/swig
     COMPONENT "core_swig"
 )
+
+#makes swig doc generator happy
+execute_process(
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/runtime/
+    COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/runtime/nop.h
+)
+
 endif(ENABLE_PYTHON)
