@@ -1,0 +1,3 @@
+[submodule "gnuradio"]
+	path = gnuradio
+	url = git@github.com:guruofquality/gnuradio.git
