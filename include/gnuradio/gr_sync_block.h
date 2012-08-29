@@ -17,7 +17,6 @@
 #ifndef INCLUDED_GNURADIO_GR_SYNC_BLOCK_H
 #define INCLUDED_GNURADIO_GR_SYNC_BLOCK_H
 
-#include <gnuradio/runtime_api.h>
 #include <gr_block.h>
 
 struct GR_RUNTIME_API gr_sync_block : public gr_block

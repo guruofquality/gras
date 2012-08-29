@@ -17,7 +17,6 @@
 #ifndef INCLUDED_GNURADIO_BLOCK_HPP
 #define INCLUDED_GNURADIO_BLOCK_HPP
 
-#include <gnuradio/runtime_api.h>
 #include <gnuradio/element.hpp>
 #include <gnuradio/tags.hpp>
 #include <gruel/pmt.h>

@@ -17,7 +17,6 @@
 #ifndef INCLUDED_GNURADIO_GR_BLOCK_H
 #define INCLUDED_GNURADIO_GR_BLOCK_H
 
-#include <gnuradio/runtime_api.h>
 #include <gnuradio/block.hpp>
 #include <gr_io_signature.h>
 #include <gr_sptr_magic.h>

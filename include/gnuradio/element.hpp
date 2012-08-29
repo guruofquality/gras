@@ -17,12 +17,19 @@
 #ifndef INCLUDED_GNURADIO_ELEMENT_HPP
 #define INCLUDED_GNURADIO_ELEMENT_HPP
 
-#include <gnuradio/runtime_api.h>
 #include <gruel/pmt.h>
 #include <gnuradio/io_signature.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
+
+//this is part of core for now, treat it as such
+#include <gr_core_api.h>
+#define GR_RUNTIME_API GR_CORE_API
 
 namespace gnuradio
 {
+
+struct ElementImpl;
 
 struct GR_RUNTIME_API Element : boost::shared_ptr<ElementImpl>
 {

@@ -17,7 +17,6 @@
 #ifndef INCLUDED_GNURADIO_GR_TOP_BLOCK_H
 #define INCLUDED_GNURADIO_GR_TOP_BLOCK_H
 
-#include <gnuradio/runtime_api.h>
 #include <gnuradio/top_block.hpp>
 #include <gr_hier_block2.h>
 

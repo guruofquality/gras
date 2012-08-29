@@ -17,7 +17,7 @@
 #ifndef INCLUDED_GNURADIO_TAGS_HPP
 #define INCLUDED_GNURADIO_TAGS_HPP
 
-#include <gnuradio/runtime_api.h>
+#include <gnuradio/element.hpp>
 #include <gruel/pmt.h>
 
 namespace gnuradio

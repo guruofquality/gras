@@ -17,7 +17,6 @@
 #ifndef INCLUDED_GNURADIO_GR_SYNC_INTERPOLATOR_H
 #define INCLUDED_GNURADIO_GR_SYNC_INTERPOLATOR_H
 
-#include <gnuradio/runtime_api.h>
 #include <gr_sync_block.h>
 
 struct GR_RUNTIME_API gr_sync_interpolator : gr_sync_block

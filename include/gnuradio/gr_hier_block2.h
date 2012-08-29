@@ -17,7 +17,6 @@
 #ifndef INCLUDED_GNURADIO_GR_HIER_BLOCK2_H
 #define INCLUDED_GNURADIO_GR_HIER_BLOCK2_H
 
-#include <gnuradio/runtime_api.h>
 #include <gnuradio/hier_block.hpp>
 #include <gr_io_signature.h>
 

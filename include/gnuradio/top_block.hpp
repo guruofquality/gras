@@ -17,7 +17,6 @@
 #ifndef INCLUDED_GNURADIO_TOP_BLOCK_HPP
 #define INCLUDED_GNURADIO_TOP_BLOCK_HPP
 
-#include <gnuradio/runtime_api.h>
 #include <gnuradio/hier_block.hpp>
 
 namespace gnuradio
