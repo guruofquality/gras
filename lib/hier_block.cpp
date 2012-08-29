@@ -34,11 +34,13 @@ HierBlock::HierBlock(const std::string &name):
 void HierBlock::connect(const Element &elem)
 {
     (*this)->topology.add_topology(elem->topology);
+    (*this)->children.push_back(elem.weak_self.lock());
 }
 
 void HierBlock::disconnect(const Element &elem)
 {
     (*this)->topology.remove_topology(elem->topology);
+    remove_one((*this)->children, elem.weak_self.lock());
 }
 
 void HierBlock::connect(
@@ -53,6 +55,8 @@ void HierBlock::connect(
         tsbe::Port(sink->get_elem(), sink_index)
     );
     (*this)->topology.connect(conn);
+    (*this)->children.push_back(src.weak_self.lock());
+    (*this)->children.push_back(sink.weak_self.lock());
 }
 
 void HierBlock::disconnect(
@@ -66,4 +70,6 @@ void HierBlock::disconnect(
         tsbe::Port(sink->get_elem(), sink_index)
     );
     (*this)->topology.disconnect(conn);
+    remove_one((*this)->children, src.weak_self.lock());
+    remove_one((*this)->children, sink.weak_self.lock());
 }

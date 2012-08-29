@@ -60,12 +60,7 @@ struct GR_RUNTIME_API TopBlock : HierBlock
      * Run is for finite flow graph executions.
      * Mostly for testing purposes only.
      */
-    void run(void)
-    {
-        this->start();
-        this->stop();
-        this->wait();
-    }
+    void run(void);
 
     //! Start a flow graph execution (does not block)
     void start(void);

@@ -40,16 +40,42 @@ static inline unsigned long long myullround(const double x)
     return (unsigned long long)(x + 0.5);
 }
 
+//! return true if an instance was found and removed
+template <typename V, typename T>
+bool remove_one(V &v, const T &t)
+{
+    for (size_t i = 0; i < v.size(); i++)
+    {
+        if (v[i] == t)
+        {
+            v.erase(v.begin() + i);
+            return true;
+        }
+    }
+    return false;
+}
+
+typedef boost::shared_ptr<int> Token;
+static inline Token make_token(void)
+{
+    return Token(new int(0));
+}
+
 struct TopBlockMessage
 {
     enum
     {
-        UPDATE,
         ACTIVE,
         INERT,
         HINT,
     } what;
     size_t hint;
+    Token token;
+};
+
+struct CheckTokensMessage
+{
+    //empty
 };
 
 namespace gnuradio
@@ -57,6 +83,18 @@ namespace gnuradio
 
 struct ElementImpl
 {
+    ElementImpl(void)
+    {
+        //NOP
+    }
+
+    ~ElementImpl(void)
+    {
+        children.clear();
+    }
+
+    std::vector<boost::shared_ptr<Element> > children;
+
     //stuff for when its a block
     std::string name;
     long unique_id;
@@ -92,6 +130,11 @@ struct ElementImpl
     //special buffer for dealing with history
     std::vector<tsbe::Buffer> history_buffs;
 
+    //track the subscriber counts
+    std::vector<Token> input_tokens;
+    std::vector<Token> output_tokens;
+    std::vector<Token> token_pool;
+
     //tag tracking
     std::vector<bool> input_tags_changed;
     std::vector<std::vector<Tag> > input_tags;
@@ -109,16 +152,20 @@ struct ElementImpl
     }
     //gets the handlers access for forecast and work
     Block *block_ptr;
-    size_t hint; //some kind of allocation hint
 
     //handlers
-    void handle_port_msg(const size_t, const tsbe::Wax &);
+    void handle_input_msg(const tsbe::TaskInterface &, const size_t, const tsbe::Wax &);
+    void handle_output_msg(const tsbe::TaskInterface &, const size_t, const tsbe::Wax &);
     void topology_update(const tsbe::TaskInterface &, const tsbe::Wax &);
     void handle_allocation(const tsbe::TaskInterface &);
     void handle_task(const tsbe::TaskInterface &);
+    void mark_done(const tsbe::TaskInterface &);
+    void free_inputs(const tsbe::TaskInterface &);
 
     //is the fg running?
     bool active;
+    Token token;
+    size_t hint; //some kind of allocation hint
 
     //rate settings
     bool enable_fixed_rate;

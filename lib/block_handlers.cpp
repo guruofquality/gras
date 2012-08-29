@@ -18,12 +18,38 @@
 
 using namespace gnuradio;
 
-void ElementImpl::handle_port_msg(const size_t index, const tsbe::Wax &msg)
+void ElementImpl::handle_input_msg(const tsbe::TaskInterface &handle, const size_t index, const tsbe::Wax &msg)
 {
     if (msg.type() == typeid(Tag))
     {
         this->input_tags[index].push_back(msg.cast<Tag>());
         this->input_tags_changed[index] = true;
+    }
+    if (msg.type() == typeid(Token))
+    {
+        this->token_pool.push_back(msg.cast<Token>());
+    }
+    if (msg.type() == typeid(CheckTokensMessage))
+    {
+        if (this->input_tokens[index].unique())
+        {
+            this->mark_done(handle);
+        }
+    }
+}
+
+void ElementImpl::handle_output_msg(const tsbe::TaskInterface &handle, const size_t index, const tsbe::Wax &msg)
+{
+    if (msg.type() == typeid(Token))
+    {
+        this->token_pool.push_back(msg.cast<Token>());
+    }
+    if (msg.type() == typeid(CheckTokensMessage))
+    {
+        if (this->output_tokens[index].unique())
+        {
+            this->mark_done(handle);
+        }
     }
 }
 
@@ -98,9 +124,27 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface, const t
         }
     }
 
+    //allocate output tokens and send them downstream
+    if (state.cast<TopBlockMessage>().what == TopBlockMessage::ACTIVE)
+    {
+        this->input_tokens.resize(num_inputs);
+        for (size_t i = 0; i < num_inputs; i++)
+        {
+            this->input_tokens[i] = make_token();
+            task_iface.post_upstream(i, this->input_tokens[i]);
+        }
+        this->output_tokens.resize(num_outputs);
+        for (size_t i = 0; i < num_outputs; i++)
+        {
+            this->output_tokens[i] = make_token();
+            task_iface.post_downstream(i, this->output_tokens[i]);
+        }
+    }
+
     if (state.cast<TopBlockMessage>().what == TopBlockMessage::ACTIVE)
     {
         this->active = true;
+        this->token = state.cast<TopBlockMessage>().token;
 
         //causes initial processing kick-off for source blocks
         this->handle_allocation(task_iface);
@@ -108,5 +152,6 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface, const t
     if (state.cast<TopBlockMessage>().what == TopBlockMessage::INERT)
     {
         this->active = false;
+        this->token = state.cast<TopBlockMessage>().token;
     }
 }

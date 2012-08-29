@@ -30,13 +30,12 @@ TopBlock::TopBlock(const std::string &name):
     tsbe::ExecutorConfig config;
     config.topology = (*this)->topology;
     (*this)->executor = tsbe::Executor(config);
+    (*this)->token = make_token();
 }
 
 void TopBlock::update(void)
 {
-    TopBlockMessage event;
-    event.what = TopBlockMessage::UPDATE;
-    (*this)->executor.update(event);
+    this->start(); //ok to re-start, means update
 }
 
 void TopBlock::set_buffer_hint(const size_t hint)
@@ -51,6 +50,7 @@ void TopBlock::start(void)
 {
     TopBlockMessage event;
     event.what = TopBlockMessage::ACTIVE;
+    event.token = (*this)->token;
     (*this)->executor.update(event);
 }
 
@@ -61,7 +61,17 @@ void TopBlock::stop(void)
     (*this)->executor.update(event);
 }
 
+void TopBlock::run(void)
+{
+    this->start();
+    this->wait();
+}
+
 void TopBlock::wait(void)
 {
-    //NOP/TODO?
+    while (not (*this)->token.unique())
+    {
+        sleep(1);
+        VAR((*this)->token.use_count());
+    }
 }

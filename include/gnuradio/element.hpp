@@ -30,6 +30,7 @@ struct GR_RUNTIME_API Element : boost::shared_ptr<ElementImpl>
     //! Create an empty element
     Element(void);
 
+    //! Creates a new element given the name
     Element(const std::string &name);
 
     /*!
@@ -40,10 +41,16 @@ struct GR_RUNTIME_API Element : boost::shared_ptr<ElementImpl>
     Element(const boost::shared_ptr<T> &elem)
     {
         *this = *elem;
+        weak_self = elem;
     }
 
+    //! for internal use only
+    boost::weak_ptr<Element> weak_self;
+
+    //! An integer ID that is unique across the process
     long unique_id(void) const;
 
+    //! Get the name of this element
     std::string name(void) const;
 
     void set_output_signature(const gnuradio::IOSignature &sig);

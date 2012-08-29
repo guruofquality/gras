@@ -27,6 +27,7 @@
 #define GR_RUNTIME_API GR_CORE_API
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 
 namespace gnuradio
 {

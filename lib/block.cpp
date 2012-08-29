@@ -35,7 +35,8 @@ Block::Block(const std::string &name):
     this->set_tag_propagation_policy(TPP_ALL_TO_ALL);
 
     tsbe::BlockConfig config;
-    config.port_callback = boost::bind(&ElementImpl::handle_port_msg, this->get(), _1, _2);
+    config.input_callback = boost::bind(&ElementImpl::handle_input_msg, this->get(), _1, _2, _3);
+    config.output_callback = boost::bind(&ElementImpl::handle_output_msg, this->get(), _1, _2, _3);
     config.update_callback = boost::bind(&ElementImpl::topology_update, this->get(), _1, _2);
     config.task_callback = boost::bind(&ElementImpl::handle_task, this->get(), _1);
     (*this)->block = tsbe::Block(config);
