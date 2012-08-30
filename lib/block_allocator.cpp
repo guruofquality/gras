@@ -20,26 +20,21 @@
 using namespace gnuradio;
 
 //TODO will need more complicated later
-static void simple_allocator(
-    const tsbe::BufferToken &tok,
-    const size_t num_bytes,
-    const size_t num_buffs
-){
-    for (size_t i = 0; i < num_buffs; i++)
-    {
-        tsbe::BufferConfig config;
-        config.memory = NULL;
-        config.length = num_bytes;
-        config.token = tok;
-        tsbe::Buffer buff(config);
-        //buffer derefs here and the token messages it back to the block
-    }
+
+
+void ElementImpl::buffer_returner(const size_t index, tsbe::Buffer &buffer)
+{
+    BufferReturnMessage message;
+    message.index = index;
+    message.buffer = buffer;
+    this->block.post_msg(message);
 }
 
 void ElementImpl::handle_allocation(const tsbe::TaskInterface &task_iface)
 {
     //allocate output buffers which will also wake up the task
     const size_t num_outputs = task_iface.get_num_outputs();
+    this->output_buffer_tokens.resize(num_outputs);
     for (size_t i = 0; i < num_outputs; i++)
     {
         size_t items = this->hint;
@@ -47,6 +42,18 @@ void ElementImpl::handle_allocation(const tsbe::TaskInterface &task_iface)
         items = std::max(items, this->output_multiple_items[i]);
 
         const size_t bytes = items * this->output_items_sizes[i];
-        this->block.set_output_port_allocator(i, boost::bind(&simple_allocator, _1, bytes, 2));
+
+        tsbe::BufferDeleter deleter = boost::bind(&ElementImpl::buffer_returner, this, i, _1);
+        this->output_buffer_tokens[i] = tsbe::BufferToken(new tsbe::BufferDeleter(deleter));
+
+        for (size_t j = 0; j < 2; j++)
+        {
+            tsbe::BufferConfig config;
+            config.memory = NULL;
+            config.length = bytes;
+            config.token = this->output_buffer_tokens[i];
+            tsbe::Buffer buff(config);
+            //buffer derefs here and the token messages it back to the block
+        }
     }
 }

@@ -16,6 +16,7 @@
 
 #include "element_impl.hpp"
 #include <gnuradio/top_block.hpp>
+#include <boost/thread/thread.hpp> //sleep
 
 using namespace gnuradio;
 
@@ -30,7 +31,7 @@ TopBlock::TopBlock(const std::string &name):
     tsbe::ExecutorConfig config;
     config.topology = (*this)->topology;
     (*this)->executor = tsbe::Executor(config);
-    (*this)->token = make_token();
+    (*this)->token = Token::make();
 }
 
 void TopBlock::update(void)
@@ -71,7 +72,6 @@ void TopBlock::wait(void)
 {
     while (not (*this)->token.unique())
     {
-        sleep(1);
-        VAR((*this)->token.use_count());
+        boost::this_thread::yield();
     }
 }

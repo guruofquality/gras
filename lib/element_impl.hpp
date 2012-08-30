@@ -17,6 +17,7 @@
 #ifndef INCLUDED_LIBGNURADIO_ELEMENT_IMPL_HPP
 #define INCLUDED_LIBGNURADIO_ELEMENT_IMPL_HPP
 
+#include <common_impl.hpp>//#include "common_impl.hpp"
 #include <tsbe/block.hpp>
 #include <tsbe/topology.hpp>
 #include <tsbe/executor.hpp>
@@ -24,59 +25,7 @@
 #include <gnuradio/block.hpp>
 #include <gr_types.h>
 #include <vector>
-#include <iostream>
-
-#define HERE() std::cerr << __FILE__ << ":" << __LINE__ << std::endl << std::flush;
-#define VAR(x) std::cerr << #x << " = " << (x) << std::endl << std::flush;
-#define ASSERT(x) if(not (x)){HERE(); std::cerr << "assert failed: " << #x << std::endl << std::flush;}
-
-static inline unsigned long myulround(const double x)
-{
-    return (unsigned long)(x + 0.5);
-}
-
-static inline unsigned long long myullround(const double x)
-{
-    return (unsigned long long)(x + 0.5);
-}
-
-//! return true if an instance was found and removed
-template <typename V, typename T>
-bool remove_one(V &v, const T &t)
-{
-    for (size_t i = 0; i < v.size(); i++)
-    {
-        if (v[i] == t)
-        {
-            v.erase(v.begin() + i);
-            return true;
-        }
-    }
-    return false;
-}
-
-typedef boost::shared_ptr<int> Token;
-static inline Token make_token(void)
-{
-    return Token(new int(0));
-}
-
-struct TopBlockMessage
-{
-    enum
-    {
-        ACTIVE,
-        INERT,
-        HINT,
-    } what;
-    size_t hint;
-    Token token;
-};
-
-struct CheckTokensMessage
-{
-    //empty
-};
+#include <queue>
 
 namespace gnuradio
 {
@@ -112,9 +61,9 @@ struct ElementImpl
     std::vector<uint64_t> items_produced;
 
     //work buffers for the classic interface
-    gr_vector_const_void_star work_input_items;
-    gr_vector_void_star work_output_items;
-    gr_vector_int work_ninput_items;
+    std::vector<const void *> work_input_items;
+    std::vector<void *> work_output_items;
+    std::vector<int> work_ninput_items;
 
     //work buffers for the new work interface
     Block::InputItems input_items;
@@ -134,6 +83,14 @@ struct ElementImpl
     std::vector<Token> input_tokens;
     std::vector<Token> output_tokens;
     std::vector<Token> token_pool;
+
+    std::vector<tsbe::BufferToken> output_buffer_tokens;
+
+    //buffer queues and ready conditions
+    std::vector<std::queue<tsbe::Buffer> > input_queues;
+    std::vector<std::queue<tsbe::Buffer> > output_queues;
+    BitSet inputs_ready;
+    BitSet outputs_ready;
 
     //tag tracking
     std::vector<bool> input_tags_changed;
@@ -161,6 +118,7 @@ struct ElementImpl
     void handle_task(const tsbe::TaskInterface &);
     void mark_done(const tsbe::TaskInterface &);
     void free_inputs(const tsbe::TaskInterface &);
+    void buffer_returner(const size_t index, tsbe::Buffer &buffer);
 
     //is the fg running?
     bool active;
