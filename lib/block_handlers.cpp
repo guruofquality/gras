@@ -107,4 +107,16 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface, const t
     {
         this->mark_done(task_iface);
     }
+
+    //TODO: think more about this:
+    if (num_inputs == 0 and num_outputs == 0)
+    {
+        this->mark_done(task_iface);
+    }
+
+    //TODO: generate a message to handle task in a loop for a while
+    //we may need to call it into exhaustion to be correct
+    //but dont call it from update, let the settings above sink in
+    this->handle_task(task_iface);
+    this->handle_task(task_iface);
 }
