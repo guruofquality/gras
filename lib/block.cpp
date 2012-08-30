@@ -37,7 +37,8 @@ Block::Block(const std::string &name):
     tsbe::BlockConfig config;
     config.input_callback = boost::bind(&ElementImpl::handle_input_msg, this->get(), _1, _2, _3);
     config.output_callback = boost::bind(&ElementImpl::handle_output_msg, this->get(), _1, _2, _3);
-    config.update_callback = boost::bind(&ElementImpl::topology_update, this->get(), _1, _2);
+    config.block_callback = boost::bind(&ElementImpl::handle_block_msg, this->get(), _1, _2);
+    config.changed_callback = boost::bind(&ElementImpl::topology_update, this->get(), _1);
     (*this)->block = tsbe::Block(config);
 
     (*this)->block_ptr = this;

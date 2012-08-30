@@ -83,7 +83,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //-- Processing time!
     //------------------------------------------------------------------
 
-    std::cout << "calling work on " << name << std::endl;
+    //std::cout << "calling work on " << name << std::endl;
 
     //reset work trackers for production/consumption
     size_t input_tokens_count = 0;
@@ -135,7 +135,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //start with source, this should be EZ
     int ret = 0;
     ret = block_ptr->Work(this->input_items, this->output_items);
-    VAR(ret);
+    //VAR(ret);
     if (ret == Block::WORK_DONE)
     {
         this->mark_done(task_iface);

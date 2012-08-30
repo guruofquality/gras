@@ -114,7 +114,8 @@ struct ElementImpl
     //handlers
     void handle_input_msg(const tsbe::TaskInterface &, const size_t, const tsbe::Wax &);
     void handle_output_msg(const tsbe::TaskInterface &, const size_t, const tsbe::Wax &);
-    void topology_update(const tsbe::TaskInterface &, const tsbe::Wax &);
+    void topology_update(const tsbe::TaskInterface &);
+    void handle_block_msg(const tsbe::TaskInterface &, const tsbe::Wax &);
     void handle_allocation(const tsbe::TaskInterface &);
     void handle_task(const tsbe::TaskInterface &);
     void mark_done(const tsbe::TaskInterface &);

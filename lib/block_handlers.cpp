@@ -19,7 +19,7 @@
 
 using namespace gnuradio;
 
-void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface, const tsbe::Wax &state)
+void ElementImpl::handle_block_msg(const tsbe::TaskInterface &task_iface, const tsbe::Wax &state)
 {
     if (state.type() == typeid(BufferReturnMessage))
     {
@@ -28,6 +28,49 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface, const t
         return;
     }
 
+    const size_t num_inputs = task_iface.get_num_inputs();
+    const size_t num_outputs = task_iface.get_num_outputs();
+
+    //allocate output tokens and send them downstream
+    if (state.cast<TopBlockMessage>().what == TopBlockMessage::ACTIVE)
+    {
+        this->input_tokens.resize(num_inputs);
+        for (size_t i = 0; i < num_inputs; i++)
+        {
+            this->input_tokens[i] = Token::make();
+            task_iface.post_upstream(i, this->input_tokens[i]);
+        }
+        this->output_tokens.resize(num_outputs);
+        for (size_t i = 0; i < num_outputs; i++)
+        {
+            this->output_tokens[i] = Token::make();
+            task_iface.post_downstream(i, this->output_tokens[i]);
+        }
+    }
+
+    if (state.cast<TopBlockMessage>().what == TopBlockMessage::ACTIVE)
+    {
+        this->active = true;
+        this->done = false;
+        this->token_pool.insert(state.cast<TopBlockMessage>().token);
+
+        //causes initial processing kick-off for source blocks
+        this->handle_allocation(task_iface);
+    }
+    if (state.cast<TopBlockMessage>().what == TopBlockMessage::INERT)
+    {
+        this->mark_done(task_iface);
+    }
+
+    //TODO: generate a message to handle task in a loop for a while
+    //we may need to call it into exhaustion to be correct
+    //but dont call it from update, let the settings above sink in
+    this->handle_task(task_iface);
+    this->handle_task(task_iface);
+}
+
+void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
+{
     const size_t num_inputs = task_iface.get_num_inputs();
     const size_t num_outputs = task_iface.get_num_outputs();
 
@@ -77,46 +120,9 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface, const t
         }
     }
 
-    //allocate output tokens and send them downstream
-    if (state.cast<TopBlockMessage>().what == TopBlockMessage::ACTIVE)
-    {
-        this->input_tokens.resize(num_inputs);
-        for (size_t i = 0; i < num_inputs; i++)
-        {
-            this->input_tokens[i] = Token::make();
-            task_iface.post_upstream(i, this->input_tokens[i]);
-        }
-        this->output_tokens.resize(num_outputs);
-        for (size_t i = 0; i < num_outputs; i++)
-        {
-            this->output_tokens[i] = Token::make();
-            task_iface.post_downstream(i, this->output_tokens[i]);
-        }
-    }
-
-    if (state.cast<TopBlockMessage>().what == TopBlockMessage::ACTIVE)
-    {
-        this->active = true;
-        this->done = false;
-        this->token_pool.insert(state.cast<TopBlockMessage>().token);
-
-        //causes initial processing kick-off for source blocks
-        this->handle_allocation(task_iface);
-    }
-    if (state.cast<TopBlockMessage>().what == TopBlockMessage::INERT)
-    {
-        this->mark_done(task_iface);
-    }
-
     //TODO: think more about this:
     if (num_inputs == 0 and num_outputs == 0)
     {
         this->mark_done(task_iface);
     }
-
-    //TODO: generate a message to handle task in a loop for a while
-    //we may need to call it into exhaustion to be correct
-    //but dont call it from update, let the settings above sink in
-    this->handle_task(task_iface);
-    this->handle_task(task_iface);
 }

@@ -47,22 +47,23 @@ void TopBlock::set_buffer_hint(const size_t hint)
     TopBlockMessage event;
     event.what = TopBlockMessage::HINT;
     event.hint = hint;
-    (*this)->executor.update(event);
+    (*this)->executor.post_msg(event);
 }
 
 void TopBlock::start(void)
 {
+    (*this)->executor.commit();
     TopBlockMessage event;
     event.what = TopBlockMessage::ACTIVE;
     event.token = (*this)->token;
-    (*this)->executor.update(event);
+    (*this)->executor.post_msg(event);
 }
 
 void TopBlock::stop(void)
 {
     TopBlockMessage event;
     event.what = TopBlockMessage::INERT;
-    (*this)->executor.update(event);
+    (*this)->executor.post_msg(event);
 }
 
 void TopBlock::run(void)
@@ -76,7 +77,7 @@ void TopBlock::wait(void)
     while (not (*this)->token.unique())
     {
         boost::this_thread::yield();
-        sleep(1);
-        VAR((*this)->token.use_count());
+        //sleep(1);
+        //VAR((*this)->token.use_count());
     }
 }
