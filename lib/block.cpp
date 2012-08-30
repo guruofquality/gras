@@ -42,6 +42,8 @@ Block::Block(const std::string &name):
 
     (*this)->block_ptr = this;
     (*this)->hint = 0;
+    (*this)->active = false;
+    (*this)->done = false;
 }
 
 template <typename V, typename T>

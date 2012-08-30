@@ -20,26 +20,27 @@
 
 using namespace gnuradio;
 
-void ElementImpl::free_inputs(const tsbe::TaskInterface &task_iface)
-{
-    for (size_t i = 0; i < task_iface.get_num_inputs(); i++)
-    {
-        while (not this->input_queues[i].empty())
-        {
-            this->input_queues[i].pop();
-        }
-        this->inputs_ready.set(i, false);
-    }
-}
-
 void ElementImpl::mark_done(const tsbe::TaskInterface &task_iface)
 {
-    if (not this->active) return;
+    if (this->done) return; //can re-enter checking done first
+
+    //mark down the new state
     this->active = false;
+    this->done = true;
+
+    //release upstream, downstream, and executor tokens
     this->token_pool.clear();
-    this->token.reset();
-    this->free_inputs(task_iface);
+
+    //release allocator tokens, buffers can now call deleters
     this->output_buffer_tokens.clear();
+
+    //release all buffers in queues
+    this->input_queues.clear();
+    this->output_queues.clear();
+
+    //tell the upstream and downstram to re-check their tokens
+    //this is how the other blocks know who is interested,
+    //and can decide based on interest to set done or not
     for (size_t i = 0; i < task_iface.get_num_inputs(); i++)
     {
         task_iface.post_upstream(i, CheckTokensMessage());
@@ -48,18 +49,12 @@ void ElementImpl::mark_done(const tsbe::TaskInterface &task_iface)
     {
         task_iface.post_downstream(i, CheckTokensMessage());
     }
-    HERE();
-    VAR(name);
+
+    std::cout << "This one: " << name << " is done..." << std::endl;
 }
 
 void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
 {
-    //FIXME in case we get called in the inactive state, assuming done?
-    if (not this->active)
-    {
-        this->free_inputs(task_iface);
-    }
-
     //------------------------------------------------------------------
     //-- Decide if its possible to continue any processing:
     //-- Handle task may get called for incoming buffers,

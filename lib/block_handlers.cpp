@@ -97,14 +97,14 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface, const t
     if (state.cast<TopBlockMessage>().what == TopBlockMessage::ACTIVE)
     {
         this->active = true;
-        this->token = state.cast<TopBlockMessage>().token;
+        this->done = false;
+        this->token_pool.insert(state.cast<TopBlockMessage>().token);
 
         //causes initial processing kick-off for source blocks
         this->handle_allocation(task_iface);
     }
     if (state.cast<TopBlockMessage>().what == TopBlockMessage::INERT)
     {
-        this->active = false;
-        this->token = state.cast<TopBlockMessage>().token;
+        this->mark_done(task_iface);
     }
 }

@@ -22,6 +22,7 @@ void ElementImpl::handle_input_msg(const tsbe::TaskInterface &handle, const size
 {
     if (msg.type() == typeid(tsbe::Buffer))
     {
+        if (this->done) return;
         this->input_queues[index].push(msg.cast<tsbe::Buffer>());
         this->inputs_ready.set(index, true);
         this->handle_task(handle);
@@ -35,7 +36,7 @@ void ElementImpl::handle_input_msg(const tsbe::TaskInterface &handle, const size
     }
     if (msg.type() == typeid(Token))
     {
-        this->token_pool.push_back(msg.cast<Token>());
+        this->token_pool.insert(msg.cast<Token>());
         return;
     }
     if (msg.type() == typeid(CheckTokensMessage))
@@ -52,6 +53,7 @@ void ElementImpl::handle_output_msg(const tsbe::TaskInterface &handle, const siz
 {
     if (msg.type() == typeid(tsbe::Buffer))
     {
+        if (this->done) return;
         this->output_queues[index].push(msg.cast<tsbe::Buffer>());
         this->outputs_ready.set(index, true);
         this->handle_task(handle);
@@ -59,7 +61,7 @@ void ElementImpl::handle_output_msg(const tsbe::TaskInterface &handle, const siz
     }
     if (msg.type() == typeid(Token))
     {
-        this->token_pool.push_back(msg.cast<Token>());
+        this->token_pool.insert(msg.cast<Token>());
         return;
     }
     if (msg.type() == typeid(CheckTokensMessage))

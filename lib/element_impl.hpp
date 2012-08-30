@@ -24,6 +24,7 @@
 #include <gnuradio/element.hpp>
 #include <gnuradio/block.hpp>
 #include <gr_types.h>
+#include <set>
 #include <vector>
 #include <queue>
 
@@ -82,7 +83,7 @@ struct ElementImpl
     //track the subscriber counts
     std::vector<Token> input_tokens;
     std::vector<Token> output_tokens;
-    std::vector<Token> token_pool;
+    std::set<Token> token_pool;
 
     std::vector<tsbe::BufferToken> output_buffer_tokens;
 
@@ -117,11 +118,11 @@ struct ElementImpl
     void handle_allocation(const tsbe::TaskInterface &);
     void handle_task(const tsbe::TaskInterface &);
     void mark_done(const tsbe::TaskInterface &);
-    void free_inputs(const tsbe::TaskInterface &);
     void buffer_returner(const size_t index, tsbe::Buffer &buffer);
 
     //is the fg running?
     bool active;
+    bool done;
     Token token;
     size_t hint; //some kind of allocation hint
 
