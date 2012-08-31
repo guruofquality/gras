@@ -25,8 +25,7 @@ void ElementImpl::handle_input_msg(const tsbe::TaskInterface &handle, const size
     if (msg.type() == typeid(tsbe::Buffer))
     {
         if (this->block_state == BLOCK_STATE_DONE) return;
-        this->input_queues[index].push(msg.cast<tsbe::Buffer>());
-        this->inputs_ready.set(index, true);
+        this->input_queues.push(index, msg.cast<tsbe::Buffer>());
         this->handle_task(handle);
         return;
     }
@@ -43,7 +42,7 @@ void ElementImpl::handle_input_msg(const tsbe::TaskInterface &handle, const size
     }
     if (msg.type() == typeid(CheckTokensMessage))
     {
-        if (this->input_queues[index].empty() and this->input_tokens[index].unique())
+        if (this->input_queues.empty(index) and this->input_tokens[index].unique())
         {
             this->mark_done(handle);
         }

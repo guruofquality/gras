@@ -28,8 +28,7 @@ void ElementImpl::handle_block_msg(const tsbe::TaskInterface &task_iface, const 
         const BufferReturnMessage &message = msg.cast<BufferReturnMessage>();
         const size_t index = message.index;
         if (this->block_state == BLOCK_STATE_DONE) return;
-        this->output_queues[index].push(message.buffer);
-        this->outputs_ready.set(index, true);
+        this->output_queues.push(index, message.buffer);
         this->handle_task(task_iface);
         return;
     }
@@ -70,7 +69,10 @@ void ElementImpl::handle_block_msg(const tsbe::TaskInterface &task_iface, const 
     if (msg.cast<TopBlockMessage>().what == TopBlockMessage::ACTIVE)
     {
         this->block_state = BLOCK_STATE_LIVE;
-        if (this->all_io_ready()) this->block.post_msg(SelfKickMessage());
+        if (this->input_queues.all_ready() and this->output_queues.all_ready())
+        {
+            this->block.post_msg(SelfKickMessage());
+        }
     }
 
     if (msg.cast<TopBlockMessage>().what == TopBlockMessage::INERT)
@@ -109,8 +111,6 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
     this->input_buff_offsets.resize(num_inputs, 0);
     this->input_queues.resize(num_inputs);
     this->output_queues.resize(num_outputs);
-    this->inputs_ready.resize(num_inputs);
-    this->outputs_ready.resize(num_outputs);
 
     this->input_tokens.resize(num_inputs);
     this->output_tokens.resize(num_outputs);

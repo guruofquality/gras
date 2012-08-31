@@ -19,8 +19,6 @@
 
 #include <tsbe/buffer.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/dynamic_bitset.hpp>
-#include <vector>
 #include <iostream>
 
 #define HERE() std::cerr << __FILE__ << ":" << __LINE__ << std::endl << std::flush;
@@ -39,8 +37,6 @@ static inline unsigned long long myullround(const double x)
 
 namespace gnuradio
 {
-
-typedef boost::dynamic_bitset<> BitSet;
 
 struct Token : boost::shared_ptr<int>
 {
@@ -81,6 +77,7 @@ struct BufferReturnMessage
     size_t index;
     tsbe::Buffer buffer;
 };
+
 
 } //namespace gnuradio
 

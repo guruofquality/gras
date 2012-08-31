@@ -18,6 +18,7 @@
 #define INCLUDED_LIBGNURADIO_ELEMENT_IMPL_HPP
 
 #include <common_impl.hpp>//#include "common_impl.hpp"
+#include <vector_of_queues.hpp>//#include "vector_of_queues.hpp"
 #include <tsbe/block.hpp>
 #include <tsbe/topology.hpp>
 #include <tsbe/executor.hpp>
@@ -94,10 +95,8 @@ struct ElementImpl
     std::vector<tsbe::BufferToken> output_buffer_tokens;
 
     //buffer queues and ready conditions
-    std::vector<std::queue<tsbe::Buffer> > input_queues;
-    std::vector<std::queue<tsbe::Buffer> > output_queues;
-    BitSet inputs_ready;
-    BitSet outputs_ready;
+    VectorOfQueues<tsbe::Buffer> input_queues;
+    VectorOfQueues<tsbe::Buffer> output_queues;
 
     //tag tracking
     std::vector<bool> input_tags_changed;
@@ -126,13 +125,6 @@ struct ElementImpl
     void handle_task(const tsbe::TaskInterface &);
     void mark_done(const tsbe::TaskInterface &);
     void buffer_returner(const size_t index, tsbe::Buffer &buffer);
-
-    inline bool all_io_ready(void)
-    {
-        const bool all_inputs_ready = (~this->inputs_ready).none();
-        const bool all_outputs_ready = (~this->outputs_ready).none();
-        return all_inputs_ready and all_outputs_ready;
-    }
 
     //is the fg running?
     enum
