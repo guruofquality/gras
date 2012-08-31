@@ -26,13 +26,14 @@ void ElementImpl::handle_block_msg(const tsbe::TaskInterface &task_iface, const 
     if (msg.type() == typeid(BufferReturnMessage))
     {
         const BufferReturnMessage &message = msg.cast<BufferReturnMessage>();
-        this->handle_output_msg(task_iface, message.index, message.buffer);
+        const size_t index = message.index;
+        if (this->block_state == BLOCK_STATE_DONE) return;
+        this->output_queues[index].push(message.buffer);
+        this->outputs_ready.set(index, true);
+        this->handle_task(task_iface);
         return;
     }
 
-    //TODO: generate a message to handle task in a loop for a while
-    //we may need to call it into exhaustion to be correct
-    //but dont call it from update, let the settings above sink in
     if (msg.type() == typeid(SelfKickMessage))
     {
         this->handle_task(task_iface);
