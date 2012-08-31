@@ -20,9 +20,11 @@ using namespace gnuradio;
 
 void ElementImpl::handle_input_msg(const tsbe::TaskInterface &handle, const size_t index, const tsbe::Wax &msg)
 {
+    std::cout << "handle_input_msg in " << name << std::endl;
+
     if (msg.type() == typeid(tsbe::Buffer))
     {
-        if (this->done) return;
+        if (this->block_state == BLOCK_STATE_DONE) return;
         this->input_queues[index].push(msg.cast<tsbe::Buffer>());
         this->inputs_ready.set(index, true);
         this->handle_task(handle);
@@ -51,9 +53,11 @@ void ElementImpl::handle_input_msg(const tsbe::TaskInterface &handle, const size
 
 void ElementImpl::handle_output_msg(const tsbe::TaskInterface &handle, const size_t index, const tsbe::Wax &msg)
 {
+    std::cout << "handle_output_msg in " << name << std::endl;
+
     if (msg.type() == typeid(tsbe::Buffer))
     {
-        if (this->done) return;
+        if (this->block_state == BLOCK_STATE_DONE) return;
         this->output_queues[index].push(msg.cast<tsbe::Buffer>());
         this->outputs_ready.set(index, true);
         this->handle_task(handle);

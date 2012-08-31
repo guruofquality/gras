@@ -40,6 +40,12 @@ struct ElementImpl
 
     ~ElementImpl(void)
     {
+        if (this->executor)
+        {
+            TopBlockMessage event;
+            event.what = TopBlockMessage::INERT;
+            this->executor.post_msg(event);
+        }
         children.clear();
     }
 
@@ -121,9 +127,20 @@ struct ElementImpl
     void mark_done(const tsbe::TaskInterface &);
     void buffer_returner(const size_t index, tsbe::Buffer &buffer);
 
+    inline bool all_io_ready(void)
+    {
+        const bool all_inputs_ready = (~this->inputs_ready).none();
+        const bool all_outputs_ready = (~this->outputs_ready).none();
+        return all_inputs_ready and all_outputs_ready;
+    }
+
     //is the fg running?
-    bool active;
-    bool done;
+    enum
+    {
+        BLOCK_STATE_INIT,
+        BLOCK_STATE_LIVE,
+        BLOCK_STATE_DONE,
+    } block_state;
     Token token;
     size_t hint; //some kind of allocation hint
 

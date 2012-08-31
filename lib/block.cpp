@@ -43,8 +43,7 @@ Block::Block(const std::string &name):
 
     (*this)->block_ptr = this;
     (*this)->hint = 0;
-    (*this)->active = false;
-    (*this)->done = false;
+    (*this)->block_state = ElementImpl::BLOCK_STATE_INIT;
 }
 
 template <typename V, typename T>

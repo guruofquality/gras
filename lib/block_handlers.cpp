@@ -19,58 +19,69 @@
 
 using namespace gnuradio;
 
-void ElementImpl::handle_block_msg(const tsbe::TaskInterface &task_iface, const tsbe::Wax &state)
+void ElementImpl::handle_block_msg(const tsbe::TaskInterface &task_iface, const tsbe::Wax &msg)
 {
-    if (state.type() == typeid(BufferReturnMessage))
+    std::cout << "handle_block_msg in " << name << std::endl;
+
+    if (msg.type() == typeid(BufferReturnMessage))
     {
-        const BufferReturnMessage &message = state.cast<BufferReturnMessage>();
+        const BufferReturnMessage &message = msg.cast<BufferReturnMessage>();
         this->handle_output_msg(task_iface, message.index, message.buffer);
         return;
-    }
-
-    const size_t num_inputs = task_iface.get_num_inputs();
-    const size_t num_outputs = task_iface.get_num_outputs();
-
-    //allocate output tokens and send them downstream
-    if (state.cast<TopBlockMessage>().what == TopBlockMessage::ACTIVE)
-    {
-        this->input_tokens.resize(num_inputs);
-        for (size_t i = 0; i < num_inputs; i++)
-        {
-            this->input_tokens[i] = Token::make();
-            task_iface.post_upstream(i, this->input_tokens[i]);
-        }
-        this->output_tokens.resize(num_outputs);
-        for (size_t i = 0; i < num_outputs; i++)
-        {
-            this->output_tokens[i] = Token::make();
-            task_iface.post_downstream(i, this->output_tokens[i]);
-        }
-    }
-
-    if (state.cast<TopBlockMessage>().what == TopBlockMessage::ACTIVE)
-    {
-        this->active = true;
-        this->done = false;
-        this->token_pool.insert(state.cast<TopBlockMessage>().token);
-
-        //causes initial processing kick-off for source blocks
-        this->handle_allocation(task_iface);
-    }
-    if (state.cast<TopBlockMessage>().what == TopBlockMessage::INERT)
-    {
-        this->mark_done(task_iface);
     }
 
     //TODO: generate a message to handle task in a loop for a while
     //we may need to call it into exhaustion to be correct
     //but dont call it from update, let the settings above sink in
-    this->handle_task(task_iface);
-    this->handle_task(task_iface);
+    if (msg.type() == typeid(SelfKickMessage))
+    {
+        this->handle_task(task_iface);
+        return;
+    }
+
+    ASSERT(msg.type() == typeid(TopBlockMessage));
+
+    const size_t num_inputs = task_iface.get_num_inputs();
+    const size_t num_outputs = task_iface.get_num_outputs();
+
+    //allocate output tokens and send them downstream
+    if (msg.cast<TopBlockMessage>().what == TopBlockMessage::TOKEN_TIME)
+    {
+        for (size_t i = 0; i < num_inputs; i++)
+        {
+            this->input_tokens[i] = Token::make();
+            task_iface.post_upstream(i, this->input_tokens[i]);
+        }
+        for (size_t i = 0; i < num_outputs; i++)
+        {
+            this->output_tokens[i] = Token::make();
+            task_iface.post_downstream(i, this->output_tokens[i]);
+        }
+        this->token_pool.insert(msg.cast<TopBlockMessage>().token);
+    }
+
+    if (msg.cast<TopBlockMessage>().what == TopBlockMessage::ALLOCATE)
+    {
+        //causes initial processing kick-off for source blocks
+        this->handle_allocation(task_iface);
+    }
+
+    if (msg.cast<TopBlockMessage>().what == TopBlockMessage::ACTIVE)
+    {
+        this->block_state = BLOCK_STATE_LIVE;
+        if (this->all_io_ready()) this->block.post_msg(SelfKickMessage());
+    }
+
+    if (msg.cast<TopBlockMessage>().what == TopBlockMessage::INERT)
+    {
+        this->mark_done(task_iface);
+    }
 }
 
 void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
 {
+    std::cout << "topology_update in " << name << std::endl;
+
     const size_t num_inputs = task_iface.get_num_inputs();
     const size_t num_outputs = task_iface.get_num_outputs();
 
@@ -100,6 +111,9 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
     this->inputs_ready.resize(num_inputs);
     this->outputs_ready.resize(num_outputs);
 
+    this->input_tokens.resize(num_inputs);
+    this->output_tokens.resize(num_outputs);
+
     //resize tags vector to match sizes
     this->input_tags_changed.resize(num_inputs);
     this->input_tags.resize(num_inputs);
@@ -123,6 +137,7 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
     //TODO: think more about this:
     if (num_inputs == 0 and num_outputs == 0)
     {
+        HERE();
         this->mark_done(task_iface);
     }
 }

@@ -53,10 +53,22 @@ void TopBlock::set_buffer_hint(const size_t hint)
 void TopBlock::start(void)
 {
     (*this)->executor.commit();
-    TopBlockMessage event;
-    event.what = TopBlockMessage::ACTIVE;
-    event.token = (*this)->token;
-    (*this)->executor.post_msg(event);
+    {
+        TopBlockMessage event;
+        event.what = TopBlockMessage::TOKEN_TIME;
+        event.token = (*this)->token;
+        (*this)->executor.post_msg(event);
+    }
+    {
+        TopBlockMessage event;
+        event.what = TopBlockMessage::ALLOCATE;
+        (*this)->executor.post_msg(event);
+    }
+    {
+        TopBlockMessage event;
+        event.what = TopBlockMessage::ACTIVE;
+        (*this)->executor.post_msg(event);
+    }
 }
 
 void TopBlock::stop(void)
