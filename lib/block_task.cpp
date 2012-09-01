@@ -73,6 +73,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     const size_t num_inputs = task_iface.get_num_inputs();
     const size_t num_outputs = task_iface.get_num_outputs();
     //const bool is_source = (num_inputs == 0);
+    this->work_io_ptr_mask = 0; //reset
 
     //------------------------------------------------------------------
     //-- sort the input tags before working
@@ -104,6 +105,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
 
         ASSERT(this->input_buff_offsets[i] < buff.get_length());
 
+        this->work_io_ptr_mask |= ptrdiff_t(mem);
         this->input_items[i]._mem = mem;
         this->input_items[i]._len = items;
         this->work_input_items[i] = mem;
@@ -127,6 +129,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         const size_t bytes = buff.get_length();
         const size_t items = bytes/this->output_items_sizes[i];
 
+        this->work_io_ptr_mask |= ptrdiff_t(mem);
         this->output_items[i]._mem = mem;
         this->output_items[i]._len = items;
         this->work_output_items[i] = mem;

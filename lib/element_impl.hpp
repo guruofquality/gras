@@ -76,6 +76,7 @@ struct ElementImpl
     //work buffers for the new work interface
     Block::InputItems input_items;
     Block::OutputItems output_items;
+    ptrdiff_t work_io_ptr_mask;
 
     //track work's calls to produce and consume
     std::vector<size_t> produce_items;
