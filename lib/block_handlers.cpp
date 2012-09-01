@@ -19,10 +19,14 @@
 
 using namespace gnuradio;
 
-void ElementImpl::handle_block_msg(const tsbe::TaskInterface &task_iface, const tsbe::Wax &msg)
-{
+void ElementImpl::handle_block_msg(
+    const tsbe::TaskInterface &task_iface,
+    const tsbe::Wax &msg
+){
     std::cout << "handle_block_msg in " << name << std::endl;
 
+    //a buffer has returned from the downstream
+    //(all interested consumers have finished with it)
     if (msg.type() == typeid(BufferReturnMessage))
     {
         const BufferReturnMessage &message = msg.cast<BufferReturnMessage>();
@@ -33,6 +37,7 @@ void ElementImpl::handle_block_msg(const tsbe::TaskInterface &task_iface, const 
         return;
     }
 
+    //self kick, call the handle task method
     if (msg.type() == typeid(SelfKickMessage))
     {
         this->handle_task(task_iface);

@@ -40,6 +40,12 @@ Element::Element(const std::string &name)
     this->set_output_signature(sig);
 }
 
+ElementImpl::~ElementImpl(void)
+{
+    if (this->executor) this->top_block_cleanup();
+    if (this->topology) this->hier_block_cleanup();
+}
+
 long Element::unique_id(void) const
 {
     return (*this)->unique_id;

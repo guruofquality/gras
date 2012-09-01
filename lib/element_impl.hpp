@@ -34,23 +34,11 @@ namespace gnuradio
 
 struct ElementImpl
 {
-    ElementImpl(void)
-    {
-        //NOP
-    }
 
-    ~ElementImpl(void)
-    {
-        if (this->executor)
-        {
-            TopBlockMessage event;
-            event.what = TopBlockMessage::INERT;
-            this->executor.post_msg(event);
-        }
-        children.clear();
-    }
-
-    std::vector<boost::shared_ptr<Element> > children;
+    //deconstructor stuff
+    ~ElementImpl(void);
+    void top_block_cleanup(void);
+    void hier_block_cleanup(void);
 
     //stuff for when its a block
     std::string name;
@@ -109,6 +97,7 @@ struct ElementImpl
     tsbe::Block block;
     tsbe::Topology topology;
     tsbe::Executor executor;
+    std::vector<boost::shared_ptr<Element> > children;
     const tsbe::Element &get_elem(void) const
     {
         if (block) return block;

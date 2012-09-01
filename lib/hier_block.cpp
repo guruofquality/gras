@@ -32,6 +32,11 @@ HierBlock::HierBlock(const std::string &name):
     (*this)->topology = tsbe::Topology(config);
 }
 
+void ElementImpl::hier_block_cleanup(void)
+{
+    this->children.clear();
+}
+
 void HierBlock::connect(const Element &elem)
 {
     (*this)->topology.add_topology(elem->topology);

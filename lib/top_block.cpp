@@ -37,6 +37,13 @@ TopBlock::TopBlock(const std::string &name):
     std::cout << "===================================================" << std::endl;
 }
 
+void ElementImpl::top_block_cleanup(void)
+{
+    TopBlockMessage event;
+    event.what = TopBlockMessage::INERT;
+    this->executor.post_msg(event);
+}
+
 void TopBlock::update(void)
 {
     this->start(); //ok to re-start, means update
