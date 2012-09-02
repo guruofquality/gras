@@ -3,7 +3,19 @@
 ########################################################################
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../tests)
+include_directories(${GRAS_SOURCE_DIR}/tests)
+
+set(GRAS_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../)
+
+########################################################################
+# Setup NumaNuma
+########################################################################
+list(APPEND CMAKE_MODULE_PATH ${GRAS_SOURCE_DIR}/numanuma/cmake)
+include_directories(${GRAS_SOURCE_DIR}/numanuma/include)
+find_package(NumaNuma)
+if(NOT NUMANUMA_FOUND)
+    message(FATAL_ERROR "numanuma dependencies not met!")
+endif()
 
 ########################################################################
 # Append gnuradio-core library sources
@@ -36,17 +48,17 @@ list(APPEND gnuradio_core_sources
 # Append gnuradio-core test sources
 ########################################################################
 list(APPEND test_gnuradio_core_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/../tests/qa_gr_block.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/../tests/qa_gr_hier_block2.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/../tests/qa_gr_hier_block2_derived.cc
-    #${CMAKE_CURRENT_SOURCE_DIR}/../tests/qa_gr_buffer.cc
-    #${CMAKE_CURRENT_SOURCE_DIR}/../tests/qa_gr_flowgraph.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/../tests/qa_gr_top_block.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/../tests/qa_gr_io_signature.cc
-    #${CMAKE_CURRENT_SOURCE_DIR}/../tests/qa_gr_vmcircbuf.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/../tests/qa_block_tags.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/../tests/qa_runtime.cc
-    #${CMAKE_CURRENT_SOURCE_DIR}/../tests/qa_set_msg_handler.cc
+    ${GRAS_SOURCE_DIR}/tests/qa_gr_block.cc
+    ${GRAS_SOURCE_DIR}/tests/qa_gr_hier_block2.cc
+    ${GRAS_SOURCE_DIR}/tests/qa_gr_hier_block2_derived.cc
+    #${GRAS_SOURCE_DIR}/tests/qa_gr_buffer.cc
+    #${GRAS_SOURCE_DIR}/tests/qa_gr_flowgraph.cc
+    ${GRAS_SOURCE_DIR}/tests/qa_gr_top_block.cc
+    ${GRAS_SOURCE_DIR}/tests/qa_gr_io_signature.cc
+    #${GRAS_SOURCE_DIR}/tests/qa_gr_vmcircbuf.cc
+    ${GRAS_SOURCE_DIR}/tests/qa_block_tags.cc
+    ${GRAS_SOURCE_DIR}/tests/qa_runtime.cc
+    #${GRAS_SOURCE_DIR}/tests/qa_set_msg_handler.cc
 )
 
 ########################################################################
@@ -74,14 +86,12 @@ list(APPEND gnuradio_core_libs
     ${TSBE_LIBRARIES}
 )
 
-if(LINUX)
-    list(APPEND gnuradio_core_libs numa)
-endif()
+list(APPEND gnuradio_core_libs ${NUMANUMA_LIBRARIES})
 
 ########################################################################
 # Install runtime headers
 ########################################################################
-file(GLOB runtime_headers "${CMAKE_CURRENT_SOURCE_DIR}/../include/gnuradio/*")
+file(GLOB runtime_headers "${GRAS_SOURCE_DIR}/include/gnuradio/*")
 install(FILES
     ${runtime_headers}
     DESTINATION ${GR_INCLUDE_DIR}/gnuradio
@@ -92,7 +102,7 @@ install(FILES
 # Install swig headers
 ########################################################################
 if(ENABLE_PYTHON)
-file(GLOB runtime_swigs "${CMAKE_CURRENT_SOURCE_DIR}/../swig/*.i")
+file(GLOB runtime_swigs "${GRAS_SOURCE_DIR}/swig/*.i")
 install(FILES
     ${runtime_swigs}
     DESTINATION ${GR_INCLUDE_DIR}/gnuradio/swig

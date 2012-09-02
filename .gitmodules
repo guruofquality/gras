@@ -1,3 +1,6 @@
 [submodule "gnuradio"]
 	path = gnuradio
 	url = https://github.com/guruofquality/gnuradio.git
+[submodule "numanuma"]
+	path = numanuma
+	url = git@github.com:guruofquality/numanuma.git
