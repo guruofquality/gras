@@ -74,7 +74,9 @@ struct ElementImpl
     std::vector<size_t> input_buff_offsets;
 
     //special buffer for dealing with history
+    std::vector<size_t> input_history_bytes;
     std::vector<tsbe::Buffer> history_buffs;
+    size_t max_history_items;
 
     //track the subscriber counts
     std::vector<Token> input_tokens;

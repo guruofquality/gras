@@ -1,0 +1,32 @@
+This is not how I plan to handle history, but keep the code snippet for now
+//handles history
+        if (this->input_buff_offsets[i] < this->input_history_bytes[i])
+        {
+            const char *old_mem = mem;
+            const size_t old_len = bytes;
+
+            mem = (char *)this->history_buffs[i].get_memory();
+            bytes = buff.get_length();
+
+            //copy the top part of the history buff from input items
+            const size_t n = this->max_history_items*this->input_items_sizes[i];
+            ASSERT(n <= old_len);
+            std::memcpy(mem+this->input_history_bytes[i], old_mem, n);
+        }
+        else
+        {
+            mem -= this->input_history_bytes[i];
+            bytes += this->input_history_bytes[i];
+        }
+
+
+* handle forecast
+* handle items multiple
+* handle calculating noutputitems using ninputs as a constraint
+* handle history
+* python wrappers for hier_block and top_block
+* python wrapper for block will come from grextras
+* bring in numanuma
+** thread prio
+** thread affinity
+** memory affinity

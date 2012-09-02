@@ -93,17 +93,15 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     for (size_t i = 0; i < num_inputs; i++)
     {
         input_tokens_count += this->input_tokens[i].use_count();
-        //this->consume_items[i] = 0;
 
         ASSERT(this->input_history_items[i] == 0);
-        ASSERT(this->input_queues.ready(i));
 
+        ASSERT(this->input_queues.ready(i));
         const tsbe::Buffer &buff = this->input_queues.front(i);
+        ASSERT(this->input_buff_offsets[i] < buff.get_length());
         char *mem = ((char *)buff.get_memory()) + this->input_buff_offsets[i];
         const size_t bytes = buff.get_length() - this->input_buff_offsets[i];
         const size_t items = bytes/this->input_items_sizes[i];
-
-        ASSERT(this->input_buff_offsets[i] < buff.get_length());
 
         this->work_io_ptr_mask |= ptrdiff_t(mem);
         this->input_items[i]._mem = mem;
@@ -120,10 +118,10 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     for (size_t i = 0; i < num_outputs; i++)
     {
         output_tokens_count += this->output_tokens[i].use_count();
-        //this->produce_items[i] = 0;
+
+        ASSERT(this->output_multiple_items[i] == 1);
 
         ASSERT(this->output_queues.ready(i));
-
         const tsbe::Buffer &buff = this->output_queues.front(i);
         char *mem = ((char *)buff.get_memory());
         const size_t bytes = buff.get_length();
@@ -137,13 +135,22 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     }
 
     //if we have outputs and at least one port has no downstream subscibers, mark done
-    if ((num_outputs != 0 and output_tokens_count == num_outputs)){
+    if ((num_outputs != 0 and output_tokens_count == num_outputs))
+    {
         this->mark_done(task_iface);
         return;
     }
 
     //------------------------------------------------------------------
-    //-- forecast (TODO) and work
+    //-- forecast
+    //------------------------------------------------------------------
+    if (not this->enable_fixed_rate)
+    {
+        block_ptr->forecast(num_output_items, work_ninput_items);
+    }
+
+    //------------------------------------------------------------------
+    //-- the work
     //------------------------------------------------------------------
     const int ret = block_ptr->Work(this->input_items, this->output_items);
     const size_t noutput_items = size_t(ret);

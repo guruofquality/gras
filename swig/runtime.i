@@ -15,7 +15,6 @@
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define GR_CORE_API
-#define GR_RUNTIME_API
 
 %ignore forecast;
 %ignore general_work;

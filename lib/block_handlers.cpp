@@ -125,18 +125,28 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
     this->input_tags.resize(num_inputs);
     this->output_tags.resize(num_outputs);
 
+    //determine max history length for allocation below
+    this->max_history_items = *std::max_element(
+        this->input_history_items.begin(),
+        this->input_history_items.end()
+    );
+
     //resize and clear that initial history
     this->history_buffs.resize(num_inputs);
+    this->input_history_bytes.resize(num_inputs);
     for (size_t i = 0; i < num_inputs; i++)
     {
         tsbe::Buffer &buff = this->history_buffs[i];
-        const size_t num_bytes = this->input_items_sizes[i]*this->input_history_items[i];
+        const size_t num_items = this->input_history_items[i] + this->max_history_items;
+        const size_t num_bytes = this->input_items_sizes[i]*num_items;
+        this->input_history_bytes[i] = num_bytes;
         if (not buff or buff.get_length() != num_bytes)
         {
             tsbe::BufferConfig config;
             config.memory = NULL;
             config.length = num_bytes;
             buff = tsbe::Buffer(config);
+            std::memset(buff.get_memory(), 0, buff.get_length());
         }
     }
 
