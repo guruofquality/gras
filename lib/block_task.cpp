@@ -24,6 +24,18 @@ void ElementImpl::mark_done(const tsbe::TaskInterface &task_iface)
 {
     if (this->block_state == BLOCK_STATE_DONE) return; //can re-enter checking done first
 
+    //flush partial output buffers to the downstream
+    for (size_t i = 0; i < task_iface.get_num_outputs(); i++)
+    {
+        if (this->output_bytes_offset[i] == 0) continue;
+        ASSERT(this->output_queues.ready(i));
+        tsbe::Buffer &buff = this->output_queues.front(i);
+        buff.get_length() = this->output_bytes_offset[i];
+        task_iface.post_downstream(i, buff);
+        this->output_queues.pop(i);
+        this->output_bytes_offset[i] = 0;
+    }
+
     //mark down the new state
     this->block_state = BLOCK_STATE_DONE;
 
