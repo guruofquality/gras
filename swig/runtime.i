@@ -77,3 +77,8 @@
 %include <gr_sync_interpolator.h>
 %include <gr_top_block.h>
 
+#ifdef SW_RUNTIME
+
+%include "sw_runtime.i"
+
+#endif

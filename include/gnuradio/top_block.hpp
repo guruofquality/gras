@@ -68,7 +68,7 @@ struct GR_RUNTIME_API TopBlock : HierBlock
     void stop(void);
 
     //! Wait for threads to exit after stop()
-    void wait(void);
+    virtual void wait(void);
 };
 
 } //namespace gnuradio

@@ -46,6 +46,11 @@ ElementImpl::~ElementImpl(void)
     if (this->topology) this->hier_block_cleanup();
 }
 
+const Element &Element::get_base(void) const
+{
+    return *this;
+}
+
 long Element::unique_id(void) const
 {
     return (*this)->unique_id;

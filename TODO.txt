@@ -1,11 +1,20 @@
+########################################################################
+## The GRAS TODO list
+########################################################################
+
 * handle forecast
 * handle items multiple
 * handle calculating noutputitems using ninputs as a constraint
 * handle history
 ** test implementation
-** stop output flush on mini history buffer
+* allocation
+** hooks for advanced allocation
+** intelligent sizing of buffers
+** communicate upstream requirements?
+** communicate downstream requirements?
 * python wrappers for hier_block and top_block
 * python wrapper for block will come from grextras
+* python wrapper should set weak_self somehow
 * bring in numanuma
 ** thread prio
 ** thread affinity

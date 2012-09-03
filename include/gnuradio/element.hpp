@@ -51,6 +51,9 @@ struct GR_RUNTIME_API Element : boost::shared_ptr<ElementImpl>
         weak_self = elem;
     }
 
+    //! Get the derived class as an element
+    const Element &get_base(void) const;
+
     //! for internal use only
     boost::weak_ptr<Element> weak_self;
 

@@ -17,7 +17,8 @@
 #include <gr_top_block.h>
 
 gr_top_block::gr_top_block(void):
-    gnuradio::TopBlock()
+    //cannot make a null top block, use name constructor
+    gnuradio::TopBlock("top")
 {
     //NOP
 }
