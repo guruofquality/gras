@@ -120,8 +120,10 @@ struct InputBufferQueues
      * Otherwise, check if the input buffer was entirely consumed.
      * If so, pop the input buffer, copy the tail end of the buffer
      * into the mini history buffer, and reset the offset condition.
+     *
+     * \return true if the buffer is fully consumed
      */
-    inline void pop(const size_t i, const size_t bytes_consumed)
+    inline bool pop(const size_t i, const size_t bytes_consumed)
     {
         _offset_bytes[i] += bytes_consumed + _history_bytes[i];
 
@@ -138,7 +140,9 @@ struct InputBufferQueues
             _queues[i].pop();
             _bitset.set(i, not _queues[i].empty());
             _offset_bytes[i] = 0;
+            return true;
         }
+        return false;
     }
 
     inline void resize(const size_t size)
