@@ -32,9 +32,11 @@ TopBlock::TopBlock(const std::string &name):
     config.topology = (*this)->topology;
     (*this)->executor = tsbe::Executor(config);
     (*this)->token = Token::make();
+    /*
     std::cout << "===================================================" << std::endl;
     std::cout << "== Top Block Created: " << name << std::endl;
     std::cout << "===================================================" << std::endl;
+    //*/
 }
 
 void ElementImpl::top_block_cleanup(void)
@@ -42,6 +44,11 @@ void ElementImpl::top_block_cleanup(void)
     TopBlockMessage event;
     event.what = TopBlockMessage::INERT;
     this->executor.post_msg(event);
+    /*
+    std::cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << std::endl;
+    std::cout << "xx Top Block Deleted: " << name << std::endl;
+    std::cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << std::endl;
+    //*/
 }
 
 void TopBlock::update(void)

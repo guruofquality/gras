@@ -40,6 +40,9 @@
 
 %}
 
+%include <gr_message.i>
+%include <gr_msg_handler.i>
+%include <gr_msg_queue.i>
 %include <gr_swig_block_magic.i>
 
 #ifdef SW_RUNTIME
