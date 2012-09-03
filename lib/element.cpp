@@ -46,8 +46,9 @@ ElementImpl::~ElementImpl(void)
     if (this->topology) this->hier_block_cleanup();
 }
 
-const Element &Element::get_base(void) const
+Element &Element::shared_to_element(void)
 {
+    this->weak_self = this->shared_from_this();
     return *this;
 }
 

@@ -21,6 +21,7 @@
 #include <gnuradio/io_signature.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 
 //this is part of core for now, treat it as such
 #include <gr_core_api.h>
@@ -31,7 +32,7 @@ namespace gnuradio
 
 struct ElementImpl;
 
-struct GR_RUNTIME_API Element : boost::shared_ptr<ElementImpl>
+struct GR_RUNTIME_API Element : boost::shared_ptr<ElementImpl>, boost::enable_shared_from_this<Element>
 {
 
     //! Create an empty element
@@ -47,12 +48,11 @@ struct GR_RUNTIME_API Element : boost::shared_ptr<ElementImpl>
     template <typename T>
     Element(const boost::shared_ptr<T> &elem)
     {
-        *this = *elem;
-        weak_self = elem;
+        *this = elem->shared_to_element();
     }
 
-    //! Get the derived class as an element
-    const Element &get_base(void) const;
+    //! Convert a shared ptr of a derived class to an Element
+    Element &shared_to_element(void);
 
     //! for internal use only
     boost::weak_ptr<Element> weak_self;

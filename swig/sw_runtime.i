@@ -51,8 +51,13 @@ struct TopBlockPython : TopBlock
 
 def internal_connect__(fcn, obj, *args):
 
+    def to_element(obj):
+        if isinstance(obj, Element): return obj
+        try: return obj.shared_to_element()
+        except: raise Exception('cant coerce obj %s to element'%(obj))
+
     if len(args) == 1:
-        fcn(obj, args[0].get_base())
+        fcn(obj, to_element(args[0]))
         return
 
     for src, sink in zip(args, args[1:]):
@@ -60,7 +65,7 @@ def internal_connect__(fcn, obj, *args):
         except: src_index = 0
         try: sink, sink_index = sink
         except: sink_index = 0
-        fcn(obj, src.get_base(), src_index, sink.get_base(), sink_index)
+        fcn(obj, to_element(src), src_index, to_element(sink), sink_index)
 
 class top_block(TopBlockPython):
     def __init__(self, *args, **kwargs):
