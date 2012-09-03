@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_LIBGNURADIO_COMMON_IMPL_HPP
-#define INCLUDED_LIBGNURADIO_COMMON_IMPL_HPP
+#ifndef INCLUDED_LIBGRAS_IMPL_MISC_HPP
+#define INCLUDED_LIBGRAS_IMPL_MISC_HPP
 
 #include <tsbe/buffer.hpp>
 #include <boost/shared_ptr.hpp>
@@ -76,4 +76,4 @@ struct BufferReturnMessage
 
 } //namespace gnuradio
 
-#endif /*INCLUDED_LIBGNURADIO_COMMON_IMPL_HPP*/
+#endif /*INCLUDED_LIBGRAS_IMPL_MISC_HPP*/

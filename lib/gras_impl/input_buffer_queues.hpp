@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_LIBGRAS_BUFFER_IOS_HPP
-#define INCLUDED_LIBGRAS_BUFFER_IOS_HPP
+#ifndef INCLUDED_LIBGRAS_IMPL_INPUT_BUFFERS_HPP
+#define INCLUDED_LIBGRAS_IMPL_INPUT_BUFFERS_HPP
 
-#include <debug_impl.hpp>
+#include <gras_impl/debug.hpp>
 #include <tsbe/buffer.hpp>
 #include <boost/dynamic_bitset.hpp>
 #include <vector>
@@ -33,7 +33,7 @@ struct BuffInfo
     size_t len;
 };
 
-struct BufferIOs
+struct InputBufferQueues
 {
     boost::dynamic_bitset<> _bitset;
     std::vector<std::queue<tsbe::Buffer> > _queues;
@@ -198,4 +198,4 @@ struct BufferIOs
 
 } //namespace gnuradio
 
-#endif /*INCLUDED_LIBGRAS_BUFFER_IOS_HPP*/
+#endif /*INCLUDED_LIBGRAS_IMPL_INPUT_BUFFERS_HPP*/

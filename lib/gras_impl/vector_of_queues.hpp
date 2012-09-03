@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_LIBGNURADIO_VECTOR_OF_QUEUES_HPP
-#define INCLUDED_LIBGNURADIO_VECTOR_OF_QUEUES_HPP
+#ifndef INCLUDED_LIBGRAS_IMPL_VECTOR_OF_QUEUES_HPP
+#define INCLUDED_LIBGRAS_IMPL_VECTOR_OF_QUEUES_HPP
 
 #include <boost/dynamic_bitset.hpp>
 #include <vector>
@@ -89,4 +89,4 @@ struct VectorOfQueues
 
 } //namespace gnuradio
 
-#endif /*INCLUDED_LIBGNURADIO_VECTOR_OF_QUEUES_HPP*/
+#endif /*INCLUDED_LIBGRAS_IMPL_VECTOR_OF_QUEUES_HPP*/

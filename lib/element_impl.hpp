@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_LIBGNURADIO_ELEMENT_IMPL_HPP
-#define INCLUDED_LIBGNURADIO_ELEMENT_IMPL_HPP
+#ifndef INCLUDED_LIBGRAS_ELEMENT_IMPL_HPP
+#define INCLUDED_LIBGRAS_ELEMENT_IMPL_HPP
 
-#include <debug_impl.hpp>
-#include <common_impl.hpp>
-#include <vector_of_queues.hpp>
-#include <buffer_ios.hpp>
+#include <gras_impl/debug.hpp>
+#include <gras_impl/misc.hpp>
+#include <gras_impl/vector_of_queues.hpp>
+#include <gras_impl/input_buffer_queues.hpp>
 
 #include <tsbe/block.hpp>
 #include <tsbe/topology.hpp>
@@ -81,7 +81,7 @@ struct ElementImpl
     std::vector<tsbe::BufferToken> output_buffer_tokens;
 
     //buffer queues and ready conditions
-    BufferIOs input_queues;
+    InputBufferQueues input_queues;
     VectorOfQueues<tsbe::Buffer> output_queues;
 
     //tag tracking
@@ -130,4 +130,4 @@ struct ElementImpl
 
 } //namespace gnuradio
 
-#endif /*INCLUDED_LIBGNURADIO_ELEMENT_IMPL_HPP*/
+#endif /*INCLUDED_LIBGRAS_ELEMENT_IMPL_HPP*/

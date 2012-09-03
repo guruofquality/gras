@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_LIBGNURADIO_VEC_UTILS_HPP_HPP
-#define INCLUDED_LIBGNURADIO_VEC_UTILS_HPP_HPP
+#ifndef INCLUDED_LIBGRAS_IMPL_VECTOR_UTILS_HPP
+#define INCLUDED_LIBGRAS_IMPL_VECTOR_UTILS_HPP
 
 //! return true if an instance was found and removed
 template <typename V, typename T>
@@ -56,4 +56,4 @@ void fill_item_sizes_from_sig(V &v, const Sig &s, const size_t size)
     }
 }
 
-#endif /*INCLUDED_LIBGNURADIO_VEC_UTILS_HPP_HPP*/
+#endif /*INCLUDED_LIBGRAS_IMPL_VECTOR_UTILS_HPP*/

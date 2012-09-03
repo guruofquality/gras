@@ -15,7 +15,7 @@
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
-#include "vec_utils_impl.hpp"
+#include <gras_impl/vector_utils.hpp>
 
 using namespace gnuradio;
 

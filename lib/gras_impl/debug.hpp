@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_LIBGRAS_DEBUG_IMPL_HPP
-#define INCLUDED_LIBGRAS_DEBUG_IMPL_HPP
+#ifndef INCLUDED_LIBGRAS_IMPL_DEBUG_HPP
+#define INCLUDED_LIBGRAS_IMPL_DEBUG_HPP
 
 #include <iostream>
 
@@ -23,4 +23,4 @@
 #define VAR(x) std::cerr << #x << " = " << (x) << std::endl << std::flush;
 #define ASSERT(x) if(not (x)){std::cerr << "ASSERT FAIL " << __FILE__ << ":" << __LINE__ << "\n\t" << #x << std::endl << std::flush;}
 
-#endif /*INCLUDED_LIBGRAS_DEBUG_IMPL_HPP*/
+#endif /*INCLUDED_LIBGRAS_IMPL_DEBUG_HPP*/
