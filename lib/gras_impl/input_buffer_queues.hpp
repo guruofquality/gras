@@ -87,24 +87,20 @@ struct InputBufferQueues
         BuffInfo info;
         const tsbe::Buffer &buff = _queues[i].front();
 
-        if (_history_bytes[i] != 0)
+        if (_offset_bytes[i] < _history_bytes[i])
         {
             const tsbe::Buffer &hist_buff = _history_buffs[i];
+            ASSERT(buff.get_length() >= _post_bytes[i]);
 
             if (_offset_bytes[i] == 0)
             {
-                info.mem = (char *)hist_buff.get_memory();
-                info.len = hist_buff.get_length();
                 char *src_mem = ((char *)buff.get_memory());
-                char *dst_mem = ((char *)info.mem) + _history_bytes[i];
+                char *dst_mem = ((char *)hist_buff.get_memory()) + _history_bytes[i];
                 std::memcpy(dst_mem, src_mem, _post_bytes[i]);
             }
 
-            else if (_offset_bytes[i] < _history_bytes[i]) //caller left us a partial
-            {
-                info.mem = (char *)hist_buff.get_memory() + _offset_bytes[i];
-                info.len = hist_buff.get_length() - _offset_bytes[i];
-            }
+            info.mem = (char *)hist_buff.get_memory() + _offset_bytes[i];
+            info.len = hist_buff.get_length() - _offset_bytes[i];
         }
 
         else
@@ -123,13 +119,11 @@ struct InputBufferQueues
      * If we were operating in a mini history buffer, do nothing.
      * Otherwise, check if the input buffer was entirely consumed.
      * If so, pop the input buffer, copy the tail end of the buffer
-     * into the mini history buffer, nd reset the offset condition.
+     * into the mini history buffer, and reset the offset condition.
      */
     inline void pop(const size_t i, const size_t bytes_consumed)
     {
-        const bool in_history = _offset_bytes[i] < _history_bytes[i];
-        _offset_bytes[i] += bytes_consumed;
-        if (in_history) return;
+        _offset_bytes[i] += bytes_consumed + _history_bytes[i];
 
         //if totally consumed, memcpy history and pop
         const tsbe::Buffer &buff = _queues[i].front();
