@@ -17,8 +17,11 @@
 #ifndef INCLUDED_LIBGNURADIO_ELEMENT_IMPL_HPP
 #define INCLUDED_LIBGNURADIO_ELEMENT_IMPL_HPP
 
-#include <common_impl.hpp>//#include "common_impl.hpp"
-#include <vector_of_queues.hpp>//#include "vector_of_queues.hpp"
+#include <debug_impl.hpp>
+#include <common_impl.hpp>
+#include <vector_of_queues.hpp>
+#include <buffer_ios.hpp>
+
 #include <tsbe/block.hpp>
 #include <tsbe/topology.hpp>
 #include <tsbe/executor.hpp>
@@ -70,14 +73,6 @@ struct ElementImpl
     std::vector<size_t> produce_items;
     std::vector<size_t> consume_items;
 
-    //state for partial input buffer consumption
-    std::vector<size_t> input_buff_offsets;
-
-    //special buffer for dealing with history
-    std::vector<size_t> input_history_bytes;
-    std::vector<tsbe::Buffer> history_buffs;
-    size_t max_history_items;
-
     //track the subscriber counts
     std::vector<Token> input_tokens;
     std::vector<Token> output_tokens;
@@ -86,7 +81,7 @@ struct ElementImpl
     std::vector<tsbe::BufferToken> output_buffer_tokens;
 
     //buffer queues and ready conditions
-    VectorOfQueues<tsbe::Buffer> input_queues;
+    BufferIOs input_queues;
     VectorOfQueues<tsbe::Buffer> output_queues;
 
     //tag tracking

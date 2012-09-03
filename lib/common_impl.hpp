@@ -19,11 +19,6 @@
 
 #include <tsbe/buffer.hpp>
 #include <boost/shared_ptr.hpp>
-#include <iostream>
-
-#define HERE() std::cerr << __FILE__ << ":" << __LINE__ << std::endl << std::flush;
-#define VAR(x) std::cerr << #x << " = " << (x) << std::endl << std::flush;
-#define ASSERT(x) if(not (x)){std::cerr << "ASSERT FAIL " << __FILE__ << ":" << __LINE__ << "\n\t" << #x << std::endl << std::flush;}
 
 static inline unsigned long myulround(const double x)
 {

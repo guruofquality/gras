@@ -94,19 +94,14 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     {
         input_tokens_count += this->input_tokens[i].use_count();
 
-        ASSERT(this->input_history_items[i] == 0);
-
         ASSERT(this->input_queues.ready(i));
-        const tsbe::Buffer &buff = this->input_queues.front(i);
-        ASSERT(this->input_buff_offsets[i] < buff.get_length());
-        char *mem = ((char *)buff.get_memory()) + this->input_buff_offsets[i];
-        const size_t bytes = buff.get_length() - this->input_buff_offsets[i];
-        const size_t items = bytes/this->input_items_sizes[i];
+        const BuffInfo info = this->input_queues.front(i);
+        const size_t items = info.len/this->input_items_sizes[i];
 
-        this->work_io_ptr_mask |= ptrdiff_t(mem);
-        this->input_items[i]._mem = mem;
+        this->work_io_ptr_mask |= ptrdiff_t(info.mem);
+        this->input_items[i]._mem = info.mem;
         this->input_items[i]._len = items;
-        this->work_input_items[i] = mem;
+        this->work_input_items[i] = info.mem;
         this->work_ninput_items[i] = items;
     }
 
@@ -172,14 +167,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
 
         this->items_consumed[i] += items;
         const size_t bytes = items*this->input_items_sizes[i];
-        this->input_buff_offsets[i] += bytes;
-        tsbe::Buffer &buff = this->input_queues.front(i);
-
-        if (buff.get_length() <= this->input_buff_offsets[i])
-        {
-            this->input_queues.pop(i);
-            this->input_buff_offsets[i] = 0;
-        }
+        this->input_queues.pop(i, bytes);
     }
 
     //------------------------------------------------------------------
