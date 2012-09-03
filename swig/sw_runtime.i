@@ -14,6 +14,33 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
+//const size types used by blocks in python
+%constant int sizeof_char       = sizeof(char);
+%constant int sizeof_short      = sizeof(short);
+%constant int sizeof_int        = sizeof(int);
+%constant int sizeof_float      = sizeof(float);
+%constant int sizeof_double     = sizeof(double);
+%constant int sizeof_gr_complex = sizeof(gr_complex);
+
+//helps with funny swig error for io signature
+%ignore gnuradio::IOSignature::operator->();
+%ignore gnuradio::IOSignature::operator->() const;
+
+%include <gnuradio/element.hpp>
+%include <gnuradio/tags.hpp>
+%include <gnuradio/block.hpp>
+%include <gnuradio/hier_block.hpp>
+%include <gnuradio/top_block.hpp>
+%include <gnuradio/io_signature.hpp>
+%include <gr_io_signature.h>
+%include <gr_block.h>
+%include <gr_message.h>
+%include <gr_msg_handler.h>
+%include <gr_msg_queue.h>
+%include <gr_sync_block.h>
+%include <gr_sync_decimator.h>
+%include <gr_sync_interpolator.h>
+
 %include "gruel_common.i"
 
 %inline %{

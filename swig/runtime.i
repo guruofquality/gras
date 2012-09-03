@@ -16,25 +16,10 @@
 
 #define GR_CORE_API
 
-%ignore forecast;
-%ignore general_work;
-%ignore work;
-
-//helps with funny swig error for io signature
-%ignore gnuradio::IOSignature::operator->();
-%ignore gnuradio::IOSignature::operator->() const;
-
 //not here to fight you swig, reference() is ambigi with shared ptr, but whatevs
 %ignore gri_agc_cc::reference();
 %ignore gri_agc2_ff::reference();
 %ignore gri_agc2_cc::reference();
-
-%constant int sizeof_char 	= sizeof(char);
-%constant int sizeof_short	= sizeof(short);
-%constant int sizeof_int	= sizeof(int);
-%constant int sizeof_float	= sizeof(float);
-%constant int sizeof_double	= sizeof(double);
-%constant int sizeof_gr_complex	= sizeof(gr_complex);
 
 %{
 
@@ -44,41 +29,34 @@
 #include <gnuradio/top_block.hpp>
 #include <gnuradio/io_signature.hpp>
 #include <gnuradio/tags.hpp>
-#include <gr_tags.h>
 #include <gr_io_signature.h>
 #include <gr_block.h>
-#include <gr_hier_block2.h>
 #include <gr_message.h>
 #include <gr_msg_handler.h>
 #include <gr_msg_queue.h>
 #include <gr_sync_block.h>
 #include <gr_sync_decimator.h>
 #include <gr_sync_interpolator.h>
-#include <gr_top_block.h>
 
 %}
 
-%include <gnuradio/element.hpp>
-%include <gnuradio/tags.hpp>
-%include <gnuradio/block.hpp>
-%include <gnuradio/hier_block.hpp>
-%include <gnuradio/top_block.hpp>
-%include <gnuradio/io_signature.hpp>
-%include <gr_tags.h>
-%include <gr_io_signature.h>
-%include <gr_block.h>
-%include <gr_hier_block2.h>
 %include <gr_swig_block_magic.i>
-%include <gr_message.h>
-%include <gr_msg_handler.h>
-%include <gr_msg_queue.h>
-%include <gr_sync_block.h>
-%include <gr_sync_decimator.h>
-%include <gr_sync_interpolator.h>
-%include <gr_top_block.h>
 
 #ifdef SW_RUNTIME
 
 %include "sw_runtime.i"
+
+#else
+
+//the bare minimum block inheritance interface to make things work but keep swig cxx file size down
+%include <gnuradio/element.hpp>
+namespace gnuradio
+{
+    struct Block : Element{};
+}
+struct gr_block : gnuradio::Block{};
+struct gr_sync_block : gr_block{};
+struct gr_sync_interpolator : gr_sync_block{};
+struct gr_sync_decimator : gr_sync_block{};
 
 #endif
