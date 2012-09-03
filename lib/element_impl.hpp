@@ -60,6 +60,7 @@ struct ElementImpl
     std::vector<uint64_t> items_produced;
 
     //work buffers for the classic interface
+    size_t work_noutput_items;
     std::vector<const void *> work_input_items;
     std::vector<void *> work_output_items;
     std::vector<int> work_ninput_items;

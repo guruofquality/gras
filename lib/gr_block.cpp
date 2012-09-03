@@ -39,7 +39,7 @@ int gr_block::Work(
     const OutputItems &output_items
 ){
     return this->general_work(
-        (output_items.empty())? input_items[0].size() : output_items[0].size(),
+        (*this)->work_noutput_items,
         (*this)->work_ninput_items,
         (*this)->work_input_items,
         (*this)->work_output_items

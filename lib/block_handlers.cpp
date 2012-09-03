@@ -23,7 +23,7 @@ void ElementImpl::handle_block_msg(
     const tsbe::TaskInterface &task_iface,
     const tsbe::Wax &msg
 ){
-    std::cout << "handle_block_msg in " << name << std::endl;
+    //std::cout << "handle_block_msg in " << name << std::endl;
 
     //a buffer has returned from the downstream
     //(all interested consumers have finished with it)
@@ -88,7 +88,7 @@ void ElementImpl::handle_block_msg(
 
 void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
 {
-    std::cout << "topology_update in " << name << std::endl;
+    //std::cout << "topology_update in " << name << std::endl;
 
     const size_t num_inputs = task_iface.get_num_inputs();
     const size_t num_outputs = task_iface.get_num_outputs();

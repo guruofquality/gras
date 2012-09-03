@@ -135,6 +135,7 @@ struct InputBufferQueues
         const tsbe::Buffer &buff = _queues[i].front();
         if (_offset_bytes[i] >= buff.get_length())
         {
+            ASSERT(_offset_bytes[i] == buff.get_length()); //bad to consume more than buffer allows
             if (_history_bytes[i] != 0)
             {
                 char *src_mem = ((char *)buff.get_memory()) + _offset_bytes[i] - _history_bytes[i];

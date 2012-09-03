@@ -89,6 +89,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //------------------------------------------------------------------
     //-- initialize input buffers before work
     //------------------------------------------------------------------
+    size_t num_input_items = (num_inputs)? ~0 : 0; //so big that it must std::min
     size_t input_tokens_count = 0;
     for (size_t i = 0; i < num_inputs; i++)
     {
@@ -103,12 +104,13 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         this->input_items[i]._len = items;
         this->work_input_items[i] = info.mem;
         this->work_ninput_items[i] = items;
+        num_input_items = std::min(num_input_items, items);
     }
 
     //------------------------------------------------------------------
     //-- initialize output buffers before work
     //------------------------------------------------------------------
-    size_t num_output_items = ~0; //so big that it must std::min
+    size_t num_output_items = (num_outputs)? ~0 : 0; //so big that it must std::min
     size_t output_tokens_count = 0;
     for (size_t i = 0; i < num_outputs; i++)
     {
@@ -147,6 +149,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //------------------------------------------------------------------
     //-- the work
     //------------------------------------------------------------------
+    work_noutput_items = (num_inputs)? myulround((num_input_items)*this->relative_rate) : num_output_items;
     const int ret = block_ptr->Work(this->input_items, this->output_items);
     const size_t noutput_items = size_t(ret);
 
