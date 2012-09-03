@@ -62,7 +62,7 @@ struct GR_RUNTIME_API gr_block : gnuradio::Block
         gr_vector_int &ninput_items,
         gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items
-    ) = 0;
+    );
 
     unsigned history(void) const
     {

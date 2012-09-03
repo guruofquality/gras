@@ -34,6 +34,14 @@ gr_sync_block::gr_sync_block(
     this->set_fixed_rate(true);
 }
 
+int gr_sync_block::work(
+    int noutput_items,
+    gr_vector_const_void_star &input_items,
+    gr_vector_void_star &output_items
+){
+    throw std::runtime_error("gr_block subclasses must overload general_work!");
+}
+
 gr_sync_interpolator::gr_sync_interpolator(void)
 {
     //NOP

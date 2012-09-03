@@ -46,6 +46,15 @@ int gr_block::Work(
     );
 }
 
+int gr_block::general_work(
+    int noutput_items,
+    gr_vector_int &ninput_items,
+    gr_vector_const_void_star &input_items,
+    gr_vector_void_star &output_items
+){
+    throw std::runtime_error("gr_block subclasses must overload general_work!");
+}
+
 void gr_block::set_alignment(const size_t)
 {
     //TODO

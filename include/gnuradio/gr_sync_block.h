@@ -48,7 +48,7 @@ struct GR_RUNTIME_API gr_sync_block : public gr_block
         int noutput_items,
         gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items
-    ) = 0;
+    );
 
 };
 
