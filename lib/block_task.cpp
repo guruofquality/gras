@@ -82,7 +82,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         this->input_queues.all_ready() and
         this->output_queues.all_ready()
     )) return;
-    //std::cout << "calling work on " << name << std::endl;
+    //std::cout << "=== calling work on " << name << " ===" << std::endl;
 
     const size_t num_inputs = task_iface.get_num_inputs();
     const size_t num_outputs = task_iface.get_num_outputs();
@@ -130,8 +130,6 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     {
         output_tokens_count += this->output_tokens[i].use_count();
 
-        ASSERT(this->output_multiple_items[i] == 1);
-
         ASSERT(this->output_queues.ready(i));
         const tsbe::Buffer &buff = this->output_queues.front(i);
         char *mem = ((char *)buff.get_memory()) + this->output_bytes_offset[i];
@@ -176,7 +174,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //------------------------------------------------------------------
     //-- process input consumption
     //------------------------------------------------------------------
-    bool input_fully_consumed = true;
+    bool input_allows_flush = true;
     for (size_t i = 0; i < num_inputs; i++)
     {
         ASSERT(enable_fixed_rate or ret != Block::WORK_CALLED_PRODUCE);
@@ -185,7 +183,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
 
         this->items_consumed[i] += items;
         const size_t bytes = items*this->input_items_sizes[i];
-        input_fully_consumed = input_fully_consumed and this->input_queues.pop(i, bytes);
+        input_allows_flush = input_allows_flush and this->input_queues.pop(i, bytes);
     }
 
     //------------------------------------------------------------------
@@ -203,7 +201,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         //only pass output buffer downstream when the input is fully consumed...
         //Reasoning: For the sake of dealling with history, we can process the mini history input buffer,
         //and then call work again on the real input buffer, but still yield one output buffer per input buffer.
-        if (input_fully_consumed)
+        if (input_allows_flush)
         {
             tsbe::Buffer &buff = this->output_queues.front(i);
             buff.get_length() = this->output_bytes_offset[i];

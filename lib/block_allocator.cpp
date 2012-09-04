@@ -38,7 +38,7 @@ void ElementImpl::handle_allocation(const tsbe::TaskInterface &task_iface)
     for (size_t i = 0; i < num_outputs; i++)
     {
         size_t items = this->hint;
-        if (items == 0) items = 1024;
+        if (items == 0) items = 2048;
         items = std::max(items, this->output_multiple_items[i]);
 
         const size_t bytes = items * this->output_items_sizes[i];

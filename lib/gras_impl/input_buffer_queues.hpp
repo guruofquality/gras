@@ -100,14 +100,13 @@ struct InputBufferQueues
             }
 
             info.mem = (char *)hist_buff.get_memory() + _offset_bytes[i];
-            info.len = hist_buff.get_length() - _offset_bytes[i];
+            info.len = hist_buff.get_length() - _offset_bytes[i] - _history_bytes[i];
         }
 
         else
         {
-            const size_t delta_bytes = _offset_bytes[i] - _history_bytes[i];
-            info.mem = ((char *)buff.get_memory()) + delta_bytes;
-            info.len = buff.get_length() - delta_bytes;
+            info.mem = ((char *)buff.get_memory()) + _offset_bytes[i] - _history_bytes[i];
+            info.len = buff.get_length() - _offset_bytes[i];
         }
 
         return info;
@@ -121,17 +120,22 @@ struct InputBufferQueues
      * If so, pop the input buffer, copy the tail end of the buffer
      * into the mini history buffer, and reset the offset condition.
      *
-     * \return true if the buffer is fully consumed
+     * \return true if the input allows output flushing
      */
     inline bool pop(const size_t i, const size_t bytes_consumed)
     {
-        _offset_bytes[i] += bytes_consumed + _history_bytes[i];
+        _offset_bytes[i] += bytes_consumed;
 
         //if totally consumed, memcpy history and pop
         const tsbe::Buffer &buff = _queues[i].front();
         if (_offset_bytes[i] >= buff.get_length())
         {
             ASSERT(_offset_bytes[i] == buff.get_length()); //bad to consume more than buffer allows
+            /*if (_offset_bytes[i] != buff.get_length())
+            {
+                VAR(_offset_bytes[i]);
+                VAR(buff.get_length());
+            }*/
             if (_history_bytes[i] != 0)
             {
                 char *src_mem = ((char *)buff.get_memory()) + _offset_bytes[i] - _history_bytes[i];
@@ -142,7 +146,7 @@ struct InputBufferQueues
             _offset_bytes[i] = 0;
             return true;
         }
-        return false;
+        return _history_bytes[i] == 0;
     }
 
     inline void resize(const size_t size)
