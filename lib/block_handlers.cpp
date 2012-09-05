@@ -128,6 +128,19 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
     //init the history comprehension on input queues
     this->input_queues.init(this->input_history_items, this->input_items_sizes);
 
+    //impose input reserve requirements based on relative rate and output multiple
+    for (size_t i = 0; i < num_inputs; i++)
+    {
+        if (num_outputs == 0) continue;
+        if (this->enable_fixed_rate) continue;
+        //TODO, this is a little cheap, we only look at output multiple [0]
+        size_t multiple = this->output_multiple_items.front();
+        if (multiple == 1) multiple = 0; //1 is meaningless, so we use 0 to disable the reserve
+        const size_t reserve_items = myulround(multiple/this->relative_rate);
+        const size_t reserve_bytes = reserve_items * this->input_items_sizes[i];
+        this->input_queues.set_reserve(i, reserve_bytes);
+    }
+
     //TODO: think more about this:
     if (num_inputs == 0 and num_outputs == 0)
     {

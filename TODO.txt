@@ -4,6 +4,7 @@
 
 * handle forecast
 * handle items multiple
+** inform upstream of multiple requirements inposed on input buffs
 * handle calculating noutputitems using ninputs as a constraint
 * handle history
 ** test implementation
@@ -19,3 +20,4 @@
 ** thread prio
 ** thread affinity
 ** memory affinity
+* track memcpys for block usage stats

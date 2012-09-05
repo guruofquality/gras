@@ -82,7 +82,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         this->input_queues.all_ready() and
         this->output_queues.all_ready()
     )) return;
-    //std::cout << "=== calling work on " << name << " ===" << std::endl;
+    std::cout << "=== calling work on " << name << " ===" << std::endl;
 
     const size_t num_inputs = task_iface.get_num_inputs();
     const size_t num_outputs = task_iface.get_num_outputs();
@@ -134,7 +134,9 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         const tsbe::Buffer &buff = this->output_queues.front(i);
         char *mem = ((char *)buff.get_memory()) + this->output_bytes_offset[i];
         const size_t bytes = buff.get_length() - this->output_bytes_offset[i];
-        const size_t items = bytes/this->output_items_sizes[i];
+        size_t items = bytes/this->output_items_sizes[i];
+        ASSERT(items >= this->output_multiple_items[i]);
+        items = this->output_multiple_items[i]*(items/this->output_multiple_items[i]);
 
         this->work_io_ptr_mask |= ptrdiff_t(mem);
         this->output_items[i]._mem = mem;
