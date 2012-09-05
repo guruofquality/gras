@@ -18,6 +18,8 @@
 #include <boost/foreach.hpp>
 #include <algorithm>
 
+#define REALLY_BIG size_t(1 << 30)
+
 using namespace gnuradio;
 
 void ElementImpl::mark_done(const tsbe::TaskInterface &task_iface)
@@ -103,7 +105,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //------------------------------------------------------------------
     //-- initialize input buffers before work
     //------------------------------------------------------------------
-    size_t num_input_items = (num_inputs)? ~0 : 0; //so big that it must std::min
+    size_t num_input_items = REALLY_BIG; //so big that it must std::min
     size_t input_tokens_count = 0;
     for (size_t i = 0; i < num_inputs; i++)
     {
@@ -124,7 +126,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //------------------------------------------------------------------
     //-- initialize output buffers before work
     //------------------------------------------------------------------
-    size_t num_output_items = (num_outputs)? ~0 : 0; //so big that it must std::min
+    size_t num_output_items = REALLY_BIG; //so big that it must std::min
     size_t output_tokens_count = 0;
     for (size_t i = 0; i < num_outputs; i++)
     {
@@ -163,7 +165,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //------------------------------------------------------------------
     //-- the work
     //------------------------------------------------------------------
-    work_noutput_items = (num_inputs)? myulround((num_input_items)*this->relative_rate) : num_output_items;
+    work_noutput_items = std::min(num_output_items, myulround((num_input_items)*this->relative_rate));
     const int ret = block_ptr->Work(this->input_items, this->output_items);
     const size_t noutput_items = size_t(ret);
 
