@@ -63,13 +63,11 @@ void ElementImpl::mark_done(const tsbe::TaskInterface &task_iface)
         task_iface.post_downstream(i, CheckTokensMessage());
     }
 
-    /*
-    std::cout
+    if (ARMAGEDDON) std::cout
         << "==================================================\n"
         << "== The " << name << " is done...\n"
         << "==================================================\n"
         << std::flush;
-    //*/
 }
 
 void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
@@ -84,7 +82,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         this->input_queues.all_ready() and
         this->output_queues.all_ready()
     )) return;
-    std::cout << "=== calling work on " << name << " ===" << std::endl;
+    //std::cout << "=== calling work on " << name << " ===" << std::endl;
 
     const size_t num_inputs = task_iface.get_num_inputs();
     const size_t num_outputs = task_iface.get_num_outputs();
@@ -136,9 +134,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         const tsbe::Buffer &buff = this->output_queues.front(i);
         char *mem = ((char *)buff.get_memory()) + this->output_bytes_offset[i];
         const size_t bytes = buff.get_length() - this->output_bytes_offset[i];
-        size_t items = bytes/this->output_items_sizes[i];
-        ASSERT(items >= this->output_multiple_items[i]);
-        items = this->output_multiple_items[i]*(items/this->output_multiple_items[i]);
+        const size_t items = bytes/this->output_items_sizes[i];
 
         this->work_io_ptr_mask |= ptrdiff_t(mem);
         this->output_items[i]._mem = mem;
@@ -187,7 +183,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
 
         this->items_consumed[i] += items;
         const size_t bytes = items*this->input_items_sizes[i];
-        input_allows_flush = input_allows_flush and this->input_queues.pop(i, bytes);
+        input_allows_flush = input_allows_flush and this->input_queues.consume(i, bytes);
     }
 
     //------------------------------------------------------------------
@@ -273,10 +269,11 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         this->output_tags[i].clear();
     }
 
-    //if there are inputs, and not all are provided for, and we have an empty queue, mark done
-    if (num_inputs != 0 and input_tokens_count == num_inputs and not this->input_queues.all_ready())
+    //if there are inputs, and not all are provided for,
+    //tell the block to check input queues and handle done
+    if (num_inputs != 0 and input_tokens_count == num_inputs)
     {
-        this->mark_done(task_iface);
+        this->block.post_msg(CheckTokensMessage());
         return;
     }
 

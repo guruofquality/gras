@@ -23,7 +23,7 @@ void ElementImpl::handle_block_msg(
     const tsbe::TaskInterface &task_iface,
     const tsbe::Wax &msg
 ){
-    //std::cout << "handle_block_msg in " << name << std::endl;
+    if (MESSAGE) std::cout << "handle_block_msg (" << msg.type().name() << ") " << name << std::endl;
 
     //a buffer has returned from the downstream
     //(all interested consumers have finished with it)
@@ -41,6 +41,20 @@ void ElementImpl::handle_block_msg(
     if (msg.type() == typeid(SelfKickMessage))
     {
         this->handle_task(task_iface);
+        return;
+    }
+
+    //clearly, this block is near death, hang on sparky
+    if (msg.type() == typeid(CheckTokensMessage))
+    {
+        if (this->input_queues.all_ready())
+        {
+            this->handle_task(task_iface);
+        }
+        else
+        {
+            this->mark_done(task_iface);
+        }
         return;
     }
 
@@ -131,11 +145,14 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
     //impose input reserve requirements based on relative rate and output multiple
     for (size_t i = 0; i < num_inputs; i++)
     {
-        if (num_outputs == 0) continue;
-        if (this->enable_fixed_rate) continue;
+        if (num_outputs == 0 or not this->enable_fixed_rate)
+        {
+            this->input_queues.set_reserve(i, 0);
+            continue;
+        }
         //TODO, this is a little cheap, we only look at output multiple [0]
         size_t multiple = this->output_multiple_items.front();
-        if (multiple == 1) multiple = 0; //1 is meaningless, so we use 0 to disable the reserve
+        //if (multiple == 1) multiple = 0; //1 is meaningless, so we use 0 to disable the reserve
         const size_t reserve_items = myulround(multiple/this->relative_rate);
         const size_t reserve_bytes = reserve_items * this->input_items_sizes[i];
         this->input_queues.set_reserve(i, reserve_bytes);

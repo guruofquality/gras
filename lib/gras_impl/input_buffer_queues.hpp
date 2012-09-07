@@ -46,6 +46,9 @@ inline void my_buff_alloc(tsbe::Buffer &buff, const size_t num_bytes)
 
 struct BufferWOffset
 {
+    BufferWOffset(void): offset(0){}
+    BufferWOffset(const tsbe::Buffer &buffer):
+        offset(0), buffer(buffer){}
     size_t offset;
     tsbe::Buffer buffer;
 };
@@ -100,8 +103,10 @@ struct InputBufferQueues
      * Otherwise, resolve pointers to the input buffer,
      * moving the memory and length by num history bytes.
      */
-    inline BuffInfo front(const size_t i) const
+    inline BuffInfo front(const size_t i)
     {
+        __prepare_front(i);
+
         BuffInfo info;
         const BufferWOffset &bo = _queues[i].front();
         const tsbe::Buffer &buff = bo.buffer;
@@ -128,11 +133,17 @@ struct InputBufferQueues
             info.len = buff.get_length() - bo.offset;
         }
 
+        if (_reserve_bytes[i] != 0)
+        {
+            info.len /= _reserve_bytes[i];
+            info.len *= _reserve_bytes[i];
+        }
+
         return info;
     }
 
     /*!
-     * Rules for popping:
+     * Rules for consume:
      *
      * If we were operating in a mini history buffer, do nothing.
      * Otherwise, check if the input buffer was entirely consumed.
@@ -141,10 +152,8 @@ struct InputBufferQueues
      *
      * \return true if the input allows output flushing
      */
-    inline bool pop(const size_t i, const size_t bytes_consumed)
+    inline bool consume(const size_t i, const size_t bytes_consumed)
     {
-        __prepare_front(i);
-
         BufferWOffset &bo = _queues[i].front();
         const tsbe::Buffer &buff = bo.buffer;
 
@@ -188,22 +197,26 @@ struct InputBufferQueues
     {
         //TODO, we may call this dynamically, so 1) call __update
         //and 2) safely resize the buffer and preserve its data
+        /*if (num_bytes)
+        {
+            std::cout << "set_reserve " << i << " " << num_bytes << " bytes\n";
+        }//*/
         _reserve_bytes[i] = num_bytes;
-        my_buff_alloc(_reserve_buffs[i], num_bytes);
+        my_buff_alloc(_reserve_buffs[i], _reserve_bytes[i]);
+        if (_reserve_buffs[i]) _reserve_buffs[i].get_length() = 0;
     }
 
-    inline void push(const size_t i, const tsbe::Buffer &value)
+    inline void push(const size_t i, const tsbe::Buffer &buffer)
     {
-        BufferWOffset bo;
-        bo.offset = 0;
-        bo.buffer = value;
-        _queues[i].push_back(bo);
-        _enqueued_bytes[i] += value.get_length();
+        _queues[i].push_back(buffer);
+        _enqueued_bytes[i] += buffer.get_length();
         __update(i);
     }
 
     inline void __prepare_front(const size_t i)
     {
+        VAR(_reserve_bytes[i]);
+        VAR(_history_bytes[i]);
         ASSERT(_history_bytes[i] == 0 or _reserve_bytes[i] == 0); //FIXME dont mix history and reserve for now
         tsbe::Buffer &reserve_buff = _reserve_buffs[i];
 
@@ -235,7 +248,10 @@ struct InputBufferQueues
         while (reserve_buff.get_length() < _reserve_bytes[i])
         {
             BufferWOffset &bo = _queues[i].front();
-            const size_t bytes_to_copy = std::min(bo.buffer.get_length()-bo.offset, _reserve_bytes[i]-reserve_buff.get_length());
+            const size_t bytes_to_copy = std::min(
+                bo.buffer.get_length()-bo.offset,
+                _reserve_bytes[i]-reserve_buff.get_length()
+            );
             std::memcpy(
                 ((char *)reserve_buff.get_memory())+reserve_buff.get_length(),
                 ((char *)bo.buffer.get_memory())+bo.offset,
@@ -245,10 +261,7 @@ struct InputBufferQueues
             bo.offset += bytes_to_copy;
             if (bo.offset >= bo.buffer.get_length()) __pop(i);
         }
-        BufferWOffset new_bo;
-        new_bo.offset = 0;
-        new_bo.buffer = reserve_buff;
-        _queues[i].push_front(new_bo);
+        _queues[i].push_front(reserve_buff);
     }
 
     inline void __consume(const size_t i, const size_t num_bytes)
@@ -260,6 +273,11 @@ struct InputBufferQueues
 
     inline void __pop(const size_t i)
     {
+        //TODO FIXME quick hack
+        if (_queues[i].front().buffer.get() == _reserve_buffs[i].get())
+        {
+            _reserve_buffs[i].get_length() = 0;
+        }
         _queues[i].pop_front();
     }
 

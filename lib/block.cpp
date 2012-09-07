@@ -73,9 +73,8 @@ size_t Block::history(const size_t which_input) const
 
 void Block::set_history(const size_t history_, const size_t which_input)
 {
-    //FIXME history of 1 actually means no history, why is this?
-    //odd because I'm fairly certain history of N means N
-    const size_t history = (history_ == 1)? 0 : history_;
+    //FIXME why is history - 1 (gnuradio loves this)
+    const size_t history = (history_ == 0)? 0 : history_-1;
     vector_set((*this)->input_history_items, history, which_input);
 }
 

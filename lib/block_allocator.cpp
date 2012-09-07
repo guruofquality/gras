@@ -46,7 +46,7 @@ void ElementImpl::handle_allocation(const tsbe::TaskInterface &task_iface)
         tsbe::BufferDeleter deleter = boost::bind(&ElementImpl::buffer_returner, this, i, _1);
         this->output_buffer_tokens[i] = tsbe::BufferToken(new tsbe::BufferDeleter(deleter));
 
-        for (size_t j = 0; j < 2; j++)
+        for (size_t j = 0; j < 8; j++)
         {
             tsbe::BufferConfig config;
             config.memory = NULL;
