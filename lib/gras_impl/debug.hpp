@@ -18,13 +18,18 @@
 #define INCLUDED_LIBGRAS_IMPL_DEBUG_HPP
 
 #include <iostream>
+#include <stdexcept>
 
 #define GENESIS 0
 #define ARMAGEDDON 0
-#define MESSAGE 1
+#define MESSAGE 0
 
 #define HERE() std::cerr << __FILE__ << ":" << __LINE__ << std::endl << std::flush;
 #define VAR(x) std::cerr << #x << " = " << (x) << std::endl << std::flush;
-#define ASSERT(x) if(not (x)){std::cerr << "ASSERT FAIL " << __FILE__ << ":" << __LINE__ << "\n\t" << #x << std::endl << std::flush;}
+#define ASSERT(x) {if(not (x)) \
+{ \
+    std::cerr << "ASSERT FAIL " << __FILE__ << ":" << __LINE__ << "\n\t" << #x << std::endl << std::flush; \
+    throw std::runtime_error(std::string("ASSERT FAIL ") + #x); \
+}}
 
 #endif /*INCLUDED_LIBGRAS_IMPL_DEBUG_HPP*/

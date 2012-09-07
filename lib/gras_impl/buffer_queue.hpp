@@ -35,11 +35,6 @@ struct BufferQueue : std::queue<tsbe::Buffer>
     ~BufferQueue(void)
     {
         _token.reset();
-        this->flush();
-    }
-
-    void flush(void)
-    {
         while (not this->empty())
         {
             this->pop();

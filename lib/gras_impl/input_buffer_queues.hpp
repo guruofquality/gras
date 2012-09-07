@@ -40,6 +40,11 @@ struct BufferWOffset
         return ((char *)buffer.get_memory()) + offset;
     }
 
+    inline size_t tail_free(void) const
+    {
+        return buffer.get_length() - offset - length;
+    }
+
     size_t offset;
     size_t length;
     tsbe::Buffer buffer;
@@ -143,11 +148,11 @@ struct InputBufferQueues
     std::vector<std::deque<BufferWOffset> > _queues;
     std::vector<size_t> _history_bytes;
     std::vector<size_t> _reserve_bytes;
-    std::vector<BufferQueue> _aux_queues;
+    std::vector<boost::shared_ptr<BufferQueue> > _aux_queues;
 };
 
 
-void InputBufferQueues::resize(const size_t size)
+inline void InputBufferQueues::resize(const size_t size)
 {
     _bitset.resize(size);
     _enqueued_bytes.resize(size, 0);
@@ -158,7 +163,7 @@ void InputBufferQueues::resize(const size_t size)
 }
 
 
-void InputBufferQueues::init(
+inline void InputBufferQueues::init(
     const std::vector<size_t> &input_history_items,
     const std::vector<size_t> &input_multiple_items,
     const std::vector<size_t> &input_item_sizes
@@ -169,6 +174,10 @@ void InputBufferQueues::init(
 
     for (size_t i = 0; i < this->size(); i++)
     {
+        ASSERT(input_multiple_items[i] > 0);
+
+        _aux_queues[i] = boost::shared_ptr<BufferQueue>(new BufferQueue());
+
         //determine byte sizes for buffers and dealing with history
         _history_bytes[i] = input_item_sizes[i]*input_history_items[i];
         const size_t post_bytes = input_item_sizes[i]*max_history_items;
@@ -181,21 +190,24 @@ void InputBufferQueues::init(
 
         //allocate mini buffers for history edge conditions
         const size_t num_bytes = _history_bytes[i] + _reserve_bytes[i];
-        _aux_queues[i].allocate_one(num_bytes);
-        _aux_queues[i].allocate_one(num_bytes);
+        _aux_queues[i]->allocate_one(num_bytes);
+        _aux_queues[i]->allocate_one(num_bytes);
 
         //there is history, so enqueue some initial history
         if (_history_bytes[i] != 0)
         {
-            tsbe::Buffer buff = _aux_queues[i].front();
-            _aux_queues[i].pop();
+            tsbe::Buffer buff = _aux_queues[i]->front();
+            _aux_queues[i]->pop();
 
-            std::memset(buff.get_memory(), 0, _history_bytes[i]);
+            const size_t hist_bytes = _history_bytes[i];
+            std::memset(buff.get_memory(), 0, hist_bytes);
             _queues[i].push_front(buff);
-            _queues[i].front().length = _history_bytes[i];
+            _queues[i].front().offset = hist_bytes;
+            _queues[i].front().length = 0;
         }
     }
 }
+
 
 inline BuffInfo InputBufferQueues::front(const size_t i)
 {
@@ -213,14 +225,48 @@ inline BuffInfo InputBufferQueues::front(const size_t i)
 
 inline void InputBufferQueues::__prepare(const size_t i)
 {
-    //this conditional statement is the requirement we must meet
-    while (
-        _queues[i].front().length < _reserve_bytes[i] or
-        _queues[i].front().offset < _history_bytes[i]
-    ){
-        
+    //assumes that we are always pushing proper history buffs on front
+    ASSERT(_queues[i].front().offset >= _history_bytes[i]);
+
+    while (_queues[i].front().length < _reserve_bytes[i])
+    {
+        BufferWOffset &front = _queues[i].front();
+        BufferWOffset dst;
+
+        //do we need a new buffer:
+        //- is the buffer unique (queue has only reference)?
+        //- can its remaining space meet reserve requirements?
+        const bool enough_space = front.buffer.get_length() >= _reserve_bytes[i] + front.offset;
+        if (enough_space and front.buffer.unique())
+        {
+            dst = _queues[i].front();
+            _queues[i].pop_front();
+        }
+        else
+        {
+            dst = BufferWOffset(_aux_queues[i]->front());
+            dst.length = 0;
+            _aux_queues[i]->pop();
+        }
+
+        BufferWOffset src = _queues[i].front();
+        _queues[i].pop_front();
+        const size_t bytes = std::min(dst.tail_free(), src.length);
+        std::memcpy(dst.mem_offset()+dst.length, src.mem_offset(), bytes);
+
+        //update buffer additions, consumptions
+        dst.length += bytes;
+        src.offset += bytes;
+        src.length -= bytes;
+
+        //keep the source buffer if not fully consumed
+        if (src.length) _queues[i].push_front(src);
+
+        //destination buffer is the new front of the queue
+        _queues[i].push_front(dst);
     }
 }
+
 
 inline bool InputBufferQueues::consume(const size_t i, const size_t bytes_consumed)
 {
@@ -240,13 +286,14 @@ inline bool InputBufferQueues::consume(const size_t i, const size_t bytes_consum
         //push history into the front of the queue
         if (_history_bytes[i] != 0)
         {
-            tsbe::Buffer buff = _aux_queues[i].front();
-            _aux_queues[i].pop();
+            tsbe::Buffer buff = _aux_queues[i]->front();
+            _aux_queues[i]->pop();
 
             const size_t hist_bytes = _history_bytes[i];
             std::memcpy(buff.get_memory(), old_buff.mem_offset() - hist_bytes, hist_bytes);
             _queues[i].push_front(buff);
-            _queues[i].front().length = hist_bytes;
+            _queues[i].front().offset = hist_bytes;
+            _queues[i].front().length = 0;
         }
     }
 
