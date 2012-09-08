@@ -232,6 +232,7 @@ inline void InputBufferQueues::__prepare(const size_t i)
     {
         BufferWOffset &front = _queues[i].front();
         BufferWOffset dst;
+        size_t hist_bytes = 0;
 
         //do we need a new buffer:
         //- is the buffer unique (queue has only reference)?
@@ -245,14 +246,17 @@ inline void InputBufferQueues::__prepare(const size_t i)
         else
         {
             dst = BufferWOffset(_aux_queues[i]->front());
-            dst.length = 0;
             _aux_queues[i]->pop();
+            hist_bytes = _history_bytes[i];
+            dst.offset = hist_bytes;
+            dst.length = 0;
         }
 
         BufferWOffset src = _queues[i].front();
         _queues[i].pop_front();
         const size_t bytes = std::min(dst.tail_free(), src.length);
-        std::memcpy(dst.mem_offset()+dst.length, src.mem_offset(), bytes);
+        ASSERT(src.offset >= hist_bytes);
+        std::memcpy(dst.mem_offset()+dst.length-hist_bytes, src.mem_offset()-hist_bytes, bytes+hist_bytes);
 
         //update buffer additions, consumptions
         dst.length += bytes;
@@ -270,32 +274,17 @@ inline void InputBufferQueues::__prepare(const size_t i)
 
 inline bool InputBufferQueues::consume(const size_t i, const size_t bytes_consumed)
 {
+    //assert that we dont consume past the bounds of the buffer
+    ASSERT(_queues[i].front().tail_free() <= bytes_consumed);
+
     //update bounds on the current buffer
     _queues[i].front().offset += bytes_consumed;
     _queues[i].front().length -= bytes_consumed;
 
-    //assert that we dont consum past the bounds of the buffer
-    ASSERT(_queues[i].front().buffer.get_length() >= _queues[i].front().offset);
-
-    //this input was completed, pop it free
-    if (_queues[i].front().length == 0)
-    {
-        const BufferWOffset old_buff = _queues[i].front();
-        _queues[i].pop_front();
-
-        //push history into the front of the queue
-        if (_history_bytes[i] != 0)
-        {
-            tsbe::Buffer buff = _aux_queues[i]->front();
-            _aux_queues[i]->pop();
-
-            const size_t hist_bytes = _history_bytes[i];
-            std::memcpy(buff.get_memory(), old_buff.mem_offset() - hist_bytes, hist_bytes);
-            _queues[i].push_front(buff);
-            _queues[i].front().offset = hist_bytes;
-            _queues[i].front().length = 0;
-        }
-    }
+    //NOTICE: This routine does not pop the buffer when exhausted!
+    //The logic to pop the buffer is conveniently in the __prepare routine.
+    //The __prepare routine also handles preserving history,
+    //which would have to be done should this routine be changed to pop.
 
     //update the number of bytes in this queue
     ASSERT(_enqueued_bytes[i] >= bytes_consumed);
