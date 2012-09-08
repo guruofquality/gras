@@ -87,6 +87,10 @@ void ElementImpl::handle_block_msg(
 
     if (msg.cast<TopBlockMessage>().what == TopBlockMessage::ACTIVE)
     {
+        if (this->block_state != BLOCK_STATE_LIVE)
+        {
+            this->block_ptr->start();
+        }
         this->block_state = BLOCK_STATE_LIVE;
         if (this->input_queues.all_ready() and this->output_queues.all_ready())
         {
@@ -96,6 +100,10 @@ void ElementImpl::handle_block_msg(
 
     if (msg.cast<TopBlockMessage>().what == TopBlockMessage::INERT)
     {
+        if (this->block_state != BLOCK_STATE_DONE)
+        {
+            this->block_ptr->stop();
+        }
         this->mark_done(task_iface);
     }
 }
