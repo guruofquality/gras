@@ -148,6 +148,7 @@ struct InputBufferQueues
     std::vector<std::deque<BufferWOffset> > _queues;
     std::vector<size_t> _history_bytes;
     std::vector<size_t> _reserve_bytes;
+    std::vector<size_t> _post_bytes;
     std::vector<boost::shared_ptr<BufferQueue> > _aux_queues;
 };
 
@@ -159,6 +160,7 @@ inline void InputBufferQueues::resize(const size_t size)
     _queues.resize(size);
     _history_bytes.resize(size, 0);
     _reserve_bytes.resize(size, 0);
+    _post_bytes.resize(size, 0);
     _aux_queues.resize(size);
 }
 
@@ -180,16 +182,12 @@ inline void InputBufferQueues::init(
 
         //determine byte sizes for buffers and dealing with history
         _history_bytes[i] = input_item_sizes[i]*input_history_items[i];
-        const size_t post_bytes = input_item_sizes[i]*max_history_items;
-        const size_t byte_multiple = input_item_sizes[i]*input_multiple_items[i];
-        _reserve_bytes[i] = byte_multiple;
-        while (_reserve_bytes[i] < post_bytes)
-        {
-            _reserve_bytes[i] += byte_multiple;
-        }
+        _reserve_bytes[i] = input_item_sizes[i]*input_multiple_items[i];
+        _post_bytes[i] = input_item_sizes[i]*max_history_items;
+        _post_bytes[i] = std::max(_post_bytes[i], _reserve_bytes[i]);
 
         //allocate mini buffers for history edge conditions
-        const size_t num_bytes = _history_bytes[i] + _reserve_bytes[i];
+        size_t num_bytes = _history_bytes[i] + _post_bytes[i];
         _aux_queues[i]->allocate_one(num_bytes);
         _aux_queues[i]->allocate_one(num_bytes);
 
@@ -255,7 +253,7 @@ inline void InputBufferQueues::__prepare(const size_t i)
 
         BufferWOffset src = _queues[i].front();
         _queues[i].pop_front();
-        const size_t bytes = std::min(dst.tail_free(), src.length);
+        const size_t bytes = std::min(std::min(dst.tail_free(), src.length), _post_bytes[i]);
         ASSERT(src.offset >= hist_bytes);
         std::memcpy(dst.mem_offset()+dst.length-hist_bytes, src.mem_offset()-hist_bytes, bytes+hist_bytes);
 
@@ -278,6 +276,9 @@ inline bool InputBufferQueues::consume(const size_t i, const size_t bytes_consum
     //assert that we dont consume past the bounds of the buffer
     ASSERT(_queues[i].front().length >= bytes_consumed);
 
+    //this is an optimization
+    const bool minibuff = (_history_bytes[i] != 0) and (_queues[i].front().offset == _history_bytes[i]) and (bytes_consumed == _post_bytes[i]);
+
     //update bounds on the current buffer
     _queues[i].front().offset += bytes_consumed;
     _queues[i].front().length -= bytes_consumed;
@@ -293,7 +294,7 @@ inline bool InputBufferQueues::consume(const size_t i, const size_t bytes_consum
     _enqueued_bytes[i] -= bytes_consumed;
     __update(i);
 
-    return true; //TODO not true on minibuff
+    return not minibuff; //not true on minibuff
 }
 
 } //namespace gnuradio
