@@ -193,6 +193,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     {
         const size_t items = (ret == Block::WORK_CALLED_PRODUCE)? this->produce_items[i] : noutput_items;
         this->produce_items[i] = 0;
+        if (items == 0) continue;
 
         this->items_produced[i] += items;
         const size_t bytes = items*this->output_items_sizes[i];

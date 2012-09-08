@@ -99,7 +99,7 @@ struct InputBufferQueues
     inline void push(const size_t i, const tsbe::Buffer &buffer)
     {
         _queues[i].push_back(buffer);
-        _enqueued_bytes[i] += buffer.get_length();
+        _enqueued_bytes[i] += _queues[i].back().length;
         __update(i);
     }
 
@@ -211,6 +211,7 @@ inline void InputBufferQueues::init(
 
 inline BuffInfo InputBufferQueues::front(const size_t i)
 {
+    ASSERT(not _queues[i].empty());
     ASSERT(this->ready(i));
     __prepare(i);
 
@@ -275,16 +276,17 @@ inline void InputBufferQueues::__prepare(const size_t i)
 inline bool InputBufferQueues::consume(const size_t i, const size_t bytes_consumed)
 {
     //assert that we dont consume past the bounds of the buffer
-    ASSERT(_queues[i].front().tail_free() <= bytes_consumed);
+    ASSERT(_queues[i].front().length >= bytes_consumed);
 
     //update bounds on the current buffer
     _queues[i].front().offset += bytes_consumed;
     _queues[i].front().length -= bytes_consumed;
 
-    //NOTICE: This routine does not pop the buffer when exhausted!
-    //The logic to pop the buffer is conveniently in the __prepare routine.
-    //The __prepare routine also handles preserving history,
-    //which would have to be done should this routine be changed to pop.
+    //safe to pop here when the buffer is consumed and no history
+    if (_queues[i].front().length == 0 and _history_bytes[i] == 0)
+    {
+        _queues[i].pop_front();
+    }
 
     //update the number of bytes in this queue
     ASSERT(_enqueued_bytes[i] >= bytes_consumed);
