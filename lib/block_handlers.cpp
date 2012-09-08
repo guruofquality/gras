@@ -115,6 +115,9 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
     const size_t num_inputs = task_iface.get_num_inputs();
     const size_t num_outputs = task_iface.get_num_outputs();
 
+    //call check_topology on block before committing settings
+    this->block_ptr->check_topology(num_inputs, num_outputs);
+
     //fill the item sizes from the IO signatures
     fill_item_sizes_from_sig(this->input_items_sizes, this->input_signature, num_inputs);
     fill_item_sizes_from_sig(this->output_items_sizes, this->output_signature, num_outputs);

@@ -87,6 +87,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     const size_t num_inputs = task_iface.get_num_inputs();
     const size_t num_outputs = task_iface.get_num_outputs();
     //const bool is_source = (num_inputs == 0);
+    //const bool is_sink = (num_outputs == 0);
     this->work_io_ptr_mask = 0; //reset
 
     //------------------------------------------------------------------

@@ -222,3 +222,8 @@ bool Block::stop(void)
 {
     return true;
 }
+
+bool Block::check_topology(int, int)
+{
+    return true;
+}

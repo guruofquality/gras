@@ -168,6 +168,9 @@ struct GR_RUNTIME_API Block : Element
         std::vector<int> &ninput_items_required
     );
 
+    //! scheduler calls when the topology is updated, can be overloaded
+    virtual bool check_topology(int ninputs, int noutputs);
+
 };
 
 } //namespace gnuradio
