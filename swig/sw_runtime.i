@@ -14,6 +14,11 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
+%rename(io_signature)  gr_make_io_signature;
+%rename(io_signature2) gr_make_io_signature2;
+%rename(io_signature3) gr_make_io_signature3;
+%rename(io_signaturev) gr_make_io_signaturev;
+
 //const size types used by blocks in python
 %constant int sizeof_char       = sizeof(char);
 %constant int sizeof_short      = sizeof(short);
@@ -34,10 +39,14 @@
 %include <gnuradio/io_signature.hpp>
 %include <gr_io_signature.h>
 %include <gr_block.h>
+%include <gr_hier_block2.h>
 %include <gr_sync_block.h>
 %include <gr_sync_decimator.h>
 %include <gr_sync_interpolator.h>
 
+////////////////////////////////////////////////////////////////////////
+// Make a special top block with python safe unlocking wait
+////////////////////////////////////////////////////////////////////////
 %include "gruel_common.i"
 
 %inline %{
@@ -71,6 +80,9 @@ struct TopBlockPython : TopBlock
 
 %}
 
+////////////////////////////////////////////////////////////////////////
+// Remake top block and hier block for multi-arg connnect
+////////////////////////////////////////////////////////////////////////
 %pythoncode %{
 
 def internal_connect__(fcn, obj, *args):
@@ -91,7 +103,7 @@ def internal_connect__(fcn, obj, *args):
         except: sink_index = 0
         fcn(obj, to_element(src), src_index, to_element(sink), sink_index)
 
-class top_block(TopBlockPython):
+class TopBlock(TopBlockPython):
     def __init__(self, *args, **kwargs):
         TopBlockPython.__init__(self, *args, **kwargs)
 
@@ -101,7 +113,7 @@ class top_block(TopBlockPython):
     def disconnect(self, *args):
         return internal_connect__(TopBlockPython.disconnect, self, *args)
 
-class hier_block(HierBlock):
+class HierBlock(HierBlock):
     def __init__(self, *args, **kwargs):
         HierBlock.__init__(self, *args, **kwargs)
 
@@ -110,6 +122,18 @@ class hier_block(HierBlock):
 
     def disconnect(self, *args):
         return internal_connect__(HierBlock.disconnect, self, *args)
+
+top_block = TopBlock
+
+class hier_block(gr_hier_block2):
+    def __init__(self, *args, **kwargs):
+        gr_hier_block2.__init__(self, *args, **kwargs)
+
+    def connect(self, *args):
+        return internal_connect__(gr_hier_block2.connect, self, *args)
+
+    def disconnect(self, *args):
+        return internal_connect__(gr_hier_block2.disconnect, self, *args)
 
 hier_block2 = hier_block
 

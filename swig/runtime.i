@@ -31,6 +31,7 @@
 #include <gnuradio/tags.hpp>
 #include <gr_io_signature.h>
 #include <gr_block.h>
+#include <gr_hier_block2.h>
 #include <gr_message.h>
 #include <gr_msg_handler.h>
 #include <gr_msg_queue.h>
