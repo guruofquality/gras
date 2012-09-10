@@ -26,7 +26,7 @@ void ElementImpl::buffer_returner(const size_t index, SBuffer &buffer)
 {
     //reset offset and length
     buffer.offset = 0;
-    buffer.length = buffer.get_actual_length();
+    buffer.length = 0;
 
     BufferReturnMessage message;
     message.index = index;

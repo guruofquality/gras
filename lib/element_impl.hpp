@@ -85,7 +85,6 @@ struct ElementImpl
     //buffer queues and ready conditions
     InputBufferQueues input_queues;
     VectorOfQueues<SBuffer> output_queues;
-    std::vector<size_t> output_bytes_offset;
 
     //tag tracking
     std::vector<bool> input_tags_changed;

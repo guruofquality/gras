@@ -26,16 +26,9 @@ namespace gnuradio
 
 struct BufferQueue : std::queue<SBuffer>
 {
-    void __push(SBuffer &buffer)
-    {
-        buffer.offset = 0;
-        buffer.length = buffer.get_actual_length();
-        this->push(buffer);
-    }
-
     BufferQueue(void)
     {
-        SBufferDeleter deleter = boost::bind(&BufferQueue::__push, this, _1);
+        SBufferDeleter deleter = boost::bind(&BufferQueue::push, this, _1);
         _token = SBufferToken(new SBufferDeleter(deleter));
     }
 

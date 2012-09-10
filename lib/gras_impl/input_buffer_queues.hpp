@@ -181,10 +181,11 @@ inline void InputBufferQueues::init(
             _aux_queues[i]->pop();
 
             const size_t hist_bytes = _history_bytes[i];
-            std::memset(buff.get(), 0, hist_bytes);
+            std::memset(buff.get_actual_memory(), 0, hist_bytes);
+            buff.offset = hist_bytes;
+            buff.length = 0;
+
             _queues[i].push_front(buff);
-            _queues[i].front().offset = hist_bytes;
-            _queues[i].front().length = 0;
         }
     }
 }
