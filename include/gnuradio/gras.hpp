@@ -14,23 +14,21 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_GNURADIO_GR_SYNC_DECIMATOR_H
-#define INCLUDED_GNURADIO_GR_SYNC_DECIMATOR_H
+#ifndef INCLUDED_GNURADIO_GRAS_HPP
+#define INCLUDED_GNURADIO_GRAS_HPP
 
-#include <gr_sync_block.h>
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 
-struct GRAS_API gr_sync_decimator : gr_sync_block
+//this is part of core for now, treat it as such
+#include <gr_core_api.h>
+#define GRAS_API GR_CORE_API
+
+namespace gnuradio
 {
 
-    gr_sync_decimator(void);
+struct ElementImpl;
 
-    gr_sync_decimator(
-        const std::string &name,
-        gr_io_signature_sptr input_signature,
-        gr_io_signature_sptr output_signature,
-        const size_t decim_rate
-    );
+} //namespace gnuradio
 
-};
-
-#endif /*INCLUDED_GNURADIO_GR_SYNC_DECIMATOR_H*/
+#endif /*INCLUDED_GNURADIO_GRAS_HPP*/

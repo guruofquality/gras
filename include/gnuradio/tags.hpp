@@ -17,13 +17,13 @@
 #ifndef INCLUDED_GNURADIO_TAGS_HPP
 #define INCLUDED_GNURADIO_TAGS_HPP
 
-#include <gnuradio/element.hpp>
+#include <gnuradio/gras.hpp>
 #include <gruel/pmt.h>
 
 namespace gnuradio
 {
 
-struct GR_RUNTIME_API Tag
+struct GRAS_API Tag
 {
 
     //! the item \p tag occurred at (as a uint64_t)

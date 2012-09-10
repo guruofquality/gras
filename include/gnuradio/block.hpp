@@ -51,7 +51,7 @@ template <typename PtrType> struct Buffer
     size_t _len;
 };
 
-struct GR_RUNTIME_API Block : Element
+struct GRAS_API Block : Element
 {
     enum
     {

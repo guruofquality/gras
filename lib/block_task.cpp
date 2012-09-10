@@ -156,9 +156,9 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //------------------------------------------------------------------
     //-- forecast
     //------------------------------------------------------------------
-    forecast_again_you_jerk:
     if (this->forecast_enable)
     {
+        forecast_again_you_jerk:
         fcast_ninput_items = work_ninput_items;
         block_ptr->forecast(num_output_items, fcast_ninput_items);
         for (size_t i = 0; i < num_inputs; i++)

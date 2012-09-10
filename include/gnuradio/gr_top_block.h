@@ -20,7 +20,7 @@
 #include <gnuradio/top_block.hpp>
 #include <gr_hier_block2.h>
 
-struct GR_RUNTIME_API gr_top_block : gnuradio::TopBlock
+struct GRAS_API gr_top_block : gnuradio::TopBlock
 {
 
     gr_top_block(void);
@@ -41,6 +41,6 @@ struct GR_RUNTIME_API gr_top_block : gnuradio::TopBlock
 
 typedef boost::shared_ptr<gr_top_block> gr_top_block_sptr;
 
-GR_RUNTIME_API gr_top_block_sptr gr_make_top_block(const std::string &name);
+GRAS_API gr_top_block_sptr gr_make_top_block(const std::string &name);
 
 #endif /*INCLUDED_GNURADIO_GR_TOP_BLOCK_H*/

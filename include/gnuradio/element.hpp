@@ -17,22 +17,15 @@
 #ifndef INCLUDED_GNURADIO_ELEMENT_HPP
 #define INCLUDED_GNURADIO_ELEMENT_HPP
 
-#include <gruel/pmt.h>
+#include <gnuradio/gras.hpp>
 #include <gnuradio/io_signature.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
-
-//this is part of core for now, treat it as such
-#include <gr_core_api.h>
-#define GR_RUNTIME_API GR_CORE_API
+#include <gruel/pmt.h>
 
 namespace gnuradio
 {
 
-struct ElementImpl;
-
-struct GR_RUNTIME_API Element : boost::shared_ptr<ElementImpl>, boost::enable_shared_from_this<Element>
+struct GRAS_API Element : boost::shared_ptr<ElementImpl>, boost::enable_shared_from_this<Element>
 {
 
     //! Create an empty element

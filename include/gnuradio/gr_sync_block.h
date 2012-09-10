@@ -19,7 +19,7 @@
 
 #include <gr_block.h>
 
-struct GR_RUNTIME_API gr_sync_block : public gr_block
+struct GRAS_API gr_sync_block : public gr_block
 {
     gr_sync_block(void);
 

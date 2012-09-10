@@ -22,7 +22,7 @@
 namespace gnuradio
 {
 
-struct GR_RUNTIME_API HierBlock : Element
+struct GRAS_API HierBlock : Element
 {
     HierBlock(void);
 

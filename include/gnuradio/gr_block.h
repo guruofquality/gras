@@ -24,7 +24,7 @@
 #include <gr_tags.h>
 #include <string>
 
-struct GR_RUNTIME_API gr_block : gnuradio::Block
+struct GRAS_API gr_block : gnuradio::Block
 {
 
     gr_block(void);

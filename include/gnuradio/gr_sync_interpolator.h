@@ -19,7 +19,7 @@
 
 #include <gr_sync_block.h>
 
-struct GR_RUNTIME_API gr_sync_interpolator : gr_sync_block
+struct GRAS_API gr_sync_interpolator : gr_sync_block
 {
 
     gr_sync_interpolator(void);

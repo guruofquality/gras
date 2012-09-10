@@ -20,7 +20,7 @@
 #include <gnuradio/hier_block.hpp>
 #include <gr_io_signature.h>
 
-struct GR_RUNTIME_API gr_hier_block2 : gnuradio::HierBlock
+struct GRAS_API gr_hier_block2 : gnuradio::HierBlock
 {
 
     gr_hier_block2(void);
@@ -40,7 +40,7 @@ struct GR_RUNTIME_API gr_hier_block2 : gnuradio::HierBlock
 
 typedef boost::shared_ptr<gr_hier_block2> gr_hier_block2_sptr;
 
-GR_RUNTIME_API gr_hier_block2_sptr gr_make_hier_block2(
+GRAS_API gr_hier_block2_sptr gr_make_hier_block2(
     const std::string &name,
     gr_io_signature_sptr input_signature,
     gr_io_signature_sptr output_signature
