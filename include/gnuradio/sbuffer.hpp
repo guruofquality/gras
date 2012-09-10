@@ -18,8 +18,6 @@
 #define INCLUDED_GNURADIO_SBUFFER_HPP
 
 #include <gnuradio/gras.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
 #include <boost/function.hpp>
 
 namespace gnuradio
@@ -56,7 +54,8 @@ struct GRAS_API SBufferConfig
 };
 
 /*!
- * Buffer is a reference counted smart pointer handler of memory.
+ * SBuffer is a smart/shared reference counted handler of memory.
+ * Thank you boost smart/shared pointers for the disambiguation!
  *
  * Default allocator:
  * To use the default system allocator, set the memory to NULL,

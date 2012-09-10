@@ -67,12 +67,6 @@ inline void intrusive_ptr_release(SBufferImpl *impl)
     }
 }
 
-inline SBufferConfig::SBufferConfig(void)
-{
-    memory = NULL;
-    length = 0;
-}
-
 inline void *SBuffer::get_actual_memory(void) const
 {
     return (*this)->config.memory;

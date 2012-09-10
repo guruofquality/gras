@@ -20,6 +20,12 @@
 
 using namespace gnuradio;
 
+SBufferConfig::SBufferConfig(void)
+{
+    memory = NULL;
+    length = 0;
+}
+
 static void numanuma_mem_deleter(SBuffer &, numanuma::mem *m)
 {
     delete m;

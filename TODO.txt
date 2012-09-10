@@ -2,11 +2,16 @@
 ## The GRAS TODO list
 ########################################################################
 
+* generate block task loops with fixed lengths
+** need a lookup/jump table
+** prove that compiler does unrolling
 * handle forecast
 ** not 100% sure here
 * add hooks to specify input reserve
 ** automatically calculate from output multiple and rel rate
 * sources need their own interruptible thread
+** topology will pass a thread pool object to its blocks
+** blocks will create source thread to topology stop/wait can inter/join
 ** udp source
 ** uhd source
 * gr stream mux is on drugs
