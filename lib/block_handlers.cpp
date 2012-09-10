@@ -150,7 +150,6 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
     //resize tags vector to match sizes
     this->input_tags_changed.resize(num_inputs);
     this->input_tags.resize(num_inputs);
-    this->output_tags.resize(num_outputs);
 
     //impose input reserve requirements based on relative rate and output multiple
     std::vector<size_t> input_multiple_items(num_inputs, 1);

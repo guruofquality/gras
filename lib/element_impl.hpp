@@ -90,7 +90,6 @@ struct ElementImpl
     //tag tracking
     std::vector<bool> input_tags_changed;
     std::vector<std::vector<Tag> > input_tags;
-    std::vector<std::vector<Tag> > output_tags;
     Block::tag_propagation_policy_t tag_prop_policy;
 
     //topological things
@@ -105,6 +104,7 @@ struct ElementImpl
     }
     //gets the handlers access for forecast and work
     Block *block_ptr;
+    tsbe::TaskInterface work_task_iface; //only valid during work
 
     //handlers
     void handle_input_msg(const tsbe::TaskInterface &, const size_t, const tsbe::Wax &);

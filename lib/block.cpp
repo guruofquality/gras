@@ -146,7 +146,8 @@ void Block::add_item_tag(
     const size_t which_output,
     const Tag &tag
 ){
-    (*this)->output_tags[which_output].push_back(tag);
+    ASSERT((*this)->work_task_iface);
+    (*this)->work_task_iface.post_downstream(which_output, tag);
 }
 
 void Block::add_item_tag(

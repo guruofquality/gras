@@ -181,7 +181,9 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     work_noutput_items = num_output_items;
     if (this->enable_fixed_rate) work_noutput_items = std::min(
         work_noutput_items, myulround((num_input_items)*this->relative_rate));
+    this->work_task_iface = task_iface;
     const int ret = block_ptr->Work(this->input_items, this->output_items);
+    this->work_task_iface.reset();
     const size_t noutput_items = size_t(ret);
 
     if (ret == Block::WORK_DONE)
@@ -275,18 +277,6 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
 
         //now its safe to perform the erasure
         if (last != 0) tags_i.erase(tags_i.begin(), tags_i.begin()+last);
-    }
-
-    //------------------------------------------------------------------
-    //-- now commit all tags in the output queue to the downstream
-    //------------------------------------------------------------------
-    for (size_t i = 0; i < num_outputs; i++)
-    {
-        BOOST_FOREACH(const Tag &t, this->output_tags[i])
-        {
-            task_iface.post_downstream(i, t);
-        }
-        this->output_tags[i].clear();
     }
 
     //------------------------------------------------------------------
