@@ -113,6 +113,7 @@ struct ElementImpl
     void handle_allocation(const tsbe::TaskInterface &);
     void handle_task(const tsbe::TaskInterface &);
     void mark_done(const tsbe::TaskInterface &);
+    void conclusion(const tsbe::TaskInterface &task_iface, const bool);
     void buffer_returner(const size_t index, tsbe::Buffer &buffer);
 
     //is the fg running?

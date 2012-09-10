@@ -121,6 +121,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         this->work_ninput_items[i] = items;
         num_input_items = std::min(num_input_items, items);
     }
+    const bool inputs_done = num_inputs != 0 and input_tokens_count == num_inputs;
 
     //------------------------------------------------------------------
     //-- initialize output buffers before work
@@ -143,9 +144,10 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         this->work_output_items[i] = mem;
         num_output_items = std::min(num_output_items, items);
     }
+    const bool outputs_done = num_outputs != 0 and output_tokens_count == num_outputs;
 
     //if we have outputs and at least one port has no downstream subscibers, mark done
-    if ((num_outputs != 0 and output_tokens_count == num_outputs))
+    if (outputs_done)
     {
         this->mark_done(task_iface);
         return;
@@ -170,20 +172,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
                 if (num_output_items == 0)
                 {
                     this->forecast_fail = true;
-                    //TODO FIXME this logic is totally duplicated from the bottom!
-                    //re-use some common code
-                    {
-                        if (num_inputs != 0 and input_tokens_count == num_inputs)
-                        {
-                            this->block.post_msg(CheckTokensMessage());
-                            return;
-                        }
-                        if (this->input_queues.all_ready() and this->output_queues.all_ready())
-                        {
-                            this->block.post_msg(SelfKickMessage());
-                            return;
-                        }
-                    }
+                    this->conclusion(task_iface, inputs_done);
                     return;
                 }
                 goto forecast_again_you_jerk;
@@ -306,9 +295,17 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         this->output_tags[i].clear();
     }
 
+    //------------------------------------------------------------------
+    //-- Message self based on post-work conditions
+    //------------------------------------------------------------------
+    this->conclusion(task_iface, inputs_done);
+}
+
+inline void ElementImpl::conclusion(const tsbe::TaskInterface &task_iface, const bool inputs_done)
+{
     //if there are inputs, and not all are provided for,
     //tell the block to check input queues and handle done
-    if (num_inputs != 0 and input_tokens_count == num_inputs)
+    if (inputs_done)
     {
         this->block.post_msg(CheckTokensMessage());
         return;
@@ -318,5 +315,6 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     if (this->input_queues.all_ready() and this->output_queues.all_ready())
     {
         this->block.post_msg(SelfKickMessage());
+        return;
     }
 }
