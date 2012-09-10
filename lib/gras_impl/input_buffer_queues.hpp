@@ -29,27 +29,6 @@
 namespace gnuradio
 {
 
-struct BufferWOffset
-{
-    BufferWOffset(void): offset(0), length(0){}
-    BufferWOffset(const SBuffer &buffer):
-        offset(0), length(buffer.length), buffer(buffer){}
-
-    inline char *mem_offset(void) const
-    {
-        return ((char *)buffer.get()) + offset;
-    }
-
-    inline size_t tail_free(void) const
-    {
-        return buffer.length - offset - length;
-    }
-
-    size_t offset;
-    size_t length;
-    SBuffer buffer;
-};
-
 struct BuffInfo
 {
     BuffInfo(void): mem(NULL), len(0){}
@@ -106,7 +85,7 @@ struct InputBufferQueues
 
     inline void flush(const size_t i)
     {
-        _queues[i] = std::deque<BufferWOffset>();
+        _queues[i] = std::deque<SBuffer>();
         _bitset.reset(i);
     }
 
@@ -146,7 +125,7 @@ struct InputBufferQueues
 
     boost::dynamic_bitset<> _bitset;
     std::vector<size_t> _enqueued_bytes;
-    std::vector<std::deque<BufferWOffset> > _queues;
+    std::vector<std::deque<SBuffer> > _queues;
     std::vector<size_t> _history_bytes;
     std::vector<size_t> _reserve_bytes;
     std::vector<size_t> _multiple_bytes;
@@ -219,9 +198,9 @@ inline BuffInfo InputBufferQueues::front(const size_t i)
     ASSERT(this->ready(i));
     __prepare(i);
 
-    BufferWOffset &front = _queues[i].front();
+    SBuffer &front = _queues[i].front();
     BuffInfo info;
-    info.mem = front.mem_offset() - _history_bytes[i];
+    info.mem = front.get(-_history_bytes[i]);
     info.len = front.length;
     info.len /= _multiple_bytes[i];
     info.len *= _multiple_bytes[i];
@@ -235,33 +214,34 @@ inline void InputBufferQueues::__prepare(const size_t i)
 
     while (_queues[i].front().length < _reserve_bytes[i])
     {
-        BufferWOffset &front = _queues[i].front();
-        BufferWOffset dst;
+        SBuffer &front = _queues[i].front();
+        SBuffer dst;
         size_t hist_bytes = 0;
 
         //do we need a new buffer:
         //- is the buffer unique (queue has only reference)?
         //- can its remaining space meet reserve requirements?
-        const bool enough_space = front.buffer.length >= _reserve_bytes[i] + front.offset;
-        if (enough_space and front.buffer.unique())
+        const bool enough_space = front.get_actual_length() >= _reserve_bytes[i] + front.offset;
+        if (enough_space and front.unique())
         {
             dst = _queues[i].front();
             _queues[i].pop_front();
         }
         else
         {
-            dst = BufferWOffset(_aux_queues[i]->front());
+            dst = _aux_queues[i]->front();
             _aux_queues[i]->pop();
             hist_bytes = _history_bytes[i];
             dst.offset = hist_bytes;
             dst.length = 0;
         }
 
-        BufferWOffset src = _queues[i].front();
+        SBuffer src = _queues[i].front();
         _queues[i].pop_front();
-        const size_t bytes = std::min(std::min(dst.tail_free(), src.length), _post_bytes[i]);
+        const size_t dst_tail = dst.get_actual_length() - (dst.offset + dst.length);
+        const size_t bytes = std::min(std::min(dst_tail, src.length), _post_bytes[i]);
         ASSERT(src.offset >= hist_bytes);
-        std::memcpy(dst.mem_offset()+dst.length-hist_bytes, src.mem_offset()-hist_bytes, bytes+hist_bytes);
+        std::memcpy(dst.get(dst.length-hist_bytes), src.get(-hist_bytes), bytes+hist_bytes);
 
         //update buffer additions, consumptions
         dst.length += bytes;

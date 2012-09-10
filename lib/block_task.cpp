@@ -134,7 +134,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
 
         ASSERT(this->output_queues.ready(i));
         const SBuffer &buff = this->output_queues.front(i);
-        char *mem = ((char *)buff.get()) + this->output_bytes_offset[i];
+        void *mem = buff.get(this->output_bytes_offset[i]);
         const size_t bytes = buff.length - this->output_bytes_offset[i];
         const size_t items = bytes/this->output_items_sizes[i];
 

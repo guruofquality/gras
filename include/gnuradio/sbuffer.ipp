@@ -83,9 +83,9 @@ inline size_t SBuffer::get_actual_length(void) const
     return (*this)->config.length;
 }
 
-inline void *SBuffer::get(void) const
+inline void *SBuffer::get(const ptrdiff_t delta_bytes) const
 {
-    return ((char *)(*this)->config.memory) + this->offset;
+    return ((char *)(*this)->config.memory) + this->offset + delta_bytes;
 }
 
 inline Affinity SBuffer::get_affinity(void) const

@@ -102,7 +102,7 @@ struct GRAS_API SBuffer : boost::intrusive_ptr<SBufferImpl>
     size_t get_actual_length(void) const;
 
     //! Get a pointer into valid memory
-    void *get(void) const;
+    void *get(const ptrdiff_t delta_bytes = 0) const;
 
     //! The offset into valid memory in bytes
     size_t offset;
