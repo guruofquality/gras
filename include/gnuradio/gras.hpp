@@ -19,15 +19,39 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
+#include <boost/intrusive_ptr.hpp>
 
 //this is part of core for now, treat it as such
 #include <gr_core_api.h>
 #define GRAS_API GR_CORE_API
 
+#define GRAS_MAX_ALIGNMENT 32
+
 namespace gnuradio
 {
 
 struct ElementImpl;
+
+struct SBuffer;
+struct SBufferImpl;
+
+void intrusive_ptr_add_ref(SBufferImpl*);
+void intrusive_ptr_release(SBufferImpl*);
+
+struct Affinity
+{
+    Affinity(void)
+    {
+        value = -1;
+    }
+
+    operator long long(void) const
+    {
+        return value;
+    }
+
+    long long value;
+};
 
 } //namespace gnuradio
 
