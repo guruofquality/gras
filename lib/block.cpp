@@ -41,6 +41,7 @@ Block::Block(const std::string &name):
     config.changed_callback = boost::bind(&ElementImpl::topology_update, this->get(), _1);
     (*this)->block = tsbe::Block(config);
 
+    (*this)->forecast_fail = false;
     (*this)->block_ptr = this;
     (*this)->hint = 0;
     (*this)->block_state = ElementImpl::BLOCK_STATE_INIT;
@@ -205,6 +206,7 @@ void Block::forecast(
     int noutput_items,
     std::vector<int> &ninput_items_required
 ){
+    if (not (*this)->enable_fixed_rate) return;
     for (size_t i = 0; i < ninput_items_required.size(); i++)
     {
         ninput_items_required[i] =

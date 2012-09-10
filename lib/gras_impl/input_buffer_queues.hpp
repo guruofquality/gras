@@ -52,6 +52,7 @@ struct BufferWOffset
 
 struct BuffInfo
 {
+    BuffInfo(void): mem(NULL), len(0){}
     void *mem;
     size_t len;
 };
@@ -148,6 +149,7 @@ struct InputBufferQueues
     std::vector<std::deque<BufferWOffset> > _queues;
     std::vector<size_t> _history_bytes;
     std::vector<size_t> _reserve_bytes;
+    std::vector<size_t> _multiple_bytes;
     std::vector<size_t> _post_bytes;
     std::vector<boost::shared_ptr<BufferQueue> > _aux_queues;
 };
@@ -160,6 +162,7 @@ inline void InputBufferQueues::resize(const size_t size)
     _queues.resize(size);
     _history_bytes.resize(size, 0);
     _reserve_bytes.resize(size, 0);
+    _multiple_bytes.resize(size, 0);
     _post_bytes.resize(size, 0);
     _aux_queues.resize(size);
 }
@@ -183,6 +186,7 @@ inline void InputBufferQueues::init(
         //determine byte sizes for buffers and dealing with history
         _history_bytes[i] = input_item_sizes[i]*input_history_items[i];
         _reserve_bytes[i] = input_item_sizes[i]*input_multiple_items[i];
+        _multiple_bytes[i] = std::max(size_t(1), _reserve_bytes[i]);
         _post_bytes[i] = input_item_sizes[i]*max_history_items;
         _post_bytes[i] = std::max(_post_bytes[i], _reserve_bytes[i]);
 
@@ -209,6 +213,8 @@ inline void InputBufferQueues::init(
 
 inline BuffInfo InputBufferQueues::front(const size_t i)
 {
+    //if (_queues[i].empty()) return BuffInfo();
+
     ASSERT(not _queues[i].empty());
     ASSERT(this->ready(i));
     __prepare(i);
@@ -217,8 +223,8 @@ inline BuffInfo InputBufferQueues::front(const size_t i)
     BuffInfo info;
     info.mem = front.mem_offset() - _history_bytes[i];
     info.len = front.length;
-    info.len /= _reserve_bytes[i];
-    info.len *= _reserve_bytes[i];
+    info.len /= _multiple_bytes[i];
+    info.len *= _multiple_bytes[i];
     return info;
 }
 
@@ -273,6 +279,8 @@ inline void InputBufferQueues::__prepare(const size_t i)
 
 inline bool InputBufferQueues::consume(const size_t i, const size_t bytes_consumed)
 {
+    //if (bytes_consumed == 0) return true;
+
     //assert that we dont consume past the bounds of the buffer
     ASSERT(_queues[i].front().length >= bytes_consumed);
 

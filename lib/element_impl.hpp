@@ -128,6 +128,7 @@ struct ElementImpl
     //rate settings
     bool enable_fixed_rate;
     double relative_rate;
+    bool forecast_fail;
 };
 
 } //namespace gnuradio

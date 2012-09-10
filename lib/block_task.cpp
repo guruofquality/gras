@@ -82,7 +82,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         this->input_queues.all_ready() and
         this->output_queues.all_ready()
     )) return;
-    //std::cout << "=== calling work on " << name << " ===" << std::endl;
+    if (WORK) std::cout << "=== calling work on " << name << " ===" << std::endl;
 
     const size_t num_inputs = task_iface.get_num_inputs();
     const size_t num_outputs = task_iface.get_num_outputs();
@@ -154,15 +154,50 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //------------------------------------------------------------------
     //-- forecast
     //------------------------------------------------------------------
+    forecast_again_you_jerk:
     if (not this->enable_fixed_rate)
     {
         block_ptr->forecast(num_output_items, work_ninput_items);
+        for (size_t i = 0; i < num_inputs; i++)
+        {
+            if (size_t(work_ninput_items[i]) > this->input_items[i].size())
+            {
+                for (size_t j = 0; j < num_inputs; j++)
+                {
+                    work_ninput_items[j] = this->input_items[j]._len;
+                }
+                num_output_items = num_output_items/2;
+                if (num_output_items == 0)
+                {
+                    this->forecast_fail = true;
+                    //TODO FIXME this logic is totally duplicated from the bottom!
+                    //re-use some common code
+                    {
+                        if (num_inputs != 0 and input_tokens_count == num_inputs)
+                        {
+                            this->block.post_msg(CheckTokensMessage());
+                            return;
+                        }
+                        if (this->input_queues.all_ready() and this->output_queues.all_ready())
+                        {
+                            this->block.post_msg(SelfKickMessage());
+                            return;
+                        }
+                    }
+                    return;
+                }
+                goto forecast_again_you_jerk;
+            }
+        }
     }
+    this->forecast_fail = false;
 
     //------------------------------------------------------------------
     //-- the work
     //------------------------------------------------------------------
-    work_noutput_items = std::min(num_output_items, myulround((num_input_items)*this->relative_rate));
+    work_noutput_items = num_output_items;
+    if (this->enable_fixed_rate) work_noutput_items = std::min(
+        work_noutput_items, myulround((num_input_items)*this->relative_rate));
     const int ret = block_ptr->Work(this->input_items, this->output_items);
     const size_t noutput_items = size_t(ret);
 

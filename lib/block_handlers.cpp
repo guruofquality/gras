@@ -47,7 +47,7 @@ void ElementImpl::handle_block_msg(
     //clearly, this block is near death, hang on sparky
     if (msg.type() == typeid(CheckTokensMessage))
     {
-        if (this->input_queues.all_ready())
+        if (this->input_queues.all_ready() and not this->forecast_fail)
         {
             this->handle_task(task_iface);
         }
@@ -154,10 +154,9 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
     std::vector<size_t> input_multiple_items(num_inputs, 1);
     for (size_t i = 0; i < num_inputs; i++)
     {
-        if (num_outputs == 0 or not this->enable_fixed_rate) continue;
         //TODO, this is a little cheap, we only look at output multiple [0]
-        const size_t multiple = this->output_multiple_items.front();
-        input_multiple_items[i] = myulround(multiple/this->relative_rate);
+        const size_t multiple = (num_outputs)?this->output_multiple_items.front():1;
+        input_multiple_items[i] = size_t(std::ceil(multiple/this->relative_rate));
         if (input_multiple_items[i] == 0) input_multiple_items[i] = 1;
     }
 
