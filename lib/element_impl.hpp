@@ -64,6 +64,7 @@ struct ElementImpl
     std::vector<const void *> work_input_items;
     std::vector<void *> work_output_items;
     std::vector<int> work_ninput_items;
+    std::vector<int> fcast_ninput_items;
 
     //work buffers for the new work interface
     Block::InputItems input_items;
@@ -130,6 +131,7 @@ struct ElementImpl
     bool enable_fixed_rate;
     double relative_rate;
     bool forecast_fail;
+    bool forecast_enable;
 };
 
 } //namespace gnuradio

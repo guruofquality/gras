@@ -157,26 +157,20 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //-- forecast
     //------------------------------------------------------------------
     forecast_again_you_jerk:
-    if (not this->enable_fixed_rate)
+    if (this->forecast_enable)
     {
-        block_ptr->forecast(num_output_items, work_ninput_items);
+        fcast_ninput_items = work_ninput_items;
+        block_ptr->forecast(num_output_items, fcast_ninput_items);
         for (size_t i = 0; i < num_inputs; i++)
         {
-            if (size_t(work_ninput_items[i]) > this->input_items[i].size())
-            {
-                for (size_t j = 0; j < num_inputs; j++)
-                {
-                    work_ninput_items[j] = this->input_items[j]._len;
-                }
-                num_output_items = num_output_items/2;
-                if (num_output_items == 0)
-                {
-                    this->forecast_fail = true;
-                    this->conclusion(task_iface, inputs_done);
-                    return;
-                }
-                goto forecast_again_you_jerk;
-            }
+            if (fcast_ninput_items[i] <= work_ninput_items[i]) continue;
+
+            num_output_items = num_output_items/2; //backoff regime
+            if (num_output_items) goto forecast_again_you_jerk;
+
+            this->forecast_fail = true;
+            this->conclusion(task_iface, inputs_done);
+            return;
         }
     }
     this->forecast_fail = false;

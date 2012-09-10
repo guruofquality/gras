@@ -134,6 +134,7 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
     this->work_input_items.resize(num_inputs);
     this->work_output_items.resize(num_outputs);
     this->work_ninput_items.resize(num_inputs);
+    this->fcast_ninput_items.resize(num_inputs);
     this->input_items.resize(num_inputs);
     this->output_items.resize(num_outputs);
     this->consume_items.resize(num_inputs, 0);
@@ -141,6 +142,7 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
     this->input_queues.resize(num_inputs);
     this->output_queues.resize(num_outputs);
     this->output_bytes_offset.resize(num_outputs, 0);
+    this->forecast_enable = not this->enable_fixed_rate;
 
     this->input_tokens.resize(num_inputs);
     this->output_tokens.resize(num_outputs);
