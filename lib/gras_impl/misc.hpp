@@ -17,7 +17,7 @@
 #ifndef INCLUDED_LIBGRAS_IMPL_MISC_HPP
 #define INCLUDED_LIBGRAS_IMPL_MISC_HPP
 
-#include <tsbe/buffer.hpp>
+#include <gnuradio/sbuffer.hpp>
 #include <boost/shared_ptr.hpp>
 
 static inline unsigned long myulround(const double x)
@@ -70,7 +70,7 @@ struct SelfKickMessage
 struct BufferReturnMessage
 {
     size_t index;
-    tsbe::Buffer buffer;
+    SBuffer buffer;
 };
 
 

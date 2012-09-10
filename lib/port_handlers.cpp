@@ -26,10 +26,10 @@ void ElementImpl::handle_input_msg(
     if (MESSAGE) std::cout << "handle_input_msg (" << msg.type().name() << ") " << name << std::endl;
 
     //handle incoming stream buffer, push into the queue
-    if (msg.type() == typeid(tsbe::Buffer))
+    if (msg.type() == typeid(SBuffer))
     {
         if (this->block_state == BLOCK_STATE_DONE) return;
-        this->input_queues.push(index, msg.cast<tsbe::Buffer>());
+        this->input_queues.push(index, msg.cast<SBuffer>());
         this->handle_task(handle);
         return;
     }

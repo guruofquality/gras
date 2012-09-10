@@ -17,19 +17,26 @@
 #ifndef INCLUDED_LIBGRAS_IMPL_BUFFER_QUEUE_HPP
 #define INCLUDED_LIBGRAS_IMPL_BUFFER_QUEUE_HPP
 
-#include <tsbe/buffer.hpp>
+#include <gnuradio/sbuffer.hpp>
 #include <boost/bind.hpp>
 #include <queue>
 
 namespace gnuradio
 {
 
-struct BufferQueue : std::queue<tsbe::Buffer>
+struct BufferQueue : std::queue<SBuffer>
 {
+    void __push(SBuffer &buffer)
+    {
+        buffer.offset = 0;
+        buffer.length = buffer.get_actual_length();
+        this->push(buffer);
+    }
+
     BufferQueue(void)
     {
-        tsbe::BufferDeleter deleter = boost::bind(&BufferQueue::push, this, _1);
-        _token = tsbe::BufferToken(new tsbe::BufferDeleter(deleter));
+        SBufferDeleter deleter = boost::bind(&BufferQueue::__push, this, _1);
+        _token = SBufferToken(new SBufferDeleter(deleter));
     }
 
     ~BufferQueue(void)
@@ -43,15 +50,15 @@ struct BufferQueue : std::queue<tsbe::Buffer>
 
     void allocate_one(const size_t num_bytes)
     {
-        tsbe::BufferConfig config;
+        SBufferConfig config;
         config.memory = NULL;
         config.length = num_bytes;
         config.token = _token;
-        tsbe::Buffer buff(config);
+        SBuffer buff(config);
         //buffer derefs here and the token messages it back to the queue
     }
 
-    tsbe::BufferToken _token;
+    SBufferToken _token;
 };
 
 } //namespace gnuradio

@@ -50,11 +50,13 @@ inline void intrusive_ptr_release(SBufferImpl *impl)
         if (token_deleter)
         {
             SBuffer buff;
+            buff.reset(impl);
             (*token_deleter)(buff);
         }
         else if (impl->config.deleter)
         {
             SBuffer buff;
+            buff.reset(impl);
             impl->config.deleter(buff);
             impl->config.deleter = SBufferDeleter(); //reset deleter, so we dont double delete
         }

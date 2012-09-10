@@ -80,11 +80,11 @@ struct ElementImpl
     std::vector<Token> output_tokens;
     std::set<Token> token_pool;
 
-    std::vector<tsbe::BufferToken> output_buffer_tokens;
+    std::vector<SBufferToken> output_buffer_tokens;
 
     //buffer queues and ready conditions
     InputBufferQueues input_queues;
-    VectorOfQueues<tsbe::Buffer> output_queues;
+    VectorOfQueues<SBuffer> output_queues;
     std::vector<size_t> output_bytes_offset;
 
     //tag tracking
@@ -115,7 +115,7 @@ struct ElementImpl
     void handle_task(const tsbe::TaskInterface &);
     void mark_done(const tsbe::TaskInterface &);
     void conclusion(const tsbe::TaskInterface &task_iface, const bool);
-    void buffer_returner(const size_t index, tsbe::Buffer &buffer);
+    void buffer_returner(const size_t index, SBuffer &buffer);
 
     //is the fg running?
     enum

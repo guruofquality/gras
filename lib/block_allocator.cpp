@@ -22,8 +22,12 @@ using namespace gnuradio;
 //TODO will need more complicated later
 
 
-void ElementImpl::buffer_returner(const size_t index, tsbe::Buffer &buffer)
+void ElementImpl::buffer_returner(const size_t index, SBuffer &buffer)
 {
+    //reset offset and length
+    buffer.offset = 0;
+    buffer.length = buffer.get_actual_length();
+
     BufferReturnMessage message;
     message.index = index;
     message.buffer = buffer;
@@ -43,16 +47,16 @@ void ElementImpl::handle_allocation(const tsbe::TaskInterface &task_iface)
 
         const size_t bytes = items * this->output_items_sizes[i];
 
-        tsbe::BufferDeleter deleter = boost::bind(&ElementImpl::buffer_returner, this, i, _1);
-        this->output_buffer_tokens[i] = tsbe::BufferToken(new tsbe::BufferDeleter(deleter));
+        SBufferDeleter deleter = boost::bind(&ElementImpl::buffer_returner, this, i, _1);
+        this->output_buffer_tokens[i] = SBufferToken(new SBufferDeleter(deleter));
 
         for (size_t j = 0; j < 8; j++)
         {
-            tsbe::BufferConfig config;
+            SBufferConfig config;
             config.memory = NULL;
             config.length = bytes;
             config.token = this->output_buffer_tokens[i];
-            tsbe::Buffer buff(config);
+            SBuffer buff(config);
             //buffer derefs here and the token messages it back to the block
         }
     }

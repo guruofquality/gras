@@ -19,7 +19,7 @@
 
 #include <gras_impl/debug.hpp>
 #include <gras_impl/buffer_queue.hpp>
-#include <tsbe/buffer.hpp>
+#include <gnuradio/sbuffer.hpp>
 #include <boost/dynamic_bitset.hpp>
 #include <vector>
 #include <queue>
@@ -32,22 +32,22 @@ namespace gnuradio
 struct BufferWOffset
 {
     BufferWOffset(void): offset(0), length(0){}
-    BufferWOffset(const tsbe::Buffer &buffer):
-        offset(0), length(buffer.get_length()), buffer(buffer){}
+    BufferWOffset(const SBuffer &buffer):
+        offset(0), length(buffer.length), buffer(buffer){}
 
     inline char *mem_offset(void) const
     {
-        return ((char *)buffer.get_memory()) + offset;
+        return ((char *)buffer.get()) + offset;
     }
 
     inline size_t tail_free(void) const
     {
-        return buffer.get_length() - offset - length;
+        return buffer.length - offset - length;
     }
 
     size_t offset;
     size_t length;
-    tsbe::Buffer buffer;
+    SBuffer buffer;
 };
 
 struct BuffInfo
@@ -97,7 +97,7 @@ struct InputBufferQueues
 
     void resize(const size_t size);
 
-    inline void push(const size_t i, const tsbe::Buffer &buffer)
+    inline void push(const size_t i, const SBuffer &buffer)
     {
         _queues[i].push_back(buffer);
         _enqueued_bytes[i] += _queues[i].back().length;
@@ -198,11 +198,11 @@ inline void InputBufferQueues::init(
         //there is history, so enqueue some initial history
         if (_history_bytes[i] != 0)
         {
-            tsbe::Buffer buff = _aux_queues[i]->front();
+            SBuffer buff = _aux_queues[i]->front();
             _aux_queues[i]->pop();
 
             const size_t hist_bytes = _history_bytes[i];
-            std::memset(buff.get_memory(), 0, hist_bytes);
+            std::memset(buff.get(), 0, hist_bytes);
             _queues[i].push_front(buff);
             _queues[i].front().offset = hist_bytes;
             _queues[i].front().length = 0;
@@ -242,7 +242,7 @@ inline void InputBufferQueues::__prepare(const size_t i)
         //do we need a new buffer:
         //- is the buffer unique (queue has only reference)?
         //- can its remaining space meet reserve requirements?
-        const bool enough_space = front.buffer.get_length() >= _reserve_bytes[i] + front.offset;
+        const bool enough_space = front.buffer.length >= _reserve_bytes[i] + front.offset;
         if (enough_space and front.buffer.unique())
         {
             dst = _queues[i].front();
