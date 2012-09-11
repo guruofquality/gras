@@ -36,6 +36,8 @@ void ElementImpl::mark_done(const tsbe::TaskInterface &task_iface)
         this->output_queues.pop(i);
     }
 
+    this->interruptible_thread.reset();
+
     //mark down the new state
     this->block_state = BLOCK_STATE_DONE;
 
@@ -84,7 +86,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
 
     const size_t num_inputs = task_iface.get_num_inputs();
     const size_t num_outputs = task_iface.get_num_outputs();
-    //const bool is_source = (num_inputs == 0);
+    const bool is_source = (num_inputs == 0);
     //const bool is_sink = (num_outputs == 0);
     this->work_io_ptr_mask = 0; //reset
 
@@ -180,7 +182,19 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     if (this->enable_fixed_rate) work_noutput_items = std::min(
         work_noutput_items, myulround((num_input_items)*this->relative_rate));
     this->work_task_iface = task_iface;
-    const int ret = block_ptr->Work(this->input_items, this->output_items);
+    int ret = 0;
+    if (is_source)
+    {
+        this->interruptible_thread->block = block_ptr;
+        this->interruptible_thread->ret = &ret;
+        this->interruptible_thread->input_items = &this->input_items;
+        this->interruptible_thread->output_items = &this->output_items;
+        this->interruptible_thread->call();
+    }
+    else
+    {
+        ret = block_ptr->Work(this->input_items, this->output_items);
+    }
     this->work_task_iface.reset();
     const size_t noutput_items = size_t(ret);
 

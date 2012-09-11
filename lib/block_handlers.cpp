@@ -58,6 +58,14 @@ void ElementImpl::handle_block_msg(
         return;
     }
 
+    //store the topology's thread group
+    if (msg.type() == typeid(SharedThreadGroup))
+    {
+        this->thread_group = msg.cast<SharedThreadGroup>();
+        this->interruptible_thread = boost::shared_ptr<InterruptibleThread>(new InterruptibleThread(this->thread_group));
+        return;
+    }
+
     ASSERT(msg.type() == typeid(TopBlockMessage));
 
     const size_t num_inputs = task_iface.get_num_inputs();

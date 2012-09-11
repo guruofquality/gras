@@ -21,6 +21,7 @@
 #include <gras_impl/misc.hpp>
 #include <gras_impl/vector_of_queues.hpp>
 #include <gras_impl/input_buffer_queues.hpp>
+#include <gras_impl/interruptible_thread.hpp>
 
 #include <tsbe/block.hpp>
 #include <tsbe/topology.hpp>
@@ -104,6 +105,10 @@ struct ElementImpl
     //gets the handlers access for forecast and work
     Block *block_ptr;
     tsbe::TaskInterface work_task_iface; //only valid during work
+
+    //interruptible thread stuff
+    SharedThreadGroup thread_group;
+    boost::shared_ptr<InterruptibleThread> interruptible_thread;
 
     //handlers
     void handle_input_msg(const tsbe::TaskInterface &, const size_t, const tsbe::Wax &);

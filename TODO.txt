@@ -28,3 +28,4 @@
 ** thread affinity
 ** memory affinity
 * track memcpys for block usage stats
+* timeout for wait() on executor

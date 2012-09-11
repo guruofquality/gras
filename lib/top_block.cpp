@@ -32,6 +32,7 @@ TopBlock::TopBlock(const std::string &name):
     config.topology = (*this)->topology;
     (*this)->executor = tsbe::Executor(config);
     (*this)->token = Token::make();
+    (*this)->thread_group = SharedThreadGroup(new boost::thread_group());
     if (GENESIS) std::cout
         << "===================================================\n"
         << "== Top Block Created: " << name << "\n"
@@ -68,6 +69,9 @@ void TopBlock::start(void)
 {
     (*this)->executor.commit();
     {
+        (*this)->executor.post_msg((*this)->thread_group);
+    }
+    {
         TopBlockMessage event;
         event.what = TopBlockMessage::TOKEN_TIME;
         event.token = (*this)->token;
@@ -87,6 +91,7 @@ void TopBlock::start(void)
 
 void TopBlock::stop(void)
 {
+    (*this)->thread_group->interrupt_all();
     TopBlockMessage event;
     event.what = TopBlockMessage::INERT;
     (*this)->executor.post_msg(event);
@@ -100,6 +105,7 @@ void TopBlock::run(void)
 
 void TopBlock::wait(void)
 {
+    //(*this)->thread_group->join_all();
     while (not (*this)->token.unique())
     {
         boost::this_thread::yield();
