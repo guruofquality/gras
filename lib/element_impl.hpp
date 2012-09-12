@@ -18,7 +18,7 @@
 #define INCLUDED_LIBGRAS_ELEMENT_IMPL_HPP
 
 #include <gras_impl/debug.hpp>
-#include <gras_impl/misc.hpp>
+#include <gras_impl/token.hpp>
 #include <gras_impl/vector_of_queues.hpp>
 #include <gras_impl/input_buffer_queues.hpp>
 #include <gras_impl/interruptible_thread.hpp>
@@ -32,6 +32,16 @@
 #include <set>
 #include <vector>
 #include <queue>
+
+static inline unsigned long myulround(const double x)
+{
+    return (unsigned long)(x + 0.5);
+}
+
+static inline unsigned long long myullround(const double x)
+{
+    return (unsigned long long)(x + 0.5);
+}
 
 namespace gnuradio
 {

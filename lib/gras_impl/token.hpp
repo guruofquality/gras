@@ -14,21 +14,10 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_LIBGRAS_IMPL_MISC_HPP
-#define INCLUDED_LIBGRAS_IMPL_MISC_HPP
+#ifndef INCLUDED_LIBGRAS_IMPL_TOKEN_HPP
+#define INCLUDED_LIBGRAS_IMPL_TOKEN_HPP
 
-#include <gnuradio/sbuffer.hpp>
 #include <boost/shared_ptr.hpp>
-
-static inline unsigned long myulround(const double x)
-{
-    return (unsigned long)(x + 0.5);
-}
-
-static inline unsigned long long myullround(const double x)
-{
-    return (unsigned long long)(x + 0.5);
-}
 
 namespace gnuradio
 {
@@ -43,37 +32,6 @@ struct Token : boost::shared_ptr<int>
     }
 };
 
-struct TopBlockMessage
-{
-    enum
-    {
-        ALLOCATE,
-        ACTIVE,
-        INERT,
-        HINT,
-        TOKEN_TIME,
-    } what;
-    size_t hint;
-    Token token;
-};
-
-struct CheckTokensMessage
-{
-    //empty
-};
-
-struct SelfKickMessage
-{
-    //empty
-};
-
-struct BufferReturnMessage
-{
-    size_t index;
-    SBuffer buffer;
-};
-
-
 } //namespace gnuradio
 
-#endif /*INCLUDED_LIBGRAS_IMPL_MISC_HPP*/
+#endif /*INCLUDED_LIBGRAS_IMPL_TOKEN_HPP*/

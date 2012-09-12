@@ -15,6 +15,7 @@
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
+#include <gras_impl/messages.hpp>
 #include <boost/bind.hpp>
 
 using namespace gnuradio;
