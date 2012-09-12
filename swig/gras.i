@@ -126,6 +126,7 @@ class TopBlock(TopBlockPython):
 class HierBlock(HierBlock):
     def __init__(self, *args, **kwargs):
         HierBlock.__init__(self, *args, **kwargs)
+        self._hb = self #backwards compat
 
     def connect(self, *args):
         return internal_connect__(HierBlock.connect, self, *args)
@@ -138,6 +139,7 @@ top_block = TopBlock
 class hier_block(gr_hier_block2):
     def __init__(self, *args, **kwargs):
         gr_hier_block2.__init__(self, *args, **kwargs)
+        self._hb = self #backwards compat
 
     def connect(self, *args):
         return internal_connect__(gr_hier_block2.connect, self, *args)
