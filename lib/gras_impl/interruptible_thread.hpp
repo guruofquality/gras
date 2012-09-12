@@ -17,9 +17,9 @@
 #ifndef INCLUDED_LIBGRAS_IMPL_INTERRUPTIBLE_THREAD_HPP
 #define INCLUDED_LIBGRAS_IMPL_INTERRUPTIBLE_THREAD_HPP
 
-#include <gnuradio/block.hpp>
 #include <gras_impl/debug.hpp>
 #include <boost/bind.hpp>
+#include <boost/function.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition_variable.hpp>
@@ -47,11 +47,12 @@ namespace gnuradio
 
     struct InterruptibleThread
     {
+        typedef boost::function<void(void)> Callable;
 
-        InterruptibleThread(SharedThreadGroup thread_group):
-            _thread_group(thread_group)
+        InterruptibleThread(SharedThreadGroup thread_group, Callable callable):
+            _thread_group(thread_group),
+            _callable(callable)
         {
-            _done = false;
             _wait_msg = true;
             _wait_ack = true;
             _mutex.lock();
@@ -64,7 +65,7 @@ namespace gnuradio
         {
             {
                 boost::mutex::scoped_lock lock(_mutex);
-                _done = true;
+                _callable = Callable();
             }
             _thread->interrupt();
             _thread->join();
@@ -73,7 +74,7 @@ namespace gnuradio
         inline void call(void)
         {
             boost::mutex::scoped_lock lock(_mutex);
-            if (_done) return;
+            if (not _callable) return;
             _wait_msg = false;
             _notify(lock);
             while (_wait_ack) _cond.wait(lock);
@@ -90,7 +91,7 @@ namespace gnuradio
                 {
                     while (_wait_msg) _cond.wait(lock);
                     _wait_msg = true;
-                    *ret = block->Work(*input_items, *output_items);
+                    _callable();
                     _wait_ack = false;
                     _notify(lock);
                 }
@@ -107,7 +108,7 @@ namespace gnuradio
             {
                 std::cerr << "InterruptibleThread threw unknown exception" << std::endl;
             }
-            _done = true;
+            _callable = Callable();
             _wait_ack = false;
             _notify(lock);
         }
@@ -120,19 +121,13 @@ namespace gnuradio
             lock.lock();
         }
 
-        //shared work variables
-        Block *block;
-        int *ret;
-        Block::InputItems *input_items;
-        Block::OutputItems *output_items;
-
         //thread locking mechanisms
-        bool _done;
         bool _wait_msg;
         bool _wait_ack;
         boost::mutex _mutex;
         boost::condition_variable _cond;
         SharedThreadGroup _thread_group;
+        Callable _callable;
         boost::thread *_thread;
     };
 

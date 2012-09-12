@@ -17,6 +17,7 @@
 #include "element_impl.hpp"
 #include <gras_impl/vector_utils.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/bind.hpp>
 
 using namespace gnuradio;
 
@@ -68,8 +69,9 @@ void ElementImpl::handle_block_msg(
         this->interruptible_thread.reset(); //erase old one
         if (task_iface.get_num_inputs() == 0) //its a source
         {
-            this->interruptible_thread =
-                boost::make_shared<InterruptibleThread>(this->thread_group);
+            this->interruptible_thread = boost::make_shared<InterruptibleThread>(
+                this->thread_group, boost::bind(&ElementImpl::task_work, this)
+            );
         }
         return;
     }

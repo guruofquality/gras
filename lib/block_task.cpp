@@ -182,23 +182,19 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     if (this->enable_fixed_rate) work_noutput_items = std::min(
         work_noutput_items, myulround((num_input_items)*this->relative_rate));
     this->work_task_iface = task_iface;
-    int ret = -1;
+    this->work_ret = -1;
     if (this->interruptible_thread)
     {
-        this->interruptible_thread->block = block_ptr;
-        this->interruptible_thread->ret = &ret;
-        this->interruptible_thread->input_items = &this->input_items;
-        this->interruptible_thread->output_items = &this->output_items;
         this->interruptible_thread->call();
     }
     else
     {
-        ret = block_ptr->Work(this->input_items, this->output_items);
+        this->task_work();
     }
     this->work_task_iface.reset();
-    const size_t noutput_items = size_t(ret);
+    const size_t noutput_items = size_t(work_ret);
 
-    if (ret == Block::WORK_DONE)
+    if (work_ret == Block::WORK_DONE)
     {
         this->mark_done(task_iface);
         return;
@@ -210,7 +206,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     bool input_allows_flush = true;
     for (size_t i = 0; i < num_inputs; i++)
     {
-        ASSERT(enable_fixed_rate or ret != Block::WORK_CALLED_PRODUCE);
+        ASSERT(enable_fixed_rate or work_ret != Block::WORK_CALLED_PRODUCE);
         const size_t items = (enable_fixed_rate)? (myulround((noutput_items/this->relative_rate))) : this->consume_items[i];
         this->consume_items[i] = 0;
 
@@ -224,7 +220,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //------------------------------------------------------------------
     for (size_t i = 0; i < num_outputs; i++)
     {
-        const size_t items = (ret == Block::WORK_CALLED_PRODUCE)? this->produce_items[i] : noutput_items;
+        const size_t items = (work_ret == Block::WORK_CALLED_PRODUCE)? this->produce_items[i] : noutput_items;
         this->produce_items[i] = 0;
         if (items == 0) continue;
 

@@ -121,6 +121,13 @@ struct ElementImpl
     void conclusion(const tsbe::TaskInterface &task_iface, const bool);
     void buffer_returner(const size_t index, SBuffer &buffer);
 
+    //work helpers
+    int work_ret;
+    inline void task_work(void)
+    {
+        this->work_ret = block_ptr->Work(this->input_items, this->output_items);
+    }
+
     //is the fg running?
     enum
     {
