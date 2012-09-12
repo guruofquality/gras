@@ -15,7 +15,7 @@
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
-#include <gras_impl/messages.hpp>
+#include <boost/foreach.hpp>
 
 using namespace gnuradio;
 
@@ -59,6 +59,8 @@ void ElementImpl::handle_input_msg(
         }
         return;
     }
+
+    ASSERT(false);
 }
 
 void ElementImpl::handle_output_msg(
@@ -85,4 +87,29 @@ void ElementImpl::handle_output_msg(
         }
         return;
     }
+
+    //update the buffer allocation hint
+    if (msg.type() == typeid(BufferHintMessage))
+    {
+        //this->output_allocation_hints.resize(std::max(output_allocation_hints.size(), index+1));
+        const BufferHintMessage new_hint = msg.cast<BufferHintMessage>();
+
+        //remove any old hints with expired token
+        //remove any older hints with matching token
+        std::vector<BufferHintMessage> hints;
+        BOOST_FOREACH(const BufferHintMessage &hint, this->output_allocation_hints[index])
+        {
+            if (hint.token.expired()) continue;
+            if (hint.token.lock() == new_hint.token.lock()) continue;
+            hints.push_back(hint);
+        }
+
+        //store the new hint as well
+        hints.push_back(new_hint);
+
+        this->output_allocation_hints[index] = hints;
+        return;
+    }
+
+    ASSERT(false);
 }

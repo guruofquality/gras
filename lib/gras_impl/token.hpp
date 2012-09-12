@@ -18,9 +18,12 @@
 #define INCLUDED_LIBGRAS_IMPL_TOKEN_HPP
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 
 namespace gnuradio
 {
+
+typedef boost::weak_ptr<int> WeakToken;
 
 struct Token : boost::shared_ptr<int>
 {

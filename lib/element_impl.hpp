@@ -19,6 +19,7 @@
 
 #include <gras_impl/debug.hpp>
 #include <gras_impl/token.hpp>
+#include <gras_impl/messages.hpp>
 #include <gras_impl/vector_of_queues.hpp>
 #include <gras_impl/input_buffer_queues.hpp>
 #include <gras_impl/interruptible_thread.hpp>
@@ -65,6 +66,7 @@ struct ElementImpl
     IOSignature output_signature;
     std::vector<size_t> input_history_items;
     std::vector<size_t> output_multiple_items;
+    std::vector<size_t> input_multiple_items;
 
     //keeps track of production
     std::vector<uint64_t> items_consumed;
@@ -147,6 +149,8 @@ struct ElementImpl
     } block_state;
     Token token;
     size_t hint; //some kind of allocation hint
+
+    std::vector<std::vector<BufferHintMessage> > output_allocation_hints;
 
     //rate settings
     bool enable_fixed_rate;

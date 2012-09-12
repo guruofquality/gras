@@ -91,6 +91,7 @@ namespace gnuradio
                 {
                     while (_wait_msg) _cond.wait(lock);
                     _wait_msg = true;
+                    if (not _callable) break;
                     _callable();
                     _wait_ack = false;
                     _notify(lock);

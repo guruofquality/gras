@@ -52,6 +52,12 @@ struct BufferReturnMessage
     SBuffer buffer;
 };
 
+struct BufferHintMessage
+{
+    size_t history_bytes;
+    size_t reserve_bytes;
+    WeakToken token;
+};
 
 } //namespace gnuradio
 

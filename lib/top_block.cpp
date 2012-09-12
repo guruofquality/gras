@@ -15,7 +15,6 @@
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
-#include <gras_impl/messages.hpp>
 #include <gnuradio/top_block.hpp>
 #include <boost/thread/thread.hpp> //sleep
 

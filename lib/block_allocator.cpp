@@ -15,13 +15,18 @@
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
-#include <gras_impl/messages.hpp>
 #include <boost/bind.hpp>
+#include <boost/foreach.hpp>
+#include <boost/math/common_factor.hpp>
 
 using namespace gnuradio;
 
-//TODO will need more complicated later
+const size_t AT_LEAST_DEFAULT_ITEMS = 1024*2;
+const size_t AHH_TOO_MANY_BYTES = 1 << 16; //TODO
+const size_t THIS_MANY_BUFFERS = 8;
+const double EDGE_CASE_MITIGATION = 8.0; //edge case mitigation constant
 
+//TODO will need more complicated later
 
 void ElementImpl::buffer_returner(const size_t index, SBuffer &buffer)
 {
@@ -35,6 +40,35 @@ void ElementImpl::buffer_returner(const size_t index, SBuffer &buffer)
     this->block.post_msg(message);
 }
 
+static size_t recommend_length(
+    const std::vector<BufferHintMessage> &hints,
+    const size_t output_multiple_bytes,
+    const size_t at_least_bytes
+){
+    //step 1) find the LCM of all reserves to create a super-reserve
+    size_t lcm_bytes = output_multiple_bytes;
+    BOOST_FOREACH(const BufferHintMessage &hint, hints)
+    {
+        lcm_bytes = boost::math::lcm(lcm_bytes, hint.reserve_bytes);
+    }
+
+    //step 2) N x super reserve to minimize history edge case
+    size_t Nlcm_bytes = lcm_bytes;
+    BOOST_FOREACH(const BufferHintMessage &hint, hints)
+    {
+        while (hint.history_bytes*EDGE_CASE_MITIGATION > Nlcm_bytes)
+        {
+            Nlcm_bytes += lcm_bytes;
+        }
+    }
+    while (at_least_bytes > Nlcm_bytes)
+    {
+        Nlcm_bytes += lcm_bytes;
+    }
+
+    return std::min(Nlcm_bytes, AHH_TOO_MANY_BYTES);
+}
+
 void ElementImpl::handle_allocation(const tsbe::TaskInterface &task_iface)
 {
     //allocate output buffers which will also wake up the task
@@ -42,16 +76,19 @@ void ElementImpl::handle_allocation(const tsbe::TaskInterface &task_iface)
     this->output_buffer_tokens.resize(num_outputs);
     for (size_t i = 0; i < num_outputs; i++)
     {
-        size_t items = this->hint;
-        if (items == 0) items = 2048;
-        items = std::max(items, this->output_multiple_items[i]);
+        size_t at_least_items = this->hint;
+        if (at_least_items == 0) at_least_items = AT_LEAST_DEFAULT_ITEMS;
 
-        const size_t bytes = items * this->output_items_sizes[i];
+        const size_t bytes = recommend_length(
+            this->output_allocation_hints[i],
+            this->output_multiple_items[i]*this->output_items_sizes[i],
+            at_least_items*this->output_items_sizes[i]
+        );
 
         SBufferDeleter deleter = boost::bind(&ElementImpl::buffer_returner, this, i, _1);
         this->output_buffer_tokens[i] = SBufferToken(new SBufferDeleter(deleter));
 
-        for (size_t j = 0; j < 8; j++)
+        for (size_t j = 0; j < THIS_MANY_BUFFERS; j++)
         {
             SBufferConfig config;
             config.memory = NULL;

@@ -15,7 +15,6 @@
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
-#include <gras_impl/messages.hpp>
 #include <gras_impl/vector_utils.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/bind.hpp>
@@ -89,6 +88,15 @@ void ElementImpl::handle_block_msg(
         {
             this->input_tokens[i] = Token::make();
             task_iface.post_upstream(i, this->input_tokens[i]);
+
+            //TODO, schedule this message as a pre-allocation message
+            //tell the upstream about the input requirements
+            BufferHintMessage message;
+            message.history_bytes = this->input_history_items[i]*this->input_items_sizes[i];
+            message.reserve_bytes = input_multiple_items[i];
+            message.token = this->input_tokens[i];
+            task_iface.post_upstream(i, message);
+
         }
         for (size_t i = 0; i < num_outputs; i++)
         {
@@ -164,13 +172,14 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
 
     this->input_tokens.resize(num_inputs);
     this->output_tokens.resize(num_outputs);
+    this->output_allocation_hints.resize(num_outputs);
 
     //resize tags vector to match sizes
     this->input_tags_changed.resize(num_inputs);
     this->input_tags.resize(num_inputs);
 
     //impose input reserve requirements based on relative rate and output multiple
-    std::vector<size_t> input_multiple_items(num_inputs, 1);
+    this->input_multiple_items.resize(num_inputs, 1);
     for (size_t i = 0; i < num_inputs; i++)
     {
         //TODO, this is a little cheap, we only look at output multiple [0]

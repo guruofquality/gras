@@ -10,16 +10,14 @@
 * add hooks to specify input reserve
 ** automatically calculate from output multiple and rel rate
 * gr stream mux is on drugs
-* inform upstream of multiple requirements inposed on input buffs
 * handle calculating noutputitems using ninputs as a constraint
 * allocation
 ** hooks for advanced allocation
-** intelligent sizing of buffers
-** communicate upstream requirements?
-** communicate downstream requirements?
 * python wrapper for block will come from grextras
 * bring in numanuma
 ** thread prio
 ** thread affinity
 ** memory affinity
 * track memcpys for block usage stats
+* runtime history, input/output multiple change?
+** resend the hint to the allocator and possibly re-allocate
