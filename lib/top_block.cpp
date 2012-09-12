@@ -91,7 +91,10 @@ void TopBlock::start(void)
 
 void TopBlock::stop(void)
 {
+    //interrupt these "special" threads
     (*this)->thread_group->interrupt_all();
+
+    //message all blocks to mark done
     TopBlockMessage event;
     event.what = TopBlockMessage::INERT;
     (*this)->executor.post_msg(event);
@@ -105,11 +108,13 @@ void TopBlock::run(void)
 
 void TopBlock::wait(void)
 {
+    //We do not need to join "special" threads;
+    //the token mechainism will do just fine.
     //(*this)->thread_group->join_all();
+
+    //wait for all blocks to release the token
     while (not (*this)->token.unique())
     {
         boost::this_thread::yield();
-        //sleep(1);
-        //VAR((*this)->token.use_count());
     }
 }

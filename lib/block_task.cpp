@@ -86,7 +86,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
 
     const size_t num_inputs = task_iface.get_num_inputs();
     const size_t num_outputs = task_iface.get_num_outputs();
-    const bool is_source = (num_inputs == 0);
+    //const bool is_source = (num_inputs == 0);
     //const bool is_sink = (num_outputs == 0);
     this->work_io_ptr_mask = 0; //reset
 
@@ -182,8 +182,8 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     if (this->enable_fixed_rate) work_noutput_items = std::min(
         work_noutput_items, myulround((num_input_items)*this->relative_rate));
     this->work_task_iface = task_iface;
-    int ret = 0;
-    if (is_source)
+    int ret = -1;
+    if (this->interruptible_thread)
     {
         this->interruptible_thread->block = block_ptr;
         this->interruptible_thread->ret = &ret;

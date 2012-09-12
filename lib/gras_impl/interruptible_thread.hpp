@@ -24,6 +24,12 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition_variable.hpp>
 
+//--------------------------- ATTENTION !!! --------------------------//
+//-- The author does not intend to have 2 threading platforms.
+//-- This file and its invocations should be removed when source blocks
+//-- in the tree can yield the thread context without producing.
+//--------------------------------------------------------------------//
+
 /*!
  * This is the only place you will find any threading stuff.
  * The entire point here is that the source's in gnuradio
@@ -47,7 +53,7 @@ namespace gnuradio
         {
             _done = false;
             _wait_msg = true;
-            _wait_ack = false;
+            _wait_ack = true;
             _mutex.lock();
             _thread = _thread_group->create_thread(boost::bind(&InterruptibleThread::run, this));
             _mutex.lock();
@@ -67,13 +73,9 @@ namespace gnuradio
         inline void call(void)
         {
             boost::mutex::scoped_lock lock(_mutex);
-            if (_done)
-            {
-                *ret = -1;
-                return;
-            }
+            if (_done) return;
             _wait_msg = false;
-            _cond.notify_one();
+            _notify(lock);
             while (_wait_ack) _cond.wait(lock);
             _wait_ack = true;
         }
@@ -82,31 +84,40 @@ namespace gnuradio
         {
             _mutex.unlock(); //spawn barrier unlock
             boost::mutex::scoped_lock lock(_mutex);
-            while (not _done and not boost::this_thread::interruption_requested())
+            try
             {
-                try
+                while (not boost::this_thread::interruption_requested())
                 {
                     while (_wait_msg) _cond.wait(lock);
                     _wait_msg = true;
                     *ret = block->Work(*input_items, *output_items);
+                    _wait_ack = false;
+                    _notify(lock);
                 }
-                catch(const std::exception &ex)
-                {
-                    std::cerr << "InterruptibleThread threw " << ex.what() << std::endl;
-                    _done = true;
-                }
-                catch(const boost::thread_interrupted &ex)
-                {
-                    _done = true;
-                }
-                catch(...)
-                {
-                    _done = true;
-                }
-                _wait_ack = false;
-                _cond.notify_one();
+            }
+            catch(const std::exception &ex)
+            {
+                std::cerr << "InterruptibleThread threw " << ex.what() << std::endl;
+            }
+            catch(const boost::thread_interrupted &)
+            {
+                //normal exit is thread_interrupted
+            }
+            catch(...)
+            {
+                std::cerr << "InterruptibleThread threw unknown exception" << std::endl;
             }
             _done = true;
+            _wait_ack = false;
+            _notify(lock);
+        }
+
+        template <typename Lock>
+        void _notify(Lock &lock)
+        {
+            lock.unlock();
+            _cond.notify_one();
+            lock.lock();
         }
 
         //shared work variables

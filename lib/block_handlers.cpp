@@ -16,6 +16,7 @@
 
 #include "element_impl.hpp"
 #include <gras_impl/vector_utils.hpp>
+#include <boost/make_shared.hpp>
 
 using namespace gnuradio;
 
@@ -59,10 +60,17 @@ void ElementImpl::handle_block_msg(
     }
 
     //store the topology's thread group
+    //erase any potentially old lingering threads
+    //spawn a new thread if this block is a source
     if (msg.type() == typeid(SharedThreadGroup))
     {
         this->thread_group = msg.cast<SharedThreadGroup>();
-        this->interruptible_thread = boost::shared_ptr<InterruptibleThread>(new InterruptibleThread(this->thread_group));
+        this->interruptible_thread.reset(); //erase old one
+        if (task_iface.get_num_inputs() == 0) //its a source
+        {
+            this->interruptible_thread =
+                boost::make_shared<InterruptibleThread>(this->thread_group);
+        }
         return;
     }
 
