@@ -118,3 +118,17 @@ void TopBlock::wait(void)
         boost::this_thread::yield();
     }
 }
+
+bool TopBlock::wait(const double timeout)
+{
+    const boost::system_time exit_time = boost::get_system_time() +
+        boost::posix_time::microseconds(long(timeout*1e6));
+
+    //wait for all blocks to release the token
+    while (not (*this)->token.unique() or boost::get_system_time() < exit_time)
+    {
+        boost::this_thread::yield();
+    }
+
+    return (*this)->token.unique();
+}

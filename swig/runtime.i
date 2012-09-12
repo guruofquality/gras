@@ -48,7 +48,7 @@
 
 #ifdef SW_RUNTIME
 
-%include "sw_runtime.i"
+%include "gras.i"
 
 #else
 

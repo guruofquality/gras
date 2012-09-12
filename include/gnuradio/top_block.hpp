@@ -67,8 +67,22 @@ struct GRAS_API TopBlock : HierBlock
     //! Stop a flow graph execution (does not block)
     void stop(void);
 
-    //! Wait for threads to exit after stop()
+    /*!
+     * Wait for threads to exit after stop() or run().
+     * This is a blocking call and will not return until
+     * all blocks in the topology have been marked done.
+     */
     virtual void wait(void);
+
+    /*!
+     * Wait for threads to exit after stop() or run().
+     * This is call will block until timeout or done.
+     *
+     * \param timeout the timeout in seconds
+     * \return true of execution completed
+     */
+    virtual bool wait(const double timeout);
+
 };
 
 } //namespace gnuradio

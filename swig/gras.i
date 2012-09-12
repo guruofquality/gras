@@ -75,6 +75,16 @@ struct TopBlockPython : TopBlock
             TopBlock::wait();
         )
     }
+
+    bool wait(const double timeout)
+    {
+        bool ret = false;
+        GR_PYTHON_BLOCKING_CODE
+        (
+            ret = TopBlock::wait(timeout);
+        )
+        return ret;
+    }
 };
 }
 
