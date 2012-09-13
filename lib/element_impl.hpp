@@ -20,7 +20,7 @@
 #include <gras_impl/debug.hpp>
 #include <gras_impl/token.hpp>
 #include <gras_impl/messages.hpp>
-#include <gras_impl/vector_of_queues.hpp>
+#include <gras_impl/output_buffer_queues.hpp>
 #include <gras_impl/input_buffer_queues.hpp>
 #include <gras_impl/interruptible_thread.hpp>
 
@@ -67,6 +67,7 @@ struct ElementImpl
     std::vector<size_t> input_history_items;
     std::vector<size_t> output_multiple_items;
     std::vector<size_t> input_multiple_items;
+    std::vector<bool> input_inline_enables;
 
     //keeps track of production
     std::vector<uint64_t> items_consumed;
@@ -97,7 +98,7 @@ struct ElementImpl
 
     //buffer queues and ready conditions
     InputBufferQueues input_queues;
-    VectorOfQueues<SBuffer> output_queues;
+    OutputBufferQueues<SBuffer> output_queues;
 
     //tag tracking
     std::vector<bool> input_tags_changed;

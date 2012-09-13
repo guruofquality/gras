@@ -152,6 +152,7 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
     //resize and fill port properties
     resize_fill_back(this->input_history_items, num_inputs);
     resize_fill_back(this->output_multiple_items, num_outputs);
+    resize_fill_grow(this->input_inline_enables, num_inputs, false);
 
     //resize the bytes consumed/produced
     resize_fill_grow(this->items_consumed, num_inputs, 0);

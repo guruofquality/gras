@@ -14,21 +14,21 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_LIBGRAS_IMPL_VECTOR_OF_QUEUES_HPP
-#define INCLUDED_LIBGRAS_IMPL_VECTOR_OF_QUEUES_HPP
+#ifndef INCLUDED_LIBGRAS_IMPL_OUTPUT_BUFFER_QUEUES_HPP
+#define INCLUDED_LIBGRAS_IMPL_OUTPUT_BUFFER_QUEUES_HPP
 
 #include <boost/dynamic_bitset.hpp>
 #include <vector>
-#include <queue>
+#include <deque>
 
 namespace gnuradio
 {
 
 template <typename T>
-struct VectorOfQueues
+struct OutputBufferQueues
 {
     boost::dynamic_bitset<> _bitset;
-    std::vector<std::queue<T> > _queues;
+    std::vector<std::deque<T> > _queues;
 
     inline void resize(const size_t size)
     {
@@ -38,7 +38,14 @@ struct VectorOfQueues
 
     inline void push(const size_t i, const T &value)
     {
-        _queues[i].push(value);
+        _queues[i].push_back(value);
+        _bitset.set(i);
+    }
+
+    //! used for input buffer inlining
+    inline void push_front(const size_t i, const T &value)
+    {
+        _queues[i].push_front(value);
         _bitset.set(i);
     }
 
@@ -54,13 +61,13 @@ struct VectorOfQueues
 
     inline void pop(const size_t i)
     {
-        _queues[i].pop();
+        _queues[i].pop_front();
         _bitset.set(i, not _queues[i].empty());
     }
 
     inline void flush(const size_t i)
     {
-        _queues[i] = std::queue<T>();
+        _queues[i] = std::deque<T>();
         _bitset.reset(i);
     }
 
@@ -89,4 +96,4 @@ struct VectorOfQueues
 
 } //namespace gnuradio
 
-#endif /*INCLUDED_LIBGRAS_IMPL_VECTOR_OF_QUEUES_HPP*/
+#endif /*INCLUDED_LIBGRAS_IMPL_OUTPUT_BUFFER_QUEUES_HPP*/

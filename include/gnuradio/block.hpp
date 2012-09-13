@@ -89,6 +89,27 @@ struct GRAS_API Block : Element
     void produce(const size_t which_output, const size_t how_many_items);
 
     /*!
+     * Set buffer inlining for this input.
+     * Inlining means that the input buffer can be used as an output buffer.
+     * The goal is to make better use of cache and memory bandwidth.
+     *
+     * By default, input port 0 is automatically inline enabled.
+     * Automatically inlining other points cannot be assumed safe.
+     * The user should override these assumptions for your work().
+     *
+     * The scheduler will inline a buffer when
+     *  * inlining is enabled on the particular input port
+     *  * block holds the only buffer reference aka unique
+     *  * buffer size is less than or equal to output buffer
+     *  * the input buffer has the same affinity as the block
+     *  * the input port has a buffer history of 0 items
+     */
+    void set_input_inline(const size_t which_input, const bool enb);
+
+    //! Get the buffer inlining state
+    bool input_inline(const size_t which_input) const;
+
+    /*!
      * Enable fixed rate logic.
      * When enabled, relative rate is assumed to be set,
      * and forecast is automatically called.

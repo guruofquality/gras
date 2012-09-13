@@ -30,6 +30,7 @@ Block::Block(const std::string &name):
 {
     this->set_history(0);
     this->set_output_multiple(1);
+    this->set_input_inline(0, true);
     this->set_fixed_rate(true);
     this->set_relative_rate(1.0);
     this->set_tag_propagation_policy(TPP_ALL_TO_ALL);
@@ -105,6 +106,16 @@ void Block::consume_each(const size_t how_many_items)
 void Block::produce(const size_t which_output, const size_t how_many_items)
 {
     (*this)->produce_items[which_output] = how_many_items;
+}
+
+void Block::set_input_inline(const size_t which_input, const bool enb)
+{
+    vector_set((*this)->input_inline_enables, enb, which_input);
+}
+
+bool Block::input_inline(const size_t which_input) const
+{
+    return (*this)->input_inline_enables[which_input];
 }
 
 void Block::set_fixed_rate(const bool fixed_rate)
