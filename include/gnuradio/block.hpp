@@ -93,14 +93,14 @@ struct GRAS_API Block : Element
      * Inlining means that the input buffer can be used as an output buffer.
      * The goal is to make better use of cache and memory bandwidth.
      *
-     * By default, input port 0 is automatically inline enabled.
-     * Automatically inlining other points cannot be assumed safe.
-     * The user should override these assumptions for your work().
+     * By default, inlining is disabled on all input ports.
+     * The user should enable inlining on an input port
+     * when it is understood that the work function will read
+     * before writting to a particular section of the buffer.
      *
      * The scheduler will inline a buffer when
      *  * inlining is enabled on the particular input port
      *  * block holds the only buffer reference aka unique
-     *  * buffer size is less than or equal to output buffer
      *  * the input buffer has the same affinity as the block
      *  * the input port has a buffer history of 0 items
      */

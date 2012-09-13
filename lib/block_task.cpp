@@ -107,20 +107,35 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //------------------------------------------------------------------
     size_t num_input_items = REALLY_BIG; //so big that it must std::min
     size_t input_tokens_count = 0;
+    size_t output_inline_index = 0;
     for (size_t i = 0; i < num_inputs; i++)
     {
         input_tokens_count += this->input_tokens[i].use_count();
 
         ASSERT(this->input_queues.ready(i));
-        const SBuffer buff = this->input_queues.front(i);
+        bool potential_inline;
+        const SBuffer buff = this->input_queues.front(i, potential_inline);
+        void *mem = buff.get();
         const size_t items = buff.length/this->input_items_sizes[i];
 
-        this->work_io_ptr_mask |= ptrdiff_t(buff.get());
-        this->input_items[i]._mem = buff.get();
+        this->work_io_ptr_mask |= ptrdiff_t(mem);
+        this->input_items[i]._mem = mem;
         this->input_items[i]._len = items;
-        this->work_input_items[i] = buff.get();
+        this->work_input_items[i] = mem;
         this->work_ninput_items[i] = items;
         num_input_items = std::min(num_input_items, items);
+
+        //inline dealings, how and when input buffers can be inlined into output buffers
+        //TODO, check that the buff.get_affinity() matches this block or we dont inline
+        //continue;
+        if (potential_inline and input_inline_enables[i] and output_inline_index < num_outputs)
+        {
+            //copy buffer reference but push with zero length, same offset
+            SBuffer new_obuff = buff;
+            new_obuff.length = 0;
+            this->output_queues.push_front(i, new_obuff); //you got inlined!
+            output_inline_index++; //done do this output port again
+        }
     }
     const bool inputs_done = num_inputs != 0 and input_tokens_count == num_inputs;
 

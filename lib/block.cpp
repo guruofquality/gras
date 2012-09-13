@@ -30,7 +30,6 @@ Block::Block(const std::string &name):
 {
     this->set_history(0);
     this->set_output_multiple(1);
-    this->set_input_inline(0, true);
     this->set_fixed_rate(true);
     this->set_relative_rate(1.0);
     this->set_tag_propagation_policy(TPP_ALL_TO_ALL);

@@ -53,7 +53,7 @@ struct InputBufferQueues
      * Otherwise, resolve pointers to the input buffer,
      * moving the memory and length by num history bytes.
      */
-    SBuffer front(const size_t i);
+    SBuffer front(const size_t i, bool &potential_inline);
 
     /*!
      * Rules for consume:
@@ -184,19 +184,25 @@ inline void InputBufferQueues::init(
 }
 
 
-inline SBuffer InputBufferQueues::front(const size_t i)
+inline SBuffer InputBufferQueues::front(const size_t i, bool &potential_inline)
 {
     //if (_queues[i].empty()) return BuffInfo();
 
     ASSERT(not _queues[i].empty());
     ASSERT(this->ready(i));
     __prepare(i);
-
     SBuffer &front = _queues[i].front();
-    SBuffer buff = front; //copy new settings
+    const bool unique = front.unique();
+
+    //same buffer, different offset and length
+    SBuffer buff = front;
     buff.offset -= _history_bytes[i];
     buff.length /= _multiple_bytes[i];
     buff.length *= _multiple_bytes[i];
+
+    //set the flag that this buffer *might* be inlined as an output buffer
+    potential_inline = unique and (_history_bytes[i] == 0) and (buff.length == front.length);
+
     return buff;
 }
 
