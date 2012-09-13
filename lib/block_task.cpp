@@ -112,13 +112,13 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         input_tokens_count += this->input_tokens[i].use_count();
 
         ASSERT(this->input_queues.ready(i));
-        const BuffInfo info = this->input_queues.front(i);
-        const size_t items = info.len/this->input_items_sizes[i];
+        const SBuffer buff = this->input_queues.front(i);
+        const size_t items = buff.length/this->input_items_sizes[i];
 
-        this->work_io_ptr_mask |= ptrdiff_t(info.mem);
-        this->input_items[i]._mem = info.mem;
+        this->work_io_ptr_mask |= ptrdiff_t(buff.get());
+        this->input_items[i]._mem = buff.get();
         this->input_items[i]._len = items;
-        this->work_input_items[i] = info.mem;
+        this->work_input_items[i] = buff.get();
         this->work_ninput_items[i] = items;
         num_input_items = std::min(num_input_items, items);
     }

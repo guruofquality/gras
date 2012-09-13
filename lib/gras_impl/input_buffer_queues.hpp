@@ -29,13 +29,6 @@
 namespace gnuradio
 {
 
-struct BuffInfo
-{
-    BuffInfo(void): mem(NULL), len(0){}
-    void *mem;
-    size_t len;
-};
-
 struct InputBufferQueues
 {
     ~InputBufferQueues(void)
@@ -60,7 +53,7 @@ struct InputBufferQueues
      * Otherwise, resolve pointers to the input buffer,
      * moving the memory and length by num history bytes.
      */
-    BuffInfo front(const size_t i);
+    SBuffer front(const size_t i);
 
     /*!
      * Rules for consume:
@@ -191,7 +184,7 @@ inline void InputBufferQueues::init(
 }
 
 
-inline BuffInfo InputBufferQueues::front(const size_t i)
+inline SBuffer InputBufferQueues::front(const size_t i)
 {
     //if (_queues[i].empty()) return BuffInfo();
 
@@ -200,12 +193,11 @@ inline BuffInfo InputBufferQueues::front(const size_t i)
     __prepare(i);
 
     SBuffer &front = _queues[i].front();
-    BuffInfo info;
-    info.mem = front.get(-_history_bytes[i]);
-    info.len = front.length;
-    info.len /= _multiple_bytes[i];
-    info.len *= _multiple_bytes[i];
-    return info;
+    SBuffer buff = front; //copy new settings
+    buff.offset -= _history_bytes[i];
+    buff.length /= _multiple_bytes[i];
+    buff.length *= _multiple_bytes[i];
+    return buff;
 }
 
 inline void InputBufferQueues::__prepare(const size_t i)
