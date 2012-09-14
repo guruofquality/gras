@@ -124,6 +124,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         this->work_input_items[i] = mem;
         this->work_ninput_items[i] = items;
         num_input_items = std::min(num_input_items, items);
+        this->consume_called[i] = false;
 
         //inline dealings, how and when input buffers can be inlined into output buffers
         //TODO, check that the buff.get_affinity() matches this block or we dont inline
@@ -223,7 +224,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     for (size_t i = 0; i < num_inputs; i++)
     {
         ASSERT(enable_fixed_rate or work_ret != Block::WORK_CALLED_PRODUCE);
-        const size_t items = (enable_fixed_rate)? (myulround((noutput_items/this->relative_rate))) : this->consume_items[i];
+        const size_t items = (this->consume_called[i])? this->consume_items[i] : (myulround((noutput_items/this->relative_rate)));
         this->consume_items[i] = 0;
 
         this->items_consumed[i] += items;

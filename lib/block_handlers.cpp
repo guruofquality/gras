@@ -166,6 +166,7 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
     this->input_items.resize(num_inputs);
     this->output_items.resize(num_outputs);
     this->consume_items.resize(num_inputs, 0);
+    this->consume_called.resize(num_inputs, false);
     this->produce_items.resize(num_outputs, 0);
     this->input_queues.resize(num_inputs);
     this->output_queues.resize(num_outputs);

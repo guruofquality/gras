@@ -24,7 +24,7 @@
 #define ARMAGEDDON 0
 #define MESSAGE 0
 #define WORK 0
-#define ASSERTING 0
+#define ASSERTING 1
 
 #define HERE() std::cerr << __FILE__ << ":" << __LINE__ << std::endl << std::flush;
 #define VAR(x) std::cerr << #x << " = " << (x) << std::endl << std::flush;
