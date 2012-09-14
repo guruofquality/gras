@@ -20,14 +20,28 @@
 #include <iostream>
 #include <stdexcept>
 
+//----------------------------------------------------------------------
+//-- set to 1 to enable these debugs:
+//----------------------------------------------------------------------
 #define GENESIS 0
 #define ARMAGEDDON 0
 #define MESSAGE 0
-#define WORK 0
-#define ASSERTING 0
 
+//----------------------------------------------------------------------
+//-- define to enable these debugs:
+//----------------------------------------------------------------------
+//#define WORK_DEBUG
+#define ASSERTING
+
+//----------------------------------------------------------------------
+//-- various debug prints
+//----------------------------------------------------------------------
 #define HERE() std::cerr << __FILE__ << ":" << __LINE__ << std::endl << std::flush;
 #define VAR(x) std::cerr << #x << " = " << (x) << std::endl << std::flush;
+
+//----------------------------------------------------------------------
+//-- implementation for assert debug
+//----------------------------------------------------------------------
 #ifdef ASSERTING
 #define ASSERT(x) {if(not (x)) \
 { \
@@ -36,6 +50,34 @@
 }}
 #else
 #define ASSERT(x)
+#endif
+
+//----------------------------------------------------------------------
+//-- implementation for work debug
+//----------------------------------------------------------------------
+#ifdef WORK_DEBUG
+
+#include <boost/thread/mutex.hpp>
+
+static boost::mutex work_debug_mutex;
+
+struct WorkDebugPrinter
+{
+    WorkDebugPrinter(const std::string &name):
+        lock(work_debug_mutex), name(name)
+    {
+        std::cout << "-----> begin work on " << name << std::endl;
+    }
+
+    ~WorkDebugPrinter(void)
+    {
+        std::cout << "<----- end work on " << name << std::endl;
+    }
+
+    boost::mutex::scoped_lock lock;
+    std::string name;
+};
+
 #endif
 
 #endif /*INCLUDED_LIBGRAS_IMPL_DEBUG_HPP*/

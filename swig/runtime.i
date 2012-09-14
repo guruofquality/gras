@@ -57,7 +57,9 @@
 namespace gnuradio
 {
     struct Block : Element{};
+    struct HierBlock : Element{};
 }
+struct gr_hier_block2 : gnuradio::HierBlock{};
 struct gr_block : gnuradio::Block{};
 struct gr_sync_block : gr_block{};
 struct gr_sync_interpolator : gr_sync_block{};

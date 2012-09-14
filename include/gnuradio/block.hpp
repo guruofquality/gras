@@ -74,9 +74,16 @@ struct GRAS_API Block : Element
      * Basic routines from basic block
      ******************************************************************/
 
-    size_t history(const size_t which_input = 0) const;
+    //! Get the number of history items (default 0)
+    size_t input_history(const size_t which_input = 0) const;
 
-    void set_history(const size_t history, const size_t which_input = 0);
+    /*!
+     * Set the number of items that will be saved from the previous run.
+     * Input buffers will begin with an overlap of the previous's buffer's
+     * num history items. This is used to implement sample memory for
+     * things like sliding dot products/FIR filters.
+     */
+    void set_input_history(const size_t history, const size_t which_input = 0);
 
     void set_output_multiple(const size_t multiple, const size_t which_output = 0);
 

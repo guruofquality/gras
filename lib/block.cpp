@@ -28,7 +28,7 @@ Block::Block(void)
 Block::Block(const std::string &name):
     Element(name)
 {
-    this->set_history(0);
+    this->set_input_history(0);
     this->set_output_multiple(1);
     this->set_fixed_rate(true);
     this->set_relative_rate(1.0);
@@ -67,15 +67,13 @@ typename V::value_type vector_get(const V &v, const size_t index)
     return v[index];
 }
 
-size_t Block::history(const size_t which_input) const
+size_t Block::input_history(const size_t which_input) const
 {
     return vector_get((*this)->input_history_items, which_input);
 }
 
-void Block::set_history(const size_t history_, const size_t which_input)
+void Block::set_input_history(const size_t history, const size_t which_input)
 {
-    //FIXME why is history - 1 (gnuradio loves this)
-    const size_t history = (history_ == 0)? 0 : history_-1;
     vector_set((*this)->input_history_items, history, which_input);
 }
 
@@ -92,6 +90,7 @@ void Block::set_output_multiple(const size_t multiple, const size_t which_output
 void Block::consume(const size_t which_input, const size_t how_many_items)
 {
     (*this)->consume_items[which_input] = how_many_items;
+    (*this)->consume_called[which_input] = true;
 }
 
 void Block::consume_each(const size_t how_many_items)
@@ -99,6 +98,7 @@ void Block::consume_each(const size_t how_many_items)
     for (size_t i = 0; i < (*this)->consume_items.size(); i++)
     {
         (*this)->consume_items[i] = how_many_items;
+        (*this)->consume_called[i] = true;
     }
 }
 
@@ -114,7 +114,7 @@ void Block::set_input_inline(const size_t which_input, const bool enb)
 
 bool Block::input_inline(const size_t which_input) const
 {
-    return (*this)->input_inline_enables[which_input];
+    return vector_get((*this)->input_inline_enables, which_input);
 }
 
 void Block::set_fixed_rate(const bool fixed_rate)

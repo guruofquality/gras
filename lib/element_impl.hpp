@@ -87,6 +87,7 @@ struct ElementImpl
     //track work's calls to produce and consume
     std::vector<size_t> produce_items;
     std::vector<size_t> consume_items;
+    std::vector<bool> consume_called;
 
     //track the subscriber counts
     std::vector<Token> input_tokens;
