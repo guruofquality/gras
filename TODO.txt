@@ -13,6 +13,8 @@
 * handle calculating noutputitems using ninputs as a constraint
 * allocation
 ** hooks for advanced allocation
+** override the default allocator (output token, recommended bytes)
+** set allocator affinity hook
 * python wrapper for block will come from grextras
 * bring in numanuma
 ** thread prio
@@ -22,3 +24,5 @@
 * runtime history, input/output multiple change?
 ** resend the hint to the allocator and possibly re-allocate
 * determine when outputs should be flushed, or continual filling
+* hooks for setting the "active framework"
+** set this before creating blocks to give them an affinity
