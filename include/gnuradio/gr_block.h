@@ -24,6 +24,10 @@
 #include <gr_tags.h>
 #include <string>
 
+typedef std::vector<int> gr_vector_int;
+typedef std::vector<void *> gr_vector_void_star;
+typedef std::vector<const void *> gr_vector_const_void_star;
+
 struct GRAS_API gr_block : gnuradio::Block
 {
 

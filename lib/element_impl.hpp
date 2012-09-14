@@ -29,7 +29,6 @@
 #include <tsbe/executor.hpp>
 #include <gnuradio/element.hpp>
 #include <gnuradio/block.hpp>
-#include <gr_types.h>
 #include <set>
 #include <vector>
 #include <queue>

@@ -21,3 +21,4 @@
 * track memcpys for block usage stats
 * runtime history, input/output multiple change?
 ** resend the hint to the allocator and possibly re-allocate
+* determine when outputs should be flushed, or continual filling
