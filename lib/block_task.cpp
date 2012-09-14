@@ -73,6 +73,10 @@ void ElementImpl::mark_done(const tsbe::TaskInterface &task_iface)
 
 void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
 {
+    #ifdef WORK_DEBUG
+    WorkDebugPrinter(this->name);
+    #endif
+
     //------------------------------------------------------------------
     //-- Decide if its possible to continue any processing:
     //-- Handle task may get called for incoming buffers,
@@ -83,7 +87,6 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         this->input_queues.all_ready() and
         this->output_queues.all_ready()
     )) return;
-    if (WORK) std::cout << "=== calling work on " << name << " ===" << std::endl;
 
     const size_t num_inputs = task_iface.get_num_inputs();
     const size_t num_outputs = task_iface.get_num_outputs();
