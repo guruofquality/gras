@@ -28,7 +28,7 @@ Block::Block(void)
 Block::Block(const std::string &name):
     Element(name)
 {
-    this->set_history(0);
+    this->set_input_history(0);
     this->set_output_multiple(1);
     this->set_fixed_rate(true);
     this->set_relative_rate(1.0);
@@ -67,12 +67,12 @@ typename V::value_type vector_get(const V &v, const size_t index)
     return v[index];
 }
 
-size_t Block::history(const size_t which_input) const
+size_t Block::input_history(const size_t which_input) const
 {
     return vector_get((*this)->input_history_items, which_input);
 }
 
-void Block::set_history(const size_t history, const size_t which_input)
+void Block::set_input_history(const size_t history, const size_t which_input)
 {
     vector_set((*this)->input_history_items, history, which_input);
 }

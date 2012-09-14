@@ -66,12 +66,15 @@ struct GRAS_API gr_block : gnuradio::Block
 
     unsigned history(void) const
     {
-        return gnuradio::Block::history();
+        //implement off-by-one history compat
+        return this->input_history()+1;
     }
 
     void set_history(unsigned history)
     {
-        gnuradio::Block::set_history(history);
+        //implement off-by-one history compat
+        if (history == 0) history++;
+        this->set_input_history(history-1);
     }
 
     void set_alignment(const size_t alignment);

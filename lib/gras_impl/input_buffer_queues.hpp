@@ -159,7 +159,6 @@ inline void InputBufferQueues::init(
 
         //determine byte sizes for buffers and dealing with history
         _history_bytes[i] = input_item_sizes[i]*input_history_items[i];
-        if (_history_bytes[i]) _history_bytes[i] -= input_item_sizes[i]; //crazy history-1 API
 
         //calculate the input multiple aka reserve size
         _reserve_bytes[i] = input_item_sizes[i]*input_multiple_items[i];
