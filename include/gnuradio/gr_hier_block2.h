@@ -18,7 +18,7 @@
 #define INCLUDED_GNURADIO_GR_HIER_BLOCK2_H
 
 #include <gnuradio/hier_block.hpp>
-#include <gr_io_signature.h>
+#include <gnuradio/gr_io_signature.h>
 
 struct GRAS_API gr_hier_block2 : gnuradio::HierBlock
 {

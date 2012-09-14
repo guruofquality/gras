@@ -18,7 +18,7 @@
 #define INCLUDED_GNURADIO_GR_TOP_BLOCK_H
 
 #include <gnuradio/top_block.hpp>
-#include <gr_hier_block2.h>
+#include <gnuradio/gr_hier_block2.h>
 
 struct GRAS_API gr_top_block : gnuradio::TopBlock
 {

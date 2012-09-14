@@ -18,10 +18,10 @@
 #define INCLUDED_GNURADIO_GR_BLOCK_H
 
 #include <gnuradio/block.hpp>
-#include <gr_io_signature.h>
-#include <gr_sptr_magic.h>
-#include <gr_types.h>
-#include <gr_tags.h>
+#include <gnuradio/gr_io_signature.h>
+#include <gnuradio/gr_sptr_magic.h>
+#include <gnuradio/gr_types.h>
+#include <gnuradio/gr_tags.h>
 #include <string>
 
 typedef std::vector<int> gr_vector_int;

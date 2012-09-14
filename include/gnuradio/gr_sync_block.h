@@ -17,7 +17,7 @@
 #ifndef INCLUDED_GNURADIO_GR_SYNC_BLOCK_H
 #define INCLUDED_GNURADIO_GR_SYNC_BLOCK_H
 
-#include <gr_block.h>
+#include <gnuradio/gr_block.h>
 
 struct GRAS_API gr_sync_block : public gr_block
 {
