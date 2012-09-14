@@ -72,10 +72,8 @@ size_t Block::history(const size_t which_input) const
     return vector_get((*this)->input_history_items, which_input);
 }
 
-void Block::set_history(const size_t history_, const size_t which_input)
+void Block::set_history(const size_t history, const size_t which_input)
 {
-    //FIXME why is history - 1 (gnuradio loves this)
-    const size_t history = (history_ == 0)? 0 : history_-1;
     vector_set((*this)->input_history_items, history, which_input);
 }
 
@@ -116,7 +114,7 @@ void Block::set_input_inline(const size_t which_input, const bool enb)
 
 bool Block::input_inline(const size_t which_input) const
 {
-    return (*this)->input_inline_enables[which_input];
+    return vector_get((*this)->input_inline_enables, which_input);
 }
 
 void Block::set_fixed_rate(const bool fixed_rate)

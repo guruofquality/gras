@@ -159,8 +159,13 @@ inline void InputBufferQueues::init(
 
         //determine byte sizes for buffers and dealing with history
         _history_bytes[i] = input_item_sizes[i]*input_history_items[i];
+        if (_history_bytes[i]) _history_bytes[i] -= input_item_sizes[i]; //crazy history-1 API
+
+        //calculate the input multiple aka reserve size
         _reserve_bytes[i] = input_item_sizes[i]*input_multiple_items[i];
         _multiple_bytes[i] = std::max(size_t(1), _reserve_bytes[i]);
+
+        //post bytes are the desired buffer size to escape the edge case
         _post_bytes[i] = input_item_sizes[i]*max_history_items;
         _post_bytes[i] = std::max(_post_bytes[i], _reserve_bytes[i]);
         _post_bytes[i] += input_item_sizes[i]; //pad for round down issues
@@ -195,6 +200,7 @@ inline SBuffer InputBufferQueues::front(const size_t i, bool &potential_inline)
     ASSERT(not _queues[i].empty());
     ASSERT(this->ready(i));
     __prepare(i);
+    ASSERT(_queues[i].front().offset >= _history_bytes[i]);
     SBuffer &front = _queues[i].front();
     const bool unique = front.unique();
 
@@ -278,7 +284,8 @@ inline bool InputBufferQueues::consume(const size_t i, const size_t bytes_consum
         _queues[i].pop_front();
     }
 
-    if (_in_hist_buff[i] and _queues[i].front().offset >= 2*_history_bytes[i])
+    //otherwise, see if this is a mini history buff we can pop
+    else if (_in_hist_buff[i] and _queues[i].front().offset >= 2*_history_bytes[i])
     {
         const size_t residual = _queues[i].front().length;
         _queues[i].pop_front();
@@ -287,6 +294,7 @@ inline bool InputBufferQueues::consume(const size_t i, const size_t bytes_consum
         ASSERT(_queues[i].front().offset > residual);
         _queues[i].front().offset -= residual;
         _queues[i].front().length += residual;
+        ASSERT(_queues[i].front().offset >= _history_bytes[i]);
     }
 
     //update the number of bytes in this queue
