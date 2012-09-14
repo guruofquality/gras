@@ -130,10 +130,13 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         this->consume_called[i] = false;
 
         //inline dealings, how and when input buffers can be inlined into output buffers
-        //TODO, check that the buff.get_affinity() matches this block or we dont inline
         //continue;
-        if (potential_inline and input_inline_enables[i] and output_inline_index < num_outputs)
-        {
+        if (
+            potential_inline and
+            input_inline_enables[i] and
+            output_inline_index < num_outputs and
+            buff.get_affinity() == this->buffer_affinity
+        ){
             //copy buffer reference but push with zero length, same offset
             SBuffer new_obuff = buff;
             new_obuff.length = 0;

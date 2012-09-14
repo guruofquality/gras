@@ -150,6 +150,7 @@ struct ElementImpl
     } block_state;
     Token token;
     size_t hint; //some kind of allocation hint
+    Affinity buffer_affinity;
 
     std::vector<std::vector<BufferHintMessage> > output_allocation_hints;
 

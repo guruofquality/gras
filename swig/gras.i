@@ -31,6 +31,7 @@
 %ignore gnuradio::IOSignature::operator->();
 %ignore gnuradio::IOSignature::operator->() const;
 
+%include <gnuradio/sbuffer.hpp>
 %include <gnuradio/element.hpp>
 %include <gnuradio/tags.hpp>
 %include <gnuradio/block.hpp>

@@ -14,12 +14,10 @@
 * allocation
 ** hooks for advanced allocation
 ** override the default allocator (output token, recommended bytes)
-** set allocator affinity hook
 * python wrapper for block will come from grextras
 * bring in numanuma
 ** thread prio
 ** thread affinity
-** memory affinity
 * track memcpys for block usage stats
 * runtime history, input/output multiple change?
 ** resend the hint to the allocator and possibly re-allocate

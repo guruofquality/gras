@@ -93,6 +93,7 @@ void ElementImpl::handle_allocation(const tsbe::TaskInterface &task_iface)
             SBufferConfig config;
             config.memory = NULL;
             config.length = bytes;
+            config.affinity = this->buffer_affinity;
             config.token = this->output_buffer_tokens[i];
             SBuffer buff(config);
             //buffer derefs here and the token messages it back to the block

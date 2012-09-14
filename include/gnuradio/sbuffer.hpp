@@ -23,6 +23,22 @@
 namespace gnuradio
 {
 
+//! A small wrapper to represent a node affinity
+struct Affinity
+{
+    Affinity(void)
+    {
+        value = -1;
+    }
+
+    operator long long(void) const
+    {
+        return value;
+    }
+
+    long long value;
+};
+
 //! The callback function type when buffers dereference
 typedef boost::function<void(SBuffer &)> SBufferDeleter;
 

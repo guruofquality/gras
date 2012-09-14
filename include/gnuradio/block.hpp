@@ -18,6 +18,7 @@
 #define INCLUDED_GNURADIO_BLOCK_HPP
 
 #include <gnuradio/element.hpp>
+#include <gnuradio/sbuffer.hpp>
 #include <gnuradio/tags.hpp>
 #include <gruel/pmt.h>
 #include <vector>
@@ -198,6 +199,21 @@ struct GRAS_API Block : Element
 
     //! scheduler calls when the topology is updated, can be overloaded
     virtual bool check_topology(int ninputs, int noutputs);
+
+    /*******************************************************************
+     * routines related to affinity and allocation
+     ******************************************************************/
+
+    /*!
+     * Set the node affinity of this block.
+     * This call affects how output buffers are allocated.
+     * By default memory is allocated by malloc.
+     * When the affinity is set, virtual memory
+     * will be locked to a physical CPU/memory node.
+     */
+    void set_buffer_affinity(const Affinity &affinity);
+
+    //TODO overload for allocate output buffer(index)
 
 };
 

@@ -240,3 +240,8 @@ bool Block::check_topology(int, int)
 {
     return true;
 }
+
+void Block::set_buffer_affinity(const Affinity &affinity)
+{
+    (*this)->buffer_affinity = affinity;
+}

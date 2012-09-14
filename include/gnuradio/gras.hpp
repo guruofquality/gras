@@ -38,21 +38,6 @@ struct SBufferImpl;
 void intrusive_ptr_add_ref(SBufferImpl*);
 void intrusive_ptr_release(SBufferImpl*);
 
-struct Affinity
-{
-    Affinity(void)
-    {
-        value = -1;
-    }
-
-    operator long long(void) const
-    {
-        return value;
-    }
-
-    long long value;
-};
-
 } //namespace gnuradio
 
 #endif /*INCLUDED_GNURADIO_GRAS_HPP*/
