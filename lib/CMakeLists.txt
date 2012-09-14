@@ -22,6 +22,7 @@ endif()
 # Append gnuradio-core library sources
 ########################################################################
 list(APPEND gnuradio_core_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/debug.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/element.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sbuffer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block.cpp

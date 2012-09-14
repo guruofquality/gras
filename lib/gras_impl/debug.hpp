@@ -66,12 +66,12 @@ struct WorkDebugPrinter
     WorkDebugPrinter(const std::string &name):
         lock(work_debug_mutex), name(name)
     {
-        std::cout << "-----> begin work on " << name << std::endl;
+        std::cerr << "-----> begin work on " << name << std::endl;
     }
 
     ~WorkDebugPrinter(void)
     {
-        std::cout << "<----- end work on " << name << std::endl;
+        std::cerr << "<----- end work on " << name << std::endl;
     }
 
     boost::mutex::scoped_lock lock;
