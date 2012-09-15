@@ -33,7 +33,7 @@ TopBlock::TopBlock(const std::string &name):
     (*this)->executor = tsbe::Executor(config);
     (*this)->token = Token::make();
     (*this)->thread_group = SharedThreadGroup(new boost::thread_group());
-    if (GENESIS) std::cout
+    if (GENESIS) std::cerr
         << "===================================================\n"
         << "== Top Block Created: " << name << "\n"
         << "===================================================\n"
@@ -45,7 +45,7 @@ void ElementImpl::top_block_cleanup(void)
     TopBlockMessage event;
     event.what = TopBlockMessage::INERT;
     this->executor.post_msg(event);
-    if (ARMAGEDDON) std::cout
+    if (ARMAGEDDON) std::cerr
         << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"
         << "xx Top Block Destroyed: " << name << "\n"
         << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"

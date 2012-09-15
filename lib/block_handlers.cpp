@@ -25,7 +25,7 @@ void ElementImpl::handle_block_msg(
     const tsbe::TaskInterface &task_iface,
     const tsbe::Wax &msg
 ){
-    if (MESSAGE) std::cout << "handle_block_msg (" << msg.type().name() << ") " << name << std::endl;
+    if (MESSAGE) std::cerr << "handle_block_msg (" << msg.type().name() << ") " << name << std::endl;
 
     //a buffer has returned from the downstream
     //(all interested consumers have finished with it)

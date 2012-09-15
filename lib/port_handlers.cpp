@@ -24,7 +24,7 @@ void ElementImpl::handle_input_msg(
     const size_t index,
     const tsbe::Wax &msg
 ){
-    if (MESSAGE) std::cout << "handle_input_msg (" << msg.type().name() << ") " << name << std::endl;
+    if (MESSAGE) std::cerr << "handle_input_msg (" << msg.type().name() << ") " << name << std::endl;
 
     //handle incoming stream buffer, push into the queue
     if (msg.type() == typeid(SBuffer))
@@ -68,7 +68,7 @@ void ElementImpl::handle_output_msg(
     const size_t index,
     const tsbe::Wax &msg
 ){
-    if (MESSAGE) std::cout << "handle_output_msg (" << msg.type().name() << ") " << name << std::endl;
+    if (MESSAGE) std::cerr << "handle_output_msg (" << msg.type().name() << ") " << name << std::endl;
 
     //store the token of the downstream consumer
     if (msg.type() == typeid(Token))

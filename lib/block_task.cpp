@@ -64,7 +64,7 @@ void ElementImpl::mark_done(const tsbe::TaskInterface &task_iface)
         task_iface.post_downstream(i, CheckTokensMessage());
     }
 
-    if (ARMAGEDDON) std::cout
+    if (ARMAGEDDON) std::cerr
         << "==================================================\n"
         << "== The " << name << " is done...\n"
         << "==================================================\n"
