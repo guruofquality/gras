@@ -109,11 +109,11 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //-- initialize input buffers before work
     //------------------------------------------------------------------
     size_t num_input_items = REALLY_BIG; //so big that it must std::min
-    size_t input_tokens_count = 0;
+    bool inputs_done = false;
     size_t output_inline_index = 0;
     for (size_t i = 0; i < num_inputs; i++)
     {
-        input_tokens_count += this->input_tokens[i].use_count();
+        inputs_done = inputs_done or this->input_tokens[i].unique();
 
         ASSERT(this->input_queues.ready(i));
         bool potential_inline;
@@ -144,16 +144,15 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
             output_inline_index++; //done do this output port again
         }
     }
-    const bool inputs_done = num_inputs != 0 and input_tokens_count == num_inputs;
 
     //------------------------------------------------------------------
     //-- initialize output buffers before work
     //------------------------------------------------------------------
     size_t num_output_items = REALLY_BIG; //so big that it must std::min
-    size_t output_tokens_count = 0;
+    bool outputs_done = false;
     for (size_t i = 0; i < num_outputs; i++)
     {
-        output_tokens_count += this->output_tokens[i].use_count();
+        outputs_done = outputs_done or this->output_tokens[i].unique();
 
         ASSERT(this->output_queues.ready(i));
         const SBuffer &buff = this->output_queues.front(i);
@@ -167,7 +166,6 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         this->work_output_items[i] = mem;
         num_output_items = std::min(num_output_items, items);
     }
-    const bool outputs_done = num_outputs != 0 and output_tokens_count == num_outputs;
 
     //if we have outputs and at least one port has no downstream subscibers, mark done
     if (outputs_done)
