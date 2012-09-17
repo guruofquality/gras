@@ -167,7 +167,7 @@ inline void InputBufferQueues::init(
         //post bytes are the desired buffer size to escape the edge case
         _post_bytes[i] = input_item_sizes[i]*max_history_items;
         _post_bytes[i] = std::max(_post_bytes[i], _reserve_bytes[i]);
-        _post_bytes[i] += input_item_sizes[i]; //pad for round down issues
+        _post_bytes[i] += _reserve_bytes[i]; //pad for round down issues
 
         //allocate mini buffers for history edge conditions
         size_t num_bytes = _history_bytes[i] + _post_bytes[i];
