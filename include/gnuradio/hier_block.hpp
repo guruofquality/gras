@@ -46,6 +46,8 @@ struct GRAS_API HierBlock : Element
         const size_t sink_index
     );
 
+    void disconnect_all(void);
+
 };
 
 } //namespace gnuradio

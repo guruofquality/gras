@@ -79,3 +79,8 @@ void HierBlock::disconnect(
     remove_one((*this)->children, src.weak_self.lock());
     remove_one((*this)->children, sink.weak_self.lock());
 }
+
+void HierBlock::disconnect_all(void)
+{
+    (*this)->topology.clear_all();
+}
