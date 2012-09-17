@@ -34,6 +34,7 @@ HierBlock::HierBlock(const std::string &name):
 
 void ElementImpl::hier_block_cleanup(void)
 {
+    this->topology.clear_all();
     this->children.clear();
 }
 
@@ -83,4 +84,5 @@ void HierBlock::disconnect(
 void HierBlock::disconnect_all(void)
 {
     (*this)->topology.clear_all();
+    (*this)->children.clear();
 }
