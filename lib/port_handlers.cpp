@@ -60,6 +60,19 @@ void ElementImpl::handle_input_msg(
         return;
     }
 
+    //handle the upstream block allocation request
+    if (msg.type() == typeid(InputAllocatorMessage))
+    {
+        InputAllocatorMessage message;
+        message.token = block_ptr->input_buffer_allocator(
+            index,
+            msg.cast<InputAllocatorMessage>().token,
+            msg.cast<InputAllocatorMessage>().recommend_length
+        );
+        if (message.token) handle.post_upstream(index, message);
+        return;
+    }
+
     ASSERT(false);
 }
 
@@ -76,7 +89,6 @@ void ElementImpl::handle_output_msg(
         this->token_pool.insert(msg.cast<Token>());
         return;
     }
-
 
     //a downstream block has declared itself done, recheck the token
     if (msg.type() == typeid(CheckTokensMessage))
@@ -109,6 +121,16 @@ void ElementImpl::handle_output_msg(
 
         this->output_allocation_hints[index] = hints;
         return;
+    }
+
+    //return of a positive downstream allocation
+    //reset the token, and clear old output buffers
+    //the new token from the downstream is installed
+    if (msg.type() == typeid(InputAllocatorMessage))
+    {
+        this->output_buffer_tokens[index].reset();
+        this->output_queues.flush(index);
+        this->output_buffer_tokens[index] = msg.cast<InputAllocatorMessage>().token;
     }
 
     ASSERT(false);

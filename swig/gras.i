@@ -31,6 +31,7 @@
 %ignore gnuradio::IOSignature::operator->();
 %ignore gnuradio::IOSignature::operator->() const;
 
+%ignore gnuradio::Block::input_buffer_allocator;
 %ignore gnuradio::Block::output_buffer_allocator;
 
 %include <gnuradio/sbuffer.hpp>

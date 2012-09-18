@@ -243,7 +243,24 @@ struct GRAS_API Block : Element
         const size_t recommend_length
     );
 
-    //TODO overload for allocate output buffer(index)
+    /*!
+     * The input buffer allocator method.
+     * This method is special and very different from allocate output buffers.
+     * Typically, blocks do not have control of their input buffers.
+     * When overloaded, an upstream block will ask this block
+     * to allocate its output buffers. This way, this block will get
+     * input buffers which were actually allocated by this method.
+     *
+     * \param which_input the input port index number
+     * \param token the token for the buffer's returner
+     * \param recommend_length the schedulers recommended length in bytes
+     * \return the token used for the buffer allocation (may be the same)
+     */
+    virtual SBufferToken input_buffer_allocator(
+        const size_t which_input,
+        const SBufferToken &token,
+        const size_t recommend_length
+    );
 
 };
 

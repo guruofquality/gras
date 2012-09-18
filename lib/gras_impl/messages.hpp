@@ -64,6 +64,12 @@ struct UpdateInputsMessage
     //empty
 };
 
+struct InputAllocatorMessage
+{
+    SBufferToken token;
+    size_t recommend_length;
+};
+
 } //namespace gnuradio
 
 #endif /*INCLUDED_LIBGRAS_IMPL_MESSAGES_HPP*/
