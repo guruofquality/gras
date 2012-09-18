@@ -59,6 +59,11 @@ struct BufferHintMessage
     WeakToken token;
 };
 
+struct UpdateInputsMessage
+{
+    //empty
+};
+
 } //namespace gnuradio
 
 #endif /*INCLUDED_LIBGRAS_IMPL_MESSAGES_HPP*/

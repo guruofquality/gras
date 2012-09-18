@@ -76,6 +76,13 @@ void ElementImpl::handle_block_msg(
         return;
     }
 
+    //user changed some input settings like history or reserve reqs
+    if (msg.type() == typeid(UpdateInputsMessage))
+    {
+        this->input_update(task_iface);
+        return;
+    }
+
     ASSERT(msg.type() == typeid(TopBlockMessage));
 
     const size_t num_inputs = task_iface.get_num_inputs();
@@ -180,23 +187,32 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
     this->input_tags_changed.resize(num_inputs);
     this->input_tags.resize(num_inputs);
 
-    //impose input reserve requirements based on relative rate and output multiple
-    this->input_multiple_items.resize(num_inputs, 1);
-    for (size_t i = 0; i < num_inputs; i++)
-    {
-        //TODO, this is a little cheap, we only look at output multiple [0]
-        const size_t multiple = (num_outputs)?this->output_multiple_items.front():1;
-        input_multiple_items[i] = size_t(std::ceil(multiple/this->relative_rate));
-        if (input_multiple_items[i] == 0) input_multiple_items[i] = 1;
-    }
-
-    //init the history comprehension on input queues
-    this->input_queues.init(this->input_history_items, input_multiple_items, this->input_items_sizes);
-
     //TODO: think more about this:
     if (num_inputs == 0 and num_outputs == 0)
     {
         HERE();
         this->mark_done(task_iface);
     }
+
+    this->topology_init = true;
+    this->input_update(task_iface);
+}
+
+void ElementImpl::input_update(const tsbe::TaskInterface &task_iface)
+{
+    const size_t num_inputs = task_iface.get_num_inputs();
+    const size_t num_outputs = task_iface.get_num_outputs();
+
+    //impose input reserve requirements based on relative rate and output multiple
+    resize_fill_grow(this->input_multiple_items, num_inputs, 1);
+    for (size_t i = 0; i < num_inputs; i++)
+    {
+        //TODO, this is a little cheap, we only look at output multiple [0]
+        const size_t multiple = (num_outputs)?this->output_multiple_items.front():1;
+        this->input_multiple_items[i] = size_t(std::ceil(multiple/this->relative_rate));
+        if (this->input_multiple_items[i] == 0) this->input_multiple_items[i] = 1;
+    }
+
+    //init the history comprehension on input queues
+    this->input_queues.init(this->input_history_items, this->input_multiple_items, this->input_items_sizes);
 }

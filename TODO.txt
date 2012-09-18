@@ -36,10 +36,4 @@
 * hooks for setting the "active framework"
 ** set this before creating blocks to give them an affinity
 
-* deal with settings changing at runtime
-** example, block calls set_history
-
-* issue with marking done on multiple inputs, 1 done, 1 not
-** see channel model qa as example
-
 * put this todo into wiki format checklist

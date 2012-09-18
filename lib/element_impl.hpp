@@ -133,6 +133,7 @@ struct ElementImpl
     void mark_done(const tsbe::TaskInterface &);
     void conclusion(const tsbe::TaskInterface &task_iface, const bool);
     void buffer_returner(const size_t index, SBuffer &buffer);
+    void input_update(const tsbe::TaskInterface &task_iface);
 
     //work helpers
     int work_ret;
@@ -159,6 +160,7 @@ struct ElementImpl
     double relative_rate;
     bool forecast_fail;
     bool forecast_enable;
+    bool topology_init;
 };
 
 } //namespace gnuradio

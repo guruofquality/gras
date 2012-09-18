@@ -28,12 +28,7 @@ Block::Block(void)
 Block::Block(const std::string &name):
     Element(name)
 {
-    this->set_input_history(0);
-    this->set_output_multiple(1);
-    this->set_fixed_rate(true);
-    this->set_relative_rate(1.0);
-    this->set_tag_propagation_policy(TPP_ALL_TO_ALL);
-
+    //create internal block object
     tsbe::BlockConfig config;
     config.input_callback = boost::bind(&ElementImpl::handle_input_msg, this->get(), _1, _2, _3);
     config.output_callback = boost::bind(&ElementImpl::handle_output_msg, this->get(), _1, _2, _3);
@@ -41,10 +36,19 @@ Block::Block(const std::string &name):
     config.changed_callback = boost::bind(&ElementImpl::topology_update, this->get(), _1);
     (*this)->block = tsbe::Block(config);
 
+    //setup some state variables
+    (*this)->topology_init = false;
     (*this)->forecast_fail = false;
     (*this)->block_ptr = this;
     (*this)->hint = 0;
     (*this)->block_state = ElementImpl::BLOCK_STATE_INIT;
+
+    //call block methods to init stuff
+    this->set_input_history(0);
+    this->set_output_multiple(1);
+    this->set_fixed_rate(true);
+    this->set_relative_rate(1.0);
+    this->set_tag_propagation_policy(TPP_ALL_TO_ALL);
 }
 
 template <typename V, typename T>
@@ -75,6 +79,7 @@ size_t Block::input_history(const size_t which_input) const
 void Block::set_input_history(const size_t history, const size_t which_input)
 {
     vector_set((*this)->input_history_items, history, which_input);
+    if ((*this)->topology_init) (*this)->block.post_msg(UpdateInputsMessage());
 }
 
 size_t Block::output_multiple(const size_t which_output) const
@@ -85,6 +90,7 @@ size_t Block::output_multiple(const size_t which_output) const
 void Block::set_output_multiple(const size_t multiple, const size_t which_output)
 {
     vector_set((*this)->output_multiple_items, multiple, which_output);
+    if ((*this)->topology_init) (*this)->block.post_msg(UpdateInputsMessage());
 }
 
 void Block::consume(const size_t which_input, const size_t how_many_items)
