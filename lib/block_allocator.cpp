@@ -86,17 +86,27 @@ void ElementImpl::handle_allocation(const tsbe::TaskInterface &task_iface)
         );
 
         SBufferDeleter deleter = boost::bind(&ElementImpl::buffer_returner, this, i, _1);
-        this->output_buffer_tokens[i] = SBufferToken(new SBufferDeleter(deleter));
 
-        for (size_t j = 0; j < THIS_MANY_BUFFERS; j++)
-        {
-            SBufferConfig config;
-            config.memory = NULL;
-            config.length = bytes;
-            config.affinity = this->buffer_affinity;
-            config.token = this->output_buffer_tokens[i];
-            SBuffer buff(config);
-            //buffer derefs here and the token messages it back to the block
-        }
+        this->output_buffer_tokens[i] = block_ptr->output_buffer_allocator(
+            i, SBufferToken(new SBufferDeleter(deleter)), bytes
+        );
     }
+}
+
+SBufferToken Block::output_buffer_allocator(
+    const size_t which_output,
+    const SBufferToken &token,
+    const size_t recommend_length
+){
+    for (size_t j = 0; j < THIS_MANY_BUFFERS; j++)
+    {
+        SBufferConfig config;
+        config.memory = NULL;
+        config.length = recommend_length;
+        config.affinity = (*this)->buffer_affinity;
+        config.token = token;
+        SBuffer buff(config);
+        //buffer derefs here and the token messages it back to the block
+    }
+    return token;
 }

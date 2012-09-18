@@ -93,7 +93,7 @@ void ElementImpl::handle_block_msg(
             //tell the upstream about the input requirements
             BufferHintMessage message;
             message.history_bytes = this->input_history_items[i]*this->input_items_sizes[i];
-            message.reserve_bytes = input_multiple_items[i];
+            message.reserve_bytes = this->input_multiple_items[i];
             message.token = this->input_tokens[i];
             task_iface.post_upstream(i, message);
 

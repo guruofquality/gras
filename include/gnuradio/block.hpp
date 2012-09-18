@@ -224,6 +224,25 @@ struct GRAS_API Block : Element
      */
     void set_buffer_affinity(const Affinity &affinity);
 
+    /*!
+     * The output buffer allocator method.
+     * This method is called by the scheduler to allocate output buffers.
+     * The user may overload this method to create a custom allocator.
+     *
+     * Example use case:
+     * //TODO code example
+     *
+     * \param which_output the output port index number
+     * \param token the token for the buffer's returner
+     * \param recommend_length the schedulers recommended length in bytes
+     * \return the token used for the buffer allocation (may be the same)
+     */
+    virtual SBufferToken output_buffer_allocator(
+        const size_t which_output,
+        const SBufferToken &token,
+        const size_t recommend_length
+    );
+
     //TODO overload for allocate output buffer(index)
 
 };
