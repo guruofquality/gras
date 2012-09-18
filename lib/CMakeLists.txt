@@ -9,6 +9,39 @@ set(GRAS_BINARY_DIR ${CMAKE_BINARY_DIR}/gruel/src)
 set(RUNTIME_SOURCE_DIR ${CMAKE_SOURCE_DIR}/gnuradio-core/src/lib/runtime)
 
 ########################################################################
+# Setup TSBE
+########################################################################
+include_directories(${GRAS_SOURCE_DIR}/tsbe/include)
+include_directories(${GRAS_SOURCE_DIR}/tsbe/lib)
+
+file(GLOB tsbe_sources
+    "${GRAS_SOURCE_DIR}/tsbe/lib/*.cpp"
+)
+
+list(APPEND gnuradio_core_sources ${tsbe_sources})
+
+########################################################################
+# Setup Theron
+########################################################################
+include_directories(${GRAS_SOURCE_DIR}/Theron/Include)
+include_directories(${GRAS_SOURCE_DIR}/Theron/Include/External)
+
+if(MSVC)
+    include_directories(${GRAS_SOURCE_DIR}/Theron/Include/External/Standard)
+endif(MSVC)
+
+if (NOT WIN32) #not on windows? tell theron headers to use boost
+    add_definitions(-DTHERON_USE_BOOST_THREADS)
+endif()
+
+file(GLOB theron_sources
+    "${GRAS_SOURCE_DIR}/Theron/Theron/*.cpp"
+    "${GRAS_SOURCE_DIR}/Theron/Source/*.cpp"
+)
+
+list(APPEND gnuradio_core_sources ${theron_sources})
+
+########################################################################
 # Setup NumaNuma
 ########################################################################
 list(APPEND CMAKE_MODULE_PATH ${GRAS_SOURCE_DIR}/numanuma/cmake)
@@ -17,6 +50,8 @@ find_package(NumaNuma)
 if(NOT NUMANUMA_FOUND)
     message(FATAL_ERROR "numanuma dependencies not met!")
 endif()
+
+list(APPEND gnuradio_core_libs ${NUMANUMA_LIBRARIES})
 
 ########################################################################
 # Append gnuradio-core library sources
@@ -81,34 +116,6 @@ set(test_headers
 foreach(header ${test_headers})
     execute_process(COMMAND ${CMAKE_COMMAND} -E copy ${header} ${GRAS_BINARY_DIR}/include)
 endforeach(header)
-
-
-########################################################################
-# Find TSBE and add to libs
-########################################################################
-FIND_PATH(
-    TSBE_INCLUDE_DIRS
-    NAMES tsbe/config.hpp
-    PATHS /usr/local/include
-          /usr/include
-)
-
-FIND_LIBRARY(
-    TSBE_LIBRARIES
-    NAMES tsbe
-    PATHS /usr/local/lib
-          /usr/lib
-          /usr/lib64
-)
-
-include_directories(${TSBE_INCLUDE_DIRS})
-link_directories(${TSBE_LIBRARY_DIRS})
-
-list(APPEND gnuradio_core_libs
-    ${TSBE_LIBRARIES}
-)
-
-list(APPEND gnuradio_core_libs ${NUMANUMA_LIBRARIES})
 
 ########################################################################
 # Install runtime headers

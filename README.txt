@@ -8,8 +8,8 @@ https://github.com/guruofquality/gras/wiki
 ------------------------------------------------------------------------
 -- Prerequisites
 ------------------------------------------------------------------------
-* https://github.com/guruofquality/tsbe
 * standard gnuradio prereqs
+* libnuma (linux only)
 
 ------------------------------------------------------------------------
 -- Get the source code

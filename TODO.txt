@@ -12,24 +12,15 @@
 * add hooks to specify input reserve
 ** automatically calculate from output multiple and rel rate
 
-* gr stream mux is on drugs
-
 * handle calculating noutputitems using ninputs as a constraint
 
-* allocation
-** hooks for advanced allocation
-** override the default allocator (output token, recommended bytes)
-
 * python wrapper for block will come from grextras
-
-* bring in numanuma
-** thread prio
-** thread affinity
 
 * track memcpys for block usage stats
 
 * runtime history, input/output multiple change?
 ** resend the hint to the allocator and possibly re-allocate
+** should only do this on topology commit?
 
 * determine when outputs should be flushed, or continual filling
 
@@ -37,3 +28,7 @@
 ** set this before creating blocks to give them an affinity
 
 * put this todo into wiki format checklist
+
+* more thread safety
+** all element internals should be accessed via message
+and not directly from block::<method>

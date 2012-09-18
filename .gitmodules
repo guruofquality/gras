@@ -4,3 +4,9 @@
 [submodule "numanuma"]
 	path = numanuma
 	url = https://github.com/guruofquality/numanuma.git
+[submodule "tsbe"]
+	path = tsbe
+	url = https://github.com/guruofquality/tsbe.git
+[submodule "Theron"]
+	path = Theron
+	url = https://github.com/guruofquality/Theron.git
