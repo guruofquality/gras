@@ -62,6 +62,9 @@ struct GRAS_API SBufferConfig
     //! memory affinity - meta information
     Affinity affinity;
 
+    //! index number for custom allocation purposes
+    size_t user_index;
+
     //! deleter callback, may be used to free
     SBufferDeleter deleter;
 
@@ -127,6 +130,9 @@ struct GRAS_API SBuffer : boost::intrusive_ptr<SBufferImpl>
 
     //! Get the affinity of the memory
     Affinity get_affinity(void) const;
+
+    //! Get the user index number
+    size_t get_user_index(void) const;
 
     //! Unique if caller holds the only reference count
     bool unique(void) const;

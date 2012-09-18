@@ -72,6 +72,11 @@ inline Affinity SBuffer::get_affinity(void) const
     return (*this)->config.affinity;
 }
 
+inline size_t SBuffer::get_user_index(void) const
+{
+    return (*this)->config.user_index;
+}
+
 inline bool SBuffer::unique(void) const
 {
     return (*this)->count == 1;

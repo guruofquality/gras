@@ -74,7 +74,7 @@ void ElementImpl::mark_done(const tsbe::TaskInterface &task_iface)
 void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
 {
     #ifdef WORK_DEBUG
-    WorkDebugPrinter(this->name);
+    WorkDebugPrinter WDP(this->name);
     #endif
 
     //------------------------------------------------------------------
@@ -122,8 +122,8 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         const size_t items = buff.length/this->input_items_sizes[i];
 
         this->work_io_ptr_mask |= ptrdiff_t(mem);
-        this->input_items[i]._mem = mem;
-        this->input_items[i]._len = items;
+        this->input_items[i].get() = mem;
+        this->input_items[i].size() = items;
         this->work_input_items[i] = mem;
         this->work_ninput_items[i] = items;
         num_input_items = std::min(num_input_items, items);
@@ -161,8 +161,8 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         const size_t items = bytes/this->output_items_sizes[i];
 
         this->work_io_ptr_mask |= ptrdiff_t(mem);
-        this->output_items[i]._mem = mem;
-        this->output_items[i]._len = items;
+        this->output_items[i].get() = mem;
+        this->output_items[i].size() = items;
         this->work_output_items[i] = mem;
         num_output_items = std::min(num_output_items, items);
     }

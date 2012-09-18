@@ -27,7 +27,7 @@
 namespace gnuradio
 {
 
-template <typename PtrType> struct Buffer
+template <typename PtrType> struct WorkBuffer
 {
     //! get a native pointer type to this buffer
     inline PtrType get(void) const
@@ -47,7 +47,18 @@ template <typename PtrType> struct Buffer
         return _len;
     }
 
-//private:
+    //! Get the memory pointer reference
+    inline PtrType &get(void)
+    {
+        return _mem;
+    }
+
+    //! Get the buffer length reference
+    inline size_t &size(void)
+    {
+        return _len;
+    }
+
     PtrType _mem;
     size_t _len;
 };
@@ -182,8 +193,8 @@ struct GRAS_API Block : Element
     //! Called when the flow graph is stopped, can overload
     virtual bool stop(void);
 
-    typedef std::vector<Buffer<const void *> > InputItems;
-    typedef std::vector<Buffer<void *> > OutputItems;
+    typedef std::vector<WorkBuffer<const void *> > InputItems;
+    typedef std::vector<WorkBuffer<void *> > OutputItems;
 
     //! The official call into the work routine (overload please)
     virtual int Work(
