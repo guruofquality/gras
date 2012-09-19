@@ -220,17 +220,9 @@ void Block::get_tags_in_range(
     }
 }
 
-void Block::forecast(
-    int noutput_items,
-    std::vector<int> &ninput_items_required
-){
-    if (not (*this)->enable_fixed_rate) return;
-    for (size_t i = 0; i < ninput_items_required.size(); i++)
-    {
-        ninput_items_required[i] =
-            (*this)->input_history_items[i] +
-            myulround((noutput_items/(*this)->relative_rate));
-    }
+void Block::forecast(int, std::vector<int> &)
+{
+    //NOP
 }
 
 bool Block::start(void)

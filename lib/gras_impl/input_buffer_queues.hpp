@@ -158,6 +158,7 @@ inline void InputBufferQueues::init(
         _aux_queues[i] = boost::shared_ptr<BufferQueue>(new BufferQueue());
 
         //determine byte sizes for buffers and dealing with history
+        const size_t old_history = _history_bytes[i];
         _history_bytes[i] = input_item_sizes[i]*input_history_items[i];
 
         //calculate the input multiple aka reserve size
@@ -182,19 +183,26 @@ inline void InputBufferQueues::init(
         _aux_queues[i]->allocate_one(num_bytes);
 
         //there is history, so enqueue some initial history
-        if (_history_bytes[i] != 0 and _enqueued_bytes[i] < _history_bytes[i])
+        if (_history_bytes[i] > old_history)
         {
             SBuffer buff = _aux_queues[i]->front();
             _aux_queues[i]->pop();
 
-            const size_t hist_bytes = _history_bytes[i];
-            std::memset(buff.get_actual_memory(), 0, hist_bytes);
+            const size_t delta = _history_bytes[i] - old_history;
+            std::memset(buff.get_actual_memory(), 0, delta);
             buff.offset = 0;
-            buff.length = hist_bytes;
+            buff.length = delta;
 
             this->push(i, buff);
             //_queues[i].push_front(buff);
             //_in_hist_buff[i] = true;
+        }
+        if (_history_bytes[i] < old_history)
+        {
+            size_t delta = old_history - _history_bytes[i];
+            delta = std::min(delta, _enqueued_bytes[i]); //FIXME
+            //TODO consume extra delta on push...? so we dont need std::min
+            this->consume(i, delta);
         }
     }
 }
