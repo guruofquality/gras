@@ -149,7 +149,7 @@ inline void InputBufferQueues::init(
 ){
     if (this->size() == 0) return;
 
-    const size_t max_history_items = *std::max_element(input_history_items.begin(), input_history_items.end());
+    //const size_t max_history_items = *std::max_element(input_history_items.begin(), input_history_items.end());
 
     for (size_t i = 0; i < this->size(); i++)
     {
@@ -161,32 +161,40 @@ inline void InputBufferQueues::init(
         _history_bytes[i] = input_item_sizes[i]*input_history_items[i];
 
         //calculate the input multiple aka reserve size
-        _reserve_bytes[i] = input_item_sizes[i]*input_multiple_items[i];
-        _multiple_bytes[i] = std::max(size_t(1), _reserve_bytes[i]);
+        _multiple_bytes[i] = input_item_sizes[i]*input_multiple_items[i];
+        _multiple_bytes[i] = std::max(size_t(1), _multiple_bytes[i]);
+
+        //calculate the input multiple aka reserve size
+        _reserve_bytes[i] = _multiple_bytes[i];
+        while (_reserve_bytes[i] < (_history_bytes[i] + _multiple_bytes[i]))
+        {
+            _reserve_bytes[i] += _multiple_bytes[i];
+        }
 
         //post bytes are the desired buffer size to escape the edge case
-        _post_bytes[i] = input_item_sizes[i]*max_history_items;
-        _post_bytes[i] = std::max(_post_bytes[i], _reserve_bytes[i]);
-        _post_bytes[i] += _reserve_bytes[i]; //pad for round down issues
+        //_post_bytes[i] = input_item_sizes[i]*max_history_items;
+        //_post_bytes[i] = std::max(_post_bytes[i], _reserve_bytes[i]);
+        //_post_bytes[i] += _reserve_bytes[i]; //pad for round down issues
 
         //allocate mini buffers for history edge conditions
-        size_t num_bytes = _history_bytes[i] + _post_bytes[i];
+        size_t num_bytes = (1 << 17);//_post_bytes[i];
         _aux_queues[i]->allocate_one(num_bytes);
         _aux_queues[i]->allocate_one(num_bytes);
 
         //there is history, so enqueue some initial history
-        if (_history_bytes[i] != 0)
+        if (_history_bytes[i] != 0 and _enqueued_bytes[i] < _history_bytes[i])
         {
             SBuffer buff = _aux_queues[i]->front();
             _aux_queues[i]->pop();
 
             const size_t hist_bytes = _history_bytes[i];
             std::memset(buff.get_actual_memory(), 0, hist_bytes);
-            buff.offset = hist_bytes;
-            buff.length = 0;
+            buff.offset = 0;
+            buff.length = hist_bytes;
 
-            _queues[i].push_front(buff);
-            _in_hist_buff[i] = true;
+            this->push(i, buff);
+            //_queues[i].push_front(buff);
+            //_in_hist_buff[i] = true;
         }
     }
 }
@@ -199,15 +207,21 @@ inline SBuffer InputBufferQueues::front(const size_t i, bool &potential_inline)
     ASSERT(not _queues[i].empty());
     ASSERT(this->ready(i));
     __prepare(i);
-    ASSERT(_queues[i].front().offset >= _history_bytes[i]);
+    ASSERT(_queues[i].front().length >= _history_bytes[i]);
     SBuffer &front = _queues[i].front();
     const bool unique = front.unique();
 
     //same buffer, different offset and length
     SBuffer buff = front;
-    buff.offset -= _history_bytes[i];
+    /*VAR(buff.length);
+    VAR(buff.offset);*/
+    buff.length -= _history_bytes[i];
     buff.length /= _multiple_bytes[i];
     buff.length *= _multiple_bytes[i];
+    /*VAR(_reserve_bytes[i]);
+    VAR(_history_bytes[i]);
+    VAR(_multiple_bytes[i]);
+    VAR(buff.length);*/
 
     //set the flag that this buffer *might* be inlined as an output buffer
     potential_inline = unique and (_history_bytes[i] == 0) and (buff.length == front.length);
@@ -217,14 +231,19 @@ inline SBuffer InputBufferQueues::front(const size_t i, bool &potential_inline)
 
 inline void InputBufferQueues::__prepare(const size_t i)
 {
+    //HERE();
     //assumes that we are always pushing proper history buffs on front
-    ASSERT(_queues[i].front().offset >= _history_bytes[i]);
+    ASSERT(_queues[i].front().length >= _history_bytes[i]);
 
     while (_queues[i].front().length < _reserve_bytes[i])
     {
+    /*HERE();
+    VAR(_queues[i].front().length);
+    VAR(_reserve_bytes[i]);
+    VAR(_history_bytes[i]);
+    */
         SBuffer &front = _queues[i].front();
         SBuffer dst;
-        size_t hist_bytes = 0;
 
         //do we need a new buffer:
         //- is the buffer unique (queue has only reference)?
@@ -239,18 +258,17 @@ inline void InputBufferQueues::__prepare(const size_t i)
         {
             dst = _aux_queues[i]->front();
             _aux_queues[i]->pop();
-            hist_bytes = _history_bytes[i];
-            dst.offset = hist_bytes;
+            dst.offset = 0;
             dst.length = 0;
-            _in_hist_buff[i] = true;
+            //_in_hist_buff[i] = true;
         }
 
         SBuffer src = _queues[i].front();
         _queues[i].pop_front();
         const size_t dst_tail = dst.get_actual_length() - (dst.offset + dst.length);
-        const size_t bytes = std::min(std::min(dst_tail, src.length), _post_bytes[i]);
-        ASSERT(src.offset >= hist_bytes);
-        std::memcpy(dst.get(dst.length-hist_bytes), src.get(-hist_bytes), bytes+hist_bytes);
+        const size_t bytes = std::min(dst_tail, src.length);
+        //const size_t bytes = std::min(std::min(dst_tail, src.length), _post_bytes[i]);
+        std::memcpy(dst.get(dst.length), src.get(), bytes);
 
         //update buffer additions, consumptions
         dst.length += bytes;
@@ -269,6 +287,8 @@ inline void InputBufferQueues::__prepare(const size_t i)
 inline bool InputBufferQueues::consume(const size_t i, const size_t bytes_consumed)
 {
     //if (bytes_consumed == 0) return true;
+    //HERE();
+    //VAR(bytes_consumed);
 
     //assert that we dont consume past the bounds of the buffer
     ASSERT(_queues[i].front().length >= bytes_consumed);
@@ -282,9 +302,9 @@ inline bool InputBufferQueues::consume(const size_t i, const size_t bytes_consum
     {
         _queues[i].pop_front();
     }
-
+/*
     //otherwise, see if this is a mini history buff we can pop
-    else if (_in_hist_buff[i] and _queues[i].front().offset >= 2*_history_bytes[i])
+    else if (_in_hist_buff[i] and _queues[i].front().length >= 2*_history_bytes[i])
     {
         const size_t residual = _queues[i].front().length;
         _queues[i].pop_front();
@@ -295,6 +315,7 @@ inline bool InputBufferQueues::consume(const size_t i, const size_t bytes_consum
         _queues[i].front().length += residual;
         ASSERT(_queues[i].front().offset >= _history_bytes[i]);
     }
+    */
 
     //update the number of bytes in this queue
     ASSERT(_enqueued_bytes[i] >= bytes_consumed);
