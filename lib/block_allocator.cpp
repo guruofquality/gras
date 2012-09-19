@@ -91,7 +91,7 @@ void ElementImpl::handle_allocation(const tsbe::TaskInterface &task_iface)
         this->output_buffer_tokens[i] = block_ptr->output_buffer_allocator(i, token, bytes);
 
         InputAllocatorMessage message;
-        message.token = token;
+        message.token = SBufferToken(new SBufferDeleter(deleter));
         message.recommend_length = bytes;
         task_iface.post_downstream(i, message);
     }
