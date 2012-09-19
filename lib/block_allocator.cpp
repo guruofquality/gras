@@ -110,6 +110,7 @@ SBufferToken Block::output_buffer_allocator(
         config.affinity = (*this)->buffer_affinity;
         config.token = token;
         SBuffer buff(config);
+        std::memset(buff.get_actual_memory(), 0, buff.get_actual_length());
         //buffer derefs here and the token messages it back to the block
     }
     return token;

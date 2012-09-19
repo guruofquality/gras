@@ -177,7 +177,7 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
     this->produce_items.resize(num_outputs, 0);
     this->input_queues.resize(num_inputs);
     this->output_queues.resize(num_outputs);
-    this->forecast_enable = true;
+    this->forecast_enable = num_outputs != 0 and num_inputs != 0;
 
     this->input_tokens.resize(num_inputs);
     this->output_tokens.resize(num_outputs);
@@ -209,7 +209,10 @@ void ElementImpl::input_update(const tsbe::TaskInterface &task_iface)
     {
         //TODO, this is a little cheap, we only look at output multiple [0]
         const size_t multiple = (num_outputs)?this->output_multiple_items.front():1;
-        this->input_multiple_items[i] = size_t(std::ceil(multiple/this->relative_rate));
+        if (this->enable_fixed_rate)
+        {
+            this->input_multiple_items[i] = size_t(std::ceil(multiple/this->relative_rate));
+        }
         if (this->input_multiple_items[i] == 0) this->input_multiple_items[i] = 1;
     }
 

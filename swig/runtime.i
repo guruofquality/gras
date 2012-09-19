@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
+#define GR_CORE_API
 #define GRAS_API
 
 //not here to fight you swig, reference() is ambigi with shared ptr, but whatevs

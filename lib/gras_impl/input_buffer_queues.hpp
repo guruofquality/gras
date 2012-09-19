@@ -232,7 +232,7 @@ inline SBuffer InputBufferQueues::front(const size_t i, bool &potential_inline)
     VAR(buff.length);*/
 
     //set the flag that this buffer *might* be inlined as an output buffer
-    potential_inline = unique and (_history_bytes[i] == 0) and (buff.length == front.length);
+    potential_inline = unique and (buff.length == front.length);
 
     return buff;
 }
