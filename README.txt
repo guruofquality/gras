@@ -14,16 +14,22 @@ https://github.com/guruofquality/gras/wiki
 ------------------------------------------------------------------------
 -- Get the source code
 ------------------------------------------------------------------------
-git clone https://github.com/guruofquality/gras.git
-cd grruntime
+git clone https://github.com/guruofquality/gras.git gras
+cd gras
 git submodule init
 git submodule update
 
 ------------------------------------------------------------------------
--- Installation instructions
+-- Build and Install instructions (unix makefiles)
 ------------------------------------------------------------------------
-mkdir <build dir>
-cd <build dir>
-cmake <source dir>/gnuradio
+mkdir <build-dir>
+cd <build-dir>
+cmake <gras-source-dir>/gnuradio
 make
 sudo make install
+sudo ldconfig
+
+------------------------------------------------------------------------
+-- Build and Install instructions (MSVC)
+------------------------------------------------------------------------
+Untested. Minor fixes may be needed but it should work.
