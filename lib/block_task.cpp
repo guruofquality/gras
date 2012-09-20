@@ -228,7 +228,6 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //------------------------------------------------------------------
     //-- process input consumption
     //------------------------------------------------------------------
-    bool input_allows_flush = true;
     for (size_t i = 0; i < num_inputs; i++)
     {
         ASSERT(enable_fixed_rate or work_ret != Block::WORK_CALLED_PRODUCE);
@@ -237,7 +236,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
 
         this->items_consumed[i] += items;
         const size_t bytes = items*this->input_items_sizes[i];
-        input_allows_flush = input_allows_flush and this->input_queues.consume(i, bytes);
+        this->input_queues.consume(i, bytes);
     }
 
     //------------------------------------------------------------------
@@ -254,10 +253,8 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         const size_t bytes = items*this->output_items_sizes[i];
         buff.length += bytes;
 
-        //only pass output buffer downstream when the input is fully consumed...
-        //Reasoning: For the sake of dealling with history, we can process the mini history input buffer,
-        //and then call work again on the real input buffer, but still yield one output buffer per input buffer.
-        if (input_allows_flush)
+        //dont always pass output buffers downstream for the sake of efficiency
+        if (not this->input_queues.all_ready() or buff.length*2 > buff.get_actual_length())
         {
             task_iface.post_downstream(i, buff);
             this->output_queues.pop(i);

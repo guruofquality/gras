@@ -7,7 +7,7 @@
 ** prove that compiler does unrolling
 
 * handle forecast
-** not 100% sure here
+** not 100% sure here with the input/output edge case sizes
 
 * add hooks to specify input reserve
 ** automatically calculate from output multiple and rel rate
@@ -21,8 +21,6 @@
 * runtime history, input/output multiple change?
 ** resend the hint to the allocator and possibly re-allocate
 ** should only do this on topology commit?
-
-* determine when outputs should be flushed, or continual filling
 
 * hooks for setting the "active framework"
 ** set this before creating blocks to give them an affinity
