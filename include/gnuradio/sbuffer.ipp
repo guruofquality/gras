@@ -32,19 +32,18 @@ struct SBufferImpl
     }
 
     boost::detail::atomic_count count;
-    size_t __pad; //avoid a probably non-issue w/ count
     SBufferConfig config;
 };
 
 
 extern GRAS_API void sbuffer_handle_deref(SBufferImpl *impl);
 
-inline void intrusive_ptr_add_ref(SBufferImpl *impl)
+GRAS_FORCE_INLINE void intrusive_ptr_add_ref(SBufferImpl *impl)
 {
     ++impl->count;
 }
 
-inline void intrusive_ptr_release(SBufferImpl *impl)
+GRAS_FORCE_INLINE void intrusive_ptr_release(SBufferImpl *impl)
 {
     if (--impl->count == 0)
     {
@@ -52,37 +51,44 @@ inline void intrusive_ptr_release(SBufferImpl *impl)
     }
 }
 
-inline void *SBuffer::get_actual_memory(void) const
+GRAS_FORCE_INLINE SBuffer::SBuffer(void):
+    offset(0),
+    length(0)
+{
+    //NOP
+}
+
+GRAS_FORCE_INLINE void *SBuffer::get_actual_memory(void) const
 {
     return (*this)->config.memory;
 }
 
-inline size_t SBuffer::get_actual_length(void) const
+GRAS_FORCE_INLINE size_t SBuffer::get_actual_length(void) const
 {
     return (*this)->config.length;
 }
 
-inline void *SBuffer::get(const ptrdiff_t delta_bytes) const
+GRAS_FORCE_INLINE void *SBuffer::get(const ptrdiff_t delta_bytes) const
 {
     return ((char *)(*this)->config.memory) + this->offset + delta_bytes;
 }
 
-inline Affinity SBuffer::get_affinity(void) const
+GRAS_FORCE_INLINE Affinity SBuffer::get_affinity(void) const
 {
     return (*this)->config.affinity;
 }
 
-inline size_t SBuffer::get_user_index(void) const
+GRAS_FORCE_INLINE size_t SBuffer::get_user_index(void) const
 {
     return (*this)->config.user_index;
 }
 
-inline bool SBuffer::unique(void) const
+GRAS_FORCE_INLINE bool SBuffer::unique(void) const
 {
     return (*this)->count == 1;
 }
 
-inline size_t SBuffer::use_count(void) const
+GRAS_FORCE_INLINE size_t SBuffer::use_count(void) const
 {
     return (*this)->count;
 }

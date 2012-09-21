@@ -33,12 +33,12 @@
 #include <vector>
 #include <queue>
 
-static inline unsigned long myulround(const double x)
+static GRAS_FORCE_INLINE unsigned long myulround(const double x)
 {
     return (unsigned long)(x + 0.5);
 }
 
-static inline unsigned long long myullround(const double x)
+static GRAS_FORCE_INLINE unsigned long long myullround(const double x)
 {
     return (unsigned long long)(x + 0.5);
 }

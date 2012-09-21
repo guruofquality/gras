@@ -21,8 +21,8 @@
 
 using namespace gnuradio;
 
-const size_t AT_LEAST_DEFAULT_ITEMS = 1 << 14;
-const size_t AHH_TOO_MANY_BYTES = 1 << 16; //TODO
+const size_t AT_LEAST_DEFAULT_ITEMS = 1 << 17;
+const size_t AHH_TOO_MANY_BYTES = 1 << 20; //TODO
 const size_t THIS_MANY_BUFFERS = 32;
 const double EDGE_CASE_MITIGATION = 8.0; //edge case mitigation constant
 

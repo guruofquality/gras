@@ -27,6 +27,15 @@
 
 #define GRAS_MAX_ALIGNMENT 32
 
+//define cross platform attribute macros
+#if defined(BOOST_MSVC)
+    #define GRAS_FORCE_INLINE         __forceinline
+#elif defined(__GNUG__) && __GNUG__ >= 4
+    #define GRAS_FORCE_INLINE         inline __attribute__((always_inline))
+#else
+    #define GRAS_FORCE_INLINE         inline
+#endif
+
 namespace gnuradio
 {
 

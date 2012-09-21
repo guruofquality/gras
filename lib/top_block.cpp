@@ -110,7 +110,7 @@ void TopBlock::wait(void)
 {
     //We do not need to join "special" threads;
     //the token mechainism will do just fine.
-    //(*this)->thread_group->join_all();
+    (*this)->thread_group->join_all();
 
     //wait for all blocks to release the token
     while (not (*this)->token.unique())

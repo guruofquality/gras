@@ -264,6 +264,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //------------------------------------------------------------------
     //-- trim the input tags that are past the consumption zone
     //-- and post trimmed tags to the downstream based on policy
+    //-- //FIXME this propagation is AFTER the output buffers flushed... fix this
     //------------------------------------------------------------------
     for (size_t i = 0; i < num_inputs; i++)
     {
@@ -313,7 +314,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     this->conclusion(task_iface, inputs_done);
 }
 
-inline void ElementImpl::conclusion(const tsbe::TaskInterface &task_iface, const bool inputs_done)
+GRAS_FORCE_INLINE void ElementImpl::conclusion(const tsbe::TaskInterface &task_iface, const bool inputs_done)
 {
     //if there are inputs, and not all are provided for,
     //tell the block to check input queues and handle done

@@ -71,7 +71,7 @@ namespace gnuradio
             _thread->join();
         }
 
-        inline void call(void)
+        GRAS_FORCE_INLINE void call(void)
         {
             boost::mutex::scoped_lock lock(_mutex);
             if (not _callable) return;

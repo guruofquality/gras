@@ -30,65 +30,65 @@ struct OutputBufferQueues
     boost::dynamic_bitset<> _bitset;
     std::vector<std::deque<T> > _queues;
 
-    inline void resize(const size_t size)
+    GRAS_FORCE_INLINE void resize(const size_t size)
     {
         _bitset.resize(size);
         _queues.resize(size);
     }
 
-    inline void push(const size_t i, const T &value)
+    GRAS_FORCE_INLINE void push(const size_t i, const T &value)
     {
         _queues[i].push_back(value);
         _bitset.set(i);
     }
 
     //! used for input buffer inlining
-    inline void push_front(const size_t i, const T &value)
+    GRAS_FORCE_INLINE void push_front(const size_t i, const T &value)
     {
         _queues[i].push_front(value);
         _bitset.set(i);
     }
 
-    inline const T &front(const size_t i) const
+    GRAS_FORCE_INLINE const T &front(const size_t i) const
     {
         return _queues[i].front();
     }
 
-    inline T &front(const size_t i)
+    GRAS_FORCE_INLINE T &front(const size_t i)
     {
         return _queues[i].front();
     }
 
-    inline void pop(const size_t i)
+    GRAS_FORCE_INLINE void pop(const size_t i)
     {
         _queues[i].pop_front();
         _bitset.set(i, not _queues[i].empty());
     }
 
-    inline void flush(const size_t i)
+    GRAS_FORCE_INLINE void flush(const size_t i)
     {
         _queues[i] = std::deque<T>();
         _bitset.reset(i);
     }
 
-    inline void flush_all(void)
+    GRAS_FORCE_INLINE void flush_all(void)
     {
         _queues.clear();
         _queues.resize(_bitset.size());
         _bitset.reset();
     }
 
-    inline bool ready(const size_t i) const
+    GRAS_FORCE_INLINE bool ready(const size_t i) const
     {
         return not _queues[i].empty();
     }
 
-    inline bool empty(const size_t i) const
+    GRAS_FORCE_INLINE bool empty(const size_t i) const
     {
         return _queues[i].empty();
     }
 
-    inline bool all_ready(void) const
+    GRAS_FORCE_INLINE bool all_ready(void) const
     {
         return (~_bitset).none();
     }

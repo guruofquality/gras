@@ -78,13 +78,6 @@ static void default_allocator(SBufferConfig &config)
     }
 }
 
-SBuffer::SBuffer(void):
-    offset(0),
-    length(0)
-{
-    //NOP
-}
-
 SBuffer::SBuffer(const SBufferConfig &config):
     offset(0),
     length(0)

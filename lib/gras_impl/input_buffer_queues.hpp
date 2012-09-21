@@ -43,21 +43,21 @@ struct InputBufferQueues
     );
 
     //! Call to get an input buffer for work
-    SBuffer front(const size_t i, bool &potential_inline);
+    SBuffer front(const size_t i, bool &potential_GRAS_FORCE_INLINE);
 
     //! Call when input bytes consumed by work
     void consume(const size_t i, const size_t bytes_consumed);
 
     void resize(const size_t size);
 
-    inline void push(const size_t i, const SBuffer &buffer)
+    GRAS_FORCE_INLINE void push(const size_t i, const SBuffer &buffer)
     {
         _queues[i].push_back(buffer);
         _enqueued_bytes[i] += _queues[i].back().length;
         __update(i);
     }
 
-    inline void flush(const size_t i)
+    GRAS_FORCE_INLINE void flush(const size_t i)
     {
         _queues[i] = std::deque<SBuffer>();
         _bitset.reset(i);
@@ -68,31 +68,31 @@ struct InputBufferQueues
         return _queues.size();
     }
 
-    inline void flush_all(void)
+    GRAS_FORCE_INLINE void flush_all(void)
     {
         const size_t old_size = this->size();
         this->resize(0);
         this->resize(old_size);
     }
 
-    inline bool ready(const size_t i) const
+    GRAS_FORCE_INLINE bool ready(const size_t i) const
     {
         return _bitset[i];
     }
 
-    inline bool empty(const size_t i) const
+    GRAS_FORCE_INLINE bool empty(const size_t i) const
     {
         return not _bitset[i];
     }
 
-    inline bool all_ready(void) const
+    GRAS_FORCE_INLINE bool all_ready(void) const
     {
         return (~_bitset).none();
     }
 
     void __prepare(const size_t i);
 
-    inline void __update(const size_t i)
+    GRAS_FORCE_INLINE void __update(const size_t i)
     {
         _bitset.set(i, _enqueued_bytes[i] >= _reserve_bytes[i]);
     }
@@ -108,7 +108,7 @@ struct InputBufferQueues
 };
 
 
-inline void InputBufferQueues::resize(const size_t size)
+GRAS_FORCE_INLINE void InputBufferQueues::resize(const size_t size)
 {
     _bitset.resize(size);
     _enqueued_bytes.resize(size, 0);
@@ -129,7 +129,7 @@ static size_t round_up_to_multiple(const size_t at_least, const size_t multiple)
 }
 
 
-inline void InputBufferQueues::init(
+GRAS_FORCE_INLINE void InputBufferQueues::init(
     const std::vector<size_t> &input_history_items,
     const std::vector<size_t> &input_multiple_items,
     const std::vector<size_t> &input_item_sizes
@@ -193,7 +193,7 @@ inline void InputBufferQueues::init(
 }
 
 
-inline SBuffer InputBufferQueues::front(const size_t i, bool &potential_inline)
+GRAS_FORCE_INLINE SBuffer InputBufferQueues::front(const size_t i, bool &potential_inline)
 {
     //if (_queues[i].empty()) return BuffInfo();
 
@@ -216,7 +216,7 @@ inline SBuffer InputBufferQueues::front(const size_t i, bool &potential_inline)
     return buff;
 }
 
-inline void InputBufferQueues::__prepare(const size_t i)
+GRAS_FORCE_INLINE void InputBufferQueues::__prepare(const size_t i)
 {
     //HERE();
     //assumes that we are always pushing proper history buffs on front
@@ -265,7 +265,7 @@ inline void InputBufferQueues::__prepare(const size_t i)
 }
 
 
-inline void InputBufferQueues::consume(const size_t i, const size_t bytes_consumed)
+GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t bytes_consumed)
 {
     //if (bytes_consumed == 0) return true;
 
