@@ -196,7 +196,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     //-- the work
     //------------------------------------------------------------------
     work_noutput_items = num_output_items;
-    /*if (this->enable_fixed_rate)*/ work_noutput_items = std::min(
+    if (this->enable_fixed_rate) work_noutput_items = std::min(
         work_noutput_items, myulround((num_input_items)*this->relative_rate));
     this->work_task_iface = task_iface;
     this->work_ret = -1;

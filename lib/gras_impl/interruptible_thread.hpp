@@ -69,6 +69,12 @@ namespace gnuradio
             }
             _thread->interrupt();
             _thread->join();
+
+            //We dont need to manually remove and delete the thread,
+            //but I thought it was nicer than thread group accumulating
+            //dead threads run after run.
+            _thread_group->remove_thread(_thread);
+            delete _thread;
         }
 
         GRAS_FORCE_INLINE void call(void)

@@ -85,6 +85,10 @@ void ElementImpl::handle_block_msg(
 
     ASSERT(msg.type() == typeid(TopBlockMessage));
 
+    //FIXME leave the marked done blocks done...
+    //this helps QA tests to pass that re-use top block without diconnecting the old design
+    if (this->block_state == BLOCK_STATE_DONE) return;
+
     const size_t num_inputs = task_iface.get_num_inputs();
     const size_t num_outputs = task_iface.get_num_outputs();
 
