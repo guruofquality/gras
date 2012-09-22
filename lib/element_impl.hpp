@@ -134,6 +134,8 @@ struct ElementImpl
     void conclusion(const tsbe::TaskInterface &task_iface, const bool);
     void buffer_returner(const size_t index, SBuffer &buffer);
     void input_update(const tsbe::TaskInterface &task_iface);
+    void sort_tags(const size_t index);
+    void trim_tags(const tsbe::TaskInterface &, const size_t index);
 
     //work helpers
     int work_ret;

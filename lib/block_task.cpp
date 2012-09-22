@@ -15,9 +15,8 @@
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
+#include "tag_handlers.hpp"
 #include <gras_impl/messages.hpp>
-#include <boost/foreach.hpp>
-#include <algorithm>
 
 #define REALLY_BIG size_t(1 << 30)
 
@@ -95,17 +94,6 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     this->work_io_ptr_mask = 0; //reset
 
     //------------------------------------------------------------------
-    //-- sort the input tags before working
-    //------------------------------------------------------------------
-    for (size_t i = 0; i < num_inputs; i++)
-    {
-        if (not this->input_tags_changed[i]) continue;
-        std::vector<Tag> &tags_i = this->input_tags[i];
-        std::sort(tags_i.begin(), tags_i.end(), Tag::offset_compare);
-        this->input_tags_changed[i] = false;
-    }
-
-    //------------------------------------------------------------------
     //-- initialize input buffers before work
     //------------------------------------------------------------------
     size_t num_input_items = REALLY_BIG; //so big that it must std::min
@@ -113,6 +101,8 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
     size_t output_inline_index = 0;
     for (size_t i = 0; i < num_inputs; i++)
     {
+        this->sort_tags(i);
+
         inputs_done = inputs_done or this->input_tokens[i].unique();
 
         ASSERT(this->input_queues.ready(i));
@@ -237,6 +227,8 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
         this->items_consumed[i] += items;
         const size_t bytes = items*this->input_items_sizes[i];
         this->input_queues.consume(i, bytes);
+
+        this->trim_tags(task_iface, i);
     }
 
     //------------------------------------------------------------------
@@ -259,53 +251,6 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
             task_iface.post_downstream(i, buff);
             this->output_queues.pop(i);
         }
-    }
-
-    //------------------------------------------------------------------
-    //-- trim the input tags that are past the consumption zone
-    //-- and post trimmed tags to the downstream based on policy
-    //-- //FIXME this propagation is AFTER the output buffers flushed... fix this
-    //------------------------------------------------------------------
-    for (size_t i = 0; i < num_inputs; i++)
-    {
-        std::vector<Tag> &tags_i = this->input_tags[i];
-        const size_t items_consumed_i = this->items_consumed[i];
-        size_t last = 0;
-        while (last < tags_i.size() and tags_i[last].offset < items_consumed_i)
-        {
-            last++;
-        }
-
-        //follow the tag propagation policy before erasure
-        switch (this->tag_prop_policy)
-        {
-        case Block::TPP_DONT: break; //well that was ez
-        case Block::TPP_ALL_TO_ALL:
-            for (size_t out_i = 0; out_i < num_outputs; out_i++)
-            {
-                for (size_t tag_i = 0; tag_i < last; tag_i++)
-                {
-                    Tag t = tags_i[tag_i];
-                    t.offset = myullround(t.offset * this->relative_rate);
-                    task_iface.post_downstream(out_i, t);
-                }
-            }
-            break;
-        case Block::TPP_ONE_TO_ONE:
-            if (i < num_outputs)
-            {
-                for (size_t tag_i = 0; tag_i < last; tag_i++)
-                {
-                    Tag t = tags_i[tag_i];
-                    t.offset = myullround(t.offset * this->relative_rate);
-                    task_iface.post_downstream(i, t);
-                }
-            }
-            break;
-        };
-
-        //now its safe to perform the erasure
-        if (last != 0) tags_i.erase(tags_i.begin(), tags_i.begin()+last);
     }
 
     //------------------------------------------------------------------
