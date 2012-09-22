@@ -95,7 +95,7 @@ void Block::set_output_multiple(const size_t multiple, const size_t which_output
 
 void Block::consume(const size_t which_input, const size_t how_many_items)
 {
-    (*this)->consume_items[which_input] = how_many_items;
+    (*this)->consume_items[which_input] += how_many_items;
     (*this)->consume_called[which_input] = true;
 }
 
@@ -103,14 +103,14 @@ void Block::consume_each(const size_t how_many_items)
 {
     for (size_t i = 0; i < (*this)->consume_items.size(); i++)
     {
-        (*this)->consume_items[i] = how_many_items;
+        (*this)->consume_items[i] += how_many_items;
         (*this)->consume_called[i] = true;
     }
 }
 
 void Block::produce(const size_t which_output, const size_t how_many_items)
 {
-    (*this)->produce_items[which_output] = how_many_items;
+    (*this)->produce_items[which_output] += how_many_items;
 }
 
 void Block::set_input_inline(const size_t which_input, const bool enb)

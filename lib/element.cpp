@@ -33,7 +33,7 @@ Element::Element(const std::string &name)
     (*this)->name = name;
     (*this)->unique_id = ++unique_id_pool;
 
-    if (GENESIS) std::cerr << "New element: " << name << std::endl;
+    if (GENESIS) std::cerr << "New element: " << name << " " << (*this)->unique_id << std::endl;
 
     //default io signature to something
     IOSignature sig; sig.push_back(1);
