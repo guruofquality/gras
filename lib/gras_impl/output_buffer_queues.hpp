@@ -92,6 +92,11 @@ struct OutputBufferQueues
     {
         return (~_bitset).none();
     }
+
+    GRAS_FORCE_INLINE size_t size(void) const
+    {
+        return _queues.size();
+    }
 };
 
 } //namespace gnuradio

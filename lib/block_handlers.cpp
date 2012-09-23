@@ -191,10 +191,9 @@ void ElementImpl::topology_update(const tsbe::TaskInterface &task_iface)
     this->input_tags_changed.resize(num_inputs);
     this->input_tags.resize(num_inputs);
 
-    //TODO: think more about this:
+    //a block looses all connections, allow it to free
     if (num_inputs == 0 and num_outputs == 0)
     {
-        HERE();
         this->mark_done(task_iface);
     }
 

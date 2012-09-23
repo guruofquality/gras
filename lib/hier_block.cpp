@@ -85,4 +85,8 @@ void HierBlock::disconnect_all(void)
 {
     (*this)->topology.clear_all();
     (*this)->children.clear();
+    if ((*this)->executor)
+    {
+        (*this)->executor.commit();
+    }
 }
