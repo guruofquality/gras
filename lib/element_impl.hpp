@@ -109,7 +109,6 @@ struct ElementImpl
     tsbe::Block block;
     tsbe::Topology topology;
     tsbe::Executor executor;
-    std::vector<boost::shared_ptr<Element> > children;
     const tsbe::Element &get_elem(void) const
     {
         if (block) return block;

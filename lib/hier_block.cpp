@@ -35,19 +35,16 @@ HierBlock::HierBlock(const std::string &name):
 void ElementImpl::hier_block_cleanup(void)
 {
     this->topology.clear_all();
-    this->children.clear();
 }
 
 void HierBlock::connect(const Element &elem)
 {
     (*this)->topology.add_topology(elem->topology);
-    (*this)->children.push_back(elem.weak_self.lock());
 }
 
 void HierBlock::disconnect(const Element &elem)
 {
     (*this)->topology.remove_topology(elem->topology);
-    remove_one((*this)->children, elem.weak_self.lock());
 }
 
 void HierBlock::connect(
@@ -58,12 +55,10 @@ void HierBlock::connect(
 ){
     //TODO, this is the perfect place to validate IO sigs
     const tsbe::Connection conn(
-        tsbe::Port(src->get_elem(), src_index),
-        tsbe::Port(sink->get_elem(), sink_index)
+        tsbe::Port(src->get_elem(), src_index, src.weak_self.lock()),
+        tsbe::Port(sink->get_elem(), sink_index, sink.weak_self.lock())
     );
     (*this)->topology.connect(conn);
-    (*this)->children.push_back(src.weak_self.lock());
-    (*this)->children.push_back(sink.weak_self.lock());
 }
 
 void HierBlock::disconnect(
@@ -77,16 +72,9 @@ void HierBlock::disconnect(
         tsbe::Port(sink->get_elem(), sink_index)
     );
     (*this)->topology.disconnect(conn);
-    remove_one((*this)->children, src.weak_self.lock());
-    remove_one((*this)->children, sink.weak_self.lock());
 }
 
 void HierBlock::disconnect_all(void)
 {
     (*this)->topology.clear_all();
-    (*this)->children.clear();
-    if ((*this)->executor)
-    {
-        (*this)->executor.commit();
-    }
 }
