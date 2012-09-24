@@ -105,6 +105,7 @@ struct InputBufferQueues
     std::vector<size_t> _multiple_bytes;
     std::vector<size_t> _post_bytes;
     std::vector<boost::shared_ptr<BufferQueue> > _aux_queues;
+    std::vector<bool> _in_aux_buff;
 };
 
 
@@ -118,6 +119,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::resize(const size_t size)
     _multiple_bytes.resize(size, 0);
     _post_bytes.resize(size, 0);
     _aux_queues.resize(size);
+    _in_aux_buff.resize(size, false);
 }
 
 static size_t round_up_to_multiple(const size_t at_least, const size_t multiple)
@@ -181,6 +183,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::init(
             buff.length = delta;
 
             this->push(i, buff);
+            _in_aux_buff[i] = true;
         }
         if (_history_bytes[i] < old_history)
         {
@@ -242,6 +245,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::__prepare(const size_t i)
             _aux_queues[i]->pop();
             dst.offset = 0;
             dst.length = 0;
+            _in_aux_buff[i] = true;
         }
 
         SBuffer src = _queues[i].front();
@@ -280,6 +284,16 @@ GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t b
     if (_queues[i].front().length == 0 and _history_bytes[i] == 0)
     {
         _queues[i].pop_front();
+    }
+
+    else if (_in_aux_buff[i] and _queues[i].front().offset >= 2*_history_bytes[i])
+    {
+        _in_aux_buff[i] = false;
+        const size_t residual = _queues[i].front().length;
+        _queues[i].pop_front();
+        ASSERT(not _queues[i].empty());
+        _queues[i].front().length += residual;
+        _queues[i].front().offset -= residual;
     }
 
     //update the number of bytes in this queue
