@@ -43,7 +43,7 @@ struct InputBufferQueues
     );
 
     //! Call to get an input buffer for work
-    SBuffer front(const size_t i, bool &potential_GRAS_FORCE_INLINE);
+    SBuffer front(const size_t i, const bool conserve_history, bool &potential_GRAS_FORCE_INLINE);
 
     //! Call when input bytes consumed by work
     void consume(const size_t i, const size_t bytes_consumed);
@@ -196,7 +196,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::init(
 }
 
 
-GRAS_FORCE_INLINE SBuffer InputBufferQueues::front(const size_t i, bool &potential_inline)
+GRAS_FORCE_INLINE SBuffer InputBufferQueues::front(const size_t i, const bool conserve_history, bool &potential_inline)
 {
     //if (_queues[i].empty()) return BuffInfo();
 
@@ -209,7 +209,7 @@ GRAS_FORCE_INLINE SBuffer InputBufferQueues::front(const size_t i, bool &potenti
 
     //same buffer, different offset and length
     SBuffer buff = front;
-    buff.length -= _history_bytes[i];
+    if (conserve_history) buff.length -= _history_bytes[i];
     buff.length /= _multiple_bytes[i];
     buff.length *= _multiple_bytes[i];
 
@@ -223,7 +223,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::__prepare(const size_t i)
 {
     //HERE();
     //assumes that we are always pushing proper history buffs on front
-    ASSERT(_queues[i].front().length >= _history_bytes[i]);
+    //ASSERT(_queues[i].front().length >= _history_bytes[i]);
 
     while (_queues[i].front().length < _reserve_bytes[i])
     {
@@ -288,18 +288,35 @@ GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t b
 
     else if (_in_aux_buff[i] and _queues[i].front().offset >= 2*_history_bytes[i])
     {
-        _in_aux_buff[i] = false;
-        const size_t residual = _queues[i].front().length;
+        const SBuffer buff = _queues[i].front();
         _queues[i].pop_front();
-        ASSERT(not _queues[i].empty());
-        _queues[i].front().length += residual;
-        _queues[i].front().offset -= residual;
+
+        if (_queues[i].empty())
+        {
+            _queues[i].push_front(buff);
+        }
+        else
+        {
+            _in_aux_buff[i] = false;
+            const size_t residual = buff.length;
+            _queues[i].front().length += residual;
+            _queues[i].front().offset -= residual;
+        }
     }
 
     //update the number of bytes in this queue
     ASSERT(_enqueued_bytes[i] >= bytes_consumed);
     _enqueued_bytes[i] -= bytes_consumed;
+
+    //we have consumed the history, change reqs
+    if (_enqueued_bytes[i] < _history_bytes[i])
+    {
+        _history_bytes[i] = 0;
+        _reserve_bytes[i] = _multiple_bytes[i];
+    }
+
     __update(i);
+
 }
 
 } //namespace gnuradio

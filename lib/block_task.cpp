@@ -107,7 +107,7 @@ void ElementImpl::handle_task(const tsbe::TaskInterface &task_iface)
 
         ASSERT(this->input_queues.ready(i));
         bool potential_inline;
-        const SBuffer buff = this->input_queues.front(i, potential_inline);
+        const SBuffer buff = this->input_queues.front(i, this->enable_fixed_rate, potential_inline);
         void *mem = buff.get();
         const size_t items = buff.length/this->input_items_sizes[i];
 

@@ -131,7 +131,6 @@ void Block::set_fixed_rate(const bool fixed_rate)
 void Block::set_relative_rate(double relative_rate)
 {
     (*this)->relative_rate = relative_rate;
-    this->set_fixed_rate(true);
 }
 
 double Block::relative_rate(void) const
