@@ -91,11 +91,15 @@ struct GRAS_API SBufferConfig
  * When the parent object deconstructs, the weak pointer will die,
  * and the normal buffer cleanup/freeing/deconstruction will happen.
  *
- * Length and memory usage:
- * Length and memory are intentionally references
- * so that they can be modified (carefully).
- * The user may do this to pass a subset of the memory.
- * Using the token causes a reset of these values.
+ * Length and offset usage:
+ * Length and offset are intentionally object members
+ * and not part of the ref-counted intrusive_ptr guts.
+ * These members should be modified carefully
+ * to pass a subset of the memory downstream.
+ *
+ * Length and offset recommendation:
+ * These values should probably be reset by the
+ * bound token or when a fresh buffer is popped.
  */
 struct GRAS_API SBuffer : boost::intrusive_ptr<SBufferImpl>
 {
