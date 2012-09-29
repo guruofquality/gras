@@ -57,6 +57,7 @@ struct TopHintMessage
 
 //----------------------------------------------------------------------
 //-- message to an input port
+//-- do not ack
 //----------------------------------------------------------------------
 
 struct InputTagMessage
@@ -77,7 +78,7 @@ struct InputTokenMessage
     Token token;
 };
 
-struct InputAllocatorMessage
+struct InputAllocMessage
 {
     size_t index;
     SBufferToken token;
@@ -91,6 +92,7 @@ struct InputCheckMessage
 
 //----------------------------------------------------------------------
 //-- message to an output port
+//-- do not ack
 //----------------------------------------------------------------------
 
 struct OutputBufferMessage
@@ -118,8 +120,15 @@ struct OutputHintMessage
     WeakToken token;
 };
 
+struct OutputAllocMessage
+{
+    size_t index;
+    SBufferToken token;
+};
+
 //----------------------------------------------------------------------
 //-- message to just the block
+//-- do not ack
 //----------------------------------------------------------------------
 
 struct SelfKickMessage

@@ -15,6 +15,7 @@
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
+#include <gras_impl/block_actor.hpp>
 #include <gras_impl/vector_utils.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/bind.hpp>

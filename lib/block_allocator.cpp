@@ -15,6 +15,7 @@
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
+#include <gras_impl/block_actor.hpp>
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 #include <boost/math/common_factor.hpp>
@@ -92,7 +93,7 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
 
         this->output_buffer_tokens[i] = block_ptr->output_buffer_allocator(i, token, bytes);
 
-        InputAllocatorMessage message;
+        InputAllocMessage message;
         message.token = SBufferToken(new SBufferDeleter(deleter));
         message.recommend_length = bytes;
         this->post_downstream(i, message);
