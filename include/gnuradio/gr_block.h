@@ -28,6 +28,16 @@ typedef std::vector<int> gr_vector_int;
 typedef std::vector<void *> gr_vector_void_star;
 typedef std::vector<const void *> gr_vector_const_void_star;
 
+namespace gnuradio
+{
+//! dummy entry, just here for legacy purposes
+template <typename T>
+boost::shared_ptr<T> get_initial_sptr(T *p)
+{
+    return boost::shared_ptr<T>(p);
+}
+}
+
 struct GRAS_API gr_block : gnuradio::Block
 {
 
