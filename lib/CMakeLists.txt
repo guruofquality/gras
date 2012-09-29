@@ -52,6 +52,7 @@ list(APPEND gnuradio_core_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/block_task.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_allocator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_handlers.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/topology_handler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/input_handlers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/output_handlers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/hier_block.cpp

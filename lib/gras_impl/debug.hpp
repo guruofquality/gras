@@ -41,7 +41,7 @@
 #define VAR(x) std::cerr << #x << " = " << (x) << std::endl << std::flush;
 
 #ifdef MESSAGE_TRACING
-#define MESSAGE_TRACER() std::cerr << "Handle message in: " << BOOST_CURRENT_FUNCTION << std::endl << std::flush;
+#define MESSAGE_TRACER() std::cerr << "Handle message: " << block_ptr->to_string() << " in " << BOOST_CURRENT_FUNCTION << std::endl << std::flush;
 #else
 #define MESSAGE_TRACER()
 #endif
