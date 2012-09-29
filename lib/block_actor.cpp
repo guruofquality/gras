@@ -15,14 +15,25 @@
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <gras_impl/block_actor.hpp>
+#include <boost/thread/thread.hpp>
 #include <Theron/Framework.h>
 
 using namespace gnuradio;
 
-static Theron::Framework global_framework(8); //TODO needs API config
+static size_t hardware_concurrency(void)
+{
+    const size_t n = boost::thread::hardware_concurrency();
+    return std::max(size_t(2), n);
+}
+
+static Theron::Framework &get_global_framework(void)
+{
+    static Theron::Framework framework(hardware_concurrency());
+    return framework;
+}
 
 BlockActor::BlockActor(void):
-    Apology::Worker(global_framework)
+    Apology::Worker(get_global_framework())
 {
     this->register_handlers();
 }

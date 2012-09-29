@@ -74,7 +74,7 @@ void BlockActor::mark_done(void)
 void BlockActor::handle_task(void)
 {
     #ifdef WORK_DEBUG
-    WorkDebugPrinter WDP(this->name);
+    WorkDebugPrinter WDP(block_ptr->to_string());
     #endif
 
     //------------------------------------------------------------------
