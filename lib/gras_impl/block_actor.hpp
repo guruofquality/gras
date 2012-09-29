@@ -27,6 +27,7 @@
 #include <gras_impl/output_buffer_queues.hpp>
 #include <gras_impl/input_buffer_queues.hpp>
 #include <gras_impl/interruptible_thread.hpp>
+#include <boost/dynamic_bitset.hpp>
 #include <vector>
 #include <set>
 
@@ -48,6 +49,7 @@ struct BlockActor : Apology::Worker
     BlockActor(void);
     ~BlockActor(void);
     Block *block_ptr;
+    std::string name; //for debug
 
     //do it here so we can match w/ the handler declarations
     void register_handlers(void)
@@ -74,7 +76,6 @@ struct BlockActor : Apology::Worker
         this->RegisterHandler(this, &BlockActor::handle_output_alloc);
 
         this->RegisterHandler(this, &BlockActor::handle_self_kick);
-        this->RegisterHandler(this, &BlockActor::handle_check_tokens);
         this->RegisterHandler(this, &BlockActor::handle_update_inputs);
     }
 
@@ -101,7 +102,6 @@ struct BlockActor : Apology::Worker
     void handle_output_alloc(const OutputAllocMessage &, const Theron::Address);
 
     void handle_self_kick(const SelfKickMessage &, const Theron::Address);
-    void handle_check_tokens(const CheckTokensMessage &, const Theron::Address);
     void handle_update_inputs(const UpdateInputsMessage &, const Theron::Address);
 
     //helpers
@@ -110,7 +110,7 @@ struct BlockActor : Apology::Worker
     void handle_task(void);
     void sort_tags(const size_t index);
     void trim_tags(const size_t index);
-    void conclusion(const bool);
+    void conclusion(void);
 
     //per port properties
     std::vector<size_t> input_items_sizes;
@@ -144,8 +144,9 @@ struct BlockActor : Apology::Worker
     //track the subscriber counts
     std::vector<Token> input_tokens;
     std::vector<Token> output_tokens;
+    boost::dynamic_bitset<> inputs_done;
+    boost::dynamic_bitset<> outputs_done;
     std::set<Token> token_pool;
-
     std::vector<SBufferToken> output_buffer_tokens;
 
     //buffer queues and ready conditions

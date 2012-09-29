@@ -74,6 +74,12 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
 {
     MESSAGE_TRACER();
 
+    if (this->block_state == BLOCK_STATE_DONE)
+    {
+        this->Send(0, from); //ACK
+        return;
+    }
+
     //allocate output buffers which will also wake up the task
     const size_t num_outputs = this->get_num_outputs();
     this->output_buffer_tokens.resize(num_outputs);

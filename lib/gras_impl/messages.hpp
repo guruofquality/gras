@@ -137,11 +137,6 @@ struct SelfKickMessage
     //empty
 };
 
-struct CheckTokensMessage
-{
-    //empty
-};
-
 struct UpdateInputsMessage
 {
     //empty

@@ -55,9 +55,14 @@ void BlockActor::handle_input_check(const InputCheckMessage &message, const Ther
     const size_t index = message.index;
 
     //an upstream block declared itself done, recheck the token
-    if (this->input_queues.empty(index) and this->input_tokens[index].unique())
+    this->inputs_done.set(index, this->input_tokens[index].unique());
+
+    if ((~this->inputs_done).none()) //no upstream providers
     {
-        this->mark_done();
+        if (not this->input_queues.all_ready())
+        {
+            this->mark_done();
+        }
     }
 }
 

@@ -90,21 +90,16 @@ void BlockActor::handle_task(void)
 
     const size_t num_inputs = this->get_num_inputs();
     const size_t num_outputs = this->get_num_outputs();
-    //const bool is_source = (num_inputs == 0);
-    //const bool is_sink = (num_outputs == 0);
     this->work_io_ptr_mask = 0; //reset
 
     //------------------------------------------------------------------
     //-- initialize input buffers before work
     //------------------------------------------------------------------
     size_t num_input_items = REALLY_BIG; //so big that it must std::min
-    bool inputs_done = false;
     size_t output_inline_index = 0;
     for (size_t i = 0; i < num_inputs; i++)
     {
         this->sort_tags(i);
-
-        inputs_done = inputs_done or this->input_tokens[i].unique();
 
         ASSERT(this->input_queues.ready(i));
         bool potential_inline;
@@ -141,11 +136,8 @@ void BlockActor::handle_task(void)
     //-- initialize output buffers before work
     //------------------------------------------------------------------
     size_t num_output_items = REALLY_BIG; //so big that it must std::min
-    bool outputs_done = false;
     for (size_t i = 0; i < num_outputs; i++)
     {
-        outputs_done = outputs_done or this->output_tokens[i].unique();
-
         ASSERT(this->output_queues.ready(i));
         const SBuffer &buff = this->output_queues.front(i);
         void *mem = buff.get(buff.length);
@@ -158,13 +150,6 @@ void BlockActor::handle_task(void)
         this->work_output_items[i] = mem;
         num_output_items = std::min(num_output_items, items);
         this->produce_items[i] = 0;
-    }
-
-    //if we have outputs and at least one port has no downstream subscibers, mark done
-    if (outputs_done)
-    {
-        this->mark_done();
-        return;
     }
 
     //------------------------------------------------------------------
@@ -187,7 +172,7 @@ void BlockActor::handle_task(void)
             if (num_output_items) goto forecast_again_you_jerk;
 
             this->forecast_fail = true;
-            this->conclusion(inputs_done);
+            this->conclusion();
             return;
         }
     }
@@ -258,17 +243,19 @@ void BlockActor::handle_task(void)
     //------------------------------------------------------------------
     //-- Message self based on post-work conditions
     //------------------------------------------------------------------
-    this->conclusion(inputs_done);
+    this->conclusion();
 }
 
-GRAS_FORCE_INLINE void BlockActor::conclusion(const bool inputs_done)
+GRAS_FORCE_INLINE void BlockActor::conclusion(void)
 {
-    //if there are inputs, and not all are provided for,
-    //tell the block to check input queues and handle done
-    if (inputs_done)
+
+    //since nothing else is coming in, its safe to mark done
+    if ((~this->inputs_done).none()) //no upstream providers
     {
-        this->Push(CheckTokensMessage(), Theron::Address());
-        return;
+        if (not this->input_queues.all_ready() or this->forecast_fail)
+        {
+            this->mark_done();
+        }
     }
 
     //still have IO ready? kick off another task

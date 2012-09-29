@@ -60,6 +60,8 @@ void BlockActor::handle_topology(
 
     this->input_tokens.resize(num_inputs);
     this->output_tokens.resize(num_outputs);
+    this->inputs_done.resize(num_inputs);
+    this->outputs_done.resize(num_outputs);
     this->output_allocation_hints.resize(num_outputs);
 
     //resize tags vector to match sizes

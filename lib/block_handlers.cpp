@@ -27,6 +27,12 @@ void BlockActor::handle_top_active(
 ){
     MESSAGE_TRACER();
 
+    if (this->block_state == BLOCK_STATE_DONE)
+    {
+        this->Send(0, from); //ACK
+        return;
+    }
+
     if (this->block_state != BLOCK_STATE_LIVE)
     {
         this->block_ptr->start();
@@ -61,10 +67,17 @@ void BlockActor::handle_top_token(
 ){
     MESSAGE_TRACER();
 
+    if (this->block_state == BLOCK_STATE_DONE)
+    {
+        this->Send(0, from); //ACK
+        return;
+    }
+
     //create input tokens and send allocation hints
     for (size_t i = 0; i < this->get_num_inputs(); i++)
     {
         this->input_tokens[i] = Token::make();
+        this->inputs_done.reset(i);
         OutputTokenMessage token_msg;
         token_msg.token = this->input_tokens[i];
         this->post_upstream(i, token_msg);
@@ -83,6 +96,7 @@ void BlockActor::handle_top_token(
     for (size_t i = 0; i < this->get_num_outputs(); i++)
     {
         this->output_tokens[i] = Token::make();
+        this->outputs_done.reset(i);
         InputTokenMessage token_msg;
         token_msg.token = this->output_tokens[i];
         this->post_downstream(i, token_msg);
@@ -132,19 +146,4 @@ void BlockActor::handle_self_kick(
 ){
     MESSAGE_TRACER();
     this->handle_task();
-}
-
-void BlockActor::handle_check_tokens(
-    const CheckTokensMessage &,
-    const Theron::Address
-){
-    MESSAGE_TRACER();
-    if (this->input_queues.all_ready() and not this->forecast_fail)
-    {
-        this->handle_task();
-    }
-    else
-    {
-        this->mark_done();
-    }
 }

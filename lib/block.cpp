@@ -28,6 +28,7 @@ Block::Block(const std::string &name):
     Element(name)
 {
     (*this)->block = boost::shared_ptr<BlockActor>(new BlockActor());
+    (*this)->block->name = name; //for debug purposes
 
     //setup some state variables
     (*this)->block->topology_init = false;
