@@ -9,37 +9,25 @@ set(GRAS_BINARY_DIR ${CMAKE_BINARY_DIR}/gruel/src)
 set(RUNTIME_SOURCE_DIR ${CMAKE_SOURCE_DIR}/gnuradio-core/src/lib/runtime)
 
 ########################################################################
-# Setup TSBE
+# Setup Theron Deps
 ########################################################################
-include_directories(${GRAS_SOURCE_DIR}/tsbe/include)
-include_directories(${GRAS_SOURCE_DIR}/tsbe/lib)
+set(THERON_SOURCE_DIR ${GRAS_SOURCE_DIR}/Theron)
+include(${THERON_SOURCE_DIR}/TheronSetup.cmake)
+include_directories(${THERON_INCLUDE_DIRS})
+link_directories(${THERON_LIBRARY_DIRS})
+add_definitions(${THERON_DEFINES})
 
-file(GLOB tsbe_sources
-    "${GRAS_SOURCE_DIR}/tsbe/lib/*.cpp"
-)
-
-list(APPEND gnuradio_core_sources ${tsbe_sources})
+list(APPEND gnuradio_core_libs ${THERON_LIBRARIES})
+list(APPEND gnuradio_core_sources ${THERON_SOURCES})
 
 ########################################################################
-# Setup Theron
+# Setup Apology Deps
 ########################################################################
-include_directories(${GRAS_SOURCE_DIR}/Theron/Include)
-include_directories(${GRAS_SOURCE_DIR}/Theron/Include/External)
+include_directories(${GRAS_SOURCE_DIR}/Apology/include)
+include_directories(${GRAS_SOURCE_DIR}/Apology/lib)
 
-if(MSVC)
-    include_directories(${GRAS_SOURCE_DIR}/Theron/Include/External/Standard)
-endif(MSVC)
-
-if (NOT WIN32) #not on windows? tell theron headers to use boost
-    add_definitions(-DTHERON_USE_BOOST_THREADS)
-endif()
-
-file(GLOB theron_sources
-    "${GRAS_SOURCE_DIR}/Theron/Theron/*.cpp"
-    "${GRAS_SOURCE_DIR}/Theron/Source/*.cpp"
-)
-
-list(APPEND gnuradio_core_sources ${theron_sources})
+file(GLOB apology_sources "${GRAS_SOURCE_DIR}/Apology/lib/*.cpp")
+list(APPEND gnuradio_core_sources ${apology_sources})
 
 ########################################################################
 # Setup NumaNuma
