@@ -40,5 +40,5 @@ BlockActor::BlockActor(void):
 
 BlockActor::~BlockActor(void)
 {
-    //NOP
+    this->mark_done();
 }

@@ -65,7 +65,7 @@ void BlockActor::handle_top_token(
     for (size_t i = 0; i < this->get_num_inputs(); i++)
     {
         this->input_tokens[i] = Token::make();
-        InputTokenMessage token_msg;
+        OutputTokenMessage token_msg;
         token_msg.token = this->input_tokens[i];
         this->post_upstream(i, token_msg);
 
@@ -83,7 +83,7 @@ void BlockActor::handle_top_token(
     for (size_t i = 0; i < this->get_num_outputs(); i++)
     {
         this->output_tokens[i] = Token::make();
-        OutputTokenMessage token_msg;
+        InputTokenMessage token_msg;
         token_msg.token = this->output_tokens[i];
         this->post_downstream(i, token_msg);
     }

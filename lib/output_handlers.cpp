@@ -35,7 +35,7 @@ void BlockActor::handle_output_buffer(const OutputBufferMessage &message, const 
 void BlockActor::handle_output_token(const OutputTokenMessage &message, const Theron::Address)
 {
     MESSAGE_TRACER();
-    //const size_t index = message.index;
+    ASSERT(message.index < this->get_num_outputs());
 
     //store the token of the downstream consumer
     this->token_pool.insert(message.token);

@@ -43,7 +43,7 @@ void BlockActor::handle_input_buffer(const InputBufferMessage &message, const Th
 void BlockActor::handle_input_token(const InputTokenMessage &message, const Theron::Address)
 {
     MESSAGE_TRACER();
-    //const size_t index = message.index;
+    ASSERT(message.index < this->get_num_inputs());
 
     //store the token of the upstream producer
     this->token_pool.insert(message.token);
