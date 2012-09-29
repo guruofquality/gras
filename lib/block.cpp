@@ -16,7 +16,6 @@
 
 #include "element_impl.hpp"
 #include <gnuradio/block.hpp>
-#include <boost/bind.hpp>
 
 using namespace gnuradio;
 
@@ -28,20 +27,14 @@ Block::Block(void)
 Block::Block(const std::string &name):
     Element(name)
 {
-    //create internal block object
-    tsbe::BlockConfig config;
-    config.input_callback = boost::bind(&ElementImpl::handle_input_msg, this->get(), _1, _2, _3);
-    config.output_callback = boost::bind(&ElementImpl::handle_output_msg, this->get(), _1, _2, _3);
-    config.block_callback = boost::bind(&ElementImpl::handle_block_msg, this->get(), _1, _2);
-    config.changed_callback = boost::bind(&ElementImpl::topology_update, this->get(), _1);
-    (*this)->block = tsbe::Block(config);
+    (*this)->block = boost::shared_ptr<BlockActor>(new BlockActor());
 
     //setup some state variables
-    (*this)->topology_init = false;
-    (*this)->forecast_fail = false;
-    (*this)->block_ptr = this;
-    (*this)->hint = 0;
-    (*this)->block_state = ElementImpl::BLOCK_STATE_INIT;
+    (*this)->block->topology_init = false;
+    (*this)->block->forecast_fail = false;
+    (*this)->block->block_ptr = this;
+    (*this)->block->hint = 0;
+    (*this)->block->block_state = BlockActor::BLOCK_STATE_INIT;
 
     //call block methods to init stuff
     this->set_input_history(0);
@@ -73,97 +66,100 @@ typename V::value_type vector_get(const V &v, const size_t index)
 
 size_t Block::input_history(const size_t which_input) const
 {
-    return vector_get((*this)->input_history_items, which_input);
+    return vector_get((*this)->block->input_history_items, which_input);
 }
 
 void Block::set_input_history(const size_t history, const size_t which_input)
 {
-    vector_set((*this)->input_history_items, history, which_input);
-    if ((*this)->topology_init) (*this)->block.post_msg(UpdateInputsMessage());
+    vector_set((*this)->block->input_history_items, history, which_input);
+    if ((*this)->block->topology_init)
+        (*this)->block->Push(UpdateInputsMessage(), Theron::Address());
 }
 
 size_t Block::output_multiple(const size_t which_output) const
 {
-    return vector_get((*this)->output_multiple_items, which_output);
+    return vector_get((*this)->block->output_multiple_items, which_output);
 }
 
 void Block::set_output_multiple(const size_t multiple, const size_t which_output)
 {
-    vector_set((*this)->output_multiple_items, multiple, which_output);
-    if ((*this)->topology_init) (*this)->block.post_msg(UpdateInputsMessage());
+    vector_set((*this)->block->output_multiple_items, multiple, which_output);
+    if ((*this)->block->topology_init)
+        (*this)->block->Push(UpdateInputsMessage(), Theron::Address());
 }
 
 void Block::consume(const size_t which_input, const size_t how_many_items)
 {
-    (*this)->consume_items[which_input] += how_many_items;
-    (*this)->consume_called[which_input] = true;
+    (*this)->block->consume_items[which_input] += how_many_items;
+    (*this)->block->consume_called[which_input] = true;
 }
 
 void Block::consume_each(const size_t how_many_items)
 {
-    for (size_t i = 0; i < (*this)->consume_items.size(); i++)
+    for (size_t i = 0; i < (*this)->block->consume_items.size(); i++)
     {
-        (*this)->consume_items[i] += how_many_items;
-        (*this)->consume_called[i] = true;
+        (*this)->block->consume_items[i] += how_many_items;
+        (*this)->block->consume_called[i] = true;
     }
 }
 
 void Block::produce(const size_t which_output, const size_t how_many_items)
 {
-    (*this)->produce_items[which_output] += how_many_items;
+    (*this)->block->produce_items[which_output] += how_many_items;
 }
 
 void Block::set_input_inline(const size_t which_input, const bool enb)
 {
-    vector_set((*this)->input_inline_enables, enb, which_input);
+    vector_set((*this)->block->input_inline_enables, enb, which_input);
 }
 
 bool Block::input_inline(const size_t which_input) const
 {
-    return vector_get((*this)->input_inline_enables, which_input);
+    return vector_get((*this)->block->input_inline_enables, which_input);
 }
 
 void Block::set_fixed_rate(const bool fixed_rate)
 {
-    (*this)->enable_fixed_rate = fixed_rate;
+    (*this)->block->enable_fixed_rate = fixed_rate;
 }
 
 void Block::set_relative_rate(double relative_rate)
 {
-    (*this)->relative_rate = relative_rate;
+    (*this)->block->relative_rate = relative_rate;
 }
 
 double Block::relative_rate(void) const
 {
-    return (*this)->relative_rate;
+    return (*this)->block->relative_rate;
 }
 
 uint64_t Block::nitems_read(const size_t which_input)
 {
-    return (*this)->items_consumed[which_input];
+    return (*this)->block->items_consumed[which_input];
 }
 
 uint64_t Block::nitems_written(const size_t which_output)
 {
-    return (*this)->items_produced[which_output];
+    return (*this)->block->items_produced[which_output];
 }
 
 Block::tag_propagation_policy_t Block::tag_propagation_policy(void)
 {
-    return (*this)->tag_prop_policy;
+    return (*this)->block->tag_prop_policy;
 }
 
 void Block::set_tag_propagation_policy(Block::tag_propagation_policy_t p)
 {
-    (*this)->tag_prop_policy = p;
+    (*this)->block->tag_prop_policy = p;
 }
 
 void Block::add_item_tag(
     const size_t which_output,
     const Tag &tag
 ){
-    ASSERT((*this)->work_task_iface);
-    (*this)->work_task_iface.post_downstream(which_output, tag);
+    BlockTagMessage message;
+    message.tag = tag;
+    (*this)->block->post_downstream(which_output, message);
 }
 
 void Block::add_item_tag(
@@ -187,7 +183,7 @@ void Block::get_tags_in_range(
     uint64_t abs_start,
     uint64_t abs_end
 ){
-    const std::vector<Tag> &input_tags = (*this)->input_tags[which_input];
+    const std::vector<Tag> &input_tags = (*this)->block->input_tags[which_input];
     tags.clear();
     for (size_t i = 0; i < input_tags.size(); i++)
     {
@@ -205,7 +201,7 @@ void Block::get_tags_in_range(
     uint64_t abs_end,
     const pmt::pmt_t &key
 ){
-    const std::vector<Tag> &input_tags = (*this)->input_tags[which_input];
+    const std::vector<Tag> &input_tags = (*this)->block->input_tags[which_input];
     tags.clear();
     for (size_t i = 0; i < input_tags.size(); i++)
     {
@@ -241,5 +237,5 @@ bool Block::check_topology(int, int)
 
 void Block::set_buffer_affinity(const Affinity &affinity)
 {
-    (*this)->buffer_affinity = affinity;
+    (*this)->block->buffer_affinity = affinity;
 }

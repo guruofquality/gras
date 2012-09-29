@@ -28,23 +28,22 @@ HierBlock::HierBlock(void)
 HierBlock::HierBlock(const std::string &name):
     Element(name)
 {
-    tsbe::TopologyConfig config;
-    (*this)->topology = tsbe::Topology(config);
+    (*this)->topology = boost::shared_ptr<Apology::Topology>(new Apology::Topology());
 }
 
 void ElementImpl::hier_block_cleanup(void)
 {
-    this->topology.clear_all();
+    this->topology->clear_all();
 }
 
 void HierBlock::connect(const Element &elem)
 {
-    (*this)->topology.add_topology(elem->topology);
+    (*this)->topology->add_topology(elem->topology.get());
 }
 
 void HierBlock::disconnect(const Element &elem)
 {
-    (*this)->topology.remove_topology(elem->topology);
+    (*this)->topology->remove_topology(elem->topology.get());
 }
 
 void HierBlock::connect(
@@ -54,11 +53,11 @@ void HierBlock::connect(
     const size_t sink_index
 ){
     //TODO, this is the perfect place to validate IO sigs
-    const tsbe::Connection conn(
-        tsbe::Port(src->get_elem(), src_index, src.weak_self.lock()),
-        tsbe::Port(sink->get_elem(), sink_index, sink.weak_self.lock())
+    const Apology::Flow flow(
+        Apology::Port(src->get_elem(), src_index, src.weak_self.lock()),
+        Apology::Port(sink->get_elem(), sink_index, sink.weak_self.lock())
     );
-    (*this)->topology.connect(conn);
+    (*this)->topology->add_flow(flow);
 }
 
 void HierBlock::disconnect(
@@ -67,14 +66,14 @@ void HierBlock::disconnect(
     const Element &sink,
     const size_t sink_index
 ){
-    const tsbe::Connection conn(
-        tsbe::Port(src->get_elem(), src_index),
-        tsbe::Port(sink->get_elem(), sink_index)
+    const Apology::Flow flow(
+        Apology::Port(src->get_elem(), src_index),
+        Apology::Port(sink->get_elem(), sink_index)
     );
-    (*this)->topology.disconnect(conn);
+    (*this)->topology->remove_flow(flow);
 }
 
 void HierBlock::disconnect_all(void)
 {
-    (*this)->topology.clear_all();
+    (*this)->topology->clear_all();
 }

@@ -19,7 +19,6 @@
 
 #include <gnuradio/block.hpp>
 #include <gnuradio/gr_io_signature.h>
-#include <gnuradio/gr_sptr_magic.h>
 #include <gnuradio/gr_types.h>
 #include <gnuradio/gr_tags.h>
 #include <string>

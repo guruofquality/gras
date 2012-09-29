@@ -28,9 +28,7 @@ TopBlock::TopBlock(void)
 TopBlock::TopBlock(const std::string &name):
     HierBlock(name)
 {
-    tsbe::ExecutorConfig config;
-    config.topology = (*this)->topology;
-    (*this)->executor = tsbe::Executor(config);
+    (*this)->executor = boost::shared_ptr<Apology::Executor>(new Apology::Executor((*this)->topology.get()));
     (*this)->token = Token::make();
     (*this)->thread_group = SharedThreadGroup(new boost::thread_group());
     if (GENESIS) std::cerr
@@ -44,7 +42,7 @@ void ElementImpl::top_block_cleanup(void)
 {
     TopBlockMessage event;
     event.what = TopBlockMessage::INERT;
-    this->executor.post_msg(event);
+    this->executor->post_all(event);
     if (ARMAGEDDON) std::cerr
         << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"
         << "xx Top Block Destroyed: " << name << "\n"
@@ -62,30 +60,30 @@ void TopBlock::set_buffer_hint(const size_t hint)
     TopBlockMessage event;
     event.what = TopBlockMessage::HINT;
     event.hint = hint;
-    (*this)->executor.post_msg(event);
+    (*this)->executor->post_all(event);
 }
 
 void TopBlock::start(void)
 {
-    (*this)->executor.commit();
+    (*this)->executor->commit();
     {
-        (*this)->executor.post_msg((*this)->thread_group);
+        (*this)->executor->post_all((*this)->thread_group);
     }
     {
         TopBlockMessage event;
         event.what = TopBlockMessage::TOKEN_TIME;
         event.token = (*this)->token;
-        (*this)->executor.post_msg(event);
+        (*this)->executor->post_all(event);
     }
     {
         TopBlockMessage event;
         event.what = TopBlockMessage::ALLOCATE;
-        (*this)->executor.post_msg(event);
+        (*this)->executor->post_all(event);
     }
     {
         TopBlockMessage event;
         event.what = TopBlockMessage::ACTIVE;
-        (*this)->executor.post_msg(event);
+        (*this)->executor->post_all(event);
     }
 }
 
@@ -97,7 +95,7 @@ void TopBlock::stop(void)
     //message all blocks to mark done
     TopBlockMessage event;
     event.what = TopBlockMessage::INERT;
-    (*this)->executor.post_msg(event);
+    (*this)->executor->post_all(event);
 }
 
 void TopBlock::run(void)

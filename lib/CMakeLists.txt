@@ -1,7 +1,6 @@
 ########################################################################
 # This file included, use CMake directory variables
 ########################################################################
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(GRAS_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../)
@@ -49,10 +48,11 @@ list(APPEND gnuradio_core_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/element.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sbuffer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/block_task.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/block_allocator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/block_handlers.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/port_handlers.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/block_actor.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/block_task.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/block_allocator.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/block_handlers.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/port_handlers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/hier_block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/top_block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_block.cpp

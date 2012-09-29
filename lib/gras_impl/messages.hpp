@@ -18,9 +18,16 @@
 #define INCLUDED_LIBGRAS_IMPL_MESSAGES_HPP
 
 #include <gnuradio/sbuffer.hpp>
+#include <gnuradio/tags.hpp>
 
 namespace gnuradio
 {
+
+struct BlockTagMessage
+{
+    size_t index;
+    Tag tag;
+};
 
 struct TopBlockMessage
 {

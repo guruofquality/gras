@@ -39,10 +39,10 @@ int gr_block::Work(
     const OutputItems &output_items
 ){
     return this->general_work(
-        (*this)->work_noutput_items,
-        (*this)->work_ninput_items,
-        (*this)->work_input_items,
-        (*this)->work_output_items
+        (*this)->block->work_noutput_items,
+        (*this)->block->work_ninput_items,
+        (*this)->block->work_input_items,
+        (*this)->block->work_output_items
     );
 }
 
@@ -67,13 +67,13 @@ bool gr_block::is_unaligned(void)
     //TODO
     //probably dont need this since volk dispatcher checks alignment
     //32 byte aligned is good enough for you
-    return ((*this)->work_io_ptr_mask & ptrdiff_t(GRAS_MAX_ALIGNMENT-1)) != 0;
+    return ((*this)->block->work_io_ptr_mask & ptrdiff_t(GRAS_MAX_ALIGNMENT-1)) != 0;
 }
 
 size_t gr_block::fixed_rate_noutput_to_ninput(const size_t noutput_items)
 {
-    return (*this)->input_history_items[0] +
-            myulround((noutput_items/(*this)->relative_rate));
+    return (*this)->block->input_history_items[0] +
+            size_t((noutput_items/this->relative_rate()));
 }
 
 size_t gr_block::interpolation(void) const
