@@ -108,6 +108,9 @@ struct BlockActor : Apology::Worker
     void buffer_returner(const size_t index, SBuffer &buffer);
     void mark_done(void);
     void handle_task(void);
+    void sort_tags(const size_t index);
+    void trim_tags(const size_t index);
+    void conclusion(const bool);
 
     //per port properties
     std::vector<size_t> input_items_sizes;
@@ -157,22 +160,6 @@ struct BlockActor : Apology::Worker
     //interruptible thread stuff
     SharedThreadGroup thread_group;
     boost::shared_ptr<InterruptibleThread> interruptible_thread;
-
-    //handlers
-    /*
-    void handle_input_msg(const tsbe::TaskInterface &, const size_t, const tsbe::Wax &);
-    void handle_output_msg(const tsbe::TaskInterface &, const size_t, const tsbe::Wax &);
-    void topology_update(const tsbe::TaskInterface &);
-    void handle_block_msg(const tsbe::TaskInterface &, const tsbe::Wax &);
-    void handle_allocation(const tsbe::TaskInterface &);
-    void handle_task(const tsbe::TaskInterface &);
-    void mark_done(const tsbe::TaskInterface &);
-    void conclusion(const tsbe::TaskInterface &task_iface, const bool);
-    void buffer_returner(const size_t index, SBuffer &buffer);
-    void input_update(const tsbe::TaskInterface &task_iface);
-    void sort_tags(const size_t index);
-    void trim_tags(const tsbe::TaskInterface &, const size_t index);
-    * */
 
     //work helpers
     int work_ret;

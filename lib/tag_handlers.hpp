@@ -17,13 +17,13 @@
 #ifndef INCLUDED_LIBGRAS_TAG_HANDLERS_HPP
 #define INCLUDED_LIBGRAS_TAG_HANDLERS_HPP
 
-#include "element_impl.hpp"
+#include <gras_impl/block_actor.hpp>
 #include <algorithm>
 
 namespace gnuradio
 {
 
-GRAS_FORCE_INLINE void ElementImpl::sort_tags(const size_t i)
+GRAS_FORCE_INLINE void BlockActor::sort_tags(const size_t i)
 {
     if (not this->input_tags_changed[i]) return;
     std::vector<Tag> &tags_i = this->input_tags[i];
@@ -31,9 +31,9 @@ GRAS_FORCE_INLINE void ElementImpl::sort_tags(const size_t i)
     this->input_tags_changed[i] = false;
 }
 
-GRAS_FORCE_INLINE void ElementImpl::trim_tags(const tsbe::TaskInterface &task_iface, const size_t i)
+GRAS_FORCE_INLINE void BlockActor::trim_tags(const size_t i)
 {
-    const size_t num_outputs = task_iface.get_num_outputs();
+    const size_t num_outputs = this->get_num_outputs();
 
     //------------------------------------------------------------------
     //-- trim the input tags that are past the consumption zone
@@ -59,7 +59,7 @@ GRAS_FORCE_INLINE void ElementImpl::trim_tags(const tsbe::TaskInterface &task_if
             {
                 Tag t = tags_i[tag_i];
                 t.offset = myullround(t.offset * this->relative_rate);
-                task_iface.post_downstream(out_i, t);
+                this->post_downstream(out_i, InputTagMessage(t));
             }
         }
         break;
@@ -70,7 +70,7 @@ GRAS_FORCE_INLINE void ElementImpl::trim_tags(const tsbe::TaskInterface &task_if
             {
                 Tag t = tags_i[tag_i];
                 t.offset = myullround(t.offset * this->relative_rate);
-                task_iface.post_downstream(i, t);
+                this->post_downstream(i, InputTagMessage(t));
             }
         }
         break;

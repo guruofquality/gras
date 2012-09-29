@@ -49,7 +49,7 @@ list(APPEND gnuradio_core_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/sbuffer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_actor.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/block_task.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/block_task.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_allocator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_handlers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/input_handlers.cpp

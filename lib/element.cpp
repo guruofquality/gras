@@ -16,6 +16,7 @@
 
 #include "element_impl.hpp"
 #include <gnuradio/element.hpp>
+#include <boost/format.hpp>
 #include <boost/detail/atomic_count.hpp>
 
 static boost::detail::atomic_count unique_id_pool(0);
@@ -63,6 +64,10 @@ std::string Element::name(void) const
     return (*this)->name;
 }
 
+std::string Element::to_string(void) const
+{
+    return str(boost::format("%s(%d)") % this->name() % this->unique_id());
+}
 
 void Element::set_output_signature(const IOSignature &sig)
 {

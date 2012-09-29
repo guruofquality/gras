@@ -62,6 +62,7 @@ struct TopHintMessage
 
 struct InputTagMessage
 {
+    InputTagMessage(const Tag &tag):tag(tag){}
     size_t index;
     Tag tag;
 };

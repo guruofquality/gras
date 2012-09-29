@@ -34,3 +34,6 @@ and not directly from block::<method>
 * create an input and output config struct (per port)
 ** idea is, we dont need so many API calls for a port
 ** set/get input/output config
+
+* want per-port token_pool for inputs and outputs
+** if ports get removed, this will release subscribers

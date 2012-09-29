@@ -56,6 +56,9 @@ struct GRAS_API Element : boost::shared_ptr<ElementImpl>, boost::enable_shared_f
     //! Get the name of this element
     std::string name(void) const;
 
+    //! get a canonical name for this element
+    std::string to_string(void) const;
+
     void set_output_signature(const gnuradio::IOSignature &sig);
 
     void set_input_signature(const gnuradio::IOSignature &sig);
