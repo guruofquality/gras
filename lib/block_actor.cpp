@@ -24,5 +24,10 @@ static Theron::Framework global_framework(8); //TODO needs API config
 BlockActor::BlockActor(void):
     Apology::Worker(global_framework)
 {
-    
+    this->register_handlers();
+}
+
+BlockActor::~BlockActor(void)
+{
+    //NOP
 }

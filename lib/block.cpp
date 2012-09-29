@@ -157,7 +157,7 @@ void Block::add_item_tag(
     const size_t which_output,
     const Tag &tag
 ){
-    BlockTagMessage message;
+    InputTagMessage message;
     message.tag = tag;
     (*this)->block->post_downstream(which_output, message);
 }

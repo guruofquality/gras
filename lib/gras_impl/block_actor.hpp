@@ -47,8 +47,63 @@ struct BlockActor : Apology::Worker
 {
     BlockActor(void);
     ~BlockActor(void);
-
     Block *block_ptr;
+
+    //do it here so we can match w/ the handler declarations
+    void register_handlers(void)
+    {
+        this->RegisterHandler(this, &BlockActor::handle_topology);
+
+        this->RegisterHandler(this, &BlockActor::handle_top_alloc);
+        this->RegisterHandler(this, &BlockActor::handle_top_active);
+        this->RegisterHandler(this, &BlockActor::handle_top_inert);
+        this->RegisterHandler(this, &BlockActor::handle_top_token);
+        this->RegisterHandler(this, &BlockActor::handle_top_hint);
+        this->RegisterHandler(this, &BlockActor::handle_top_thread_group);
+
+        this->RegisterHandler(this, &BlockActor::handle_input_tag);
+        this->RegisterHandler(this, &BlockActor::handle_input_buffer);
+        this->RegisterHandler(this, &BlockActor::handle_input_token);
+        this->RegisterHandler(this, &BlockActor::handle_input_check);
+
+        this->RegisterHandler(this, &BlockActor::handle_output_buffer);
+        this->RegisterHandler(this, &BlockActor::handle_output_token);
+        this->RegisterHandler(this, &BlockActor::handle_output_check);
+        this->RegisterHandler(this, &BlockActor::handle_output_hint);
+
+        this->RegisterHandler(this, &BlockActor::handle_self_kick);
+        this->RegisterHandler(this, &BlockActor::handle_check_tokens);
+        this->RegisterHandler(this, &BlockActor::handle_update_inputs);
+    }
+
+    //handlers
+    void handle_topology(const Apology::WorkerTopologyMessage &, const Theron::Address);
+
+    void handle_top_alloc(const TopAllocMessage &, const Theron::Address);
+    void handle_top_active(const TopActiveMessage &, const Theron::Address);
+    void handle_top_inert(const TopInertMessage &, const Theron::Address);
+    void handle_top_token(const TopTokenMessage &, const Theron::Address);
+    void handle_top_hint(const TopHintMessage &, const Theron::Address);
+    void handle_top_thread_group(const SharedThreadGroup &, const Theron::Address);
+
+    void handle_input_tag(const InputTagMessage &, const Theron::Address);
+    void handle_input_buffer(const InputBufferMessage &, const Theron::Address);
+    void handle_input_token(const InputTokenMessage &, const Theron::Address);
+    void handle_input_check(const InputCheckMessage &, const Theron::Address);
+
+    void handle_output_buffer(const OutputBufferMessage &, const Theron::Address);
+    void handle_output_token(const OutputTokenMessage &, const Theron::Address);
+    void handle_output_check(const OutputCheckMessage &, const Theron::Address);
+    void handle_output_hint(const OutputHintMessage &, const Theron::Address);
+
+    void handle_self_kick(const SelfKickMessage &, const Theron::Address);
+    void handle_check_tokens(const CheckTokensMessage &, const Theron::Address);
+    void handle_update_inputs(const UpdateInputsMessage &, const Theron::Address);
+
+    //helpers
+    void buffer_returner(const size_t index, SBuffer &buffer);
+    void mark_done(void);
+    void handle_task(void);
 
     //per port properties
     std::vector<size_t> input_items_sizes;
@@ -96,6 +151,7 @@ struct BlockActor : Apology::Worker
     Block::tag_propagation_policy_t tag_prop_policy;
 
     //interruptible thread stuff
+    SharedThreadGroup thread_group;
     boost::shared_ptr<InterruptibleThread> interruptible_thread;
 
     //handlers
@@ -131,7 +187,7 @@ struct BlockActor : Apology::Worker
     size_t hint; //some kind of allocation hint
     Affinity buffer_affinity;
 
-    std::vector<std::vector<BufferHintMessage> > output_allocation_hints;
+    std::vector<std::vector<OutputHintMessage> > output_allocation_hints;
 
     //rate settings
     bool enable_fixed_rate;

@@ -19,25 +19,32 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <boost/current_function.hpp>
 
 //----------------------------------------------------------------------
 //-- set to 1 to enable these debugs:
 //----------------------------------------------------------------------
 #define GENESIS 0
 #define ARMAGEDDON 0
-#define MESSAGE 0
 
 //----------------------------------------------------------------------
 //-- define to enable these debugs:
 //----------------------------------------------------------------------
 //#define WORK_DEBUG
 #define ASSERTING
+#define MESSAGE_TRACING
 
 //----------------------------------------------------------------------
 //-- various debug prints
 //----------------------------------------------------------------------
 #define HERE() std::cerr << __FILE__ << ":" << __LINE__ << std::endl << std::flush;
 #define VAR(x) std::cerr << #x << " = " << (x) << std::endl << std::flush;
+
+#ifdef MESSAGE_TRACING
+#define MESSAGE_TRACER() std::cerr << "Handle message in: " << BOOST_CURRENT_FUNCTION << std::endl << std::flush;
+#else
+#define MESSAGE_TRACER()
+#endif
 
 //----------------------------------------------------------------------
 //-- implementation for assert debug

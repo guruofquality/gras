@@ -19,28 +19,112 @@
 
 #include <gnuradio/sbuffer.hpp>
 #include <gnuradio/tags.hpp>
+#include <gnuradio/sbuffer.hpp>
+#include <gras_impl/token.hpp>
 
 namespace gnuradio
 {
 
-struct BlockTagMessage
+//----------------------------------------------------------------------
+//-- message from the top block/executor
+//-- these messages must be ack'd
+//----------------------------------------------------------------------
+
+struct TopAllocMessage
+{
+    //empty
+};
+
+struct TopActiveMessage
+{
+    //empty
+};
+
+struct TopInertMessage
+{
+    //empty
+};
+
+struct TopTokenMessage
+{
+    Token token;
+};
+
+struct TopHintMessage
+{
+    size_t hint;
+};
+
+//----------------------------------------------------------------------
+//-- message to an input port
+//----------------------------------------------------------------------
+
+struct InputTagMessage
 {
     size_t index;
     Tag tag;
 };
 
-struct TopBlockMessage
+struct InputBufferMessage
 {
-    enum
-    {
-        ALLOCATE,
-        ACTIVE,
-        INERT,
-        HINT,
-        TOKEN_TIME,
-    } what;
-    size_t hint;
+    size_t index;
+    SBuffer buffer;
+};
+
+struct InputTokenMessage
+{
+    size_t index;
     Token token;
+};
+
+struct InputAllocatorMessage
+{
+    size_t index;
+    SBufferToken token;
+    size_t recommend_length;
+};
+
+struct InputCheckMessage
+{
+    size_t index;
+};
+
+//----------------------------------------------------------------------
+//-- message to an output port
+//----------------------------------------------------------------------
+
+struct OutputBufferMessage
+{
+    size_t index;
+    SBuffer buffer;
+};
+
+struct OutputTokenMessage
+{
+    size_t index;
+    Token token;
+};
+
+struct OutputCheckMessage
+{
+    size_t index;
+};
+
+struct OutputHintMessage
+{
+    size_t index;
+    size_t history_bytes;
+    size_t reserve_bytes;
+    WeakToken token;
+};
+
+//----------------------------------------------------------------------
+//-- message to just the block
+//----------------------------------------------------------------------
+
+struct SelfKickMessage
+{
+    //empty
 };
 
 struct CheckTokensMessage
@@ -48,33 +132,9 @@ struct CheckTokensMessage
     //empty
 };
 
-struct SelfKickMessage
-{
-    //empty
-};
-
-struct BufferReturnMessage
-{
-    size_t index;
-    SBuffer buffer;
-};
-
-struct BufferHintMessage
-{
-    size_t history_bytes;
-    size_t reserve_bytes;
-    WeakToken token;
-};
-
 struct UpdateInputsMessage
 {
     //empty
-};
-
-struct InputAllocatorMessage
-{
-    SBufferToken token;
-    size_t recommend_length;
 };
 
 } //namespace gnuradio

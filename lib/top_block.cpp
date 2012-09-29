@@ -40,9 +40,7 @@ TopBlock::TopBlock(const std::string &name):
 
 void ElementImpl::top_block_cleanup(void)
 {
-    TopBlockMessage event;
-    event.what = TopBlockMessage::INERT;
-    this->executor->post_all(event);
+    this->executor->post_all(TopInertMessage());
     if (ARMAGEDDON) std::cerr
         << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"
         << "xx Top Block Destroyed: " << name << "\n"
@@ -57,10 +55,9 @@ void TopBlock::update(void)
 
 void TopBlock::set_buffer_hint(const size_t hint)
 {
-    TopBlockMessage event;
-    event.what = TopBlockMessage::HINT;
-    event.hint = hint;
-    (*this)->executor->post_all(event);
+    TopHintMessage message;
+    message.hint = hint;
+    (*this)->executor->post_all(message);
 }
 
 void TopBlock::start(void)
@@ -70,20 +67,15 @@ void TopBlock::start(void)
         (*this)->executor->post_all((*this)->thread_group);
     }
     {
-        TopBlockMessage event;
-        event.what = TopBlockMessage::TOKEN_TIME;
-        event.token = (*this)->token;
-        (*this)->executor->post_all(event);
+        TopTokenMessage message;
+        message.token = (*this)->token;
+        (*this)->executor->post_all(message);
     }
     {
-        TopBlockMessage event;
-        event.what = TopBlockMessage::ALLOCATE;
-        (*this)->executor->post_all(event);
+        (*this)->executor->post_all(TopAllocMessage());
     }
     {
-        TopBlockMessage event;
-        event.what = TopBlockMessage::ACTIVE;
-        (*this)->executor->post_all(event);
+        (*this)->executor->post_all(TopActiveMessage());
     }
 }
 
@@ -93,9 +85,7 @@ void TopBlock::stop(void)
     (*this)->thread_group->interrupt_all();
 
     //message all blocks to mark done
-    TopBlockMessage event;
-    event.what = TopBlockMessage::INERT;
-    (*this)->executor->post_all(event);
+    (*this)->executor->post_all(TopInertMessage());
 }
 
 void TopBlock::run(void)

@@ -19,6 +19,18 @@
 
 using namespace gnuradio;
 
+//a buffer has returned from the downstream
+    //(all interested consumers have finished with it)
+    if (msg.type() == typeid(BufferReturnMessage))
+    {
+        const BufferReturnMessage &message = msg.cast<BufferReturnMessage>();
+        const size_t index = message.index;
+        if (this->block_state == BLOCK_STATE_DONE) return;
+        this->output_queues.push(index, message.buffer);
+        this->handle_task(task_iface);
+        return;
+    }
+
 void ElementImpl::handle_input_msg(
     const tsbe::TaskInterface &handle,
     const size_t index,

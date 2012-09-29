@@ -28,33 +28,33 @@ const double EDGE_CASE_MITIGATION = 8.0; //edge case mitigation constant
 
 //TODO will need more complicated later
 
-void ElementImpl::buffer_returner(const size_t index, SBuffer &buffer)
+void BlockActor::buffer_returner(const size_t index, SBuffer &buffer)
 {
     //reset offset and length
     buffer.offset = 0;
     buffer.length = 0;
 
-    BufferReturnMessage message;
+    OutputBufferMessage message;
     message.index = index;
     message.buffer = buffer;
-    this->block.post_msg(message);
+    this->Push(message, Theron::Address());
 }
 
 static size_t recommend_length(
-    const std::vector<BufferHintMessage> &hints,
+    const std::vector<OutputHintMessage> &hints,
     const size_t output_multiple_bytes,
     const size_t at_least_bytes
 ){
     //step 1) find the LCM of all reserves to create a super-reserve
     size_t lcm_bytes = output_multiple_bytes;
-    BOOST_FOREACH(const BufferHintMessage &hint, hints)
+    BOOST_FOREACH(const OutputHintMessage &hint, hints)
     {
         lcm_bytes = boost::math::lcm(lcm_bytes, hint.reserve_bytes);
     }
 
     //step 2) N x super reserve to minimize history edge case
     size_t Nlcm_bytes = lcm_bytes;
-    BOOST_FOREACH(const BufferHintMessage &hint, hints)
+    BOOST_FOREACH(const OutputHintMessage &hint, hints)
     {
         while (hint.history_bytes*EDGE_CASE_MITIGATION > Nlcm_bytes)
         {
@@ -69,10 +69,12 @@ static size_t recommend_length(
     return std::min(Nlcm_bytes, AHH_TOO_MANY_BYTES);
 }
 
-void ElementImpl::handle_allocation(const tsbe::TaskInterface &task_iface)
+void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address from)
 {
+    MESSAGE_TRACER();
+
     //allocate output buffers which will also wake up the task
-    const size_t num_outputs = task_iface.get_num_outputs();
+    const size_t num_outputs = this->get_num_outputs();
     this->output_buffer_tokens.resize(num_outputs);
     for (size_t i = 0; i < num_outputs; i++)
     {
@@ -85,7 +87,7 @@ void ElementImpl::handle_allocation(const tsbe::TaskInterface &task_iface)
             at_least_items*this->output_items_sizes[i]
         );
 
-        SBufferDeleter deleter = boost::bind(&ElementImpl::buffer_returner, this, i, _1);
+        SBufferDeleter deleter = boost::bind(&BlockActor::buffer_returner, this, i, _1);
         SBufferToken token = SBufferToken(new SBufferDeleter(deleter));
 
         this->output_buffer_tokens[i] = block_ptr->output_buffer_allocator(i, token, bytes);
@@ -93,8 +95,10 @@ void ElementImpl::handle_allocation(const tsbe::TaskInterface &task_iface)
         InputAllocatorMessage message;
         message.token = SBufferToken(new SBufferDeleter(deleter));
         message.recommend_length = bytes;
-        task_iface.post_downstream(i, message);
+        this->post_downstream(i, message);
     }
+
+    this->Send(0, from); //ACK
 }
 
 SBufferToken Block::output_buffer_allocator(
@@ -107,7 +111,7 @@ SBufferToken Block::output_buffer_allocator(
         SBufferConfig config;
         config.memory = NULL;
         config.length = recommend_length;
-        config.affinity = (*this)->buffer_affinity;
+        config.affinity = (*this)->block->buffer_affinity;
         config.token = token;
         SBuffer buff(config);
         std::memset(buff.get_actual_memory(), 0, buff.get_actual_length());
