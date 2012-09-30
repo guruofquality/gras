@@ -31,7 +31,7 @@
 //-- define to enable these debugs:
 //----------------------------------------------------------------------
 //#define WORK_DEBUG
-#define ASSERTING
+//#define ASSERTING
 //#define MESSAGE_TRACING
 
 //----------------------------------------------------------------------

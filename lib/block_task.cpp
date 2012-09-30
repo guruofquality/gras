@@ -262,6 +262,5 @@ GRAS_FORCE_INLINE void BlockActor::conclusion(void)
     if (this->input_queues.all_ready() and this->output_queues.all_ready())
     {
         this->Push(SelfKickMessage(), Theron::Address());
-        return;
     }
 }
