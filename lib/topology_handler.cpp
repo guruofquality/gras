@@ -15,9 +15,32 @@
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <gras_impl/block_actor.hpp>
-#include <gras_impl/vector_utils.hpp>
 
 using namespace gnuradio;
+
+template <typename V, typename Sig>
+void fill_item_sizes_from_sig(V &v, const Sig &s, const size_t size)
+{
+    v.resize(size);
+    for (size_t i = 0; i < v.size(); i++)
+    {
+        v[i] = s->sizeof_stream_item(i);
+    }
+}
+
+template <typename V, typename T>
+void resize_fill_grow(V &v, const size_t new_len, const T &fill)
+{
+    if (v.size() >= new_len) return; //dont ever shrink it
+    v.resize(new_len, fill);
+}
+
+template <typename V>
+void resize_fill_back(V &v, const size_t new_len)
+{
+    if (v.empty()) v.push_back(0);
+    resize_fill_grow(v, new_len, v.back());
+}
 
 void BlockActor::handle_topology(
     const Apology::WorkerTopologyMessage &,

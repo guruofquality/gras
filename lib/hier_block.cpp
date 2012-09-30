@@ -15,7 +15,6 @@
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
-#include <gras_impl/vector_utils.hpp>
 #include <gnuradio/hier_block.hpp>
 
 using namespace gnuradio;
