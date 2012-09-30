@@ -250,7 +250,7 @@ GRAS_FORCE_INLINE void BlockActor::conclusion(void)
 {
 
     //since nothing else is coming in, its safe to mark done
-    if ((~this->inputs_done).none()) //no upstream providers
+    if (this->inputs_done.all()) //no upstream providers
     {
         if (not this->input_queues.all_ready() or this->forecast_fail)
         {

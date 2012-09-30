@@ -48,7 +48,7 @@ void BlockActor::handle_output_check(const OutputCheckMessage &message, const Th
 
     //a downstream block has declared itself done, recheck the token
     this->outputs_done.set(index, this->output_tokens[index].unique());
-    if ((~this->outputs_done).none()) //no downstream subscribers?
+    if (this->outputs_done.all()) //no downstream subscribers?
     {
         this->mark_done();
     }

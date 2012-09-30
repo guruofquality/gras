@@ -17,7 +17,7 @@
 #ifndef INCLUDED_LIBGRAS_IMPL_OUTPUT_BUFFER_QUEUES_HPP
 #define INCLUDED_LIBGRAS_IMPL_OUTPUT_BUFFER_QUEUES_HPP
 
-#include <boost/dynamic_bitset.hpp>
+#include <gras_impl/bitset.hpp>
 #include <vector>
 #include <deque>
 
@@ -27,7 +27,7 @@ namespace gnuradio
 template <typename T>
 struct OutputBufferQueues
 {
-    boost::dynamic_bitset<> _bitset;
+    BitSet _bitset;
     std::vector<std::deque<T> > _queues;
 
     GRAS_FORCE_INLINE void resize(const size_t size)
@@ -90,7 +90,7 @@ struct OutputBufferQueues
 
     GRAS_FORCE_INLINE bool all_ready(void) const
     {
-        return (~_bitset).none();
+        return _bitset.all();
     }
 
     GRAS_FORCE_INLINE size_t size(void) const

@@ -18,9 +18,9 @@
 #define INCLUDED_LIBGRAS_IMPL_INPUT_BUFFERS_HPP
 
 #include <gras_impl/debug.hpp>
+#include <gras_impl/bitset.hpp>
 #include <gras_impl/buffer_queue.hpp>
 #include <gnuradio/sbuffer.hpp>
-#include <boost/dynamic_bitset.hpp>
 #include <vector>
 #include <queue>
 #include <deque>
@@ -87,7 +87,7 @@ struct InputBufferQueues
 
     GRAS_FORCE_INLINE bool all_ready(void) const
     {
-        return (~_bitset).none();
+        return _bitset.all();
     }
 
     void __prepare(const size_t i);
@@ -97,7 +97,7 @@ struct InputBufferQueues
         _bitset.set(i, _enqueued_bytes[i] >= _reserve_bytes[i]);
     }
 
-    boost::dynamic_bitset<> _bitset;
+    BitSet _bitset;
     std::vector<size_t> _enqueued_bytes;
     std::vector<std::deque<SBuffer> > _queues;
     std::vector<size_t> _history_bytes;

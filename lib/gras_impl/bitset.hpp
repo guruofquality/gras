@@ -1,0 +1,37 @@
+//
+// Copyright 2012 Josh Blum
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
+
+#ifndef INCLUDED_LIBGRAS_IMPL_BITSET_HPP
+#define INCLUDED_LIBGRAS_IMPL_BITSET_HPP
+
+#include <gnuradio/gras.hpp>
+#include <boost/dynamic_bitset.hpp>
+
+namespace gnuradio
+{
+
+//! Its just dynamic bitset w/ the handle all() routine
+struct BitSet : boost::dynamic_bitset<>
+{
+    GRAS_FORCE_INLINE bool all(void) const
+    {
+        return this->count() == this->size();
+    }
+};
+
+} //namespace gnuradio
+
+#endif /*INCLUDED_LIBGRAS_IMPL_BITSET_HPP*/

@@ -17,17 +17,16 @@
 #ifndef INCLUDED_LIBGRAS_IMPL_BLOCK_ACTOR_HPP
 #define INCLUDED_LIBGRAS_IMPL_BLOCK_ACTOR_HPP
 
-
+#include <gras_impl/debug.hpp>
+#include <gras_impl/bitset.hpp>
 #include <gnuradio/gras.hpp>
 #include <gnuradio/block.hpp>
 #include <Apology/Worker.hpp>
-#include <gras_impl/debug.hpp>
 #include <gras_impl/token.hpp>
 #include <gras_impl/messages.hpp>
 #include <gras_impl/output_buffer_queues.hpp>
 #include <gras_impl/input_buffer_queues.hpp>
 #include <gras_impl/interruptible_thread.hpp>
-#include <boost/dynamic_bitset.hpp>
 #include <vector>
 #include <set>
 
@@ -144,8 +143,8 @@ struct BlockActor : Apology::Worker
     //track the subscriber counts
     std::vector<Token> input_tokens;
     std::vector<Token> output_tokens;
-    boost::dynamic_bitset<> inputs_done;
-    boost::dynamic_bitset<> outputs_done;
+    BitSet inputs_done;
+    BitSet outputs_done;
     std::set<Token> token_pool;
     std::vector<SBufferToken> output_buffer_tokens;
 
