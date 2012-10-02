@@ -19,7 +19,7 @@
 
 #include <gras_impl/bitset.hpp>
 #include <vector>
-#include <deque>
+#include <boost/circular_buffer.hpp>
 
 namespace gnuradio
 {
@@ -27,13 +27,15 @@ namespace gnuradio
 template <typename T>
 struct OutputBufferQueues
 {
+    enum {MAX_QUEUE_SIZE = 128};
+
     BitSet _bitset;
-    std::vector<std::deque<T> > _queues;
+    std::vector<boost::circular_buffer<T> > _queues;
 
     GRAS_FORCE_INLINE void resize(const size_t size)
     {
         _bitset.resize(size);
-        _queues.resize(size);
+        _queues.resize(size, boost::circular_buffer<T>(MAX_QUEUE_SIZE));
     }
 
     GRAS_FORCE_INLINE void push(const size_t i, const T &value)
@@ -45,6 +47,7 @@ struct OutputBufferQueues
     //! used for input buffer inlining
     GRAS_FORCE_INLINE void push_front(const size_t i, const T &value)
     {
+        ASSERT(not _queues[i].full());
         _queues[i].push_front(value);
         _bitset.set(i);
     }
@@ -67,7 +70,7 @@ struct OutputBufferQueues
 
     GRAS_FORCE_INLINE void flush(const size_t i)
     {
-        _queues[i] = std::deque<T>();
+        _queues[i].clear();
         _bitset.reset(i);
     }
 

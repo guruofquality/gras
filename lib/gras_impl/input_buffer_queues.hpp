@@ -25,12 +25,15 @@
 #include <queue>
 #include <deque>
 #include <cstring> //memcpy/memset
+#include <boost/circular_buffer.hpp>
 
 namespace gnuradio
 {
 
 struct InputBufferQueues
 {
+    enum {MAX_QUEUE_SIZE = 128};
+
     ~InputBufferQueues(void)
     {
         this->resize(0);
@@ -52,6 +55,7 @@ struct InputBufferQueues
 
     GRAS_FORCE_INLINE void push(const size_t i, const SBuffer &buffer)
     {
+        ASSERT(not _queues[i].full());
         _queues[i].push_back(buffer);
         _enqueued_bytes[i] += _queues[i].back().length;
         __update(i);
@@ -59,7 +63,7 @@ struct InputBufferQueues
 
     GRAS_FORCE_INLINE void flush(const size_t i)
     {
-        _queues[i] = std::deque<SBuffer>();
+        _queues[i].clear();
         _bitset.reset(i);
     }
 
@@ -99,7 +103,7 @@ struct InputBufferQueues
 
     BitSet _bitset;
     std::vector<size_t> _enqueued_bytes;
-    std::vector<std::deque<SBuffer> > _queues;
+    std::vector<boost::circular_buffer<SBuffer> > _queues;
     std::vector<size_t> _history_bytes;
     std::vector<size_t> _reserve_bytes;
     std::vector<size_t> _multiple_bytes;
@@ -113,7 +117,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::resize(const size_t size)
 {
     _bitset.resize(size);
     _enqueued_bytes.resize(size, 0);
-    _queues.resize(size);
+    _queues.resize(size, boost::circular_buffer<SBuffer>(MAX_QUEUE_SIZE));
     _history_bytes.resize(size, 0);
     _reserve_bytes.resize(size, 0);
     _multiple_bytes.resize(size, 0);
@@ -175,7 +179,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::init(
         if (_history_bytes[i] > old_history)
         {
             SBuffer buff = _aux_queues[i]->front();
-            _aux_queues[i]->pop();
+            _aux_queues[i]->pop_front();
 
             const size_t delta = _history_bytes[i] - old_history;
             std::memset(buff.get_actual_memory(), 0, delta);
@@ -242,7 +246,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::__prepare(const size_t i)
         else
         {
             dst = _aux_queues[i]->front();
-            _aux_queues[i]->pop();
+            _aux_queues[i]->pop_front();
             dst.offset = 0;
             dst.length = 0;
             _in_aux_buff[i] = true;
