@@ -179,7 +179,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::init(
         if (_history_bytes[i] > old_history)
         {
             SBuffer buff = _aux_queues[i]->front();
-            _aux_queues[i]->pop_front();
+            _aux_queues[i]->pop();
 
             const size_t delta = _history_bytes[i] - old_history;
             std::memset(buff.get_actual_memory(), 0, delta);
@@ -246,7 +246,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::__prepare(const size_t i)
         else
         {
             dst = _aux_queues[i]->front();
-            _aux_queues[i]->pop_front();
+            _aux_queues[i]->pop();
             dst.offset = 0;
             dst.length = 0;
             _in_aux_buff[i] = true;

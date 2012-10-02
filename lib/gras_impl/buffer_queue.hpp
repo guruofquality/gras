@@ -19,26 +19,26 @@
 
 #include <gnuradio/sbuffer.hpp>
 #include <boost/bind.hpp>
-#include <boost/circular_buffer.hpp>
+#include <queue>
 
 namespace gnuradio
 {
 
-struct BufferQueue : boost::circular_buffer<SBuffer>
+struct BufferQueue : std::queue<SBuffer>
 {
-    enum {MAX_QUEUE_SIZE = 4};
-
     BufferQueue(void)
     {
-        this->resize(MAX_QUEUE_SIZE);
-        SBufferDeleter deleter = boost::bind(&BufferQueue::push_back, this, _1);
+        SBufferDeleter deleter = boost::bind(&BufferQueue::push, this, _1);
         _token = SBufferToken(new SBufferDeleter(deleter));
     }
 
     ~BufferQueue(void)
     {
         _token.reset();
-        this->clear();
+        while (not this->empty())
+        {
+            this->pop();
+        }
     }
 
     void allocate_one(const size_t num_bytes)
