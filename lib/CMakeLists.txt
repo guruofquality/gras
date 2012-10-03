@@ -11,6 +11,10 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DGRAS_DEBUG)
 endif()
 
+list(APPEND gnuradio_core_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/register_messages.cpp #exports messages, must be first
+)
+
 ########################################################################
 # Setup Theron Deps
 ########################################################################
@@ -54,6 +58,7 @@ list(APPEND gnuradio_core_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_actor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_task.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/theron_allocator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_allocator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_handlers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/topology_handler.cpp
