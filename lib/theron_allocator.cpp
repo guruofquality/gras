@@ -28,7 +28,7 @@
 #include <Theron/AllocatorManager.h>
 #include <boost/circular_buffer.hpp>
 
-#define MY_ALLOCATOR_CHUNK_SIZE 88 //Theron asks for a lot of 88-byte buffers
+#define MY_ALLOCATOR_CHUNK_SIZE 96 //Theron asks for a lot of 88-byte buffers
 #define MY_ALLOCATOR_POOL_SIZE (MY_ALLOCATOR_CHUNK_SIZE * 4096)
 
 static struct WorkerAllocator : Theron::IAllocator
@@ -42,6 +42,7 @@ static struct WorkerAllocator : Theron::IAllocator
             const ptrdiff_t pool_ptr = ptrdiff_t(pool) + i*MY_ALLOCATOR_CHUNK_SIZE;
             queue.push_back((void *)pool_ptr);
         }
+        pool_end = ptrdiff_t(pool) + MY_ALLOCATOR_POOL_SIZE;
         Theron::AllocatorManager::Instance().SetAllocator(this);
     }
 
@@ -70,7 +71,7 @@ static struct WorkerAllocator : Theron::IAllocator
 
     void Free(void *const memory)
     {
-        const bool in_pool = ptrdiff_t(memory) >= ptrdiff_t(pool) and ptrdiff_t(memory) < (ptrdiff_t(pool) + MY_ALLOCATOR_POOL_SIZE);
+        const bool in_pool = ptrdiff_t(memory) >= ptrdiff_t(pool) and ptrdiff_t(memory) < pool_end;
         if (in_pool)
         {
             mSpinLock.Lock();
@@ -85,6 +86,7 @@ static struct WorkerAllocator : Theron::IAllocator
 
     boost::circular_buffer<void *> queue;
     long pool[MY_ALLOCATOR_POOL_SIZE/sizeof(long)];
+    ptrdiff_t pool_end;
     Theron::Detail::SpinLock mSpinLock;
 
 } my_alloc;
