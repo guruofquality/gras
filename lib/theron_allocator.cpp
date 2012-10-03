@@ -22,6 +22,7 @@
  * and otherwise the regular malloc/free for larger buffers.
  **********************************************************************/
 
+#include <gnuradio/gras.hpp>
 #include <gras_impl/debug.hpp>
 #include <Theron/Detail/Threading/SpinLock.h>
 #include <Theron/IAllocator.h>
@@ -85,7 +86,9 @@ static struct WorkerAllocator : Theron::IAllocator
     }
 
     boost::circular_buffer<void *> queue;
-    long pool[MY_ALLOCATOR_POOL_SIZE/sizeof(long)];
+    THERON_PREALIGN(GRAS_MAX_ALIGNMENT)
+        char pool[MY_ALLOCATOR_POOL_SIZE]
+    THERON_POSTALIGN(GRAS_MAX_ALIGNMENT);
     ptrdiff_t pool_end;
     Theron::Detail::SpinLock mSpinLock;
 
