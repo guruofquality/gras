@@ -16,6 +16,18 @@
 
 #include <gras_impl/debug.hpp>
 
+#ifdef MALLOC_DEBUG
+#include <cstdio>
+#include <cstdlib>
+
+void *operator new(std::size_t n) throw (std::bad_alloc)
+{
+    //static int malloc_count = 0;
+    //printf("malloc #%d -> size %u\n", malloc_count++, n);
+    return std::malloc(n);
+}
+#endif
+
 #ifdef ASSERTING
 
 struct DebugAssertPrinter

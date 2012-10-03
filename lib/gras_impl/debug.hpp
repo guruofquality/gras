@@ -17,6 +17,12 @@
 #ifndef INCLUDED_LIBGRAS_IMPL_DEBUG_HPP
 #define INCLUDED_LIBGRAS_IMPL_DEBUG_HPP
 
+//#define MALLOC_DEBUG
+#ifdef MALLOC_DEBUG
+#include <stdexcept>
+extern void *operator new(std::size_t n) throw (std::bad_alloc);
+#endif
+
 #include <iostream>
 #include <stdexcept>
 #include <boost/current_function.hpp>
