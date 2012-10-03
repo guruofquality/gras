@@ -108,7 +108,7 @@ set(test_headers
     ${RUNTIME_SOURCE_DIR}/gr_unittests.h
 )
 foreach(header ${test_headers})
-    execute_process(COMMAND ${CMAKE_COMMAND} -E copy ${header} ${GRAS_BINARY_DIR}/include)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${header} ${GRAS_BINARY_DIR}/include)
 endforeach(header)
 
 ########################################################################
@@ -124,7 +124,7 @@ set(runtime_copy_headers
 
 #copy the headers to a place that is in the include path
 foreach(runtime_copy_header ${runtime_copy_headers})
-    execute_process(COMMAND ${CMAKE_COMMAND} -E copy ${runtime_copy_header} ${GRAS_BINARY_DIR}/include)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${runtime_copy_header} ${GRAS_BINARY_DIR}/include)
 endforeach(runtime_copy_header)
 
 file(GLOB runtime_headers "${GRAS_SOURCE_DIR}/include/gnuradio/*")
@@ -148,14 +148,17 @@ set(runtime_copy_swigs
 #makes swig doc generator happy
 execute_process(
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/runtime/
-    COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/runtime/nop.h
+    COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/nop.h
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/nop.h
+        ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/runtime/nop.h
 )
 
 #copy the headers to a place that is in the include path
 foreach(runtime_copy_header ${runtime_copy_swigs})
     execute_process(
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/swig/
-        COMMAND ${CMAKE_COMMAND} -E copy ${runtime_copy_header} ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/swig/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${runtime_copy_header} ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/swig/
     )
 endforeach(runtime_copy_header)
 
