@@ -12,7 +12,7 @@
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef INCLUDED_GNURADIO_GR_SYNC_INTERPOLATOR_H
 #define INCLUDED_GNURADIO_GR_SYNC_INTERPOLATOR_H
