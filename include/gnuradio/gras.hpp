@@ -28,7 +28,9 @@
 #define GRAS_MAX_ALIGNMENT 32
 
 //define cross platform attribute macros
-#if defined(BOOST_MSVC)
+#if defined(GRAS_DEBUG)
+    #define GRAS_FORCE_INLINE         inline
+#elif defined(BOOST_MSVC)
     #define GRAS_FORCE_INLINE         __forceinline
 #elif defined(__GNUG__) && __GNUG__ >= 4
     #define GRAS_FORCE_INLINE         inline __attribute__((always_inline))

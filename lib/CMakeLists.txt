@@ -7,6 +7,10 @@ set(GRAS_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../)
 set(GRAS_BINARY_DIR ${CMAKE_BINARY_DIR}/gruel/src)
 set(RUNTIME_SOURCE_DIR ${CMAKE_SOURCE_DIR}/gnuradio-core/src/lib/runtime)
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(-DGRAS_DEBUG)
+endif()
+
 ########################################################################
 # Setup Theron Deps
 ########################################################################
