@@ -80,14 +80,28 @@ struct GRAS_API gr_block : gnuradio::Block
     unsigned history(void) const
     {
         //implement off-by-one history compat
-        return this->input_history()+1;
+        return this->input_config().lookahead_items+1;
     }
 
     void set_history(unsigned history)
     {
+        gnuradio::InputPortConfig config = this->input_config();
         //implement off-by-one history compat
         if (history == 0) history++;
-        this->set_input_history(history-1);
+        config.lookahead_items = history-1;
+        this->set_input_config(config);
+    }
+
+    unsigned output_multiple(void) const
+    {
+        return this->output_config().reserve_items+1;
+    }
+
+    void set_output_multiple(unsigned multiple)
+    {
+        gnuradio::OutputPortConfig config = this->output_config();
+        config.reserve_items = multiple;
+        this->set_output_config(config);
     }
 
     void set_alignment(const size_t alignment);

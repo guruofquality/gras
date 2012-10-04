@@ -27,6 +27,57 @@
 namespace gnuradio
 {
 
+//! Configuration parameters for an input port
+struct GRAS_API InputPortConfig
+{
+    InputPortConfig(void);
+
+    /*!
+     * Set buffer inlining for this port config.
+     * Inlining means that the input buffer can be used as an output buffer.
+     * The goal is to make better use of cache and memory bandwidth.
+     *
+     * By default, inlining is disabled on all input ports.
+     * The user should enable inlining on an input port
+     * when it is understood that the work function will read
+     * before writting to a particular section of the buffer.
+     *
+     * The scheduler will inline a buffer when
+     *  * inlining is enabled on the particular input port
+     *  * block holds the only buffer reference aka unique
+     *  * the input buffer has the same affinity as the block
+     *  * the input port has a buffer look-ahead of 0
+     *
+     * Default = false.
+     */
+    bool inline_buffer;
+
+    /*!
+     * Set the number of input buffer look-ahead items.
+     * When num look-ahead items are not consumed,
+     * they will be available for the next work call.
+     * This is used to implement sample memory for
+     * things like sliding dot products/FIR filters.
+     *
+     * Default = 0.
+     */
+    size_t lookahead_items;
+};
+
+//! Configuration parameters for an output port
+struct GRAS_API OutputPortConfig
+{
+    OutputPortConfig(void);
+
+    /*!
+     * Set an output reserve requirement such that work is called
+     * with an output buffer at least reserve items in size.
+     *
+     * Default = 1.
+     */
+    size_t reserve_items;
+};
+
 template <typename PtrType> struct WorkBuffer
 {
     //! get a native pointer type to this buffer
@@ -65,68 +116,28 @@ template <typename PtrType> struct WorkBuffer
 
 struct GRAS_API Block : Element
 {
-    enum
-    {
-        WORK_CALLED_PRODUCE = -2,
-        WORK_DONE = -1
-    };
 
-    enum tag_propagation_policy_t
-    {
-        TPP_DONT = 0,
-        TPP_ALL_TO_ALL = 1,
-        TPP_ONE_TO_ONE = 2
-    };
-
+    //! Contruct an empty/null block
     Block(void);
 
+    //! Create a new block given the name
     Block(const std::string &name);
 
     /*******************************************************************
-     * Basic routines from basic block
+     * Deal with input and output port configuration
      ******************************************************************/
 
-    //! Get the number of history items (default 0)
-    size_t input_history(const size_t which_input = 0) const;
+    //! Get the configuration rules of an input port
+    InputPortConfig input_config(const size_t which_input = 0) const;
 
-    /*!
-     * Set the number of items that will be saved from the previous run.
-     * Input buffers will begin with an overlap of the previous's buffer's
-     * num history items. This is used to implement sample memory for
-     * things like sliding dot products/FIR filters.
-     */
-    void set_input_history(const size_t history, const size_t which_input = 0);
+    //! Set the configuration rules for an input port
+    void set_input_config(const InputPortConfig &config, const size_t which_input = 0);
 
-    void set_output_multiple(const size_t multiple, const size_t which_output = 0);
+    //! Get the configuration rules of an output port
+    OutputPortConfig output_config(const size_t which_output = 0) const;
 
-    size_t output_multiple(const size_t which_output = 0) const;
-
-    void consume(const size_t which_input, const size_t how_many_items);
-
-    void consume_each(const size_t how_many_items);
-
-    void produce(const size_t which_output, const size_t how_many_items);
-
-    /*!
-     * Set buffer inlining for this input.
-     * Inlining means that the input buffer can be used as an output buffer.
-     * The goal is to make better use of cache and memory bandwidth.
-     *
-     * By default, inlining is disabled on all input ports.
-     * The user should enable inlining on an input port
-     * when it is understood that the work function will read
-     * before writting to a particular section of the buffer.
-     *
-     * The scheduler will inline a buffer when
-     *  * inlining is enabled on the particular input port
-     *  * block holds the only buffer reference aka unique
-     *  * the input buffer has the same affinity as the block
-     *  * the input port has a buffer history of 0 items
-     */
-    void set_input_inline(const size_t which_input, const bool enb);
-
-    //! Get the buffer inlining state
-    bool input_inline(const size_t which_input) const;
+    //! Set the configuration rules for an output port
+    void set_output_config(const OutputPortConfig &config, const size_t which_output = 0);
 
     /*!
      * Enable fixed rate logic.
@@ -145,8 +156,35 @@ struct GRAS_API Block : Element
     double relative_rate(void) const;
 
     /*******************************************************************
-     * Tag related routines from basic block
+     * Deal with data production and consumption
      ******************************************************************/
+
+    //! Return options for the work call
+    enum
+    {
+        WORK_CALLED_PRODUCE = -2,
+        WORK_DONE = -1
+    };
+
+    //! Call during work to consume items
+    void consume(const size_t which_input, const size_t how_many_items);
+
+    //! Call during work to consume items
+    void consume_each(const size_t how_many_items);
+
+    //! Call during work to produce items, must return WORK_CALLED_PRODUCE
+    void produce(const size_t which_output, const size_t how_many_items);
+
+    /*******************************************************************
+     * Deal with tag handling and tag configuration
+     ******************************************************************/
+
+    enum tag_propagation_policy_t
+    {
+        TPP_DONT = 0,
+        TPP_ALL_TO_ALL = 1,
+        TPP_ONE_TO_ONE = 2
+    };
 
     uint64_t nitems_read(const size_t which_input);
 

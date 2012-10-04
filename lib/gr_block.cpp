@@ -72,7 +72,7 @@ bool gr_block::is_unaligned(void)
 
 size_t gr_block::fixed_rate_noutput_to_ninput(const size_t noutput_items)
 {
-    return (*this)->block->input_history_items[0] +
+    return (*this)->block->input_configs[0].lookahead_items +
             size_t((noutput_items/this->relative_rate()));
 }
 

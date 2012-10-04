@@ -19,6 +19,17 @@
 
 using namespace gnuradio;
 
+InputPortConfig::InputPortConfig(void)
+{
+    inline_buffer = false;
+    lookahead_items = 0;
+}
+
+OutputPortConfig::OutputPortConfig(void)
+{
+    reserve_items = 1;
+}
+
 Block::Block(void)
 {
     //NOP
@@ -38,8 +49,8 @@ Block::Block(const std::string &name):
     (*this)->block->block_state = BlockActor::BLOCK_STATE_INIT;
 
     //call block methods to init stuff
-    this->set_input_history(0);
-    this->set_output_multiple(1);
+    this->set_input_config(InputPortConfig());
+    this->set_output_config(OutputPortConfig());
     this->set_fixed_rate(true);
     this->set_relative_rate(1.0);
     this->set_tag_propagation_policy(TPP_ALL_TO_ALL);
@@ -65,26 +76,26 @@ typename V::value_type vector_get(const V &v, const size_t index)
     return v[index];
 }
 
-size_t Block::input_history(const size_t which_input) const
+InputPortConfig Block::input_config(const size_t which_input) const
 {
-    return vector_get((*this)->block->input_history_items, which_input);
+    return vector_get((*this)->block->input_configs, which_input);
 }
 
-void Block::set_input_history(const size_t history, const size_t which_input)
+void Block::set_input_config(const InputPortConfig &config, const size_t which_input)
 {
-    vector_set((*this)->block->input_history_items, history, which_input);
+    vector_set((*this)->block->input_configs, config, which_input);
     if ((*this)->block->topology_init)
         (*this)->block->Push(UpdateInputsMessage(), Theron::Address());
 }
 
-size_t Block::output_multiple(const size_t which_output) const
+OutputPortConfig Block::output_config(const size_t which_output) const
 {
-    return vector_get((*this)->block->output_multiple_items, which_output);
+    return vector_get((*this)->block->output_configs, which_output);
 }
 
-void Block::set_output_multiple(const size_t multiple, const size_t which_output)
+void Block::set_output_config(const OutputPortConfig &config, const size_t which_output)
 {
-    vector_set((*this)->block->output_multiple_items, multiple, which_output);
+    vector_set((*this)->block->output_configs, config, which_output);
     if ((*this)->block->topology_init)
         (*this)->block->Push(UpdateInputsMessage(), Theron::Address());
 }
@@ -107,16 +118,6 @@ void Block::consume_each(const size_t how_many_items)
 void Block::produce(const size_t which_output, const size_t how_many_items)
 {
     (*this)->block->produce_items[which_output] += how_many_items;
-}
-
-void Block::set_input_inline(const size_t which_input, const bool enb)
-{
-    vector_set((*this)->block->input_inline_enables, enb, which_input);
-}
-
-bool Block::input_inline(const size_t which_input) const
-{
-    return vector_get((*this)->block->input_inline_enables, which_input);
 }
 
 void Block::set_fixed_rate(const bool fixed_rate)

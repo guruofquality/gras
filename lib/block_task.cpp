@@ -120,7 +120,7 @@ void BlockActor::handle_task(void)
         //continue;
         if (
             potential_inline and
-            input_inline_enables[i] and
+            input_configs[i].inline_buffer and
             output_inline_index < num_outputs and
             buff.get_affinity() == this->buffer_affinity
         ){
@@ -159,10 +159,6 @@ void BlockActor::handle_task(void)
     {
         forecast_again_you_jerk:
         fcast_ninput_items = work_ninput_items;
-        {
-            num_output_items /= this->output_multiple_items.front();
-            num_output_items *= this->output_multiple_items.front();
-        }
         block_ptr->forecast(num_output_items, fcast_ninput_items);
         for (size_t i = 0; i < num_inputs; i++)
         {

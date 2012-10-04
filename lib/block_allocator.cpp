@@ -90,7 +90,7 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
 
         const size_t bytes = recommend_length(
             this->output_allocation_hints[i],
-            this->output_multiple_items[i]*this->output_items_sizes[i],
+            this->output_configs[i].reserve_items*this->output_items_sizes[i],
             at_least_items*this->output_items_sizes[i]
         );
 

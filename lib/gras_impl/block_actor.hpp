@@ -114,10 +114,9 @@ struct BlockActor : Apology::Worker
     //per port properties
     std::vector<size_t> input_items_sizes;
     std::vector<size_t> output_items_sizes;
-    std::vector<size_t> input_history_items;
-    std::vector<size_t> output_multiple_items;
-    std::vector<size_t> input_multiple_items;
-    std::vector<bool> input_inline_enables;
+    std::vector<InputPortConfig> input_configs;
+    std::vector<OutputPortConfig> output_configs;
+    std::vector<size_t> input_reserve_items;
 
     //keeps track of production
     std::vector<uint64_t> items_consumed;

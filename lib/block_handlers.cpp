@@ -85,8 +85,8 @@ void BlockActor::handle_top_token(
         //TODO, schedule this message as a pre-allocation message
         //tell the upstream about the input requirements
         OutputHintMessage output_hints;
-        output_hints.history_bytes = this->input_history_items[i]*this->input_items_sizes[i];
-        output_hints.reserve_bytes = this->input_multiple_items[i];
+        output_hints.history_bytes = this->input_configs[i].lookahead_items*this->input_items_sizes[i];
+        output_hints.reserve_bytes = this->input_reserve_items[i];
         output_hints.token = this->input_tokens[i];
         this->post_upstream(i, output_hints);
 

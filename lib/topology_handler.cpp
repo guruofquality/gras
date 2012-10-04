@@ -38,7 +38,7 @@ void resize_fill_grow(V &v, const size_t new_len, const T &fill)
 template <typename V>
 void resize_fill_back(V &v, const size_t new_len)
 {
-    if (v.empty()) v.push_back(0);
+    if (v.empty()) v.resize(1);
     resize_fill_grow(v, new_len, v.back());
 }
 
@@ -59,9 +59,8 @@ void BlockActor::handle_topology(
     fill_item_sizes_from_sig(this->output_items_sizes, block_ptr->output_signature(), num_outputs);
 
     //resize and fill port properties
-    resize_fill_back(this->input_history_items, num_inputs);
-    resize_fill_back(this->output_multiple_items, num_outputs);
-    resize_fill_grow(this->input_inline_enables, num_inputs, false);
+    resize_fill_back(this->input_configs, num_inputs);
+    resize_fill_back(this->output_configs, num_outputs);
 
     //resize the bytes consumed/produced
     resize_fill_grow(this->items_consumed, num_inputs, 0);
@@ -111,18 +110,21 @@ void BlockActor::handle_update_inputs(
     const size_t num_outputs = this->get_num_outputs();
 
     //impose input reserve requirements based on relative rate and output multiple
-    resize_fill_grow(this->input_multiple_items, num_inputs, 1);
+    resize_fill_grow(this->input_reserve_items, num_inputs, 1);
+    std::vector<size_t> input_lookahead_items(num_inputs);
     for (size_t i = 0; i < num_inputs; i++)
     {
+        input_lookahead_items[i] = this->input_configs[i].lookahead_items;
+
         //TODO, this is a little cheap, we only look at output multiple [0]
-        const size_t multiple = (num_outputs)?this->output_multiple_items.front():1;
+        const size_t multiple = (num_outputs)?this->output_configs.front().reserve_items:1;
         if (this->enable_fixed_rate)
         {
-            this->input_multiple_items[i] = size_t(std::ceil(multiple/this->relative_rate));
+            this->input_reserve_items[i] = size_t(std::ceil(multiple/this->relative_rate));
         }
-        if (this->input_multiple_items[i] == 0) this->input_multiple_items[i] = 1;
+        if (this->input_reserve_items[i] == 0) this->input_reserve_items[i] = 1;
     }
 
     //init the history comprehension on input queues
-    this->input_queues.init(this->input_history_items, this->input_multiple_items, this->input_items_sizes);
+    this->input_queues.init(input_lookahead_items, this->input_reserve_items, this->input_items_sizes);
 }
