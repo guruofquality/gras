@@ -248,14 +248,11 @@ void BlockActor::handle_task(void)
 
 GRAS_FORCE_INLINE void BlockActor::conclusion(void)
 {
-
+    //missing at least one upstream provider?
     //since nothing else is coming in, its safe to mark done
-    if (this->inputs_done.all()) //no upstream providers
+    if (this->any_inputs_done() or this->forecast_fail)
     {
-        if (not this->input_queues.all_ready() or this->forecast_fail)
-        {
-            this->mark_done();
-        }
+        this->mark_done();
     }
 
     //still have IO ready? kick off another task
