@@ -41,7 +41,7 @@ struct InputBufferQueues
 
     void init(
         const std::vector<size_t> &input_history_items,
-        const std::vector<size_t> &input_multiple_items,
+        const std::vector<size_t> &input_reserve_items,
         const std::vector<size_t> &input_item_sizes
     );
 
@@ -106,7 +106,6 @@ struct InputBufferQueues
     std::vector<boost::circular_buffer<SBuffer> > _queues;
     std::vector<size_t> _history_bytes;
     std::vector<size_t> _reserve_bytes;
-    std::vector<size_t> _multiple_bytes;
     std::vector<size_t> _post_bytes;
     std::vector<boost::shared_ptr<BufferQueue> > _aux_queues;
     std::vector<bool> _in_aux_buff;
@@ -120,24 +119,14 @@ GRAS_FORCE_INLINE void InputBufferQueues::resize(const size_t size)
     _queues.resize(size, boost::circular_buffer<SBuffer>(MAX_QUEUE_SIZE));
     _history_bytes.resize(size, 0);
     _reserve_bytes.resize(size, 0);
-    _multiple_bytes.resize(size, 0);
     _post_bytes.resize(size, 0);
     _aux_queues.resize(size);
     _in_aux_buff.resize(size, false);
 }
 
-static size_t round_up_to_multiple(const size_t at_least, const size_t multiple)
-{
-    size_t result = (multiple*at_least)/multiple;
-    while (result < at_least) result += multiple;
-    ASSERT((multiple*result)/multiple == result);
-    return result;
-}
-
-
 GRAS_FORCE_INLINE void InputBufferQueues::init(
     const std::vector<size_t> &input_history_items,
-    const std::vector<size_t> &input_multiple_items,
+    const std::vector<size_t> &input_reserve_items,
     const std::vector<size_t> &input_item_sizes
 ){
     if (this->size() == 0) return;
@@ -146,7 +135,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::init(
 
     for (size_t i = 0; i < this->size(); i++)
     {
-        ASSERT(input_multiple_items[i] > 0);
+        ASSERT(input_reserve_items[i] > 0);
 
         _aux_queues[i] = boost::shared_ptr<BufferQueue>(new BufferQueue());
 
@@ -154,20 +143,20 @@ GRAS_FORCE_INLINE void InputBufferQueues::init(
         const size_t old_history = _history_bytes[i];
         _history_bytes[i] = input_item_sizes[i]*input_history_items[i];
 
-        //calculate the input multiple aka reserve size
-        _multiple_bytes[i] = input_item_sizes[i]*input_multiple_items[i];
-        _multiple_bytes[i] = std::max(size_t(1), _multiple_bytes[i]);
+        //calculate the input reserve aka reserve size
+        _reserve_bytes[i] = input_item_sizes[i]*input_reserve_items[i];
+        _reserve_bytes[i] = std::max(size_t(1), _reserve_bytes[i]);
 
-        //calculate the input multiple aka reserve size
-        _reserve_bytes[i] = round_up_to_multiple(
-            _history_bytes[i] + _multiple_bytes[i],
-            _multiple_bytes[i]
+        //calculate the input reserve aka reserve size
+        _reserve_bytes[i] = std::max(
+            _history_bytes[i] + _reserve_bytes[i],
+            _reserve_bytes[i]
         );
 
         //post bytes are the desired buffer size to escape the edge case
-        _post_bytes[i] = round_up_to_multiple(
+        _post_bytes[i] = std::max(
             input_item_sizes[i]*max_history_items + _reserve_bytes[i],
-            _multiple_bytes[i]
+            _reserve_bytes[i]
         );
 
         //allocate mini buffers for history edge conditions
@@ -214,8 +203,6 @@ GRAS_FORCE_INLINE SBuffer InputBufferQueues::front(const size_t i, const bool co
     //same buffer, different offset and length
     SBuffer buff = front;
     if (conserve_history) buff.length -= _history_bytes[i];
-    buff.length /= _multiple_bytes[i];
-    buff.length *= _multiple_bytes[i];
 
     //set the flag that this buffer *might* be inlined as an output buffer
     potential_inline = unique and (buff.length == front.length);
@@ -316,7 +303,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t b
     if (_enqueued_bytes[i] < _history_bytes[i])
     {
         _history_bytes[i] = 0;
-        _reserve_bytes[i] = _multiple_bytes[i];
+        _reserve_bytes[i] = 1; //cant be 0
     }
 
     __update(i);
