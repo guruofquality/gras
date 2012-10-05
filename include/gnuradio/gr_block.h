@@ -51,7 +51,7 @@ struct GRAS_API gr_block : gnuradio::Block
     template <typename T> void set_msg_handler(T msg_handler){/*LOL*/}
 
     //! implements work -> calls general work
-    int Work(
+    int work(
         const InputItems &input_items,
         const OutputItems &output_items
     );

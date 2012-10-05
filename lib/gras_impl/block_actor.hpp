@@ -170,7 +170,7 @@ struct BlockActor : Apology::Worker
     int work_ret;
     inline void task_work(void)
     {
-        this->work_ret = block_ptr->Work(this->input_items, this->output_items);
+        this->work_ret = block_ptr->work(this->input_items, this->output_items);
     }
 
     //is the fg running?

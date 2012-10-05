@@ -235,7 +235,7 @@ struct GRAS_API Block : Element
     typedef std::vector<WorkBuffer<void *> > OutputItems;
 
     //! The official call into the work routine (overload please)
-    virtual int Work(
+    virtual int work(
         const InputItems &input_items,
         const OutputItems &output_items
     ) = 0;

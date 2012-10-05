@@ -34,7 +34,7 @@ gr_block::gr_block(
     this->set_output_signature(output_signature);
 }
 
-int gr_block::Work(
+int gr_block::work(
     const InputItems &input_items,
     const OutputItems &output_items
 ){
