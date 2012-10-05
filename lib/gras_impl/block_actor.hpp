@@ -110,6 +110,11 @@ struct BlockActor : Apology::Worker
     void sort_tags(const size_t index);
     void trim_tags(const size_t index);
     void conclusion(void);
+    GRAS_FORCE_INLINE bool any_inputs_done(void)
+    {
+        if (this->inputs_done.none()) return false;
+        return ((~this->input_queues.ready_bitset()) & this->inputs_done).any();
+    }
 
     //per port properties
     std::vector<size_t> input_items_sizes;
@@ -157,6 +162,7 @@ struct BlockActor : Apology::Worker
     Block::tag_propagation_policy_t tag_prop_policy;
 
     //interruptible thread stuff
+    bool interruptible_work;
     SharedThreadGroup thread_group;
     boost::shared_ptr<InterruptibleThread> interruptible_thread;
 

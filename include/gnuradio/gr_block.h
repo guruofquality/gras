@@ -118,6 +118,18 @@ struct GRAS_API gr_block : gnuradio::Block
 
     void set_decimation(const size_t);
 
+    ///////////// TODO //////////////////////
+    int max_noutput_items(){return 0;}
+    void set_max_noutput_items(int){}
+    void unset_max_noutput_items(){}
+    bool is_set_max_noutput_items(){return false;}
+    void set_max_output_buffer(long){}
+    void set_max_output_buffer(int, long){}
+    long max_output_buffer(size_t){return 0;}
+    void set_min_output_buffer(long){}
+    void set_min_output_buffer(int, long){}
+    long min_output_buffer(size_t){return 0;}
+
 };
 
 typedef boost::shared_ptr<gr_block> gr_block_sptr;

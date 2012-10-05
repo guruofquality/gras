@@ -249,6 +249,15 @@ struct GRAS_API Block : Element
     //! scheduler calls when the topology is updated, can be overloaded
     virtual bool check_topology(int ninputs, int noutputs);
 
+    /*!
+     * Set if the work call should be interruptible by stop().
+     * Some work implementations block with the expectation of
+     * getting a boost thread interrupt in a blocking call.
+     * Set set_interruptible_work(true) if this is the case.
+     * By default, work implementations are not interruptible.
+     */
+    void set_interruptible_work(const bool enb);
+
     /*******************************************************************
      * routines related to affinity and allocation
      ******************************************************************/

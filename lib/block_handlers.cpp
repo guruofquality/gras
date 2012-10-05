@@ -130,7 +130,7 @@ void BlockActor::handle_top_thread_group(
     //spawn a new thread if this block is a source
     this->thread_group = message;
     this->interruptible_thread.reset(); //erase old one
-    if (this->get_num_inputs() == 0) //its a source
+    if (this->interruptible_work)
     {
         this->interruptible_thread = boost::make_shared<InterruptibleThread>(
             this->thread_group, boost::bind(&BlockActor::task_work, this)
