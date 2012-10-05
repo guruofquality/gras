@@ -53,11 +53,6 @@ struct InputBufferQueues
 
     void resize(const size_t size);
 
-    GRAS_FORCE_INLINE const BitSet &ready_bitset(void) const
-    {
-        return _bitset;
-    }
-
     GRAS_FORCE_INLINE void push(const size_t i, const SBuffer &buffer)
     {
         ASSERT(not _queues[i].full());

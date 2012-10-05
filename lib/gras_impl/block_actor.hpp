@@ -114,7 +114,14 @@ struct BlockActor : Apology::Worker
     GRAS_FORCE_INLINE bool any_inputs_done(void)
     {
         if (this->inputs_done.none()) return false;
-        return ((~this->input_queues.ready_bitset()) & this->inputs_done).any();
+        for (size_t i = 0; i < this->get_num_inputs(); i++)
+        {
+            if (this->inputs_done[i] and not this->input_queues.ready(i))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     //per port properties
