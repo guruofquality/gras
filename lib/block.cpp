@@ -28,6 +28,7 @@ InputPortConfig::InputPortConfig(void)
 OutputPortConfig::OutputPortConfig(void)
 {
     reserve_items = 1;
+    maximum_items = 0;
 }
 
 Block::Block(void)

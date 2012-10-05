@@ -18,7 +18,6 @@
 #include <gras_impl/block_actor.hpp>
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
-#include <boost/math/common_factor.hpp>
 
 using namespace gnuradio;
 
@@ -43,31 +42,36 @@ void BlockActor::buffer_returner(const size_t index, SBuffer &buffer)
 
 static size_t recommend_length(
     const std::vector<OutputHintMessage> &hints,
-    const size_t output_multiple_bytes,
-    const size_t at_least_bytes
+    const size_t hint_bytes,
+    const size_t at_least_bytes,
+    const size_t at_most_bytes
 ){
-    //step 1) find the LCM of all reserves to create a super-reserve
-    size_t lcm_bytes = output_multiple_bytes;
+    //step 1) find the min of all reserves to create a super-reserve
+    size_t min_bytes = at_least_bytes;
     BOOST_FOREACH(const OutputHintMessage &hint, hints)
     {
-        lcm_bytes = boost::math::lcm(lcm_bytes, hint.reserve_bytes);
+        min_bytes = std::max(min_bytes, hint.reserve_bytes);
     }
 
     //step 2) N x super reserve to minimize history edge case
-    size_t Nlcm_bytes = lcm_bytes;
+    size_t Nmin_bytes = min_bytes;
     BOOST_FOREACH(const OutputHintMessage &hint, hints)
     {
-        while (hint.history_bytes*EDGE_CASE_MITIGATION > Nlcm_bytes)
+        while (hint.history_bytes*EDGE_CASE_MITIGATION > Nmin_bytes)
         {
-            Nlcm_bytes += lcm_bytes;
+            Nmin_bytes += min_bytes;
         }
     }
-    while (at_least_bytes > Nlcm_bytes)
+    while (hint_bytes > Nmin_bytes)
     {
-        Nlcm_bytes += lcm_bytes;
+        Nmin_bytes += min_bytes;
     }
 
-    return std::min(Nlcm_bytes, AHH_TOO_MANY_BYTES);
+    //step 3) cap the maximum size by the upper bound (if set)
+    if (at_most_bytes) Nmin_bytes = std::min(Nmin_bytes, at_most_bytes);
+    else Nmin_bytes = std::min(Nmin_bytes, AHH_TOO_MANY_BYTES);
+
+    return Nmin_bytes;
 }
 
 void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address from)
@@ -85,13 +89,14 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
     this->output_buffer_tokens.resize(num_outputs);
     for (size_t i = 0; i < num_outputs; i++)
     {
-        size_t at_least_items = this->hint;
-        if (at_least_items == 0) at_least_items = AT_LEAST_DEFAULT_ITEMS;
+        size_t hint_items = this->hint;
+        if (hint_items == 0) hint_items = AT_LEAST_DEFAULT_ITEMS;
 
         const size_t bytes = recommend_length(
             this->output_allocation_hints[i],
+            hint_items*this->output_items_sizes[i],
             this->output_configs[i].reserve_items*this->output_items_sizes[i],
-            at_least_items*this->output_items_sizes[i]
+            this->output_configs[i].maximum_items*this->output_items_sizes[i]
         );
 
         SBufferDeleter deleter = boost::bind(&BlockActor::buffer_returner, this, i, _1);

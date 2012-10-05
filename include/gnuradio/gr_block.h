@@ -77,32 +77,13 @@ struct GRAS_API gr_block : gnuradio::Block
         gr_vector_void_star &output_items
     );
 
-    unsigned history(void) const
-    {
-        //implement off-by-one history compat
-        return this->input_config().lookahead_items+1;
-    }
+    unsigned history(void) const;
 
-    void set_history(unsigned history)
-    {
-        gnuradio::InputPortConfig config = this->input_config();
-        //implement off-by-one history compat
-        if (history == 0) history++;
-        config.lookahead_items = history-1;
-        this->set_input_config(config);
-    }
+    void set_history(unsigned history);
 
-    unsigned output_multiple(void) const
-    {
-        return this->output_config().reserve_items+1;
-    }
+    unsigned output_multiple(void) const;
 
-    void set_output_multiple(unsigned multiple)
-    {
-        gnuradio::OutputPortConfig config = this->output_config();
-        config.reserve_items = multiple;
-        this->set_output_config(config);
-    }
+    void set_output_multiple(unsigned multiple);
 
     void set_alignment(const size_t alignment);
 
@@ -118,11 +99,15 @@ struct GRAS_API gr_block : gnuradio::Block
 
     void set_decimation(const size_t);
 
+    int max_noutput_items(void) const;
+
+    void set_max_noutput_items(int);
+
+    void unset_max_noutput_items(void);
+
+    bool is_set_max_noutput_items(void) const;
+
     ///////////// TODO //////////////////////
-    int max_noutput_items(){return 0;}
-    void set_max_noutput_items(int){}
-    void unset_max_noutput_items(){}
-    bool is_set_max_noutput_items(){return false;}
     void set_max_output_buffer(long){}
     void set_max_output_buffer(int, long){}
     long max_output_buffer(size_t){return 0;}

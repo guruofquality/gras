@@ -76,6 +76,14 @@ struct GRAS_API OutputPortConfig
      * Default = 1.
      */
     size_t reserve_items;
+
+    /*!
+     * Constrain the maximum buffer size that
+     * work can be called with for this port.
+     *
+     * Default = 0 aka disabled.
+     */
+    size_t maximum_items;
 };
 
 template <typename PtrType> struct WorkBuffer

@@ -95,3 +95,52 @@ void gr_block::set_decimation(const size_t decim)
 {
     this->set_relative_rate(1.0/decim);
 }
+
+unsigned gr_block::history(void) const
+{
+    //implement off-by-one history compat
+    return this->input_config().lookahead_items+1;
+}
+
+void gr_block::set_history(unsigned history)
+{
+    gnuradio::InputPortConfig config = this->input_config();
+    //implement off-by-one history compat
+    if (history == 0) history++;
+    config.lookahead_items = history-1;
+    this->set_input_config(config);
+}
+
+unsigned gr_block::output_multiple(void) const
+{
+    return this->output_config().reserve_items+1;
+}
+
+void gr_block::set_output_multiple(unsigned multiple)
+{
+    gnuradio::OutputPortConfig config = this->output_config();
+    config.reserve_items = multiple;
+    this->set_output_config(config);
+}
+
+int gr_block::max_noutput_items(void) const
+{
+    return this->output_config().maximum_items;
+}
+
+void gr_block::set_max_noutput_items(int max_items)
+{
+    gnuradio::OutputPortConfig config = this->output_config();
+    config.maximum_items = max_items;
+    this->set_output_config(config);
+}
+
+void gr_block::unset_max_noutput_items(void)
+{
+    this->set_max_noutput_items(0);
+}
+
+bool gr_block::is_set_max_noutput_items(void) const
+{
+    return this->max_noutput_items() != 0;
+}
