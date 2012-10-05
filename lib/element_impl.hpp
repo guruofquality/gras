@@ -51,6 +51,7 @@ struct ElementImpl
     boost::shared_ptr<Apology::Topology> topology;
     boost::shared_ptr<Apology::Executor> executor;
     boost::shared_ptr<BlockActor> block;
+    ThreadPool thread_pool;
     Apology::Base *get_elem(void) const
     {
         if (block) return block.get();

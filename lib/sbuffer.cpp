@@ -47,6 +47,7 @@ SBufferConfig::SBufferConfig(void)
 {
     memory = NULL;
     length = 0;
+    affinity = -1;
 }
 
 static void numanuma_mem_deleter(SBuffer &, numanuma::mem *m)
@@ -61,7 +62,7 @@ static void default_allocator_deleter(SBuffer &, char *m)
 
 static void default_allocator(SBufferConfig &config)
 {
-    if (config.affinity == Affinity())
+    if (config.affinity == -1)
     {
         char *m = new char[config.length + GRAS_MAX_ALIGNMENT - 1];
         size_t x = size_t(m) + GRAS_MAX_ALIGNMENT - 1;

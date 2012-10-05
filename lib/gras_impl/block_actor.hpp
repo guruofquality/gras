@@ -22,6 +22,7 @@
 #include <gnuradio/gras.hpp>
 #include <gnuradio/block.hpp>
 #include <gnuradio/top_block.hpp>
+#include <gnuradio/thread_pool.hpp>
 #include <Apology/Worker.hpp>
 #include <gras_impl/token.hpp>
 #include <gras_impl/messages.hpp>
@@ -50,6 +51,7 @@ struct BlockActor : Apology::Worker
     ~BlockActor(void);
     Block *block_ptr;
     std::string name; //for debug
+    ThreadPool thread_pool;
 
     //do it here so we can match w/ the handler declarations
     void register_handlers(void)
@@ -188,7 +190,7 @@ struct BlockActor : Apology::Worker
         BLOCK_STATE_LIVE,
         BLOCK_STATE_DONE,
     } block_state;
-    Affinity buffer_affinity;
+    long buffer_affinity;
 
     std::vector<std::vector<OutputHintMessage> > output_allocation_hints;
 

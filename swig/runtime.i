@@ -24,6 +24,7 @@
 
 %{
 
+#include <gnuradio/thread_pool.hpp>
 #include <gnuradio/element.hpp>
 #include <gnuradio/block.hpp>
 #include <gnuradio/hier_block.hpp>

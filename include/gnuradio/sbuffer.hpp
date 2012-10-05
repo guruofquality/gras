@@ -23,22 +23,6 @@
 namespace gnuradio
 {
 
-//! A small wrapper to represent a node affinity
-struct Affinity
-{
-    Affinity(void)
-    {
-        value = -1;
-    }
-
-    operator long long(void) const
-    {
-        return value;
-    }
-
-    long long value;
-};
-
 //! The callback function type when buffers dereference
 typedef boost::function<void(SBuffer &)> SBufferDeleter;
 
@@ -60,7 +44,7 @@ struct GRAS_API SBufferConfig
     size_t length;
 
     //! memory affinity - meta information
-    Affinity affinity;
+    long affinity;
 
     //! index number for custom allocation purposes
     size_t user_index;
@@ -133,7 +117,7 @@ struct GRAS_API SBuffer : boost::intrusive_ptr<SBufferImpl>
     size_t length;
 
     //! Get the affinity of the memory
-    Affinity get_affinity(void) const;
+    long get_affinity(void) const;
 
     //! Get the user index number
     size_t get_user_index(void) const;

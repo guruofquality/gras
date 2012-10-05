@@ -14,27 +14,74 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <gnuradio/thread_pool.hpp>
 #include <gras_impl/block_actor.hpp>
-#include <boost/thread/thread.hpp>
 #include <Theron/Framework.h>
 
 using namespace gnuradio;
 
-static size_t hardware_concurrency(void)
+/***********************************************************************
+ * Thread pool implementation
+ **********************************************************************/
+ThreadPool::ThreadPool(void)
 {
-    const size_t n = boost::thread::hardware_concurrency();
-    return std::max(size_t(2), n);
+    //NOP
 }
 
-static Theron::Framework &get_global_framework(void)
+ThreadPool::ThreadPool(boost::weak_ptr<Theron::Framework> p):
+    boost::shared_ptr<Theron::Framework>(p.lock())
 {
-    static Theron::Framework framework(hardware_concurrency());
-    return framework;
+    //NOP
 }
+
+ThreadPool::ThreadPool(const unsigned long threadCount)
+{
+    if (threadCount == 0) this->reset(new Theron::Framework(Theron::Framework::Parameters()));
+    else this->reset(new Theron::Framework(Theron::Framework::Parameters(threadCount)));
+}
+
+ThreadPool::ThreadPool(const unsigned long threadCount, const unsigned long nodeMask)
+{
+    this->reset(new Theron::Framework(Theron::Framework::Parameters(threadCount, nodeMask)));
+}
+
+ThreadPool::ThreadPool(const unsigned long threadCount, const unsigned long nodeMask, const unsigned long processorMask)
+{
+    this->reset(new Theron::Framework(Theron::Framework::Parameters(threadCount, nodeMask, processorMask)));
+}
+
+/***********************************************************************
+ * Active framework implementation
+ **********************************************************************/
+static boost::weak_ptr<Theron::Framework> weak_framework;
+
+void ThreadPool::set_active(void)
+{
+    weak_framework = *this;
+}
+
+static ThreadPool active_thread_pool;
+
+static ThreadPool get_active_thread_pool(void)
+{
+    if (not weak_framework.lock())
+    {
+        active_thread_pool = ThreadPool(0);
+        active_thread_pool.set_active();
+        std::cout << "Created default thread pool with " << active_thread_pool->GetNumThreads() << " threads." << std::endl;
+    }
+    return weak_framework;
+}
+
+/***********************************************************************
+ * Block actor construction - gets active framework
+ **********************************************************************/
 
 BlockActor::BlockActor(void):
-    Apology::Worker(get_global_framework())
+    Apology::Worker(*get_active_thread_pool())
 {
+    thread_pool = get_active_thread_pool();
+    active_thread_pool.reset(); //actors hold this, now its safe to reset, weak_framework only
     this->register_handlers();
 }
 

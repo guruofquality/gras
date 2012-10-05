@@ -40,6 +40,7 @@ Block::Block(const std::string &name):
     Element(name)
 {
     (*this)->block = boost::shared_ptr<BlockActor>(new BlockActor());
+    (*this)->thread_pool = (*this)->block->thread_pool; //ref copy of pool
     (*this)->block->name = name; //for debug purposes
 
     //setup some state variables
@@ -55,6 +56,7 @@ Block::Block(const std::string &name):
     this->set_relative_rate(1.0);
     this->set_tag_propagation_policy(TPP_ALL_TO_ALL);
     this->set_interruptible_work(false);
+    this->set_buffer_affinity(-1);
 }
 
 template <typename V, typename T>
@@ -236,7 +238,7 @@ bool Block::check_topology(int, int)
     return true;
 }
 
-void Block::set_buffer_affinity(const Affinity &affinity)
+void Block::set_buffer_affinity(const long affinity)
 {
     (*this)->block->buffer_affinity = affinity;
 }

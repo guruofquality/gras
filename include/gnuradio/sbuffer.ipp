@@ -73,7 +73,7 @@ GRAS_FORCE_INLINE void *SBuffer::get(const ptrdiff_t delta_bytes) const
     return ((char *)(*this)->config.memory) + this->offset + delta_bytes;
 }
 
-GRAS_FORCE_INLINE Affinity SBuffer::get_affinity(void) const
+GRAS_FORCE_INLINE long SBuffer::get_affinity(void) const
 {
     return (*this)->config.affinity;
 }

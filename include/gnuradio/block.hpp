@@ -276,8 +276,9 @@ struct GRAS_API Block : Element
      * By default memory is allocated by malloc.
      * When the affinity is set, virtual memory
      * will be locked to a physical CPU/memory node.
+     * \param affinity a memory node on the system
      */
-    void set_buffer_affinity(const Affinity &affinity);
+    void set_buffer_affinity(const long affinity);
 
     /*!
      * The output buffer allocator method.

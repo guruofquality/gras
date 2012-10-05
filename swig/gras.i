@@ -34,7 +34,7 @@
 %ignore gnuradio::Block::input_buffer_allocator;
 %ignore gnuradio::Block::output_buffer_allocator;
 
-%include <gnuradio/sbuffer.hpp>
+%include <gnuradio/thread_pool.hpp>
 %include <gnuradio/element.hpp>
 %include <gnuradio/tags.hpp>
 %include <gnuradio/block.hpp>
