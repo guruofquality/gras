@@ -37,9 +37,29 @@ struct GRAS_API gr_top_block : gnuradio::TopBlock
         this->update();
     }
 
-    ///////////// TODO //////////////////////
-    int max_noutput_items(){return 0;}
-    void set_max_noutput_items(int){}
+    void start(const size_t max_items)
+    {
+        this->set_max_noutput_items(max_items);
+        gnuradio::TopBlock::start();
+    }
+
+    void run(const size_t max_items)
+    {
+        this->set_max_noutput_items(max_items);
+        gnuradio::TopBlock::run();
+    }
+
+    int max_noutput_items(void) const
+    {
+        return this->global_config().maximum_output_items;
+    }
+
+    void set_max_noutput_items(int max_items)
+    {
+        gnuradio::GlobalBlockConfig config = this->global_config();
+        config.maximum_output_items = max_items;
+        this->set_global_config(config);
+    }
 
 };
 

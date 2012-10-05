@@ -78,7 +78,7 @@ struct GRAS_API OutputPortConfig
     size_t reserve_items;
 
     /*!
-     * Constrain the maximum buffer size that
+     * Constrain the maximum number of items that
      * work can be called with for this port.
      *
      * Default = 0 aka disabled.

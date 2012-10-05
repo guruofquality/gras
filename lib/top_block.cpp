@@ -20,6 +20,11 @@
 
 using namespace gnuradio;
 
+GlobalBlockConfig::GlobalBlockConfig(void)
+{
+    maximum_output_items = 0;
+}
+
 TopBlock::TopBlock(void)
 {
     //NOP
@@ -48,16 +53,9 @@ void ElementImpl::top_block_cleanup(void)
         << std::flush;
 }
 
-void TopBlock::update(void)
+void TopBlock::commit(void)
 {
     this->start(); //ok to re-start, means update
-}
-
-void TopBlock::set_buffer_hint(const size_t hint)
-{
-    TopHintMessage message;
-    message.hint = hint;
-    (*this)->executor->post_all(message);
 }
 
 void TopBlock::start(void)

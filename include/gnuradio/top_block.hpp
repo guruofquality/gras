@@ -22,38 +22,37 @@
 namespace gnuradio
 {
 
+struct GRAS_API GlobalBlockConfig
+{
+    GlobalBlockConfig(void);
+
+    /*!
+     * Constrain the maximum number of items that
+     * work can be called with for all output ports.
+     *
+     * Default = 0 aka disabled.
+     */
+    size_t maximum_output_items;
+};
+
 struct GRAS_API TopBlock : HierBlock
 {
     TopBlock(void);
 
     TopBlock(const std::string &name);
 
+    //! Get the global block config settings
+    const GlobalBlockConfig &global_config(void) const;
+
+    //! Set the global block config settings
+    void set_global_config(const GlobalBlockConfig &config);
+
     /*!
      * Commit changes to the overall flow graph.
      * Call this after modifying connections.
-     * Update is called automatically by start/stop/run.
+     * Commit is called automatically by start/stop/run.
      */
-    void update(void);
-
-    /*!
-     * Set the buffer allocation hint.
-     * This affects the size of buffers.
-     */
-    void set_buffer_hint(const size_t hint);
-
-    //! Combined hint + start
-    void start(const size_t hint)
-    {
-        this->set_buffer_hint(hint);
-        this->start();
-    }
-
-    //! Combined hint + run
-    void run(const size_t hint)
-    {
-        this->set_buffer_hint(hint);
-        this->run();
-    }
+    void commit(void);
 
     /*!
      * Run is for finite flow graph executions.
