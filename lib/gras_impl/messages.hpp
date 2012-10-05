@@ -50,11 +50,6 @@ struct TopTokenMessage
     Token token;
 };
 
-struct TopHintMessage
-{
-    size_t hint;
-};
-
 //----------------------------------------------------------------------
 //-- message to an input port
 //-- do not ack

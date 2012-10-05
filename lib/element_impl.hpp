@@ -45,6 +45,7 @@ struct ElementImpl
     //top block stuff
     SharedThreadGroup thread_group;
     Token token;
+    GlobalBlockConfig top_config;
 
     //things may be in this element
     boost::shared_ptr<Apology::Topology> topology;

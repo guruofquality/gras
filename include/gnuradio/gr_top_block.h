@@ -34,13 +34,23 @@ struct GRAS_API gr_top_block : gnuradio::TopBlock
 
     void unlock(void)
     {
-        this->update();
+        this->commit();
+    }
+
+    void start(void)
+    {
+        gnuradio::TopBlock::start();
     }
 
     void start(const size_t max_items)
     {
         this->set_max_noutput_items(max_items);
         gnuradio::TopBlock::start();
+    }
+
+    void run(void)
+    {
+        gnuradio::TopBlock::run();
     }
 
     void run(const size_t max_items)

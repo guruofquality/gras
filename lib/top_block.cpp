@@ -53,6 +53,16 @@ void ElementImpl::top_block_cleanup(void)
         << std::flush;
 }
 
+GlobalBlockConfig TopBlock::global_config(void) const
+{
+    return (*this)->top_config;
+}
+
+void TopBlock::set_global_config(const GlobalBlockConfig &config)
+{
+    (*this)->top_config = config;
+}
+
 void TopBlock::commit(void)
 {
     this->start(); //ok to re-start, means update
@@ -68,6 +78,10 @@ void TopBlock::start(void)
         TopTokenMessage message;
         message.token = (*this)->token;
         (*this)->executor->post_all(message);
+    }
+    {
+        //send the global block config before alloc
+        (*this)->executor->post_all((*this)->top_config);
     }
     {
         (*this)->executor->post_all(TopAllocMessage());

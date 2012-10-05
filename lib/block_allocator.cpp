@@ -89,12 +89,9 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
     this->output_buffer_tokens.resize(num_outputs);
     for (size_t i = 0; i < num_outputs; i++)
     {
-        size_t hint_items = this->hint;
-        if (hint_items == 0) hint_items = AT_LEAST_DEFAULT_ITEMS;
-
         const size_t bytes = recommend_length(
             this->output_allocation_hints[i],
-            hint_items*this->output_items_sizes[i],
+            AT_LEAST_DEFAULT_ITEMS*this->output_items_sizes[i],
             this->output_configs[i].reserve_items*this->output_items_sizes[i],
             this->output_configs[i].maximum_items*this->output_items_sizes[i]
         );

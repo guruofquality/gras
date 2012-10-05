@@ -46,7 +46,6 @@ Block::Block(const std::string &name):
     (*this)->block->topology_init = false;
     (*this)->block->forecast_fail = false;
     (*this)->block->block_ptr = this;
-    (*this)->block->hint = 0;
     (*this)->block->block_state = BlockActor::BLOCK_STATE_INIT;
 
     //call block methods to init stuff

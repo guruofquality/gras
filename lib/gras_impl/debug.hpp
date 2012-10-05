@@ -37,7 +37,7 @@ extern void *operator new(std::size_t n) throw (std::bad_alloc);
 //-- define to enable these debugs:
 //----------------------------------------------------------------------
 //#define WORK_DEBUG
-//#define ASSERTING
+#define ASSERTING
 //#define MESSAGE_TRACING
 
 //----------------------------------------------------------------------

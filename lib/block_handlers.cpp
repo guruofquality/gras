@@ -108,13 +108,20 @@ void BlockActor::handle_top_token(
     this->Send(0, from); //ACK
 }
 
-void BlockActor::handle_top_hint(
-    const TopHintMessage &message,
+void BlockActor::handle_top_config(
+    const GlobalBlockConfig &message,
     const Theron::Address from
 ){
     MESSAGE_TRACER();
 
-    this->hint = message.hint;
+    //overwrite with global config only if maxium_items is not set (zero)
+    for (size_t i = 0; i < this->output_configs.size(); i++)
+    {
+        if (this->output_configs[i].maximum_items == 0)
+        {
+            this->output_configs[i].maximum_items = message.maximum_output_items;
+        }
+    }
 
     this->Send(0, from); //ACK
 }

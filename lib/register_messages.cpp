@@ -15,6 +15,7 @@
 // along with io_sig program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <Theron/Register.h>
+#include <gnuradio/top_block.hpp>
 #include <gras_impl/messages.hpp>
 #include <gras_impl/interruptible_thread.hpp>
 #include <Apology/Worker.hpp>
@@ -24,7 +25,7 @@ THERON_REGISTER_MESSAGE(gnuradio::TopAllocMessage);
 THERON_REGISTER_MESSAGE(gnuradio::TopActiveMessage);
 THERON_REGISTER_MESSAGE(gnuradio::TopInertMessage);
 THERON_REGISTER_MESSAGE(gnuradio::TopTokenMessage);
-THERON_REGISTER_MESSAGE(gnuradio::TopHintMessage);
+THERON_REGISTER_MESSAGE(gnuradio::GlobalBlockConfig);
 THERON_REGISTER_MESSAGE(gnuradio::SharedThreadGroup);
 
 THERON_REGISTER_MESSAGE(gnuradio::InputTagMessage);

@@ -44,6 +44,7 @@
 %include <gr_io_signature.h>
 %include <gr_block.h>
 %include <gr_hier_block2.h>
+%include <gr_top_block.h>
 %include <gr_sync_block.h>
 %include <gr_sync_decimator.h>
 %include <gr_sync_interpolator.h>
@@ -58,16 +59,19 @@
 namespace gnuradio
 {
 
-struct TopBlockPython : TopBlock
+//typedef TopBlock TopBlockBase;
+typedef gr_top_block TopBlockBase; //maximal set of all API
+
+struct TopBlockPython : TopBlockBase
 {
     TopBlockPython(void):
-        TopBlock("top")
+        TopBlockBase("top")
     {
         //NOP
     }
 
     TopBlockPython(const std::string &name):
-        TopBlock(name)
+        TopBlockBase(name)
     {
         //NOP
     }
@@ -76,7 +80,7 @@ struct TopBlockPython : TopBlock
     {
         GR_PYTHON_BLOCKING_CODE
         (
-            TopBlock::wait();
+            TopBlockBase::wait();
         )
     }
 

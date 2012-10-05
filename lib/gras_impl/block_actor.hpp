@@ -21,6 +21,7 @@
 #include <gras_impl/bitset.hpp>
 #include <gnuradio/gras.hpp>
 #include <gnuradio/block.hpp>
+#include <gnuradio/top_block.hpp>
 #include <Apology/Worker.hpp>
 #include <gras_impl/token.hpp>
 #include <gras_impl/messages.hpp>
@@ -59,7 +60,7 @@ struct BlockActor : Apology::Worker
         this->RegisterHandler(this, &BlockActor::handle_top_active);
         this->RegisterHandler(this, &BlockActor::handle_top_inert);
         this->RegisterHandler(this, &BlockActor::handle_top_token);
-        this->RegisterHandler(this, &BlockActor::handle_top_hint);
+        this->RegisterHandler(this, &BlockActor::handle_top_config);
         this->RegisterHandler(this, &BlockActor::handle_top_thread_group);
 
         this->RegisterHandler(this, &BlockActor::handle_input_tag);
@@ -85,7 +86,7 @@ struct BlockActor : Apology::Worker
     void handle_top_active(const TopActiveMessage &, const Theron::Address);
     void handle_top_inert(const TopInertMessage &, const Theron::Address);
     void handle_top_token(const TopTokenMessage &, const Theron::Address);
-    void handle_top_hint(const TopHintMessage &, const Theron::Address);
+    void handle_top_config(const GlobalBlockConfig &, const Theron::Address);
     void handle_top_thread_group(const SharedThreadGroup &, const Theron::Address);
 
     void handle_input_tag(const InputTagMessage &, const Theron::Address);
@@ -180,7 +181,6 @@ struct BlockActor : Apology::Worker
         BLOCK_STATE_LIVE,
         BLOCK_STATE_DONE,
     } block_state;
-    size_t hint; //some kind of allocation hint
     Affinity buffer_affinity;
 
     std::vector<std::vector<OutputHintMessage> > output_allocation_hints;
