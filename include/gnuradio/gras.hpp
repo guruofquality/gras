@@ -17,9 +17,7 @@
 #ifndef INCLUDED_GNURADIO_GRAS_HPP
 #define INCLUDED_GNURADIO_GRAS_HPP
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-#include <boost/intrusive_ptr.hpp>
+#include <ciso646>
 
 //this is part of core for now, treat it as such
 #include <gr_core_api.h>
@@ -37,18 +35,5 @@
 #else
     #define GRAS_FORCE_INLINE         inline
 #endif
-
-namespace gnuradio
-{
-
-struct ElementImpl;
-
-struct SBuffer;
-struct SBufferImpl;
-
-void intrusive_ptr_add_ref(SBufferImpl*);
-void intrusive_ptr_release(SBufferImpl*);
-
-} //namespace gnuradio
 
 #endif /*INCLUDED_GNURADIO_GRAS_HPP*/

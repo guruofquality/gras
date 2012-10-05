@@ -19,11 +19,14 @@
 
 #include <gnuradio/gras.hpp>
 #include <gnuradio/io_signature.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <gruel/pmt.h>
 
 namespace gnuradio
 {
+
+class ElementImpl;
 
 struct GRAS_API Element : boost::shared_ptr<ElementImpl>, boost::enable_shared_from_this<Element>
 {

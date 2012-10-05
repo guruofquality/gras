@@ -18,10 +18,16 @@
 #define INCLUDED_GNURADIO_SBUFFER_HPP
 
 #include <gnuradio/gras.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
+#include <boost/intrusive_ptr.hpp>
 #include <boost/function.hpp>
 
 namespace gnuradio
 {
+
+struct SBufferImpl;
+struct SBuffer;
 
 //! The callback function type when buffers dereference
 typedef boost::function<void(SBuffer &)> SBufferDeleter;

@@ -18,6 +18,8 @@
 #define INCLUDED_GNURADIO_THREAD_POOL_HPP
 
 #include <gnuradio/gras.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 
 //! ThreadPool is an unexposed Theron Framework
 //! Forward declare the Framwork for c++ users
