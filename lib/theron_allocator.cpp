@@ -30,7 +30,7 @@
 #include <boost/circular_buffer.hpp>
 
 #define MY_ALLOCATOR_CHUNK_SIZE 96 //Theron asks for a lot of 88-byte buffers
-#define MY_ALLOCATOR_POOL_SIZE (MY_ALLOCATOR_CHUNK_SIZE * 4096)
+#define MY_ALLOCATOR_POOL_SIZE (MY_ALLOCATOR_CHUNK_SIZE * (1 << 16))
 
 static struct WorkerAllocator : Theron::IAllocator
 {
@@ -57,7 +57,12 @@ static struct WorkerAllocator : Theron::IAllocator
         if (size <= MY_ALLOCATOR_CHUNK_SIZE)
         {
             mSpinLock.Lock();
-            ASSERT(not queue.empty());
+            if (queue.empty())
+            {
+                mSpinLock.Unlock();
+                std::cout << "~" << std::flush;
+                return std::malloc(size);
+            }
             void *memory = queue.front();
             queue.pop_front();
             mSpinLock.Unlock();
