@@ -43,6 +43,7 @@ Block::Block(const std::string &name):
     this->set_fixed_rate(true);
     this->set_relative_rate(1.0);
     this->set_tag_propagation_policy(TPP_ALL_TO_ALL);
+    this->set_interruptible_work(false);
 }
 
 template <typename V, typename T>
@@ -237,4 +238,9 @@ bool Block::check_topology(int, int)
 void Block::set_buffer_affinity(const Affinity &affinity)
 {
     (*this)->block->buffer_affinity = affinity;
+}
+
+void Block::set_interruptible_work(const bool enb)
+{
+    (*this)->block->interruptible_work = enb;
 }

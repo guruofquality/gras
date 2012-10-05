@@ -37,6 +37,10 @@ struct GRAS_API gr_top_block : gnuradio::TopBlock
         this->update();
     }
 
+    ///////////// TODO //////////////////////
+    int max_noutput_items(){return 0;}
+    void set_max_noutput_items(int){}
+
 };
 
 typedef boost::shared_ptr<gr_top_block> gr_top_block_sptr;

@@ -163,6 +163,7 @@ struct BlockActor : Apology::Worker
     Block::tag_propagation_policy_t tag_prop_policy;
 
     //interruptible thread stuff
+    bool interruptible_work;
     SharedThreadGroup thread_group;
     boost::shared_ptr<InterruptibleThread> interruptible_thread;
 
