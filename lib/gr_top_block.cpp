@@ -33,3 +33,47 @@ gr_top_block_sptr gr_make_top_block(const std::string &name)
 {
     return gr_top_block_sptr(new gr_top_block(name));
 }
+
+void gr_top_block::lock(void)
+{
+    //NOP
+}
+
+void gr_top_block::unlock(void)
+{
+    this->commit();
+}
+
+void gr_top_block::start(void)
+{
+    gnuradio::TopBlock::start();
+}
+
+void gr_top_block::start(const size_t max_items)
+{
+    this->set_max_noutput_items(max_items);
+    gnuradio::TopBlock::start();
+}
+
+void gr_top_block::run(void)
+{
+    gnuradio::TopBlock::run();
+}
+
+void gr_top_block::run(const size_t max_items)
+{
+    this->set_max_noutput_items(max_items);
+    gnuradio::TopBlock::run();
+}
+
+int gr_top_block::max_noutput_items(void) const
+{
+    return this->global_config().maximum_output_items;
+}
+
+void gr_top_block::set_max_noutput_items(int max_items)
+{
+    gnuradio::GlobalBlockConfig config = this->global_config();
+    config.maximum_output_items = max_items;
+    this->set_global_config(config);
+}
