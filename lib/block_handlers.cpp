@@ -38,10 +38,8 @@ void BlockActor::handle_top_active(
         this->block_ptr->start();
     }
     this->block_state = BLOCK_STATE_LIVE;
-    if (this->input_queues.all_ready() and this->output_queues.all_ready())
-    {
-        this->Push(SelfKickMessage(), Theron::Address());
-    }
+
+    this->Push(SelfKickMessage(), Theron::Address());
 
     this->Send(0, from); //ACK
 }

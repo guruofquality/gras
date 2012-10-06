@@ -45,7 +45,6 @@ Block::Block(const std::string &name):
 
     //setup some state variables
     (*this)->block->topology_init = false;
-    (*this)->block->forecast_fail = false;
     (*this)->block->block_ptr = this;
     (*this)->block->block_state = BlockActor::BLOCK_STATE_INIT;
 

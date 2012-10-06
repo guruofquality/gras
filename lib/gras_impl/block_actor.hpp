@@ -112,7 +112,6 @@ struct BlockActor : Apology::Worker
     void handle_task(void);
     void sort_tags(const size_t index);
     void trim_tags(const size_t index);
-    void conclusion(void);
     GRAS_FORCE_INLINE bool any_inputs_done(void)
     {
         if (this->inputs_done.none()) return false;
@@ -197,7 +196,6 @@ struct BlockActor : Apology::Worker
     //rate settings
     bool enable_fixed_rate;
     double relative_rate;
-    bool forecast_fail;
     bool forecast_enable;
     bool topology_init;
 };

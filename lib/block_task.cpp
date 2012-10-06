@@ -167,12 +167,11 @@ void BlockActor::handle_task(void)
             num_output_items = num_output_items/2; //backoff regime
             if (num_output_items) goto forecast_again_you_jerk;
 
-            this->forecast_fail = true;
-            this->conclusion();
+            //handle the case of forecast failing
+            this->mark_done();
             return;
         }
     }
-    this->forecast_fail = false;
 
     //------------------------------------------------------------------
     //-- the work
@@ -239,17 +238,9 @@ void BlockActor::handle_task(void)
     //------------------------------------------------------------------
     //-- Message self based on post-work conditions
     //------------------------------------------------------------------
-    this->conclusion();
-}
-
-GRAS_FORCE_INLINE void BlockActor::conclusion(void)
-{
     //missing at least one upstream provider?
     //since nothing else is coming in, its safe to mark done
-    if (this->any_inputs_done() or this->forecast_fail)
-    {
-        this->mark_done();
-    }
+    if (this->any_inputs_done()) this->mark_done();
 
     //still have IO ready? kick off another task
     if (this->input_queues.all_ready() and this->output_queues.all_ready())
