@@ -33,6 +33,15 @@ struct GRAS_API GlobalBlockConfig
      * Default = 0 aka disabled.
      */
     size_t maximum_output_items;
+
+    /*!
+     * Set the global memory node affinity.
+     * Blocks that have not been explicitly set,
+     * will take on this new buffer_affinity.
+     *
+     * Default = -1 aka no affinity.
+     */
+    long buffer_affinity;
 };
 
 struct GRAS_API TopBlock : HierBlock

@@ -123,6 +123,12 @@ void BlockActor::handle_top_config(
         }
     }
 
+    //overwrite with global node affinity setting for buffers if not set
+    if (this->buffer_affinity == -1)
+    {
+        this->buffer_affinity = message.buffer_affinity;
+    }
+
     this->Send(0, from); //ACK
 }
 

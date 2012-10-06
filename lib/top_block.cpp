@@ -23,6 +23,7 @@ using namespace gnuradio;
 GlobalBlockConfig::GlobalBlockConfig(void)
 {
     maximum_output_items = 0;
+    buffer_affinity = -1;
 }
 
 TopBlock::TopBlock(void)
