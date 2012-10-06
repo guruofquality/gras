@@ -142,14 +142,34 @@ void BlockActor::handle_task(void)
         const SBuffer &buff = this->output_queues.front(i);
         void *mem = buff.get(buff.length);
         const size_t bytes = buff.get_actual_length() - buff.length - buff.offset;
-        const size_t items = bytes/this->output_items_sizes[i];
+        size_t items = bytes/this->output_items_sizes[i];
 
         this->work_io_ptr_mask |= ptrdiff_t(mem);
         this->output_items[i].get() = mem;
         this->output_items[i].size() = items;
         this->work_output_items[i] = mem;
+
+        items /= this->output_multiple_items;
+        items *= this->output_multiple_items;
         num_output_items = std::min(num_output_items, items);
         this->produce_items[i] = 0;
+    }
+
+    //------------------------------------------------------------------
+    //-- calculate the work_noutput_items given:
+    //-- min of num_input_items
+    //-- min of num_output_items
+    //-- relative rate and output multiple items
+    //------------------------------------------------------------------
+    work_noutput_items = num_output_items;
+    if (num_inputs and (this->enable_fixed_rate or not num_outputs))
+    {
+        size_t calc_output_items = size_t(num_input_items*this->relative_rate);
+        calc_output_items += this->output_multiple_items-1;
+        calc_output_items /= this->output_multiple_items;
+        calc_output_items *= this->output_multiple_items;
+        if (calc_output_items and calc_output_items < work_noutput_items)
+            work_noutput_items = calc_output_items;
     }
 
     //------------------------------------------------------------------
@@ -158,14 +178,17 @@ void BlockActor::handle_task(void)
     if (this->forecast_enable)
     {
         forecast_again_you_jerk:
-        fcast_ninput_items = work_ninput_items;
-        block_ptr->forecast(num_output_items, fcast_ninput_items);
+        fcast_ninput_items = work_ninput_items; //init for NOP case
+        block_ptr->forecast(work_noutput_items, fcast_ninput_items);
         for (size_t i = 0; i < num_inputs; i++)
         {
             if (fcast_ninput_items[i] <= work_ninput_items[i]) continue;
 
-            num_output_items = num_output_items/2; //backoff regime
-            if (num_output_items) goto forecast_again_you_jerk;
+            work_noutput_items = work_noutput_items/2; //backoff regime
+            work_noutput_items += this->output_multiple_items-1;
+            work_noutput_items /= this->output_multiple_items;
+            work_noutput_items *= this->output_multiple_items;
+            if (work_noutput_items) goto forecast_again_you_jerk;
 
             //handle the case of forecast failing
             this->mark_done();
@@ -176,9 +199,6 @@ void BlockActor::handle_task(void)
     //------------------------------------------------------------------
     //-- the work
     //------------------------------------------------------------------
-    work_noutput_items = num_output_items;
-    if (this->enable_fixed_rate) work_noutput_items = std::min(
-        work_noutput_items, myulround((num_input_items)*this->relative_rate));
     this->work_ret = -1;
     if (this->interruptible_thread)
     {

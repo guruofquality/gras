@@ -46,6 +46,14 @@ int gr_block::work(
     );
 }
 
+void gr_block::forecast(int noutput_items, std::vector<int> &ninputs_req)
+{
+    for (size_t i = 0; i < ninputs_req.size(); i++)
+    {
+        ninputs_req[i] = fixed_rate_noutput_to_ninput(noutput_items);
+    }
+}
+
 int gr_block::general_work(
     int noutput_items,
     gr_vector_int &ninput_items,
@@ -72,8 +80,7 @@ bool gr_block::is_unaligned(void)
 
 size_t gr_block::fixed_rate_noutput_to_ninput(const size_t noutput_items)
 {
-    return (*this)->block->input_configs[0].lookahead_items +
-            size_t((noutput_items/this->relative_rate()));
+    return size_t((noutput_items/this->relative_rate()));
 }
 
 size_t gr_block::interpolation(void) const
@@ -113,11 +120,12 @@ void gr_block::set_history(unsigned history)
 
 unsigned gr_block::output_multiple(void) const
 {
-    return this->output_config().reserve_items+1;
+    return (*this)->block->output_multiple_items;
 }
 
 void gr_block::set_output_multiple(unsigned multiple)
 {
+    (*this)->block->output_multiple_items = multiple;
     gnuradio::OutputPortConfig config = this->output_config();
     config.reserve_items = multiple;
     this->set_output_config(config);

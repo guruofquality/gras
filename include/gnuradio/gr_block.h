@@ -56,6 +56,9 @@ struct GRAS_API gr_block : gnuradio::Block
         const OutputItems &output_items
     );
 
+    //! Overload me! I am the forecast
+    virtual void forecast(int, std::vector<int> &);
+
     /*!
     * \brief compute output items from input items
     *

@@ -107,7 +107,6 @@ void BlockActor::handle_update_inputs(
     const Theron::Address
 ){
     const size_t num_inputs = this->get_num_inputs();
-    const size_t num_outputs = this->get_num_outputs();
 
     //impose input reserve requirements based on relative rate and output multiple
     resize_fill_grow(this->input_reserve_items, num_inputs, 1);
@@ -115,13 +114,7 @@ void BlockActor::handle_update_inputs(
     for (size_t i = 0; i < num_inputs; i++)
     {
         input_lookahead_items[i] = this->input_configs[i].lookahead_items;
-
-        //TODO, this is a little cheap, we only look at output multiple [0]
-        const size_t multiple = (num_outputs)?this->output_configs.front().reserve_items:1;
-        if (this->enable_fixed_rate)
-        {
-            this->input_reserve_items[i] = size_t(std::ceil(multiple/this->relative_rate));
-        }
+        this->input_reserve_items[i] = size_t(std::ceil(this->output_multiple_items/this->relative_rate));
         if (this->input_reserve_items[i] == 0) this->input_reserve_items[i] = 1;
     }
 

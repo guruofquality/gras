@@ -56,6 +56,7 @@ Block::Block(const std::string &name):
     this->set_tag_propagation_policy(TPP_ALL_TO_ALL);
     this->set_interruptible_work(false);
     this->set_buffer_affinity(-1);
+    (*this)->block->output_multiple_items = 1;
 }
 
 template <typename V, typename T>
