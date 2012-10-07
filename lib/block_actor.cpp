@@ -16,6 +16,7 @@
 
 #include <gnuradio/thread_pool.hpp>
 #include <gras_impl/block_actor.hpp>
+#include <boost/thread/thread.hpp>
 #include <Theron/Framework.h>
 
 using namespace gnuradio;
@@ -34,10 +35,16 @@ ThreadPool::ThreadPool(boost::weak_ptr<Theron::Framework> p):
     //NOP
 }
 
-ThreadPool::ThreadPool(const unsigned long threadCount)
+const size_t default_concurrency(void)
 {
-    if (threadCount == 0) this->reset(new Theron::Framework(Theron::Framework::Parameters()));
-    else this->reset(new Theron::Framework(Theron::Framework::Parameters(threadCount)));
+    const size_t n = boost::thread::hardware_concurrency();
+    return std::max(size_t(2), n);
+}
+
+ThreadPool::ThreadPool(unsigned long threadCount)
+{
+    if (threadCount == 0) threadCount = default_concurrency();
+    this->reset(new Theron::Framework(Theron::Framework::Parameters(threadCount, 0)));
 }
 
 ThreadPool::ThreadPool(const unsigned long threadCount, const unsigned long nodeMask)
