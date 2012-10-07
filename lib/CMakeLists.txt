@@ -37,18 +37,6 @@ file(GLOB apology_sources "${GRAS_SOURCE_DIR}/Apology/lib/*.cpp")
 list(APPEND gnuradio_core_sources ${apology_sources})
 
 ########################################################################
-# Setup NumaNuma
-########################################################################
-list(APPEND CMAKE_MODULE_PATH ${GRAS_SOURCE_DIR}/numanuma/cmake)
-include_directories(${GRAS_SOURCE_DIR}/numanuma/include)
-find_package(NumaNuma)
-if(NOT NUMANUMA_FOUND)
-    message(FATAL_ERROR "numanuma dependencies not met!")
-endif()
-
-list(APPEND gnuradio_core_libs ${NUMANUMA_LIBRARIES})
-
-########################################################################
 # Append gnuradio-core library sources
 ########################################################################
 list(APPEND gnuradio_core_sources

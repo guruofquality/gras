@@ -1,9 +1,6 @@
 [submodule "gnuradio"]
 	path = gnuradio
 	url = https://github.com/guruofquality/gnuradio.git
-[submodule "numanuma"]
-	path = numanuma
-	url = https://github.com/guruofquality/numanuma.git
 [submodule "Theron"]
 	path = Theron
 	url = https://github.com/guruofquality/Theron.git

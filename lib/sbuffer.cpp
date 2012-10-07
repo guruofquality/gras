@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <gnuradio/sbuffer.hpp>
-#include <numanuma.hpp>
+#include "alloc_on_node.hpp"
 #include <boost/bind.hpp>
 
 using namespace gnuradio;
@@ -50,9 +50,9 @@ SBufferConfig::SBufferConfig(void)
     affinity = -1;
 }
 
-static void numanuma_mem_deleter(SBuffer &, numanuma::mem *m)
+static void numa_mem_deleter(SBuffer &buff)
 {
-    delete m;
+    FreeOnNode(buff.get_actual_memory(), buff.get_actual_length());
 }
 
 static void default_allocator_deleter(SBuffer &, char *m)
@@ -72,10 +72,14 @@ static void default_allocator(SBufferConfig &config)
     }
     else
     {
-        numanuma::mem *m = numanuma::mem::make(config.affinity, config.length);
-        config.memory = m->get();
-        config.length = m->len();
-        config.deleter = boost::bind(&numanuma_mem_deleter, _1, m);
+        config.memory = AllocOnNode(config.affinity, config.length);
+        config.deleter = boost::bind(&numa_mem_deleter, _1);
+        //deal with numa failue case //TODO print warning message
+        if (config.memory == NULL)
+        {
+            config.affinity = -1;
+            default_allocator(config);
+        }
     }
 }
 
