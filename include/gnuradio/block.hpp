@@ -20,7 +20,6 @@
 #include <gnuradio/element.hpp>
 #include <gnuradio/sbuffer.hpp>
 #include <gnuradio/tags.hpp>
-#include <gruel/pmt.h>
 #include <vector>
 #include <string>
 
