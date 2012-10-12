@@ -20,6 +20,7 @@
 #include <gnuradio/gras.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
+#include <string>
 
 //! ThreadPool is an unexposed Theron Framework
 //! Forward declare the Framwork for c++ users
@@ -30,6 +31,38 @@ namespace Theron
 
 namespace gnuradio
 {
+
+struct GRAS_API ThreadPoolConfig
+{
+    ThreadPoolConfig(void);
+
+    /*!
+     * The initial number of worker threads to create within the framework.
+     * Default is the number of CPUs on the system.
+     */
+    size_t thread_count;
+
+    /*!
+     * Specifies the NUMA processor nodes upon which the framework may execute.
+     * Default is all NUMA nodes on the system.
+     */
+    size_t node_mask;
+
+    /*!
+     * Specifies the subset of the processors in each NUMA processor node upon which the framework may execute.
+     * Default is all CPUs per NUMA node.
+     */
+    size_t processor_mask;
+
+    /*!
+     * Yield strategy employed by the worker threads in the framework.
+     * POLITE,              ///< Threads go to sleep when not in use.
+     * STRONG,              ///< Threads yield to other threads but don't go to sleep.
+     * AGGRESSIVE           ///< Threads never yield to other threads.
+     * Default is STRONG.
+     */
+    std::string yield_strategy;
+};
 
 /*!
  * Thread Pool is is a this wrapper of Theron Framework, see link for more details:
@@ -44,13 +77,7 @@ struct GRAS_API ThreadPool : boost::shared_ptr<Theron::Framework>
     ThreadPool(boost::weak_ptr<Theron::Framework> p);
 
     //! Create a new thread pool with parameters
-    ThreadPool(const unsigned long threadCount);
-
-    //! Create a new thread pool with parameters
-    ThreadPool(const unsigned long threadCount, const unsigned long nodeMask);
-
-    //! Create a new thread pool with parameters
-    ThreadPool(const unsigned long threadCount, const unsigned long nodeMask, const unsigned long processorMask);
+    ThreadPool(const ThreadPoolConfig &config);
 
     /*!
      * When a block is created, it will execute in the active pool.
