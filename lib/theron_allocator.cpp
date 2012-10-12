@@ -29,7 +29,7 @@
 #include <Theron/AllocatorManager.h>
 #include <boost/circular_buffer.hpp>
 
-#define MY_ALLOCATOR_CHUNK_SIZE 96 //Theron asks for a lot of 88-byte buffers
+#define MY_ALLOCATOR_CHUNK_SIZE 256
 #define MY_ALLOCATOR_POOL_SIZE (MY_ALLOCATOR_CHUNK_SIZE * (1 << 16))
 
 static struct WorkerAllocator : Theron::IAllocator
@@ -71,7 +71,7 @@ static struct WorkerAllocator : Theron::IAllocator
         else
         {
             //std::cout << "malloc size " << size << std::endl;
-            return std::malloc(size);
+            return new char[size];
         }
     }
 
@@ -86,7 +86,7 @@ static struct WorkerAllocator : Theron::IAllocator
         }
         else
         {
-            std::free(memory);
+            delete [] ((char *)memory);
         }
     }
 
