@@ -139,4 +139,31 @@ struct UpdateInputsMessage
 
 } //namespace gnuradio
 
+#include <Theron/Register.h>
+#include <gnuradio/top_block.hpp>
+#include <gras_impl/messages.hpp>
+#include <gras_impl/interruptible_thread.hpp>
+
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::TopAllocMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::TopActiveMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::TopInertMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::TopTokenMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::GlobalBlockConfig);
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::SharedThreadGroup);
+
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::InputTagMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::InputBufferMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::InputTokenMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::InputCheckMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::InputAllocMessage);
+
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::OutputBufferMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::OutputTokenMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::OutputCheckMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::OutputHintMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::OutputAllocMessage);
+
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::SelfKickMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::UpdateInputsMessage);
+
 #endif /*INCLUDED_LIBGRAS_IMPL_MESSAGES_HPP*/
