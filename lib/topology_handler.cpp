@@ -106,7 +106,9 @@ void BlockActor::handle_update_inputs(
     const UpdateInputsMessage &,
     const Theron::Address
 ){
+    MESSAGE_TRACER();
     const size_t num_inputs = this->get_num_inputs();
+    this->input_queues.resize(num_inputs);
 
     //impose input reserve requirements based on relative rate and output multiple
     resize_fill_grow(this->input_reserve_items, num_inputs, 1);

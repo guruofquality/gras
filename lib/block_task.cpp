@@ -114,10 +114,17 @@ void BlockActor::handle_task(void)
         this->input_items[i].size() = items;
         this->work_input_items[i] = mem;
         this->work_ninput_items[i] = items;
+
         if (this->enable_fixed_rate)
         {
-            items = std::max<int>(0, int(items) - int(this->input_configs[i].lookahead_items));
+            if (items <= this->input_configs[i].lookahead_items)
+            {
+                if (this->inputs_done[i]) this->mark_done();
+                return;
+            }
+            items -= this->input_configs[i].lookahead_items;
         }
+
         num_input_items = std::min(num_input_items, items);
         this->consume_items[i] = 0;
         this->consume_called[i] = false;
@@ -181,6 +188,7 @@ void BlockActor::handle_task(void)
     //------------------------------------------------------------------
     //-- forecast
     //------------------------------------------------------------------
+    VAR(work_noutput_items);
     if (this->forecast_enable)
     {
         forecast_again_you_jerk:
@@ -207,6 +215,8 @@ void BlockActor::handle_task(void)
     //------------------------------------------------------------------
     //-- the work
     //------------------------------------------------------------------
+    VAR(work_noutput_items);
+    if (num_inputs) VAR(work_ninput_items[0]);
     this->work_ret = -1;
     if (this->interruptible_thread)
     {
