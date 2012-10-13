@@ -80,7 +80,14 @@ bool gr_block::is_unaligned(void)
 
 size_t gr_block::fixed_rate_noutput_to_ninput(const size_t noutput_items)
 {
-    return size_t(0.5 + (noutput_items/this->relative_rate())) + this->history() - 1;
+    if ((*this)->block->enable_fixed_rate)
+    {
+        return size_t(0.5 + (noutput_items/this->relative_rate())) + this->history() - 1;
+    }
+    else
+    {
+        return noutput_items + this->history() - 1;
+    }
 }
 
 size_t gr_block::interpolation(void) const

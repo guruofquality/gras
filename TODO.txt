@@ -8,6 +8,7 @@
 
 * handle forecast
 ** not 100% sure here with the input/output edge case sizes
+** forecast + input buffer accumulate
 
 * add hooks to specify input reserve
 ** automatically calculate from output multiple and rel rate
@@ -37,8 +38,6 @@ and not directly from block::<method>
 
 * want per-port token_pool for inputs and outputs
 ** if ports get removed, this will release subscribers
-
-* forecast + input buffer accumulate
 
 * token check for top block stop
 ** fixes qa UDP so we dont wait for inert message

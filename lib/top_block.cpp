@@ -107,6 +107,7 @@ void TopBlock::run(void)
 {
     this->start();
     this->wait();
+    this->disconnect_all();
 }
 
 GRAS_FORCE_INLINE void wait_thread_yield(void)
