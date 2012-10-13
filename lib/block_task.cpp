@@ -198,17 +198,19 @@ void BlockActor::handle_task(void)
         {
             if (fcast_ninput_items[i] <= work_ninput_items[i]) continue;
 
-            const size_t work_noutput_items_last = work_noutput_items;
+            if (work_noutput_items <= this->output_multiple_items)
+            {
+                //handle the case of forecast failing
+                //TODO accumulate input here, only done if inputs done and already accumulated
+                if (this->inputs_done[i]) this->mark_done();
+                return;
+            }
+
             work_noutput_items = work_noutput_items/2; //backoff regime
             work_noutput_items += this->output_multiple_items-1;
             work_noutput_items /= this->output_multiple_items;
             work_noutput_items *= this->output_multiple_items;
-            if (work_noutput_items and work_noutput_items_last != work_noutput_items) goto forecast_again_you_jerk;
-
-            //handle the case of forecast failing
-            //TODO accumulate input here, only done if inputs done and already accumulated
-            if (this->inputs_done[i]) this->mark_done();
-            return;
+            goto forecast_again_you_jerk;
         }
     }
 
