@@ -212,6 +212,31 @@ GRAS_FORCE_INLINE SBuffer InputBufferQueues::front(const size_t i, const bool co
 
 GRAS_FORCE_INLINE void InputBufferQueues::__prepare(const size_t i)
 {
+    SBufferConfig config;
+    config.memory = NULL;
+    config.length = _enqueued_bytes[i];
+    SBuffer newbuff(config);
+    newbuff.offset = 0;
+    newbuff.length = 0;
+
+    while (not _queues[i].empty())
+    {
+        std::memcpy(newbuff.get(newbuff.length), _queues[i].front().get(), _queues[i].front().length);
+        newbuff.length += _queues[i].front().length;
+        _queues[i].pop_front();
+    }
+
+    _queues[i].push_back(newbuff);
+    return;
+    
+    
+    
+    
+    
+    
+    
+    
+    
     //HERE();
     //assumes that we are always pushing proper history buffs on front
     //ASSERT(_queues[i].front().length >= _history_bytes[i]);

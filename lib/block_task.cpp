@@ -191,7 +191,8 @@ void BlockActor::handle_task(void)
             if (work_noutput_items) goto forecast_again_you_jerk;
 
             //handle the case of forecast failing
-            this->mark_done();
+            //TODO accumulate input here, only done if inputs done and already accumulated
+            if (this->inputs_done[i]) this->mark_done();
             return;
         }
     }
