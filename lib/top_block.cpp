@@ -47,6 +47,8 @@ TopBlock::TopBlock(const std::string &name):
 void ElementImpl::top_block_cleanup(void)
 {
     this->executor->post_all(TopInertMessage());
+    this->topology->clear_all();;
+    this->executor->commit();
     if (ARMAGEDDON) std::cerr
         << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"
         << "xx Top Block Destroyed: " << name << "\n"

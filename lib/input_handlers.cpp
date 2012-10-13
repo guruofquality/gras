@@ -33,6 +33,7 @@ void BlockActor::handle_input_buffer(const InputBufferMessage &message, const Th
 {
     MESSAGE_TRACER();
     const size_t index = message.index;
+    VAR(this->input_tokens[index].use_count());
 
     //handle incoming stream buffer, push into the queue
     if (this->block_state == BLOCK_STATE_DONE) return;

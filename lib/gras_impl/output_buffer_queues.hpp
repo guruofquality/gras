@@ -76,9 +76,7 @@ struct OutputBufferQueues
 
     GRAS_FORCE_INLINE void flush_all(void)
     {
-        _queues.clear();
-        _queues.resize(_bitset.size());
-        _bitset.reset();
+        for (size_t i = 0; i < this->size(); i++) this->flush(i);
     }
 
     GRAS_FORCE_INLINE bool ready(const size_t i) const

@@ -114,7 +114,8 @@ void BlockActor::handle_update_inputs(
     for (size_t i = 0; i < num_inputs; i++)
     {
         input_lookahead_items[i] = this->input_configs[i].lookahead_items;
-        this->input_reserve_items[i] = size_t(std::ceil(this->output_multiple_items/this->relative_rate));
+        if (this->enable_fixed_rate)
+            this->input_reserve_items[i] = size_t(std::ceil(this->output_multiple_items/this->relative_rate));
         if (this->input_reserve_items[i] == 0) this->input_reserve_items[i] = 1;
     }
 

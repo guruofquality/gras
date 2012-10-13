@@ -114,7 +114,7 @@ struct BlockActor : Apology::Worker
     void trim_tags(const size_t index);
     GRAS_FORCE_INLINE bool any_inputs_done(void)
     {
-        if (this->inputs_done.none()) return false;
+        if (this->inputs_done.none() or this->input_queues.all_ready()) return false;
         for (size_t i = 0; i < this->get_num_inputs(); i++)
         {
             if (this->inputs_done[i] and not this->input_queues.ready(i))

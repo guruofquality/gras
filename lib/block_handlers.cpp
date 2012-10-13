@@ -27,12 +27,6 @@ void BlockActor::handle_top_active(
 ){
     MESSAGE_TRACER();
 
-    if (this->block_state == BLOCK_STATE_DONE)
-    {
-        this->Send(0, from); //ACK
-        return;
-    }
-
     if (this->block_state != BLOCK_STATE_LIVE)
     {
         this->block_ptr->start();
@@ -50,10 +44,6 @@ void BlockActor::handle_top_inert(
 ){
     MESSAGE_TRACER();
 
-    if (this->block_state != BLOCK_STATE_DONE)
-    {
-        this->block_ptr->stop();
-    }
     this->mark_done();
 
     this->Send(0, from); //ACK
@@ -64,12 +54,6 @@ void BlockActor::handle_top_token(
     const Theron::Address from
 ){
     MESSAGE_TRACER();
-
-    if (this->block_state == BLOCK_STATE_DONE)
-    {
-        this->Send(0, from); //ACK
-        return;
-    }
 
     //create input tokens and send allocation hints
     for (size_t i = 0; i < this->get_num_inputs(); i++)

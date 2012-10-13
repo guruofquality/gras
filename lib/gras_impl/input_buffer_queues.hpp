@@ -152,6 +152,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::init(
             _history_bytes[i] + _reserve_bytes[i],
             _reserve_bytes[i]
         );
+        _reserve_bytes[i] = 1;
 
         //post bytes are the desired buffer size to escape the edge case
         _post_bytes[i] = std::max(
@@ -202,7 +203,8 @@ GRAS_FORCE_INLINE SBuffer InputBufferQueues::front(const size_t i, const bool co
 
     //same buffer, different offset and length
     SBuffer buff = front;
-    if (conserve_history) buff.length -= _history_bytes[i];
+    //if (conserve_history) ASSERT(buff.length >= _history_bytes[i]);
+    //if (conserve_history) buff.length -= _history_bytes[i];
 
     //set the flag that this buffer *might* be inlined as an output buffer
     potential_inline = unique and (buff.length == front.length);
