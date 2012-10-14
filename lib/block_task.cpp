@@ -105,7 +105,7 @@ void BlockActor::handle_task(void)
 
         ASSERT(this->input_queues.ready(i));
         bool potential_inline;
-        const SBuffer buff = this->input_queues.front(i, this->enable_fixed_rate and num_outputs, potential_inline);
+        const SBuffer buff = this->input_queues.front(i, potential_inline);
         void *mem = buff.get();
         size_t items = buff.length/this->input_items_sizes[i];
 

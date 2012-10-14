@@ -10,6 +10,9 @@
 ** not 100% sure here with the input/output edge case sizes
 ** forecast + input buffer accumulate
 
+* smarter forecast
+** tell user number of inputs, user says output reqs
+
 * add hooks to specify input reserve
 ** automatically calculate from output multiple and rel rate
 

@@ -111,16 +111,9 @@ void BlockActor::handle_update_inputs(
     this->input_queues.resize(num_inputs);
 
     //impose input reserve requirements based on relative rate and output multiple
-    resize_fill_grow(this->input_reserve_items, num_inputs, 1);
-    std::vector<size_t> input_lookahead_items(num_inputs);
     for (size_t i = 0; i < num_inputs; i++)
     {
-        input_lookahead_items[i] = this->input_configs[i].lookahead_items;
-        if (this->enable_fixed_rate)
-            this->input_reserve_items[i] = size_t(std::ceil(this->output_multiple_items/this->relative_rate));
-        if (this->input_reserve_items[i] == 0) this->input_reserve_items[i] = 1;
+        const size_t hist_bytes = this->input_items_sizes[i]*this->input_configs[i].lookahead_items;
+        this->input_queues.update_history_bytes(i, hist_bytes);
     }
-
-    //init the history comprehension on input queues
-    this->input_queues.init(input_lookahead_items, this->input_reserve_items, this->input_items_sizes);
 }

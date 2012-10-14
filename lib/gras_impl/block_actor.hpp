@@ -130,7 +130,6 @@ struct BlockActor : Apology::Worker
     std::vector<size_t> output_items_sizes;
     std::vector<InputPortConfig> input_configs;
     std::vector<OutputPortConfig> output_configs;
-    std::vector<size_t> input_reserve_items;
     size_t output_multiple_items;
 
     //keeps track of production
