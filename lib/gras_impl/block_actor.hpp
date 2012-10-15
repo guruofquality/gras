@@ -110,6 +110,7 @@ struct BlockActor : Apology::Worker
     void buffer_returner(const size_t index, SBuffer &buffer);
     void mark_done(void);
     void handle_task(void);
+    void input_fail(const size_t index);
     void sort_tags(const size_t index);
     void trim_tags(const size_t index);
     GRAS_FORCE_INLINE bool any_inputs_done(void)

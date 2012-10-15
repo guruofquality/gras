@@ -58,6 +58,19 @@ struct InputBufferQueues
 
     void accumulate(const size_t i, const size_t item_size);
 
+    /*!
+     * Can we consider this queue's buffers to be accumulated?
+     * Either the first buffer holds all of the enqueued bytes
+     * or the first buffer is larger than we can accumulate.
+     */
+    GRAS_FORCE_INLINE bool is_accumulated(const size_t i) const
+    {
+        ASSERT(not _queues[i].empty());
+        return
+            (_queues[i].front().length == _enqueued_bytes[i]) or
+            (_queues[i].front().length >= MAX_AUX_BUFF_BYTES);
+    }
+
     GRAS_FORCE_INLINE void push(const size_t i, const SBuffer &buffer)
     {
         ASSERT(not _queues[i].full());
@@ -182,7 +195,8 @@ GRAS_FORCE_INLINE void InputBufferQueues::accumulate(const size_t i, const size_
     }
 
     _queues[i].push_front(accum_buff);
-    return;
+
+    ASSERT(this->is_accumulated(i));
 }
 
 GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t bytes_consumed)

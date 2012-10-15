@@ -73,6 +73,19 @@ void BlockActor::mark_done(void)
         << std::flush;
 }
 
+GRAS_FORCE_INLINE void BlockActor::input_fail(const size_t i)
+{
+    //input failed, accumulate and try again
+    if (not this->input_queues.is_accumulated(i))
+    {
+        this->input_queues.accumulate(i, this->input_items_sizes[i]);
+        this->Push(SelfKickMessage(), Theron::Address());
+        return;
+    }
+    //otherwise check for done, else wait for more
+    if (this->inputs_done[i]) this->mark_done();
+}
+
 void BlockActor::handle_task(void)
 {
     #ifdef WORK_DEBUG
@@ -104,7 +117,7 @@ void BlockActor::handle_task(void)
         this->sort_tags(i);
 
         ASSERT(this->input_queues.ready(i));
-        this->input_queues.accumulate(i, this->input_items_sizes[i]);
+        //this->input_queues.accumulate(i, this->input_items_sizes[i]);
         const SBuffer &buff = this->input_queues.front(i);
         void *mem = buff.get();
         size_t items = buff.length/this->input_items_sizes[i];
@@ -119,8 +132,7 @@ void BlockActor::handle_task(void)
         {
             if (items <= this->input_configs[i].lookahead_items)
             {
-                if (this->inputs_done[i]) this->mark_done();
-                return;
+                this->input_fail(i); return;
             }
             items -= this->input_configs[i].lookahead_items;
         }
@@ -198,12 +210,10 @@ void BlockActor::handle_task(void)
         {
             if (fcast_ninput_items[i] <= work_ninput_items[i]) continue;
 
+            //handle the case of forecast failing
             if (work_noutput_items <= this->output_multiple_items)
             {
-                //handle the case of forecast failing
-                //TODO accumulate input here, only done if inputs done and already accumulated
-                if (this->inputs_done[i]) this->mark_done();
-                return;
+                this->input_fail(i); return;
             }
 
             work_noutput_items = work_noutput_items/2; //backoff regime
