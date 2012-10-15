@@ -104,8 +104,8 @@ void BlockActor::handle_task(void)
         this->sort_tags(i);
 
         ASSERT(this->input_queues.ready(i));
-        bool potential_inline;
-        const SBuffer buff = this->input_queues.front(i, potential_inline);
+        this->input_queues.accumulate(i, this->input_items_sizes[i]);
+        const SBuffer &buff = this->input_queues.front(i);
         void *mem = buff.get();
         size_t items = buff.length/this->input_items_sizes[i];
 
@@ -132,7 +132,7 @@ void BlockActor::handle_task(void)
         //inline dealings, how and when input buffers can be inlined into output buffers
         //continue;
         if (
-            potential_inline and
+            buff.unique() and
             input_configs[i].inline_buffer and
             output_inline_index < num_outputs and
             buff.get_affinity() == this->buffer_affinity
@@ -188,7 +188,7 @@ void BlockActor::handle_task(void)
     //------------------------------------------------------------------
     //-- forecast
     //------------------------------------------------------------------
-    VAR(work_noutput_items);
+    //VAR(work_noutput_items);
     if (this->forecast_enable)
     {
         forecast_again_you_jerk:
@@ -217,8 +217,7 @@ void BlockActor::handle_task(void)
     //------------------------------------------------------------------
     //-- the work
     //------------------------------------------------------------------
-    VAR(work_noutput_items);
-    if (num_inputs) VAR(work_ninput_items[0]);
+    //VAR(work_noutput_items);
     this->work_ret = -1;
     if (this->interruptible_thread)
     {
@@ -229,7 +228,7 @@ void BlockActor::handle_task(void)
         this->task_work();
     }
     const size_t noutput_items = size_t(work_ret);
-    VAR(work_ret);
+    //VAR(work_ret);
 
     if (work_ret == Block::WORK_DONE)
     {
