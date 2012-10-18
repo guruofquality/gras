@@ -154,13 +154,26 @@ struct GRAS_API Block : Element
      */
     void set_fixed_rate(const bool fixed_rate);
 
+    //! Get the fixed rate setting
+    bool fixed_rate(void) const;
+
     /*!
      * The relative rate can be thought of as interpolation/decimation.
      * In other words, relative rate is the ratio of output items to input items.
      */
-    void set_relative_rate(double relative_rate);
+    void set_relative_rate(const double relative_rate);
 
+    //! Get the relative rate setting
     double relative_rate(void) const;
+
+    /*!
+     * The output multiple setting controls work output buffer sizes.
+     * Buffers will be number of items modulo rounted to the multiple.
+     */
+    void set_output_multiple(const size_t multiple);
+
+    //! Get the output multiple setting
+    size_t output_multiple(void) const;
 
     /*******************************************************************
      * Deal with data production and consumption

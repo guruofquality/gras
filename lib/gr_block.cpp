@@ -80,7 +80,7 @@ bool gr_block::is_unaligned(void)
 
 size_t gr_block::fixed_rate_noutput_to_ninput(const size_t noutput_items)
 {
-    if ((*this)->block->enable_fixed_rate)
+    if (this->fixed_rate())
     {
         return size_t(0.5 + (noutput_items/this->relative_rate())) + this->history() - 1;
     }
@@ -124,19 +124,6 @@ void gr_block::set_history(unsigned history)
     if (history == 0) history++;
     config.lookahead_items = history-1;
     this->set_input_config(config);
-}
-
-unsigned gr_block::output_multiple(void) const
-{
-    return (*this)->block->output_multiple_items;
-}
-
-void gr_block::set_output_multiple(unsigned multiple)
-{
-    (*this)->block->output_multiple_items = multiple;
-    gnuradio::OutputPortConfig config = this->output_config();
-    config.reserve_items = multiple;
-    this->set_output_config(config);
 }
 
 int gr_block::max_noutput_items(void) const

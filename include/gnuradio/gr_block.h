@@ -84,10 +84,6 @@ struct GRAS_API gr_block : gnuradio::Block
 
     void set_history(unsigned history);
 
-    unsigned output_multiple(void) const;
-
-    void set_output_multiple(unsigned multiple);
-
     void set_alignment(const size_t alignment);
 
     bool is_unaligned(void);

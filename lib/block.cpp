@@ -128,6 +128,24 @@ void Block::set_fixed_rate(const bool fixed_rate)
     (*this)->block->enable_fixed_rate = fixed_rate;
 }
 
+bool Block::fixed_rate(void) const
+{
+    return (*this)->block->enable_fixed_rate;
+}
+
+void Block::set_output_multiple(const size_t multiple)
+{
+    (*this)->block->output_multiple_items = multiple;
+    gnuradio::OutputPortConfig config = this->output_config();
+    config.reserve_items = multiple;
+    this->set_output_config(config);
+}
+
+size_t Block::output_multiple(void) const
+{
+    return (*this)->block->output_multiple_items;
+}
+
 void Block::set_relative_rate(double relative_rate)
 {
     (*this)->block->relative_rate = relative_rate;
