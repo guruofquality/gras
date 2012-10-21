@@ -76,3 +76,8 @@ void HierBlock::disconnect_all(void)
 {
     (*this)->topology->clear_all();
 }
+
+void HierBlock::commit(void)
+{
+    (*this)->topology->commit();
+}

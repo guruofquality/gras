@@ -48,6 +48,26 @@ struct GRAS_API HierBlock : Element
 
     void disconnect_all(void);
 
+    /*!
+     * Commit changes to the overall flow graph.
+     * Call this after modifying connections.
+     */
+    virtual void commit(void);
+
+    /*!
+     * The lock() call is deprecated.
+     * Topology can be changed duing design execution.
+     * The underlying implementation is literally a NOP.
+     */
+    inline void lock(void){}
+
+    /*!
+     * The unlock() call is deprecated.
+     * Topology can be changed duing design execution.
+     * The underlying implementation is this->commit().
+     */
+    inline void unlock(void){this->commit();}
+
 };
 
 } //namespace gnuradio

@@ -27,10 +27,6 @@ struct GRAS_API gr_top_block : gnuradio::TopBlock
 
     gr_top_block(const std::string &name);
 
-    void lock(void);
-
-    void unlock(void);
-
     void start(void);
 
     void start(const size_t max_items);

@@ -34,16 +34,6 @@ gr_top_block_sptr gr_make_top_block(const std::string &name)
     return gr_top_block_sptr(new gr_top_block(name));
 }
 
-void gr_top_block::lock(void)
-{
-    //NOP
-}
-
-void gr_top_block::unlock(void)
-{
-    this->commit();
-}
-
 void gr_top_block::start(void)
 {
     gnuradio::TopBlock::start();
