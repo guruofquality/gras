@@ -176,64 +176,18 @@ void Block::set_tag_propagation_policy(Block::tag_propagation_policy_t p)
     (*this)->block->tag_prop_policy = p;
 }
 
-void Block::add_item_tag(
+void Block::post_output_tag(
     const size_t which_output,
     const Tag &tag
 ){
     (*this)->block->post_downstream(which_output, InputTagMessage(tag));
 }
 
-void Block::add_item_tag(
-    const size_t which_output,
-    uint64_t abs_offset,
-    const pmt::pmt_t &key,
-    const pmt::pmt_t &value,
-    const pmt::pmt_t &srcid
-){
-    Tag t;
-    t.offset = abs_offset;
-    t.key = key;
-    t.value = value;
-    t.srcid = srcid;
-    this->add_item_tag(which_output, t);
-}
-
-void Block::get_tags_in_range(
-    std::vector<Tag> &tags,
-    const size_t which_input,
-    uint64_t abs_start,
-    uint64_t abs_end
+Block::TagIter Block::get_input_tags(
+    const size_t which_input
 ){
     const std::vector<Tag> &input_tags = (*this)->block->input_tags[which_input];
-    tags.clear();
-    for (size_t i = 0; i < input_tags.size(); i++)
-    {
-        if (input_tags[i].offset >= abs_start and input_tags[i].offset <= abs_end)
-        {
-            tags.push_back(input_tags[i]);
-        }
-    }
-}
-
-void Block::get_tags_in_range(
-    std::vector<Tag> &tags,
-    const size_t which_input,
-    uint64_t abs_start,
-    uint64_t abs_end,
-    const pmt::pmt_t &key
-){
-    const std::vector<Tag> &input_tags = (*this)->block->input_tags[which_input];
-    tags.clear();
-    for (size_t i = 0; i < input_tags.size(); i++)
-    {
-        if (
-            input_tags[i].offset >= abs_start and
-            input_tags[i].offset <= abs_end and
-            pmt::pmt_equal(input_tags[i].key, key)
-        ){
-            tags.push_back(input_tags[i]);
-        }
-    }
+    return boost::make_iterator_range(input_tags.begin(), input_tags.end());
 }
 
 void Block::forecast(int, std::vector<int> &)

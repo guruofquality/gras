@@ -16,6 +16,7 @@
 
 #include "element_impl.hpp"
 #include <gr_block.h>
+#include <boost/foreach.hpp>
 
 gr_block::gr_block(void)
 {
@@ -146,4 +147,59 @@ void gr_block::unset_max_noutput_items(void)
 bool gr_block::is_set_max_noutput_items(void) const
 {
     return this->max_noutput_items() != 0;
+}
+
+//TODO Tag2gr_tag and gr_tag2Tag need PMC to/from PMT logic
+static gr_tag_t Tag2gr_tag(const gnuradio::Tag &tag)
+{
+    gr_tag_t t;
+    t.offset = tag.offset;
+    t.key = tag.key;
+    t.value = tag.value;
+    t.srcid = tag.srcid;
+    return t;
+}
+
+static gnuradio::Tag gr_tag2Tag(const gr_tag_t &tag)
+{
+    return gnuradio::Tag(tag.offset, tag.key, tag.value, tag.srcid);
+}
+
+void gr_block::add_item_tag(
+    const size_t which_output, const gr_tag_t &tag
+){
+    this->post_output_tag(which_output, gr_tag2Tag(tag));
+}
+
+void gr_block::add_item_tag(
+    const size_t which_output,
+    uint64_t abs_offset,
+    const pmt::pmt_t &key,
+    const pmt::pmt_t &value,
+    const pmt::pmt_t &srcid
+){
+    gr_tag_t t;
+    t.offset = abs_offset;
+    t.key = key;
+    t.value = value;
+    t.srcid = srcid;
+    this->add_item_tag(which_output, t);
+}
+
+void gr_block::get_tags_in_range(
+    std::vector<gr_tag_t> &tags,
+    const size_t which_input,
+    uint64_t abs_start,
+    uint64_t abs_end,
+    const pmt::pmt_t &key
+){
+    tags.clear();
+    BOOST_FOREACH(const gnuradio::Tag &tag, this->get_input_tags(which_input))
+    {
+        if (tag.offset >= abs_start and tag.offset <= abs_end)
+        {
+            gr_tag_t t = Tag2gr_tag(tag);
+            if (key or pmt::pmt_equal(t.key, key)) tags.push_back(t);
+        }
+    }
 }

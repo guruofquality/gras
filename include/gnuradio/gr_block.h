@@ -80,6 +80,26 @@ struct GRAS_API gr_block : gnuradio::Block
         gr_vector_void_star &output_items
     );
 
+    void add_item_tag(
+        const size_t which_output, const gr_tag_t &tag
+    );
+
+    void add_item_tag(
+        const size_t which_output,
+        uint64_t abs_offset,
+        const pmt::pmt_t &key,
+        const pmt::pmt_t &value,
+        const pmt::pmt_t &srcid=pmt::PMT_F
+    );
+
+    void get_tags_in_range(
+        std::vector<gr_tag_t> &tags,
+        const size_t which_input,
+        uint64_t abs_start,
+        uint64_t abs_end,
+        const pmt::pmt_t &key = pmt::pmt_t()
+    );
+
     unsigned history(void) const;
 
     void set_history(unsigned history);

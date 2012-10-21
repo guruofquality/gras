@@ -14,32 +14,23 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_GR_TAGS_H
-#define INCLUDED_GR_TAGS_H
-
 #include <gnuradio/tags.hpp>
 
-struct GRAS_API gr_tag_t
+using namespace gnuradio;
+
+Tag::Tag(void):
+    offset(0)
 {
+    //NOP
+}
 
-    //! the item \p tag occurred at (as a uint64_t)
-    uint64_t offset;
+Tag::Tag(const uint64_t &offset, const PMCC &key, const PMCC &value, const PMCC &srcid):
+    offset(offset), key(key), value(value), srcid(srcid)
+{
+    //NOP
+}
 
-    //! the key of \p tag (as a PMT symbol)
-    pmt::pmt_t key;
-
-    //! the value of \p tag (as a PMT)
-    pmt::pmt_t value;
-
-    //! the source ID of \p tag (as a PMT)
-    pmt::pmt_t srcid;
-
-    //! Comparison function to test which tag, \p x or \p y, came first in time
-    static inline bool offset_compare(
-        const gr_tag_t &x, const gr_tag_t &y
-    ){
-        return x.offset < y.offset;
-    }
-};
-
-#endif /*INCLUDED_GR_TAGS_H*/
+bool gnuradio::operator<(const Tag &lhs, const Tag &rhs)
+{
+    return lhs.offset < rhs.offset;
+}
