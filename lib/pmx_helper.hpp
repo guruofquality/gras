@@ -27,11 +27,15 @@ namespace pmt
 
 inline pmt_t pmc_to_pmt(const PMCC &p)
 {
+    //the container is null
     if (not p) return pmt::pmt_t();
 
     #define decl_pmc_to_pmt(type, conv) if (p.is<type >()) return conv(p.as<type >())
 
+    //bool
     decl_pmc_to_pmt(bool, pmt_from_bool);
+
+    //string
     decl_pmc_to_pmt(std::string, pmt_string_to_symbol);
 
     //numeric types
@@ -88,7 +92,7 @@ for i in range(11):
     if (p.is<PMCTuple<10> >())
         return pmt_make_tuple(pmc_to_pmt(p.as<PMCTuple<10> >()[0]), pmc_to_pmt(p.as<PMCTuple<10> >()[1]), pmc_to_pmt(p.as<PMCTuple<10> >()[2]), pmc_to_pmt(p.as<PMCTuple<10> >()[3]), pmc_to_pmt(p.as<PMCTuple<10> >()[4]), pmc_to_pmt(p.as<PMCTuple<10> >()[5]), pmc_to_pmt(p.as<PMCTuple<10> >()[6]), pmc_to_pmt(p.as<PMCTuple<10> >()[7]), pmc_to_pmt(p.as<PMCTuple<10> >()[8]), pmc_to_pmt(p.as<PMCTuple<10> >()[9]));
 
-    //vectors
+    //vector container
     if (p.is<PMCList>())
     {
         const PMCList &l = p.as<PMCList>();
@@ -116,7 +120,7 @@ for i in range(11):
     decl_pmc_to_pmt_numeric_array(std::complex<float>, c32);
     decl_pmc_to_pmt_numeric_array(std::complex<double>, c64);
 
-    //dictionary
+    //dictionary container
     if (p.is<PMCDict>())
     {
         const PMCDict &m = p.as<PMCDict>();
@@ -128,11 +132,11 @@ for i in range(11):
         return d;
     }
 
-    //set
+    //set container
     if (p.is<PMCSet>())
     {
         const PMCSet &s = p.as<PMCSet>();
-        pmt_t l; //start w/ null - think this is ok
+        pmt_t l = PMT_NIL;
         BOOST_FOREACH(const PMCC &elem, s)
         {
             l = pmt_list_add(l, pmc_to_pmt(elem));
@@ -148,9 +152,110 @@ for i in range(11):
 
 }
 
-inline PMC pmt_to_pmc(const pmt_t &p)
+inline PMCC pmt_to_pmc(const pmt_t &p)
 {
-    
+    //if the container null?
+    if (not p) return PMC();
+
+    #define decl_pmt_to_pmc(check, conv) if (check(p)) return PMC::make(conv(p))
+
+    //bool
+    decl_pmt_to_pmc(pmt_is_bool, pmt_to_bool);
+
+    //string
+    decl_pmt_to_pmc(pmt_is_symbol, pmt_symbol_to_string);
+
+    //numeric types
+    decl_pmt_to_pmc(pmt_is_integer, pmt_to_long);
+    decl_pmt_to_pmc(pmt_is_uint64, pmt_to_uint64);
+    decl_pmt_to_pmc(pmt_is_real, pmt_to_double);
+    decl_pmt_to_pmc(pmt_is_complex, pmt_to_complex);
+
+    //is it a boost any holding a PMCC?
+    if (pmt_is_any(p))
+    {
+        const boost::any a = pmt_any_ref(p);
+        if (a.type() == typeid(PMCC)) return boost::any_cast<PMCC>(a);
+    }
+
+    //pair container
+    if (pmt_is_pair(p))
+    {
+        PMCPair pr(pmt_to_pmc(pmt_car(p)), pmt_to_pmc(pmt_cdr(p)));
+        return PMC::make(pr);
+    }
+
+    //fucking tuples
+    #define decl_pmt_to_pmc_tuple(n) \
+    if (pmt_is_tuple(p) and pmt_length(p) == n) \
+    { \
+        PMCTuple<n> t; \
+        for (size_t i = 0; i < n; i++) t[i] = pmt_to_pmc(pmt_tuple_ref(p, i)); \
+        return PMC::make(t); \
+    }
+    decl_pmt_to_pmc_tuple(0);
+    decl_pmt_to_pmc_tuple(1);
+    decl_pmt_to_pmc_tuple(2);
+    decl_pmt_to_pmc_tuple(3);
+    decl_pmt_to_pmc_tuple(4);
+    decl_pmt_to_pmc_tuple(5);
+    decl_pmt_to_pmc_tuple(6);
+    decl_pmt_to_pmc_tuple(7);
+    decl_pmt_to_pmc_tuple(8);
+    decl_pmt_to_pmc_tuple(9);
+    decl_pmt_to_pmc_tuple(10);
+
+    //vector container
+    if (pmt_is_vector(p))
+    {
+        PMCList l(pmt_length(p));
+        for (size_t i = 0; i < l.size(); i++)
+        {
+            l[i] = pmt_to_pmc(pmt_vector_ref(p, i));
+        }
+        return PMC::make(l);
+    }
+
+    //numeric arrays
+    #define decl_pmt_to_pmc_numeric_array(type, suffix) \
+    if (pmt_is_ ## suffix ## vector(p)) \
+    { \
+        size_t n; const type* i = pmt_ ## suffix ## vector_elements(p, n); \
+        return PMC::make(std::vector<type>(i, i+n)); \
+    }
+    decl_pmt_to_pmc_numeric_array(uint8_t, u8);
+    decl_pmt_to_pmc_numeric_array(uint16_t, u16);
+    decl_pmt_to_pmc_numeric_array(uint32_t, u32);
+    decl_pmt_to_pmc_numeric_array(uint64_t, u64);
+    decl_pmt_to_pmc_numeric_array(int8_t, s8);
+    decl_pmt_to_pmc_numeric_array(int16_t, s16);
+    decl_pmt_to_pmc_numeric_array(int32_t, s32);
+    decl_pmt_to_pmc_numeric_array(int64_t, s64);
+    decl_pmt_to_pmc_numeric_array(float, f32);
+    decl_pmt_to_pmc_numeric_array(double, f64);
+    decl_pmt_to_pmc_numeric_array(std::complex<float>, c32);
+    decl_pmt_to_pmc_numeric_array(std::complex<double>, c64);
+
+    //dictionary container
+    if (pmt_is_dict(p))
+    {
+        PMCDict m;
+        pmt_t items = pmt_dict_items(p);
+        for (size_t i = 0; i < pmt_length(items); i++)
+        {
+            pmt_t item = pmt_nth(i, items);
+            PMCC key = pmt_to_pmc(pmt_car(item));
+            PMCC val = pmt_to_pmc(pmt_cdr(item));
+            m[key] = val;
+        }
+        return PMC::make(m);
+    }
+
+    //set container
+    //FIXME no pmt_is_list...
+
+    //backup plan... store the pmt
+    return PMC::make(p);
 }
 
 }
