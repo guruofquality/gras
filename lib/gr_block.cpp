@@ -156,15 +156,21 @@ static gr_tag_t Tag2gr_tag(const gnuradio::Tag &tag)
 {
     gr_tag_t t;
     t.offset = tag.offset;
-    t.key = tag.key? tag.key.as<pmt::pmt_t>() : pmt::pmt_t();
-    t.value = tag.value? tag.value.as<pmt::pmt_t>() : pmt::pmt_t();
-    t.srcid = tag.srcid? tag.srcid.as<pmt::pmt_t>() : pmt::pmt_t();
+    t.key = pmt::pmc_to_pmt(tag.key);
+    t.value = pmt::pmc_to_pmt(tag.value);
+    t.srcid = pmt::pmc_to_pmt(tag.srcid);
     return t;
 }
 
 static gnuradio::Tag gr_tag2Tag(const gr_tag_t &tag)
 {
-    return gnuradio::Tag(tag.offset, PMC::make(tag.key), PMC::make(tag.value), PMC::make(tag.srcid));
+    return gnuradio::Tag
+    (
+        tag.offset,
+        pmt::pmt_to_pmc(tag.key),
+        pmt::pmt_to_pmc(tag.value),
+        pmt::pmt_to_pmc(tag.srcid)
+    );
 }
 
 void gr_block::add_item_tag(
