@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
+#include "pmx_helper.hpp"
 #include <gr_block.h>
 #include <boost/foreach.hpp>
 
@@ -155,9 +156,9 @@ static gr_tag_t Tag2gr_tag(const gnuradio::Tag &tag)
 {
     gr_tag_t t;
     t.offset = tag.offset;
-    t.key = tag.key? tag.key.cast<pmt::pmt_t>() : pmt::pmt_t();
-    t.value = tag.value? tag.value.cast<pmt::pmt_t>() : pmt::pmt_t();
-    t.srcid = tag.srcid? tag.srcid.cast<pmt::pmt_t>() : pmt::pmt_t();
+    t.key = tag.key? tag.key.as<pmt::pmt_t>() : pmt::pmt_t();
+    t.value = tag.value? tag.value.as<pmt::pmt_t>() : pmt::pmt_t();
+    t.srcid = tag.srcid? tag.srcid.as<pmt::pmt_t>() : pmt::pmt_t();
     return t;
 }
 
