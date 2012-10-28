@@ -150,19 +150,20 @@ bool gr_block::is_set_max_noutput_items(void) const
 }
 
 //TODO Tag2gr_tag and gr_tag2Tag need PMC to/from PMT logic
+//currently PMC holds the pmt_t, this is temporary
 static gr_tag_t Tag2gr_tag(const gnuradio::Tag &tag)
 {
     gr_tag_t t;
     t.offset = tag.offset;
-    t.key = tag.key;
-    t.value = tag.value;
-    t.srcid = tag.srcid;
+    t.key = tag.key? tag.key.cast<pmt::pmt_t>() : pmt::pmt_t();
+    t.value = tag.value? tag.value.cast<pmt::pmt_t>() : pmt::pmt_t();
+    t.srcid = tag.srcid? tag.srcid.cast<pmt::pmt_t>() : pmt::pmt_t();
     return t;
 }
 
 static gnuradio::Tag gr_tag2Tag(const gr_tag_t &tag)
 {
-    return gnuradio::Tag(tag.offset, tag.key, tag.value, tag.srcid);
+    return gnuradio::Tag(tag.offset, PMC::make(tag.key), PMC::make(tag.value), PMC::make(tag.srcid));
 }
 
 void gr_block::add_item_tag(

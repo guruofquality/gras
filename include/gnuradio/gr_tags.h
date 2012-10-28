@@ -17,7 +17,8 @@
 #ifndef INCLUDED_GR_TAGS_H
 #define INCLUDED_GR_TAGS_H
 
-#include <gnuradio/tags.hpp>
+#include <gnuradio/gras.hpp>
+#include <gruel/pmt.h>
 
 struct GRAS_API gr_tag_t
 {

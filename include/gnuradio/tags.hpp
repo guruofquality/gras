@@ -19,11 +19,8 @@
 
 #include <gnuradio/gras.hpp>
 #include <boost/operators.hpp>
-
-//TODO -- this is a stub for the PMC libray
-#include <gruel/pmt.h>
-typedef pmt::pmt_t PMC;
-typedef pmt::pmt_t PMCC;
+#include <PMC/PMC.hpp>
+#include <boost/cstdint.hpp>
 
 namespace gnuradio
 {
@@ -37,7 +34,7 @@ struct GRAS_API Tag : boost::less_than_comparable<Tag>
     Tag(const uint64_t &offset, const PMCC &key, const PMCC &value, const PMCC &srcid = PMCC());
 
     //! the absolute item count associated with this tag
-    uint64_t offset;
+    boost::uint64_t offset;
 
     //! A symbolic name identifying the type of tag
     PMCC key;

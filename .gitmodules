@@ -7,3 +7,6 @@
 [submodule "Apology"]
 	path = Apology
 	url = https://github.com/guruofquality/Apology.git
+[submodule "PMC"]
+	path = PMC
+	url = https://github.com/guruofquality/PMC.git
