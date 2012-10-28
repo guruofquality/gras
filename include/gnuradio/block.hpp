@@ -22,6 +22,7 @@
 #include <gnuradio/tags.hpp>
 #include <vector>
 #include <string>
+#include <boost/range.hpp> //iterator range
 
 namespace gnuradio
 {
@@ -214,32 +215,14 @@ struct GRAS_API Block : Element
 
     void set_tag_propagation_policy(tag_propagation_policy_t p);
 
-    void add_item_tag(
-        const size_t which_output, const Tag &tag
-    );
+    //! Send a tag to the downstream on the given output port
+    void post_output_tag(const size_t which_output, const Tag &tag);
 
-    void add_item_tag(
-        const size_t which_output,
-        uint64_t abs_offset,
-        const pmt::pmt_t &key,
-        const pmt::pmt_t &value,
-        const pmt::pmt_t &srcid=pmt::PMT_F
-    );
+    //! Iterator return type get_input_tags - stl and boost compliant
+    typedef boost::iterator_range<std::vector<Tag>::const_iterator> TagIter;
 
-    void get_tags_in_range(
-        std::vector<Tag> &tags,
-        const size_t which_input,
-        uint64_t abs_start,
-        uint64_t abs_end
-    );
-
-    void get_tags_in_range(
-        std::vector<Tag> &tags,
-        const size_t which_input,
-        uint64_t abs_start,
-        uint64_t abs_end,
-        const pmt::pmt_t &key
-    );
+    //! Get an iterator of item tags for the given input
+    TagIter get_input_tags(const size_t which_input = 0);
 
     /*******************************************************************
      * Work related routines from basic block

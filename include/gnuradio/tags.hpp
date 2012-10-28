@@ -18,33 +18,35 @@
 #define INCLUDED_GNURADIO_TAGS_HPP
 
 #include <gnuradio/gras.hpp>
-#include <gruel/pmt.h>
+#include <boost/operators.hpp>
+#include <PMC/PMC.hpp>
+#include <boost/cstdint.hpp>
 
 namespace gnuradio
 {
 
-struct GRAS_API Tag
+struct GRAS_API Tag : boost::less_than_comparable<Tag>
 {
+    //! Make an empty tag with null members
+    Tag(void);
 
-    //! the item \p tag occurred at (as a uint64_t)
-    uint64_t offset;
+    //! Make a tag from parameters to initialize the members
+    Tag(const uint64_t &offset, const PMCC &key, const PMCC &value, const PMCC &srcid = PMCC());
 
-    //! the key of \p tag (as a PMT symbol)
-    pmt::pmt_t key;
+    //! the absolute item count associated with this tag
+    boost::uint64_t offset;
 
-    //! the value of \p tag (as a PMT)
-    pmt::pmt_t value;
+    //! A symbolic name identifying the type of tag
+    PMCC key;
 
-    //! the source ID of \p tag (as a PMT)
-    pmt::pmt_t srcid;
+    //! The value of this tag -> the sample metadata
+    PMCC value;
 
-    //! Comparison function to test which tag, \p x or \p y, came first in time
-    static inline bool offset_compare(
-        const Tag &x, const Tag &y
-    ){
-        return x.offset < y.offset;
-    }
+    //! The optional source ID -> something unique
+    PMCC srcid;
 };
+
+GRAS_API bool operator<(const Tag &lhs, const Tag &rhs);
 
 } //namespace gnuradio
 

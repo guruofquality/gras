@@ -12,6 +12,19 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 ########################################################################
+# Setup PMC Deps
+########################################################################
+include_directories(${GRAS_SOURCE_DIR}/PMC/include)
+
+list(APPEND GNURADIO_CORE_INCLUDE_DIRS ${GRAS_SOURCE_DIR}/PMC/include)
+GR_SET_GLOBAL(GNURADIO_CORE_INCLUDE_DIRS ${GNURADIO_CORE_INCLUDE_DIRS})
+
+list(APPEND GNURADIO_CORE_SWIG_INCLUDE_DIRS ${GRAS_SOURCE_DIR}/PMC/include)
+GR_SET_GLOBAL(GNURADIO_CORE_SWIG_INCLUDE_DIRS ${GNURADIO_CORE_SWIG_INCLUDE_DIRS})
+
+add_subdirectory(${GRAS_SOURCE_DIR}/PMC ${CMAKE_BINARY_DIR}/PMC)
+
+########################################################################
 # Setup Theron Deps
 ########################################################################
 set(THERON_SOURCE_DIR ${GRAS_SOURCE_DIR}/Theron)
@@ -39,6 +52,7 @@ list(APPEND gnuradio_core_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/debug.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/element.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sbuffer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tags.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_actor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_task.cpp

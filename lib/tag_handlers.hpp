@@ -27,7 +27,7 @@ GRAS_FORCE_INLINE void BlockActor::sort_tags(const size_t i)
 {
     if (not this->input_tags_changed[i]) return;
     std::vector<Tag> &tags_i = this->input_tags[i];
-    std::sort(tags_i.begin(), tags_i.end(), Tag::offset_compare);
+    std::sort(tags_i.begin(), tags_i.end());
     this->input_tags_changed[i] = false;
 }
 
