@@ -11,10 +11,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DGRAS_DEBUG)
 endif()
 
-list(APPEND gnuradio_core_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/register_messages.cpp #exports messages, must be first
-)
-
 ########################################################################
 # Setup Theron Deps
 ########################################################################
@@ -58,6 +54,7 @@ list(APPEND gnuradio_core_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_sync_block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_hier_block2.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gr_top_block.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/register_messages.cpp
 )
 
 #sources that are in tree that have not changed

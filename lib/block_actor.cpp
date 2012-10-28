@@ -21,6 +21,15 @@
 
 using namespace gnuradio;
 
+ThreadPoolConfig::ThreadPoolConfig(void)
+{
+    thread_count = boost::thread::hardware_concurrency();
+    thread_count = std::max(size_t(2), thread_count);
+    node_mask = 0;
+    processor_mask = 0xffffffff;
+    yield_strategy = "STRONG";
+}
+
 /***********************************************************************
  * Thread pool implementation
  **********************************************************************/
@@ -35,26 +44,19 @@ ThreadPool::ThreadPool(boost::weak_ptr<Theron::Framework> p):
     //NOP
 }
 
-const size_t default_concurrency(void)
+ThreadPool::ThreadPool(const ThreadPoolConfig &config)
 {
-    const size_t n = boost::thread::hardware_concurrency();
-    return std::max(size_t(2), n);
-}
+    Theron::Framework::Parameters params(
+        config.thread_count,
+        config.node_mask,
+        config.processor_mask
+    );
 
-ThreadPool::ThreadPool(unsigned long threadCount)
-{
-    if (threadCount == 0) threadCount = default_concurrency();
-    this->reset(new Theron::Framework(Theron::Framework::Parameters(threadCount, 0)));
-}
+    if (config.yield_strategy == "POLITE") params.mYieldStrategy = Theron::Framework::YIELD_STRATEGY_POLITE;
+    if (config.yield_strategy == "STRONG") params.mYieldStrategy = Theron::Framework::YIELD_STRATEGY_STRONG;
+    if (config.yield_strategy == "AGGRESSIVE") params.mYieldStrategy = Theron::Framework::YIELD_STRATEGY_AGGRESSIVE;
 
-ThreadPool::ThreadPool(const unsigned long threadCount, const unsigned long nodeMask)
-{
-    this->reset(new Theron::Framework(Theron::Framework::Parameters(threadCount, nodeMask)));
-}
-
-ThreadPool::ThreadPool(const unsigned long threadCount, const unsigned long nodeMask, const unsigned long processorMask)
-{
-    this->reset(new Theron::Framework(Theron::Framework::Parameters(threadCount, nodeMask, processorMask)));
+    this->reset(new Theron::Framework(Theron::Framework::Parameters(params)));
 }
 
 /***********************************************************************
@@ -73,7 +75,7 @@ static ThreadPool get_active_thread_pool(void)
 {
     if (not weak_framework.lock())
     {
-        active_thread_pool = ThreadPool(0);
+        active_thread_pool = ThreadPool(ThreadPoolConfig());
         active_thread_pool.set_active();
         std::cout << "Created default thread pool with " << active_thread_pool->GetNumThreads() << " threads." << std::endl;
     }
