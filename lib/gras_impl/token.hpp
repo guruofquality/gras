@@ -20,7 +20,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 
-namespace gnuradio
+namespace gras
 {
 
 typedef boost::weak_ptr<int> WeakToken;
@@ -35,6 +35,6 @@ struct Token : boost::shared_ptr<int>
     }
 };
 
-} //namespace gnuradio
+} //namespace gras
 
 #endif /*INCLUDED_LIBGRAS_IMPL_TOKEN_HPP*/

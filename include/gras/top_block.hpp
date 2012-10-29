@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_GNURADIO_TOP_BLOCK_HPP
-#define INCLUDED_GNURADIO_TOP_BLOCK_HPP
+#ifndef INCLUDED_GRAS_TOP_BLOCK_HPP
+#define INCLUDED_GRAS_TOP_BLOCK_HPP
 
-#include <gnuradio/hier_block.hpp>
+#include <gras/hier_block.hpp>
 
-namespace gnuradio
+namespace gras
 {
 
 struct GRAS_API GlobalBlockConfig
@@ -93,6 +93,6 @@ struct GRAS_API TopBlock : HierBlock
 
 };
 
-} //namespace gnuradio
+} //namespace gras
 
-#endif /*INCLUDED_GNURADIO_TOP_BLOCK_HPP*/
+#endif /*INCLUDED_GRAS_TOP_BLOCK_HPP*/

@@ -15,9 +15,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
-#include <gnuradio/block.hpp>
+#include <gras/block.hpp>
 
-using namespace gnuradio;
+using namespace gras;
 
 InputPortConfig::InputPortConfig(void)
 {
@@ -136,7 +136,7 @@ bool Block::fixed_rate(void) const
 void Block::set_output_multiple(const size_t multiple)
 {
     (*this)->block->output_multiple_items = multiple;
-    gnuradio::OutputPortConfig config = this->output_config();
+    gras::OutputPortConfig config = this->output_config();
     config.reserve_items = multiple;
     this->set_output_config(config);
 }

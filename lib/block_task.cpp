@@ -19,7 +19,7 @@
 
 #define REALLY_BIG size_t(1 << 30)
 
-using namespace gnuradio;
+using namespace gras;
 
 void BlockActor::mark_done(void)
 {

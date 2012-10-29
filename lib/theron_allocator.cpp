@@ -22,7 +22,7 @@
  * and otherwise the regular malloc/free for larger buffers.
  **********************************************************************/
 
-#include <gnuradio/gras.hpp>
+#include <gras/gras.hpp>
 #include <gras_impl/debug.hpp>
 #include <Theron/Detail/Threading/SpinLock.h>
 #include <Theron/IAllocator.h>

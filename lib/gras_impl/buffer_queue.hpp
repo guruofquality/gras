@@ -17,11 +17,11 @@
 #ifndef INCLUDED_LIBGRAS_IMPL_BUFFER_QUEUE_HPP
 #define INCLUDED_LIBGRAS_IMPL_BUFFER_QUEUE_HPP
 
-#include <gnuradio/sbuffer.hpp>
+#include <gras/sbuffer.hpp>
 #include <boost/bind.hpp>
 #include <queue>
 
-namespace gnuradio
+namespace gras
 {
 
 struct BufferQueue : std::queue<SBuffer>
@@ -54,6 +54,6 @@ struct BufferQueue : std::queue<SBuffer>
     SBufferToken _token;
 };
 
-} //namespace gnuradio
+} //namespace gras
 
 #endif /*INCLUDED_LIBGRAS_IMPL_BUFFER_QUEUE_HPP*/

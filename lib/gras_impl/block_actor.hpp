@@ -19,10 +19,10 @@
 
 #include <gras_impl/debug.hpp>
 #include <gras_impl/bitset.hpp>
-#include <gnuradio/gras.hpp>
-#include <gnuradio/block.hpp>
-#include <gnuradio/top_block.hpp>
-#include <gnuradio/thread_pool.hpp>
+#include <gras/gras.hpp>
+#include <gras/block.hpp>
+#include <gras/top_block.hpp>
+#include <gras/thread_pool.hpp>
 #include <Apology/Worker.hpp>
 #include <gras_impl/token.hpp>
 #include <gras_impl/messages.hpp>
@@ -32,7 +32,7 @@
 #include <vector>
 #include <set>
 
-namespace gnuradio
+namespace gras
 {
 
 static GRAS_FORCE_INLINE unsigned long myulround(const double x)
@@ -201,6 +201,6 @@ struct BlockActor : Apology::Worker
     bool topology_init;
 };
 
-} //namespace gnuradio
+} //namespace gras
 
 #endif /*INCLUDED_LIBGRAS_IMPL_BLOCK_ACTOR_HPP*/

@@ -1,28 +1,30 @@
 ########################################################################
-# This file included, use CMake directory variables
+# Setup the GRAS library build
 ########################################################################
+include_directories(${GRAS_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(GRAS_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../)
-set(GRAS_BINARY_DIR ${CMAKE_BINARY_DIR}/gruel/src)
-set(RUNTIME_SOURCE_DIR ${CMAKE_SOURCE_DIR}/gnuradio-core/src/lib/runtime)
-
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_definitions(-DGRAS_DEBUG)
-endif()
-
 ########################################################################
-# Setup PMC Deps
+# Setup Boost
 ########################################################################
-include_directories(${GRAS_SOURCE_DIR}/PMC/include)
+if(UNIX AND EXISTS "/usr/lib64")
+    list(APPEND BOOST_LIBRARYDIR "/usr/lib64") #fedora 64-bit fix
+endif(UNIX AND EXISTS "/usr/lib64")
 
-list(APPEND GNURADIO_CORE_INCLUDE_DIRS ${GRAS_SOURCE_DIR}/PMC/include)
-GR_SET_GLOBAL(GNURADIO_CORE_INCLUDE_DIRS ${GNURADIO_CORE_INCLUDE_DIRS})
+set(Boost_ADDITIONAL_VERSIONS
+    "1.35.0" "1.35" "1.36.0" "1.36" "1.37.0" "1.37" "1.38.0" "1.38" "1.39.0" "1.39"
+    "1.40.0" "1.40" "1.41.0" "1.41" "1.42.0" "1.42" "1.43.0" "1.43" "1.44.0" "1.44"
+    "1.45.0" "1.45" "1.46.0" "1.46" "1.47.0" "1.47" "1.48.0" "1.48" "1.49.0" "1.49"
+    "1.50.0" "1.50" "1.51.0" "1.51" "1.52.0" "1.52" "1.53.0" "1.53" "1.54.0" "1.54"
+    "1.55.0" "1.55" "1.56.0" "1.56" "1.57.0" "1.57" "1.58.0" "1.58" "1.59.0" "1.59"
+    "1.60.0" "1.60" "1.61.0" "1.61" "1.62.0" "1.62" "1.63.0" "1.63" "1.64.0" "1.64"
+    "1.65.0" "1.65" "1.66.0" "1.66" "1.67.0" "1.67" "1.68.0" "1.68" "1.69.0" "1.69"
+)
+find_package(Boost COMPONENTS)
 
-list(APPEND GNURADIO_CORE_SWIG_INCLUDE_DIRS ${GRAS_SOURCE_DIR}/PMC/include)
-GR_SET_GLOBAL(GNURADIO_CORE_SWIG_INCLUDE_DIRS ${GNURADIO_CORE_SWIG_INCLUDE_DIRS})
-
-add_subdirectory(${GRAS_SOURCE_DIR}/PMC ${CMAKE_BINARY_DIR}/PMC)
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
+list(APPEND GRAS_LIBRARIES ${Boost_LIBRARIES})
 
 ########################################################################
 # Setup Theron Deps
@@ -33,8 +35,8 @@ include_directories(${THERON_INCLUDE_DIRS})
 link_directories(${THERON_LIBRARY_DIRS})
 add_definitions(${THERON_DEFINES})
 
-list(APPEND gnuradio_core_libs ${THERON_LIBRARIES})
-list(APPEND gnuradio_core_sources ${THERON_SOURCES})
+list(APPEND GRAS_LIBRARIES ${THERON_LIBRARIES})
+list(APPEND GRAS_SOURCES ${THERON_SOURCES})
 
 ########################################################################
 # Setup Apology Deps
@@ -43,12 +45,12 @@ include_directories(${GRAS_SOURCE_DIR}/Apology/include)
 include_directories(${GRAS_SOURCE_DIR}/Apology/lib)
 
 file(GLOB apology_sources "${GRAS_SOURCE_DIR}/Apology/lib/*.cpp")
-list(APPEND gnuradio_core_sources ${apology_sources})
+list(APPEND GRAS_SOURCES ${apology_sources})
 
 ########################################################################
-# Append gnuradio-core library sources
+# Append gras-core library sources
 ########################################################################
-list(APPEND gnuradio_core_sources
+list(APPEND GRAS_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/debug.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/element.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sbuffer.cpp
@@ -64,113 +66,15 @@ list(APPEND gnuradio_core_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/output_handlers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/hier_block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/top_block.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gr_block.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gr_sync_block.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gr_hier_block2.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gr_top_block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/register_messages.cpp
 )
 
-#sources that are in tree that have not changed
-list(APPEND gnuradio_core_sources
-    ${RUNTIME_SOURCE_DIR}/gr_sys_paths.cc
-    ${RUNTIME_SOURCE_DIR}/gr_message.cc
-    ${RUNTIME_SOURCE_DIR}/gr_msg_queue.cc
-    ${RUNTIME_SOURCE_DIR}/gr_msg_handler.cc
-)
-
 ########################################################################
-# Append gnuradio-core test sources
+# Build library
 ########################################################################
-list(APPEND test_gnuradio_core_sources
-    ${RUNTIME_SOURCE_DIR}/qa_gr_block.cc
-    ${RUNTIME_SOURCE_DIR}/qa_gr_hier_block2.cc
-    ${RUNTIME_SOURCE_DIR}/qa_gr_hier_block2_derived.cc
-    #${RUNTIME_SOURCE_DIR}/qa_gr_buffer.cc
-    #${RUNTIME_SOURCE_DIR}/qa_gr_flowgraph.cc
-    ${RUNTIME_SOURCE_DIR}/qa_gr_top_block.cc
-    ${RUNTIME_SOURCE_DIR}/qa_gr_io_signature.cc
-    #${RUNTIME_SOURCE_DIR}/qa_gr_vmcircbuf.cc
-    ${RUNTIME_SOURCE_DIR}/qa_block_tags.cc
-    ${GRAS_SOURCE_DIR}/lib/qa_runtime.cc
-    #${RUNTIME_SOURCE_DIR}/qa_set_msg_handler.cc
-)
+include(GrMiscUtils)
 
-#copy test headers to include dir
-set(test_headers
-    ${RUNTIME_SOURCE_DIR}/qa_gr_block.h
-    ${RUNTIME_SOURCE_DIR}/qa_gr_hier_block2.h
-    ${RUNTIME_SOURCE_DIR}/qa_gr_hier_block2_derived.h
-    #${RUNTIME_SOURCE_DIR}/qa_gr_buffer.h
-    #${RUNTIME_SOURCE_DIR}/qa_gr_flowgraph.h
-    ${RUNTIME_SOURCE_DIR}/qa_gr_top_block.h
-    ${RUNTIME_SOURCE_DIR}/qa_gr_io_signature.h
-    #${RUNTIME_SOURCE_DIR}/qa_gr_vmcircbuf.h
-    ${RUNTIME_SOURCE_DIR}/qa_block_tags.h
-    ${RUNTIME_SOURCE_DIR}/qa_runtime.h
-    #${RUNTIME_SOURCE_DIR}/qa_set_msg_handler.h
-    ${RUNTIME_SOURCE_DIR}/gr_unittests.h
-)
-foreach(header ${test_headers})
-    execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${header} ${GRAS_BINARY_DIR}/include)
-endforeach(header)
-
-########################################################################
-# Install runtime headers
-########################################################################
-set(runtime_copy_headers
-    ${RUNTIME_SOURCE_DIR}/gr_sys_paths.h
-    ${RUNTIME_SOURCE_DIR}/gr_message.h
-    ${RUNTIME_SOURCE_DIR}/gr_msg_queue.h
-    ${RUNTIME_SOURCE_DIR}/gr_msg_handler.h
-    ${RUNTIME_SOURCE_DIR}/gr_complex.h
-)
-
-#copy the headers to a place that is in the include path
-foreach(runtime_copy_header ${runtime_copy_headers})
-    execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${runtime_copy_header} ${GRAS_BINARY_DIR}/include)
-endforeach(runtime_copy_header)
-
-file(GLOB runtime_headers "${GRAS_SOURCE_DIR}/include/gnuradio/*")
-install(FILES
-    ${runtime_headers} ${runtime_copy_headers}
-    DESTINATION ${GR_INCLUDE_DIR}/gnuradio
-    COMPONENT "core_devel"
-)
-
-########################################################################
-# Install swig headers
-########################################################################
-if(ENABLE_PYTHON)
-
-set(runtime_copy_swigs
-    ${RUNTIME_SOURCE_DIR}/gr_message.i
-    ${RUNTIME_SOURCE_DIR}/gr_msg_queue.i
-    ${RUNTIME_SOURCE_DIR}/gr_msg_handler.i
-)
-
-#makes swig doc generator happy
-execute_process(
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/runtime/
-    COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/nop.h
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/nop.h
-        ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/runtime/nop.h
-)
-
-#copy the headers to a place that is in the include path
-foreach(runtime_copy_header ${runtime_copy_swigs})
-    execute_process(
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/swig/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${runtime_copy_header} ${CMAKE_BINARY_DIR}/gnuradio-core/src/lib/swig/
-    )
-endforeach(runtime_copy_header)
-
-file(GLOB runtime_swigs "${GRAS_SOURCE_DIR}/swig/*.i")
-install(FILES
-    ${runtime_swigs} ${runtime_copy_swigs}
-    DESTINATION ${GR_INCLUDE_DIR}/gnuradio/swig
-    COMPONENT "core_swig"
-)
-
-endif(ENABLE_PYTHON)
+add_library(gras SHARED ${GRAS_SOURCES})
+target_link_libraries(gras ${GRAS_LIBRARIES})
+set(GR_LIBRARY_DIR lib)
+GR_LIBRARY_FOO(gras RUNTIME_COMPONENT ${GRAS_COMP_RUNTIME} DEVEL_COMPONENT ${GRAS_COMP_DEVEL})

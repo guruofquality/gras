@@ -14,15 +14,15 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_GNURADIO_ELEMENT_HPP
-#define INCLUDED_GNURADIO_ELEMENT_HPP
+#ifndef INCLUDED_GRAS_ELEMENT_HPP
+#define INCLUDED_GRAS_ELEMENT_HPP
 
-#include <gnuradio/gras.hpp>
-#include <gnuradio/io_signature.hpp>
+#include <gras/gras.hpp>
+#include <gras/io_signature.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
-namespace gnuradio
+namespace gras
 {
 
 class ElementImpl;
@@ -61,16 +61,16 @@ struct GRAS_API Element : boost::shared_ptr<ElementImpl>, boost::enable_shared_f
     //! get a canonical name for this element
     std::string to_string(void) const;
 
-    void set_output_signature(const gnuradio::IOSignature &sig);
+    void set_output_signature(const gras::IOSignature &sig);
 
-    void set_input_signature(const gnuradio::IOSignature &sig);
+    void set_input_signature(const gras::IOSignature &sig);
 
-    const gnuradio::IOSignature &input_signature(void) const;
+    const gras::IOSignature &input_signature(void) const;
 
-    const gnuradio::IOSignature &output_signature(void) const;
+    const gras::IOSignature &output_signature(void) const;
 
 };
 
-} //namespace gnuradio
+} //namespace gras
 
-#endif /*INCLUDED_GNURADIO_ELEMENT_HPP*/
+#endif /*INCLUDED_GRAS_ELEMENT_HPP*/

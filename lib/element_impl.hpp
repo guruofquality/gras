@@ -20,12 +20,12 @@
 #include <gras_impl/block_actor.hpp>
 #include <Apology/Topology.hpp>
 #include <Apology/Executor.hpp>
-#include <gnuradio/element.hpp>
-#include <gnuradio/block.hpp>
+#include <gras/element.hpp>
+#include <gras/block.hpp>
 #include <gras_impl/token.hpp>
 #include <gras_impl/interruptible_thread.hpp>
 
-namespace gnuradio
+namespace gras
 {
 
 struct ElementImpl
@@ -61,6 +61,6 @@ struct ElementImpl
 
 };
 
-} //namespace gnuradio
+} //namespace gras
 
 #endif /*INCLUDED_LIBGRAS_ELEMENT_IMPL_HPP*/

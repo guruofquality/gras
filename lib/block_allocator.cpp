@@ -19,7 +19,7 @@
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 
-using namespace gnuradio;
+using namespace gras;
 
 const size_t AT_LEAST_DEFAULT_ITEMS = 1 << 13;
 const size_t AHH_TOO_MANY_BYTES = 1 << 20; //TODO

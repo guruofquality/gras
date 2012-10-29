@@ -15,9 +15,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
-#include <gnuradio/hier_block.hpp>
+#include <gras/hier_block.hpp>
 
-using namespace gnuradio;
+using namespace gras;
 
 HierBlock::HierBlock(void)
 {

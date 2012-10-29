@@ -14,16 +14,16 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_GNURADIO_SBUFFER_HPP
-#define INCLUDED_GNURADIO_SBUFFER_HPP
+#ifndef INCLUDED_GRAS_SBUFFER_HPP
+#define INCLUDED_GRAS_SBUFFER_HPP
 
-#include <gnuradio/gras.hpp>
+#include <gras/gras.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/intrusive_ptr.hpp>
 #include <boost/function.hpp>
 
-namespace gnuradio
+namespace gras
 {
 
 struct SBufferImpl;
@@ -135,8 +135,8 @@ struct GRAS_API SBuffer : boost::intrusive_ptr<SBufferImpl>
     size_t use_count(void) const;
 };
 
-} //namespace gnuradio
+} //namespace gras
 
-#include <gnuradio/sbuffer.ipp>
+#include <gras/sbuffer.ipp>
 
-#endif /*INCLUDED_GNURADIO_SBUFFER_HPP*/
+#endif /*INCLUDED_GRAS_SBUFFER_HPP*/

@@ -18,7 +18,7 @@
 #include <boost/make_shared.hpp>
 #include <boost/bind.hpp>
 
-using namespace gnuradio;
+using namespace gras;
 
 
 void BlockActor::handle_top_active(

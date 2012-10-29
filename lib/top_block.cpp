@@ -15,10 +15,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
-#include <gnuradio/top_block.hpp>
+#include <gras/top_block.hpp>
 #include <boost/thread/thread.hpp> //sleep
 
-using namespace gnuradio;
+using namespace gras;
 
 GlobalBlockConfig::GlobalBlockConfig(void)
 {

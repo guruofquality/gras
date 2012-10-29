@@ -32,7 +32,7 @@
 
 /*!
  * This is the only place you will find any threading stuff.
- * The entire point here is that the source's in gnuradio
+ * The entire point here is that the source's in gras
  * are sometimed bad and block forever (the author is guilty too).
  * This thread pool creates an interruptible thread to perform work.
  * Everything is nice and synchronous with the block actor.
@@ -40,7 +40,7 @@
  * However, this will be interrupted and not block forever,
  * when the executor is told to stop/interrupt and wait/join.
  */
-namespace gnuradio
+namespace gras
 {
 
     typedef boost::shared_ptr<boost::thread_group> SharedThreadGroup;
@@ -138,6 +138,6 @@ namespace gnuradio
         boost::thread *_thread;
     };
 
-} //namespace gnuradio
+} //namespace gras
 
 #endif /*INCLUDED_LIBGRAS_IMPL_INTERRUPTIBLE_THREAD_HPP*/

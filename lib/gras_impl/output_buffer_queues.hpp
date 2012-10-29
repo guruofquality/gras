@@ -21,7 +21,7 @@
 #include <vector>
 #include <boost/circular_buffer.hpp>
 
-namespace gnuradio
+namespace gras
 {
 
 template <typename T>
@@ -100,6 +100,6 @@ struct OutputBufferQueues
     }
 };
 
-} //namespace gnuradio
+} //namespace gras
 
 #endif /*INCLUDED_LIBGRAS_IMPL_OUTPUT_BUFFER_QUEUES_HPP*/

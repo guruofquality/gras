@@ -14,17 +14,17 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_GNURADIO_BLOCK_HPP
-#define INCLUDED_GNURADIO_BLOCK_HPP
+#ifndef INCLUDED_GRAS_BLOCK_HPP
+#define INCLUDED_GRAS_BLOCK_HPP
 
-#include <gnuradio/element.hpp>
-#include <gnuradio/sbuffer.hpp>
-#include <gnuradio/tags.hpp>
+#include <gras/element.hpp>
+#include <gras/sbuffer.hpp>
+#include <gras/tags.hpp>
 #include <vector>
 #include <string>
 #include <boost/range.hpp> //iterator range
 
-namespace gnuradio
+namespace gras
 {
 
 //! Configuration parameters for an input port
@@ -315,6 +315,6 @@ struct GRAS_API Block : Element
 
 };
 
-} //namespace gnuradio
+} //namespace gras
 
-#endif /*INCLUDED_GNURADIO_BLOCK_HPP*/
+#endif /*INCLUDED_GRAS_BLOCK_HPP*/

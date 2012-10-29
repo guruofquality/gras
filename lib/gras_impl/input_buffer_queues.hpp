@@ -20,14 +20,14 @@
 #include <gras_impl/debug.hpp>
 #include <gras_impl/bitset.hpp>
 #include <gras_impl/buffer_queue.hpp>
-#include <gnuradio/sbuffer.hpp>
+#include <gras/sbuffer.hpp>
 #include <vector>
 #include <queue>
 #include <deque>
 #include <cstring> //memcpy/memset
 #include <boost/circular_buffer.hpp>
 
-namespace gnuradio
+namespace gras
 {
 
 struct InputBufferQueues
@@ -217,6 +217,6 @@ GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t b
     __update(i);
 }
 
-} //namespace gnuradio
+} //namespace gras
 
 #endif /*INCLUDED_LIBGRAS_IMPL_INPUT_BUFFERS_HPP*/

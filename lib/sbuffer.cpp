@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <gnuradio/sbuffer.hpp>
+#include <gras/sbuffer.hpp>
 #include "alloc_on_node.hpp"
 #include <boost/bind.hpp>
 
-using namespace gnuradio;
+using namespace gras;
 
-void gnuradio::sbuffer_handle_deref(SBufferImpl *impl)
+void gras::sbuffer_handle_deref(SBufferImpl *impl)
 {
     //call the deleter if possible
     boost::shared_ptr<SBufferDeleter> token_deleter = impl->config.token.lock();

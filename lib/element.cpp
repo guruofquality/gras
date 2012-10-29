@@ -15,13 +15,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "element_impl.hpp"
-#include <gnuradio/element.hpp>
+#include <gras/element.hpp>
 #include <boost/format.hpp>
 #include <boost/detail/atomic_count.hpp>
 
 static boost::detail::atomic_count unique_id_pool(0);
 
-using namespace gnuradio;
+using namespace gras;
 
 Element::Element(void)
 {

@@ -20,7 +20,7 @@
 #include <gras_impl/block_actor.hpp>
 #include <algorithm>
 
-namespace gnuradio
+namespace gras
 {
 
 GRAS_FORCE_INLINE void BlockActor::sort_tags(const size_t i)
@@ -80,6 +80,6 @@ GRAS_FORCE_INLINE void BlockActor::trim_tags(const size_t i)
     if (last != 0) tags_i.erase(tags_i.begin(), tags_i.begin()+last);
 }
 
-} //namespace gnuradio
+} //namespace gras
 
 #endif /*INCLUDED_LIBGRAS_TAG_HANDLERS_HPP*/

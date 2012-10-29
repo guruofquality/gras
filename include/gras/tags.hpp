@@ -14,15 +14,15 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_GNURADIO_TAGS_HPP
-#define INCLUDED_GNURADIO_TAGS_HPP
+#ifndef INCLUDED_GRAS_TAGS_HPP
+#define INCLUDED_GRAS_TAGS_HPP
 
-#include <gnuradio/gras.hpp>
+#include <gras/gras.hpp>
 #include <boost/operators.hpp>
 #include <PMC/PMC.hpp>
 #include <boost/cstdint.hpp>
 
-namespace gnuradio
+namespace gras
 {
 
 struct GRAS_API Tag : boost::less_than_comparable<Tag>
@@ -48,6 +48,6 @@ struct GRAS_API Tag : boost::less_than_comparable<Tag>
 
 GRAS_API bool operator<(const Tag &lhs, const Tag &rhs);
 
-} //namespace gnuradio
+} //namespace gras
 
-#endif /*INCLUDED_GNURADIO_TAGS_HPP*/
+#endif /*INCLUDED_GRAS_TAGS_HPP*/

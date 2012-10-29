@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <gnuradio/thread_pool.hpp>
+#include <gras/thread_pool.hpp>
 #include <gras_impl/block_actor.hpp>
 #include <boost/thread/thread.hpp>
 #include <Theron/Framework.h>
 
-using namespace gnuradio;
+using namespace gras;
 
 ThreadPoolConfig::ThreadPoolConfig(void)
 {

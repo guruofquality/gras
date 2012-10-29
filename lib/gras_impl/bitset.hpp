@@ -17,10 +17,10 @@
 #ifndef INCLUDED_LIBGRAS_IMPL_BITSET_HPP
 #define INCLUDED_LIBGRAS_IMPL_BITSET_HPP
 
-#include <gnuradio/gras.hpp>
+#include <gras/gras.hpp>
 #include <boost/dynamic_bitset.hpp>
 
-namespace gnuradio
+namespace gras
 {
 
 //! Its just dynamic bitset w/ the handle all() routine
@@ -32,6 +32,6 @@ struct BitSet : boost::dynamic_bitset<>
     }
 };
 
-} //namespace gnuradio
+} //namespace gras
 
 #endif /*INCLUDED_LIBGRAS_IMPL_BITSET_HPP*/

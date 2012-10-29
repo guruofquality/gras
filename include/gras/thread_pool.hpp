@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_GNURADIO_THREAD_POOL_HPP
-#define INCLUDED_GNURADIO_THREAD_POOL_HPP
+#ifndef INCLUDED_GRAS_THREAD_POOL_HPP
+#define INCLUDED_GRAS_THREAD_POOL_HPP
 
-#include <gnuradio/gras.hpp>
+#include <gras/gras.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <string>
@@ -29,7 +29,7 @@ namespace Theron
     class Framework;
 }
 
-namespace gnuradio
+namespace gras
 {
 
 struct GRAS_API ThreadPoolConfig
@@ -87,6 +87,6 @@ struct GRAS_API ThreadPool : boost::shared_ptr<Theron::Framework>
     void set_active(void);
 };
 
-} //namespace gnuradio
+} //namespace gras
 
-#endif /*INCLUDED_GNURADIO_THREAD_POOL_HPP*/
+#endif /*INCLUDED_GRAS_THREAD_POOL_HPP*/

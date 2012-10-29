@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_GNURADIO_IO_SIGNATURE_HPP
-#define INCLUDED_GNURADIO_IO_SIGNATURE_HPP
+#ifndef INCLUDED_GRAS_IO_SIGNATURE_HPP
+#define INCLUDED_GRAS_IO_SIGNATURE_HPP
 
 #include <vector>
 #include <stdexcept>
 
-namespace gnuradio
+namespace gras
 {
 
 /*!
@@ -108,6 +108,6 @@ struct IOSignature : std::vector<int>
     int _max_streams;
 };
 
-} //namespace gnuradio
+} //namespace gras
 
-#endif /*INCLUDED_GNURADIO_IO_SIGNATURE_HPP*/
+#endif /*INCLUDED_GRAS_IO_SIGNATURE_HPP*/

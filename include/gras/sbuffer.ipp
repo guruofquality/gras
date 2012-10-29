@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_GNURADIO_SBUFFER_IPP
-#define INCLUDED_GNURADIO_SBUFFER_IPP
+#ifndef INCLUDED_GRAS_SBUFFER_IPP
+#define INCLUDED_GRAS_SBUFFER_IPP
 
 #include <boost/detail/atomic_count.hpp>
 
-namespace gnuradio
+namespace gras
 {
 
 struct SBufferImpl
@@ -93,6 +93,6 @@ GRAS_FORCE_INLINE size_t SBuffer::use_count(void) const
     return (*this)->count;
 }
 
-} //namespace gnuradio
+} //namespace gras
 
-#endif /*INCLUDED_GNURADIO_SBUFFER_IPP*/
+#endif /*INCLUDED_GRAS_SBUFFER_IPP*/

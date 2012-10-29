@@ -1,6 +1,3 @@
-[submodule "gnuradio"]
-	path = gnuradio
-	url = https://github.com/guruofquality/gnuradio.git
 [submodule "Theron"]
 	path = Theron
 	url = https://github.com/guruofquality/Theron.git

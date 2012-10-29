@@ -16,7 +16,7 @@
 
 #include <gras_impl/block_actor.hpp>
 
-using namespace gnuradio;
+using namespace gras;
 
 template <typename V, typename Sig>
 void fill_item_sizes_from_sig(V &v, const Sig &s, const size_t size)

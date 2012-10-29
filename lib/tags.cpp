@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <gnuradio/tags.hpp>
+#include <gras/tags.hpp>
 
-using namespace gnuradio;
+using namespace gras;
 
 Tag::Tag(void):
     offset(0)
@@ -30,7 +30,7 @@ Tag::Tag(const uint64_t &offset, const PMCC &key, const PMCC &value, const PMCC 
     //NOP
 }
 
-bool gnuradio::operator<(const Tag &lhs, const Tag &rhs)
+bool gras::operator<(const Tag &lhs, const Tag &rhs)
 {
     return lhs.offset < rhs.offset;
 }

@@ -17,7 +17,7 @@
 #include <gras_impl/block_actor.hpp>
 #include <boost/foreach.hpp>
 
-using namespace gnuradio;
+using namespace gras;
 
 
 void BlockActor::handle_output_buffer(const OutputBufferMessage &message, const Theron::Address)
