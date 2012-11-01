@@ -5,18 +5,13 @@ cmake_minimum_required(VERSION 2.6)
 project(gras CXX C)
 enable_testing()
 
-#select the release build type by default to get optimization flags
-if(NOT CMAKE_BUILD_TYPE)
-   set(CMAKE_BUILD_TYPE "Release")
-   message(STATUS "Build type not specified: defaulting to release.")
-endif(NOT CMAKE_BUILD_TYPE)
-set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "")
+set(GRAS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+list(APPEND CMAKE_MODULE_PATH ${GRAS_SOURCE_DIR}/PMC/cmake/Modules)
+include(CMakeDefsHelper)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DGRAS_DEBUG)
 endif()
-
-set(GRAS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(LIBVER 0.0.0)
 
@@ -41,18 +36,20 @@ if (NOT DEFINED GRAS_COMP_PYTHON)
     set(GRAS_COMP_PYTHON "python")
 endif()
 
-########################################################################
-# Setup PMC Deps
-########################################################################
 set(PMC_COMP_DEVEL ${GRAS_COMP_DEVEL})
 set(PMC_COMP_RUNTIME ${GRAS_COMP_RUNTIME})
 set(PMC_COMP_PYTHON ${GRAS_COMP_PYTHON})
 
-list(APPEND CMAKE_MODULE_PATH ${GRAS_SOURCE_DIR}/PMC/cmake/Modules)
-include_directories(${GRAS_SOURCE_DIR}/PMC/include)
-add_subdirectory(PMC)
+########################################################################
+# Paths to public headers
+########################################################################
+list(APPEND GRAS_INCLUDE_DIRS ${GRAS_SOURCE_DIR}/PMC/include)
+list(APPEND GRAS_INCLUDE_DIRS ${GRAS_SOURCE_DIR}/include)
 
 ########################################################################
 # Add subdirectories
 ########################################################################
+add_subdirectory(include/gras)
 add_subdirectory(lib)
+add_subdirectory(PMC)
+add_subdirectory(python/gras)
