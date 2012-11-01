@@ -144,3 +144,29 @@ bool TopBlock::wait(const double timeout)
 
     return (*this)->token.unique();
 }
+
+///////////////////////// Deprecated interfaces ////////////////////////
+
+void TopBlock::start(const size_t max_items)
+{
+    this->set_max_noutput_items(max_items);
+    this->start();
+}
+
+void TopBlock::run(const size_t max_items)
+{
+    this->set_max_noutput_items(max_items);
+    this->run();
+}
+
+int TopBlock::max_noutput_items(void) const
+{
+    return this->global_config().maximum_output_items;
+}
+
+void TopBlock::set_max_noutput_items(int max_items)
+{
+    gras::GlobalBlockConfig config = this->global_config();
+    config.maximum_output_items = max_items;
+    this->set_global_config(config);
+}

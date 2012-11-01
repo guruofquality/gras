@@ -91,6 +91,18 @@ struct GRAS_API TopBlock : HierBlock
      */
     virtual bool wait(const double timeout);
 
+    //! Deprecated
+    void start(const size_t max_items);
+
+    //! Deprecated
+    void run(const size_t max_items);
+
+    //! Deprecated
+    int max_noutput_items(void) const;
+
+    //! Deprecated
+    void set_max_noutput_items(int max_items);
+
 };
 
 } //namespace gras
