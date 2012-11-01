@@ -183,6 +183,7 @@ struct GRAS_API Block : Element
     //! Return options for the work call
     enum
     {
+        WORK_DONE_ON_INPUT = -3,
         WORK_CALLED_PRODUCE = -2,
         WORK_DONE = -1
     };

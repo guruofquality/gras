@@ -224,6 +224,10 @@ void BlockActor::handle_task(void)
         }
     }
 
+    //workaround:
+    if (num_outputs) output_items[0].size() = work_noutput_items;
+    else input_items[0].size() = work_noutput_items;
+
     //------------------------------------------------------------------
     //-- the work
     //------------------------------------------------------------------

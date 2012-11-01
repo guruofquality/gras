@@ -61,6 +61,8 @@ add_subdirectory(tests)
 set(CMAKE_SOURCE_DIR ${GRAS_SOURCE_DIR}/gnuradio)
 set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/gnuradio)
 
+set(GRAS_LIBRARIES gras) #for submodule linking
+
 add_subdirectory(gnuradio)
 
 ########################################################################
