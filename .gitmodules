@@ -7,3 +7,6 @@
 [submodule "PMC"]
 	path = PMC
 	url = https://github.com/guruofquality/PMC.git
+[submodule "gnuradio"]
+	path = gnuradio
+	url = https://github.com/guruofquality/gnuradio.git

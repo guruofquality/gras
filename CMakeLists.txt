@@ -15,8 +15,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DGRAS_DEBUG)
 endif()
 
-set(LIBVER 0.0.0)
-
 if(CMAKE_COMPILER_IS_GNUCXX)
     add_definitions(-Wall)
     add_definitions(-fvisibility=hidden)
@@ -29,13 +27,13 @@ add_definitions(-DGRAS_DLL=1) #this project builds a dll
 # Component names for install rules
 ########################################################################
 if (NOT DEFINED GRAS_COMP_DEVEL)
-    set(GRAS_COMP_DEVEL "devel")
+    set(GRAS_COMP_DEVEL "gras_devel")
 endif()
 if (NOT DEFINED GRAS_COMP_RUNTIME)
-    set(GRAS_COMP_RUNTIME "runtime")
+    set(GRAS_COMP_RUNTIME "gras_runtime")
 endif()
 if (NOT DEFINED GRAS_COMP_PYTHON)
-    set(GRAS_COMP_PYTHON "python")
+    set(GRAS_COMP_PYTHON "gras_python")
 endif()
 
 set(PMC_COMP_DEVEL ${GRAS_COMP_DEVEL})
@@ -56,3 +54,39 @@ add_subdirectory(lib)
 add_subdirectory(PMC)
 add_subdirectory(python/gras)
 add_subdirectory(tests)
+
+########################################################################
+# add gnuradio as sub-project
+########################################################################
+set(CMAKE_SOURCE_DIR ${GRAS_SOURCE_DIR}/gnuradio)
+set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/gnuradio)
+
+add_subdirectory(gnuradio)
+
+########################################################################
+# add GRAS to gnuradio cpack registry
+# this must come after the submodule
+########################################################################
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
+include(GrPackage)
+
+CPACK_SET(CPACK_COMPONENT_GROUP_GRAS_DESCRIPTION "GNU Radio Advanced Scheduler")
+
+CPACK_COMPONENT("${GRAS_COMP_RUNTIME}"
+    GROUP        "GRAS"
+    DISPLAY_NAME "Runtime"
+    DESCRIPTION  "Runtime"
+)
+
+CPACK_COMPONENT("${GRAS_COMP_DEVEL}"
+    GROUP        "GRAS"
+    DISPLAY_NAME "Development"
+    DESCRIPTION  "C++ headers and import libraries"
+)
+
+CPACK_COMPONENT("${GRAS_COMP_PYTHON}"
+    GROUP        "GRAS"
+    DISPLAY_NAME "Python"
+    DESCRIPTION  "Python modules for runtime"
+    DEPENDS      "${GRAS_COMP_RUNTIME}"
+)
