@@ -36,25 +36,16 @@
 %{
 #include <gras/hier_block.hpp>
 #include <gras/top_block.hpp>
-#include <gras/io_signature.hpp>
 %}
 
-////////////////////////////////////////////////////////////////////////
-//helps with funny swig error for io signature
-////////////////////////////////////////////////////////////////////////
-%ignore gras::IOSignature::operator->();
-%ignore gras::IOSignature::operator->() const;
-
-%include <std_vector.i>
-%template () std::vector<int>;
+%include <gras/element.i>
+%include <gras/io_signature.i>
 
 ////////////////////////////////////////////////////////////////////////
 // pull in hier and top interface
 ////////////////////////////////////////////////////////////////////////
-%include <gras/element.i>
 %include <gras/hier_block.hpp>
 %include <gras/top_block.hpp>
-%include <gras/io_signature.hpp>
 
 ////////////////////////////////////////////////////////////////////////
 // Make a special top block with python safe unlocking wait

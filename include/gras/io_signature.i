@@ -14,29 +14,19 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_GRAS_ELEMENT_I
-#define INCLUDED_GRAS_ELEMENT_I
+#ifndef INCLUDED_GRAS_IO_SIGNATURE_I
+#define INCLUDED_GRAS_IO_SIGNATURE_I
 
 %{
-#include <gras/element.hpp>
+#include <gras/io_signature.hpp>
 %}
 
-%include <std_string.i>
+%ignore gras::IOSignature::operator->();
+%ignore gras::IOSignature::operator->() const;
 
-%include <boost_shared_ptr.i>
-%shared_ptr(gras::ElementImpl)
+%include <std_vector.i>
+%template () std::vector<int>;
 
-%include <gras/element.hpp>
+%include <gras/io_signature.hpp>
 
-namespace gras
-{
-    %extend Element
-    {
-        std::string __str__(void)
-        {
-           return self->to_string();
-        }
-    }
-}
-
-#endif /*INCLUDED_GRAS_ELEMENT_I*/
+#endif /*INCLUDED_GRAS_IO_SIGNATURE_I*/
