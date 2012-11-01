@@ -5,6 +5,7 @@ install(FILES
 
     block.hpp
     element.hpp
+    element.i
     gras.hpp
     hier_block.hpp
     io_signature.hpp

@@ -34,14 +34,10 @@
 }
 
 %{
-
-#include <gras/element.hpp>
 #include <gras/hier_block.hpp>
 #include <gras/top_block.hpp>
 #include <gras/io_signature.hpp>
-
 %}
-
 
 ////////////////////////////////////////////////////////////////////////
 //helps with funny swig error for io signature
@@ -55,10 +51,7 @@
 ////////////////////////////////////////////////////////////////////////
 // pull in hier and top interface
 ////////////////////////////////////////////////////////////////////////
-%include <boost_shared_ptr.i>
-%shared_ptr(gras::ElementImpl)
-
-%include <gras/element.hpp>
+%include <gras/element.i>
 %include <gras/hier_block.hpp>
 %include <gras/top_block.hpp>
 %include <gras/io_signature.hpp>
@@ -138,10 +131,11 @@ class TopBlock(TopBlockPython):
     def disconnect(self, *args):
         return internal_connect__(TopBlockPython.disconnect, self, *args)
 
-class HierBlock(HierBlock):
+HierBlockPython = HierBlock
+
+class HierBlock(HierBlockPython):
     def __init__(self, *args, **kwargs):
-        HierBlock.__init__(self, *args, **kwargs)
-        self._hb = self #backwards compat
+        HierBlockPython.__init__(self, *args, **kwargs)
 
     def connect(self, *args):
         return internal_connect__(HierBlock.connect, self, *args)

@@ -6,6 +6,8 @@ project(gras CXX C)
 enable_testing()
 
 set(GRAS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(GRAS_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+
 list(APPEND CMAKE_MODULE_PATH ${GRAS_SOURCE_DIR}/PMC/cmake/Modules)
 include(CMakeDefsHelper)
 
@@ -53,3 +55,4 @@ add_subdirectory(include/gras)
 add_subdirectory(lib)
 add_subdirectory(PMC)
 add_subdirectory(python/gras)
+add_subdirectory(tests)

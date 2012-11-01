@@ -15,6 +15,7 @@ find_package(Boost) #for headers
 ########################################################################
 list(APPEND GR_SWIG_INCLUDE_DIRS ${GRAS_INCLUDE_DIRS})
 list(APPEND GR_SWIG_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
+set(GR_SWIG_LIBRARIES gras)
 
 GR_SWIG_MAKE(GRASElements GRASElements.i)
 GR_SWIG_INSTALL(
