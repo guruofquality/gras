@@ -14,83 +14,90 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%rename(io_signature)  gr_make_io_signature;
-%rename(io_signature2) gr_make_io_signature2;
-%rename(io_signature3) gr_make_io_signature3;
-%rename(io_signaturev) gr_make_io_signaturev;
+#define GRAS_API
 
-//const size types used by blocks in python
-%constant int sizeof_char       = sizeof(char);
-%constant int sizeof_short      = sizeof(short);
-%constant int sizeof_int        = sizeof(int);
-%constant int sizeof_float      = sizeof(float);
-%constant int sizeof_double     = sizeof(double);
-%constant int sizeof_gr_complex = sizeof(gr_complex);
+////////////////////////////////////////////////////////////////////////
+// http://www.swig.org/Doc2.0/Library.html#Library_stl_exceptions
+////////////////////////////////////////////////////////////////////////
+%include "exception.i"
 
+%exception
+{
+    try
+    {
+        $action
+    }
+    catch (const std::exception& e)
+    {
+        SWIG_exception(SWIG_RuntimeError, e.what());
+    }
+}
+
+%{
+
+#include <gras/element.hpp>
+#include <gras/hier_block.hpp>
+#include <gras/top_block.hpp>
+#include <gras/io_signature.hpp>
+
+%}
+
+
+////////////////////////////////////////////////////////////////////////
 //helps with funny swig error for io signature
-%ignore gnuradio::IOSignature::operator->();
-%ignore gnuradio::IOSignature::operator->() const;
+////////////////////////////////////////////////////////////////////////
+%ignore gras::IOSignature::operator->();
+%ignore gras::IOSignature::operator->() const;
 
-%ignore gnuradio::Block::input_buffer_allocator;
-%ignore gnuradio::Block::output_buffer_allocator;
+%include <std_vector.i>
+%template () std::vector<int>;
 
-%include <gnuradio/thread_pool.hpp>
-%include <gnuradio/element.hpp>
-%include <gnuradio/tags.hpp>
-%include <gnuradio/block.hpp>
-%include <gnuradio/hier_block.hpp>
-%include <gnuradio/top_block.hpp>
-%include <gnuradio/io_signature.hpp>
-%include <gr_io_signature.h>
-%include <gr_block.h>
-%include <gr_hier_block2.h>
-%include <gr_top_block.h>
-%include <gr_sync_block.h>
-%include <gr_sync_decimator.h>
-%include <gr_sync_interpolator.h>
+////////////////////////////////////////////////////////////////////////
+// pull in hier and top interface
+////////////////////////////////////////////////////////////////////////
+%include <boost_shared_ptr.i>
+%shared_ptr(gras::ElementImpl)
+
+%include <gras/element.hpp>
+%include <gras/hier_block.hpp>
+%include <gras/top_block.hpp>
+%include <gras/io_signature.hpp>
 
 ////////////////////////////////////////////////////////////////////////
 // Make a special top block with python safe unlocking wait
 ////////////////////////////////////////////////////////////////////////
-%include "gruel_common.i"
 
 %inline %{
 
-namespace gnuradio
+namespace gras
 {
 
-//typedef TopBlock TopBlockBase;
-typedef gr_top_block TopBlockBase; //maximal set of all API
-
-struct TopBlockPython : TopBlockBase
+struct TopBlockPython : TopBlock
 {
     TopBlockPython(void):
-        TopBlockBase("top")
+        TopBlock("top")
     {
         //NOP
     }
 
     TopBlockPython(const std::string &name):
-        TopBlockBase(name)
+        TopBlock(name)
     {
         //NOP
     }
 
     void wait(void)
     {
-        GR_PYTHON_BLOCKING_CODE
-        (
-            TopBlockBase::wait();
-        )
+        PyThreadState *s = PyEval_SaveThread();
+        TopBlock::wait();
+        PyEval_RestoreThread(s);
     }
 
     bool wait(const double timeout)
     {
-        bool ret = false;
-        GR_PYTHON_BLOCKING_CODE
-        (
-            ret = TopBlock::wait(timeout);
-        )
+        PyThreadState *s = PyEval_SaveThread();
+        const bool ret = TopBlock::wait(timeout);
+        PyEval_RestoreThread(s);
         return ret;
     }
 };
@@ -141,20 +148,5 @@ class HierBlock(HierBlock):
 
     def disconnect(self, *args):
         return internal_connect__(HierBlock.disconnect, self, *args)
-
-top_block = TopBlock
-
-class hier_block(gr_hier_block2):
-    def __init__(self, *args, **kwargs):
-        gr_hier_block2.__init__(self, *args, **kwargs)
-        self._hb = self #backwards compat
-
-    def connect(self, *args):
-        return internal_connect__(gr_hier_block2.connect, self, *args)
-
-    def disconnect(self, *args):
-        return internal_connect__(gr_hier_block2.disconnect, self, *args)
-
-hier_block2 = hier_block
 
 %}

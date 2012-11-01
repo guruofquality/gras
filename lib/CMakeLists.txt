@@ -58,9 +58,11 @@ list(APPEND GRAS_SOURCES
 ########################################################################
 # Build library
 ########################################################################
-include(GrMiscUtils)
-
 add_library(gras SHARED ${GRAS_SOURCES})
 target_link_libraries(gras ${GRAS_LIBRARIES})
-set(GR_LIBRARY_DIR lib)
-GR_LIBRARY_FOO(gras RUNTIME_COMPONENT ${GRAS_COMP_RUNTIME} DEVEL_COMPONENT ${GRAS_COMP_DEVEL})
+
+install(TARGETS gras
+    LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT ${GRAS_COMP_RUNTIME} # .so file
+    ARCHIVE DESTINATION lib${LIB_SUFFIX} COMPONENT ${GRAS_COMP_DEVEL}   # .lib file
+    RUNTIME DESTINATION bin              COMPONENT ${GRAS_COMP_RUNTIME} # .dll file
+)

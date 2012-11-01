@@ -16,18 +16,18 @@ find_package(Boost) #for headers
 list(APPEND GR_SWIG_INCLUDE_DIRS ${GRAS_INCLUDE_DIRS})
 list(APPEND GR_SWIG_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
 
-#GR_SWIG_MAKE(${pmc_swig_module} ${pmc_swig_module}.i)
-#GR_SWIG_INSTALL(
-#    TARGETS ${pmc_swig_module}
-#    DESTINATION ${GR_PYTHON_DIR}/PMC
-#    COMPONENT ${PMC_COMP_PYTHON}
-#)
+GR_SWIG_MAKE(GRASElements GRASElements.i)
+GR_SWIG_INSTALL(
+    TARGETS GRASElements
+    DESTINATION ${GR_PYTHON_DIR}/gras
+    COMPONENT ${GRAS_COMP_PYTHON}
+)
 
 ########################################################################
 # Install rules
 ########################################################################
-#GR_PYTHON_INSTALL(
-#    FILES __init__.py
-#    DESTINATION ${GR_PYTHON_DIR}/PMC
-#    COMPONENT ${PMC_COMP_PYTHON}
-#)
+GR_PYTHON_INSTALL(
+    FILES __init__.py
+    DESTINATION ${GR_PYTHON_DIR}/gras
+    COMPONENT ${GRAS_COMP_PYTHON}
+)
