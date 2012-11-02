@@ -85,6 +85,32 @@ struct TopBlockPython : TopBlock
         return ret;
     }
 };
+
+struct HierBlockPython : HierBlock
+{
+    HierBlockPython(void)
+    {
+        //NOP
+    }
+
+    HierBlockPython(const std::string &name):
+        HierBlock(name)
+    {
+        //NOP
+    }
+
+    HierBlockPython(
+        const std::string &name,
+        const IOSignature &input_signature,
+        const IOSignature &output_signature
+    ):
+        HierBlock(name)
+    {
+        this->set_input_signature(input_signature);
+        this->set_output_signature(output_signature);
+    }
+};
+
 }
 
 %}
@@ -122,16 +148,14 @@ class TopBlock(TopBlockPython):
     def disconnect(self, *args):
         return internal_connect__(TopBlockPython.disconnect, self, *args)
 
-HierBlockPython = HierBlock
-
 class HierBlock(HierBlockPython):
     def __init__(self, *args, **kwargs):
         HierBlockPython.__init__(self, *args, **kwargs)
 
     def connect(self, *args):
-        return internal_connect__(HierBlock.connect, self, *args)
+        return internal_connect__(HierBlockPython.connect, self, *args)
 
     def disconnect(self, *args):
-        return internal_connect__(HierBlock.disconnect, self, *args)
+        return internal_connect__(HierBlockPython.disconnect, self, *args)
 
 %}

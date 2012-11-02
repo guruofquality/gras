@@ -23,8 +23,8 @@
 
 %include <std_string.i>
 
-%include <boost_shared_ptr.i>
-%shared_ptr(gras::ElementImpl)
+//remove base class warning
+#pragma SWIG nowarn=401
 
 %include <gras/element.hpp>
 

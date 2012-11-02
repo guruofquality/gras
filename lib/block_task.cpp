@@ -170,7 +170,13 @@ void BlockActor::handle_task(void)
         this->task_work();
     }
 
-    if (work_ret == Block::WORK_DONE)
+    if (work_ret >= 0)
+    {
+        this->input_fail(work_ret);
+        return;
+    }
+
+    if (work_ret == -1)
     {
         this->mark_done();
         return;

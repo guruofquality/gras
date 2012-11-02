@@ -47,6 +47,14 @@ list(APPEND GRAS_INCLUDE_DIRS ${GRAS_SOURCE_DIR}/PMC/include)
 list(APPEND GRAS_INCLUDE_DIRS ${GRAS_SOURCE_DIR}/include)
 
 ########################################################################
+# Paths for python
+########################################################################
+list(APPEND GRAS_PYTHON_DIRS ${GRAS_SOURCE_DIR}/python)
+list(APPEND GRAS_PYTHON_DIRS ${GRAS_BINARY_DIR}/python)
+list(APPEND GRAS_PYTHON_DIRS ${GRAS_BINARY_DIR}/python/gras)
+list(APPEND GRAS_PYTHON_DIRS ${GRAS_BINARY_DIR}/python/gras/${CMAKE_BUILD_TYPE})
+
+########################################################################
 # Add subdirectories
 ########################################################################
 add_subdirectory(include/gras)
@@ -60,6 +68,8 @@ add_subdirectory(tests)
 ########################################################################
 set(CMAKE_SOURCE_DIR ${GRAS_SOURCE_DIR}/gnuradio)
 set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/gnuradio)
+
+set(GR_TEST_EXTRA_PYTHON_DIRS ${GRAS_PYTHON_DIRS}) #helps QA tests
 
 set(GRAS_LIBRARIES gras) #for submodule linking
 

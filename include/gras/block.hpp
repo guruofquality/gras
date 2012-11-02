@@ -151,14 +151,6 @@ struct GRAS_API Block : Element
      * Deal with data production and consumption
      ******************************************************************/
 
-    //! Return options for the work call
-    enum
-    {
-        WORK_DONE_ON_INPUT = -3,
-        WORK_CALLED_PRODUCE = -2,
-        WORK_DONE = -1
-    };
-
     //! Call during work to consume items
     void consume(const size_t which_input, const size_t how_many_items);
 
