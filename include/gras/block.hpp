@@ -147,35 +147,6 @@ struct GRAS_API Block : Element
     //! Set the configuration rules for an output port
     void set_output_config(const OutputPortConfig &config, const size_t which_output = 0);
 
-    /*!
-     * Enable fixed rate logic.
-     * When enabled, relative rate is assumed to be set,
-     * and forecast is automatically called.
-     * Also, consume will be called automatically.
-     */
-    void set_fixed_rate(const bool fixed_rate);
-
-    //! Get the fixed rate setting
-    bool fixed_rate(void) const;
-
-    /*!
-     * The relative rate can be thought of as interpolation/decimation.
-     * In other words, relative rate is the ratio of output items to input items.
-     */
-    void set_relative_rate(const double relative_rate);
-
-    //! Get the relative rate setting
-    double relative_rate(void) const;
-
-    /*!
-     * The output multiple setting controls work output buffer sizes.
-     * Buffers will be number of items modulo rounted to the multiple.
-     */
-    void set_output_multiple(const size_t multiple);
-
-    //! Get the output multiple setting
-    size_t output_multiple(void) const;
-
     /*******************************************************************
      * Deal with data production and consumption
      ******************************************************************/
@@ -201,20 +172,9 @@ struct GRAS_API Block : Element
      * Deal with tag handling and tag configuration
      ******************************************************************/
 
-    enum tag_propagation_policy_t
-    {
-        TPP_DONT = 0,
-        TPP_ALL_TO_ALL = 1,
-        TPP_ONE_TO_ONE = 2
-    };
-
     uint64_t nitems_read(const size_t which_input);
 
     uint64_t nitems_written(const size_t which_output);
-
-    tag_propagation_policy_t tag_propagation_policy(void);
-
-    void set_tag_propagation_policy(tag_propagation_policy_t p);
 
     //! Send a tag to the downstream on the given output port
     void post_output_tag(const size_t which_output, const Tag &tag);
@@ -224,6 +184,9 @@ struct GRAS_API Block : Element
 
     //! Get an iterator of item tags for the given input
     TagIter get_input_tags(const size_t which_input = 0);
+
+    //! Overload me to implement tag propagation logic
+    virtual void propagate_tags(const size_t which_input, const TagIter &iter);
 
     /*******************************************************************
      * Work related routines from basic block
@@ -243,12 +206,6 @@ struct GRAS_API Block : Element
         const InputItems &input_items,
         const OutputItems &output_items
     ) = 0;
-
-    //! forcast requirements, can be overloaded
-    virtual void forecast(
-        int noutput_items,
-        std::vector<int> &ninput_items_required
-    );
 
     //! scheduler calls when the topology is updated, can be overloaded
     virtual bool check_topology(int ninputs, int noutputs);

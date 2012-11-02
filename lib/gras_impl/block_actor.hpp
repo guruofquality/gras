@@ -35,16 +35,6 @@
 namespace gras
 {
 
-static GRAS_FORCE_INLINE unsigned long myulround(const double x)
-{
-    return (unsigned long)(x + 0.5);
-}
-
-static GRAS_FORCE_INLINE unsigned long long myullround(const double x)
-{
-    return (unsigned long long)(x + 0.5);
-}
-
 struct BlockActor : Apology::Worker
 {
     BlockActor(void);
@@ -131,7 +121,6 @@ struct BlockActor : Apology::Worker
     std::vector<size_t> output_items_sizes;
     std::vector<InputPortConfig> input_configs;
     std::vector<OutputPortConfig> output_configs;
-    size_t output_multiple_items;
 
     //keeps track of production
     std::vector<uint64_t> items_consumed;
@@ -152,7 +141,6 @@ struct BlockActor : Apology::Worker
     //track work's calls to produce and consume
     std::vector<size_t> produce_items;
     std::vector<size_t> consume_items;
-    std::vector<bool> consume_called;
 
     //track the subscriber counts
     std::vector<Token> input_tokens;
@@ -169,7 +157,6 @@ struct BlockActor : Apology::Worker
     //tag tracking
     std::vector<bool> input_tags_changed;
     std::vector<std::vector<Tag> > input_tags;
-    Block::tag_propagation_policy_t tag_prop_policy;
 
     //interruptible thread stuff
     bool interruptible_work;
@@ -194,10 +181,6 @@ struct BlockActor : Apology::Worker
 
     std::vector<std::vector<OutputHintMessage> > output_allocation_hints;
 
-    //rate settings
-    bool enable_fixed_rate;
-    double relative_rate;
-    bool forecast_enable;
     bool topology_init;
 };
 
