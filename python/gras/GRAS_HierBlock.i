@@ -58,13 +58,7 @@ namespace gras
 
 struct TopBlockPython : TopBlock
 {
-    TopBlockPython(void):
-        TopBlock("top")
-    {
-        //NOP
-    }
-
-    TopBlockPython(const std::string &name):
+    TopBlockPython(const std::string &name = "Top"):
         TopBlock(name)
     {
         //NOP
@@ -88,12 +82,7 @@ struct TopBlockPython : TopBlock
 
 struct HierBlockPython : HierBlock
 {
-    HierBlockPython(void)
-    {
-        //NOP
-    }
-
-    HierBlockPython(const std::string &name):
+    HierBlockPython(const std::string &name = "Hier"):
         HierBlock(name)
     {
         //NOP
