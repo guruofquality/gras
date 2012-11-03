@@ -57,7 +57,7 @@ Element &Element::shared_to_element(void)
         this->weak_self = this->shared_from_this();
     }
     catch(...){}
-    return this->derived_to_element();
+    return *this;
 }
 
 long Element::unique_id(void) const

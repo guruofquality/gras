@@ -36,22 +36,6 @@ struct GRAS_API Element : boost::shared_ptr<ElementImpl>, boost::enable_shared_f
     //! Creates a new element given the name
     Element(const std::string &name);
 
-    /*!
-     * Create an element from a shared pointer to an element.
-     * Good for that factory function/shared ptr paradigm.
-     */
-    template <typename T>
-    Element(const boost::shared_ptr<T> &elem)
-    {
-        *this = elem->shared_to_element();
-    }
-
-    //! Convert a shared ptr of a derived class to an Element
-    Element &shared_to_element(void);
-
-    //! for internal use only
-    boost::weak_ptr<Element> weak_self;
-
     //! An integer ID that is unique across the process
     long unique_id(void) const;
 
@@ -68,6 +52,25 @@ struct GRAS_API Element : boost::shared_ptr<ElementImpl>, boost::enable_shared_f
     const gras::IOSignature &input_signature(void) const;
 
     const gras::IOSignature &output_signature(void) const;
+
+    /*******************************************************************
+     * Compatibility for dealing with shared ptrs of Elements
+     ******************************************************************/
+    /*!
+     * Create an element from a shared pointer to an element.
+     * Good for that factory function/shared ptr paradigm.
+     */
+    template <typename T>
+    Element(const boost::shared_ptr<T> &elem)
+    {
+        *this = elem->shared_to_element();
+    }
+
+    //! Convert a shared ptr of a derived class to an Element
+    Element &shared_to_element(void);
+
+    //! for internal use only
+    boost::weak_ptr<Element> weak_self;
 
 };
 
