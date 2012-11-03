@@ -54,6 +54,11 @@ list(APPEND GRAS_PYTHON_DIRS ${GRAS_BINARY_DIR}/python)
 list(APPEND GRAS_PYTHON_DIRS ${GRAS_BINARY_DIR}/python/gras)
 list(APPEND GRAS_PYTHON_DIRS ${GRAS_BINARY_DIR}/python/gras/${CMAKE_BUILD_TYPE})
 
+list(APPEND GRAS_PYTHON_DIRS ${GRAS_SOURCE_DIR}/PMC/python)
+list(APPEND GRAS_PYTHON_DIRS ${GRAS_BINARY_DIR}/PMC/python)
+list(APPEND GRAS_PYTHON_DIRS ${GRAS_BINARY_DIR}/PMC/python/PMC)
+list(APPEND GRAS_PYTHON_DIRS ${GRAS_BINARY_DIR}/PMC/python/PMC/${CMAKE_BUILD_TYPE})
+
 ########################################################################
 # Add subdirectories
 ########################################################################

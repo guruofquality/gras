@@ -51,6 +51,14 @@ struct IOSignature : std::vector<int>
         this->set_max_streams(max_streams);
     }
 
+    //! Create a signature from a vector of IO widths
+    IOSignature(const std::vector<int> &sig)
+    {
+        this->assign(sig.begin(), sig.end());
+        this->set_min_streams(this->size());
+        this->set_max_streams(this->size());
+    }
+
     //! Construct from pointer for backwards compatible shared_ptr usage.
     IOSignature(const IOSignature *sig)
     {
