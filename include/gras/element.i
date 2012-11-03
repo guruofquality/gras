@@ -42,8 +42,14 @@ namespace gras
     {
         std::string __str__(void)
         {
-           return self->to_string();
+           return ($self)->to_string();
         }
+
+        bool __eq__(const Element &rhs)
+        {
+            return ($self)->get() == rhs.get();
+        }
+
     }
 }
 

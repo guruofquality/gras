@@ -109,42 +109,55 @@ struct HierBlockPython : HierBlock
 ////////////////////////////////////////////////////////////////////////
 %pythoncode %{
 
-def internal_connect__(fcn, obj, *args):
+def to_element(obj):
+    if isinstance(obj, Element): return obj
+    try: return obj.shared_to_element()
+    except: raise Exception('cant coerce obj %s to element'%(obj))
 
-    def to_element(obj):
-        if isinstance(obj, Element): return obj
-        try: return obj.shared_to_element()
-        except: raise Exception('cant coerce obj %s to element'%(obj))
+def internal_connect__(fcn, obj, refs, action, *args):
 
     if len(args) == 1:
-        fcn(obj, to_element(args[0]))
+        elem = (args[0])
+        fcn(obj, elem)
+        if elem != to_element(obj): action(refs, elem)
         return
 
     for src, sink in zip(args, args[1:]):
+
         try: src, src_index = src
         except: src_index = 0
+        src = to_element(src)
+
         try: sink, sink_index = sink
         except: sink_index = 0
-        fcn(obj, to_element(src), src_index, to_element(sink), sink_index)
+        sink = to_element(sink)
+
+        fcn(obj, src, src_index, sink, sink_index)
+
+        #incr/decr the python obj ref counts
+        if src != to_element(obj): action(refs, src)
+        if sink != to_element(obj): action(refs, sink)
 
 class TopBlock(TopBlockPython):
     def __init__(self, *args, **kwargs):
         TopBlockPython.__init__(self, *args, **kwargs)
+        self.__refs = list()
 
     def connect(self, *args):
-        return internal_connect__(TopBlockPython.connect, self, *args)
+        return internal_connect__(TopBlockPython.connect, self, self.__refs, list.append, *args)
 
     def disconnect(self, *args):
-        return internal_connect__(TopBlockPython.disconnect, self, *args)
+        return internal_connect__(TopBlockPython.disconnect, self, self.__refs, list.remove, *args)
 
 class HierBlock(HierBlockPython):
     def __init__(self, *args, **kwargs):
         HierBlockPython.__init__(self, *args, **kwargs)
+        self.__refs = list()
 
     def connect(self, *args):
-        return internal_connect__(HierBlockPython.connect, self, *args)
+        return internal_connect__(HierBlockPython.connect, self, self.__refs, list.append, *args)
 
     def disconnect(self, *args):
-        return internal_connect__(HierBlockPython.disconnect, self, *args)
+        return internal_connect__(HierBlockPython.disconnect, self, self.__refs, list.remove, *args)
 
 %}

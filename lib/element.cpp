@@ -52,8 +52,12 @@ ElementImpl::~ElementImpl(void)
 
 Element &Element::shared_to_element(void)
 {
-    this->weak_self = this->shared_from_this();
-    return *this;
+    try
+    {
+        this->weak_self = this->shared_from_this();
+    }
+    catch(...){}
+    return this->derived_to_element();
 }
 
 long Element::unique_id(void) const
