@@ -58,7 +58,7 @@ list(APPEND GRAS_SOURCES
 ########################################################################
 # Build library
 ########################################################################
-add_library(gras STATIC ${GRAS_SOURCES})
+add_library(gras SHARED ${GRAS_SOURCES})
 target_link_libraries(gras ${GRAS_LIBRARIES})
 
 install(TARGETS gras

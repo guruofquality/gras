@@ -17,20 +17,48 @@
 #define GRAS_API
 
 %module(directors="1") GRAS_Block
+%feature("director") gras::BlockPython;
+%feature("nodirector") gras::BlockPython::input_buffer_allocator;
+%feature("nodirector") gras::BlockPython::output_buffer_allocator;
+%feature("nodirector") gras::BlockPython::work;
+%feature("nodirector") gras::BlockPython::propagate_tags;
 
-%feature("director") BlockPython;
+////////////////////////////////////////////////////////////////////////
+// http://www.swig.org/Doc2.0/Library.html#Library_stl_exceptions
+////////////////////////////////////////////////////////////////////////
+%include "exception.i"
+
+%exception
+{
+    try
+    {
+        $action
+    }
+    catch (const std::exception& e)
+    {
+        SWIG_exception(SWIG_RuntimeError, e.what());
+    }
+}
+
+%feature("director:except")
+{
+    if ($error != NULL)
+    {
+        throw Swig::DirectorMethodException();
+    }
+}
 
 %{
 #include <gras/block.hpp>
+#include <iostream>
 %}
 
-%include <gras/io_signature.i>
 %include <gras/element.i>
+%include <gras/io_signature.i>
 %include <gras/sbuffer.hpp>
 %include <gras/tags.hpp>
 %include <gras/block.hpp>
 %include <PMC/PMC.i>
-
 
 ////////////////////////////////////////////////////////////////////////
 // Make a special block with safe overloads
@@ -47,7 +75,10 @@ struct BlockPython : Block
         Block(name)
     {
         //NOP
+        std::cout << "C++ Block init!!\n";
     }
+
+    virtual ~BlockPython(void){}
 
     int work
     (
@@ -55,8 +86,8 @@ struct BlockPython : Block
         const OutputItems &output_items
     )
     {
-        PyGILState_STATE s;
-        s = PyGILState_Ensure();
+        std::cout << "C++ call work!!\n";
+        PyGILState_STATE s = PyGILState_Ensure();
         int ret = 0;
         try
         {
@@ -75,10 +106,7 @@ struct BlockPython : Block
     (
         const InputItems &input_items,
         const OutputItems &output_items
-    )
-    {
-        throw std::runtime_error("Error in BlockPython::python_work: SWIG directors issue?");
-    }
+    ){}
 };
 
 }
@@ -99,6 +127,7 @@ def sig_to_dtype_sig(sig):
 class Block(BlockPython):
     def __init__(self, name='Block', in_sig=None, out_sig=None):
         BlockPython.__init__(self, name)
+        print 'BlockPython.__init__(self, name)'
         self.set_input_signature(in_sig)
         self.set_output_signature(in_sig)
 
@@ -115,5 +144,18 @@ class Block(BlockPython):
 
     def python_work(self, input_items, output_items):
         print 'python work called'
+        return -1
+
+    def check_topology(self, *args):
+        print 'check top ', args
+        return True
+
+    def start(self):
+        print 'PYTHON START'
+        return True
+
+    def stop(self):
+        print 'PYTHON STOP'
+        return False
 
 %}
