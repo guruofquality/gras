@@ -16,12 +16,18 @@
 
 #define GRAS_API
 
+////////////////////////////////////////////////////////////////////////
+// SWIG director shit - be explicit with all virtual methods
+////////////////////////////////////////////////////////////////////////
 %module(directors="1") GRAS_Block
 %feature("director") gras::BlockPython;
 %feature("nodirector") gras::BlockPython::input_buffer_allocator;
 %feature("nodirector") gras::BlockPython::output_buffer_allocator;
-%feature("nodirector") gras::BlockPython::work;
 %feature("nodirector") gras::BlockPython::propagate_tags;
+%feature("nodirector") gras::BlockPython::start;
+%feature("nodirector") gras::BlockPython::stop;
+%feature("nodirector") gras::BlockPython::check_topology;
+%feature("nodirector") gras::BlockPython::work;
 
 ////////////////////////////////////////////////////////////////////////
 // http://www.swig.org/Doc2.0/Library.html#Library_stl_exceptions
@@ -53,6 +59,39 @@
 #include <iostream>
 %}
 
+////////////////////////////////////////////////////////////////////////
+// Simple class to deal with smart locking/unlocking of python GIL
+////////////////////////////////////////////////////////////////////////
+%{
+
+struct PyGILPhondler
+{
+    PyGILPhondler(void):
+        s(PyGILState_Ensure())
+    {
+        //NOP
+    }
+    ~PyGILPhondler(void)
+    {
+        PyGILState_Release(s);
+    }
+    PyGILState_STATE s;
+};
+
+%}
+
+////////////////////////////////////////////////////////////////////////
+// SWIG up the representation for IO work arrays
+////////////////////////////////////////////////////////////////////////
+%include <std_pair.i>
+%include <std_vector.i>
+
+%template () std::pair<ptrdiff_t, size_t>;
+%template () std::vector<std::pair<ptrdiff_t, size_t> >;
+
+////////////////////////////////////////////////////////////////////////
+// Pull in the implementation goodies
+////////////////////////////////////////////////////////////////////////
 %include <gras/element.i>
 %include <gras/io_signature.i>
 %include <gras/sbuffer.hpp>
@@ -75,10 +114,36 @@ struct BlockPython : Block
         Block(name)
     {
         //NOP
-        std::cout << "C++ Block init!!\n";
     }
 
-    virtual ~BlockPython(void){}
+    virtual ~BlockPython(void)
+    {
+        //NOP
+    }
+
+    bool start(void)
+    {
+        PyGILPhondler phil();
+        return this->_Py_start();
+    }
+
+    virtual bool _Py_start(void) = 0;
+
+    bool stop(void)
+    {
+        PyGILPhondler phil();
+        return this->_Py_stop();
+    }
+
+    virtual bool _Py_stop(void) = 0;
+
+    bool check_topology(int ninputs, int noutputs)
+    {
+        PyGILPhondler phil();
+        return this->_Py_check_topology(ninputs, noutputs);
+    }
+
+    virtual bool _Py_check_topology(int ninputs, int noutputs) = 0;
 
     int work
     (
@@ -86,31 +151,57 @@ struct BlockPython : Block
         const OutputItems &output_items
     )
     {
-        std::cout << "C++ call work!!\n";
-        PyGILState_STATE s = PyGILState_Ensure();
-        int ret = 0;
-        try
+        _input_items.resize(input_items.size());
+        for (size_t i = 0; i < input_items.size(); i++)
         {
-            ret = this->python_work(input_items, output_items);
+            _input_items[i].first = ptrdiff_t(input_items[i].get());
+            _input_items[i].second = input_items[i].size();
         }
-        catch(...)
+
+        _output_items.resize(output_items.size());
+        for (size_t i = 0; i < output_items.size(); i++)
         {
-            PyGILState_Release(s);
-            throw;
+            _output_items[i].first = ptrdiff_t(output_items[i].get());
+            _output_items[i].second = output_items[i].size();
         }
-        PyGILState_Release(s);
-        return ret;
+
+        PyGILPhondler phil();
+        return this->_Py_work(_input_items, _output_items);
     }
 
-    virtual int python_work
+    typedef std::vector<std::pair<ptrdiff_t, size_t> > IOPairVec;
+    IOPairVec _input_items;
+    IOPairVec _output_items;
+
+    virtual int _Py_work
     (
-        const InputItems &input_items,
-        const OutputItems &output_items
-    ){}
+        const IOPairVec &input_items,
+        const IOPairVec &output_items
+    ) = 0;
 };
 
 }
 
+%}
+
+////////////////////////////////////////////////////////////////////////
+// Conversion to the numpy array
+////////////////////////////////////////////////////////////////////////
+%pythoncode %{
+
+import numpy
+
+def pointer_to_ndarray(addr, dtype, nitems, readonly=False):
+    class array_like:
+        __array_interface__ = {
+            'data' : (addr, readonly),
+            'typestr' : dtype.base.str,
+            'descr' : dtype.base.descr,
+            'shape' : (nitems,) + dtype.shape,
+            'strides' : None,
+            'version' : 3,
+        }
+    return numpy.asarray(array_like()).view(dtype.base)
 %}
 
 ////////////////////////////////////////////////////////////////////////
@@ -142,20 +233,33 @@ class Block(BlockPython):
     def input_signature(self): return self.__in_sig
     def output_signature(self): return self.__out_sig
 
-    def python_work(self, input_items, output_items):
-        print 'python work called'
+    def _Py_work(self, input_items, output_items):
+
+        input_arrays = list()
+        for i, item in enumerate(input_items):
+            addr, nitems = item
+            ndarray = pointer_to_ndarray(addr=addr, dtype=self.__in_sig[i], nitems=nitems, readonly=True)
+            input_arrays.append(ndarray)
+
+        output_arrays = list()
+        for i, item in enumerate(output_items):
+            addr, nitems = item
+            ndarray = pointer_to_ndarray(addr=addr, dtype=self.__out_sig[i], nitems=nitems, readonly=False)
+            output_arrays.append(ndarray)
+
+        return self.work(input_arrays, output_arrays)
+
+    def work(self, *args):
+        print 'Implement Work!'
         return -1
 
-    def check_topology(self, *args):
-        print 'check top ', args
-        return True
+    def _Py_check_topology(self, *args): return self.check_topology(*args)
+    def check_topology(self, *args): return True
 
-    def start(self):
-        print 'PYTHON START'
-        return True
+    def _Py_start(self): return self.start()
+    def start(self): return True
 
-    def stop(self):
-        print 'PYTHON STOP'
-        return False
+    def _Py_stop(self): return self.stop()
+    def stop(self): return True
 
 %}

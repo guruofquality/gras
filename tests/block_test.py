@@ -46,6 +46,7 @@ class BlockTest(unittest.TestCase):
         print 'ok'
 
         tb.disconnect(null_src, null_sink)
+        tb.commit()
         print 'done'
 
 if __name__ == '__main__':
