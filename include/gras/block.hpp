@@ -154,10 +154,7 @@ struct GRAS_API Block : Element
     //! Call during work to consume items
     void consume(const size_t which_input, const size_t how_many_items);
 
-    //! Call during work to consume items
-    void consume_each(const size_t how_many_items);
-
-    //! Call during work to produce items, must return WORK_CALLED_PRODUCE
+    //! Call during work to produce items
     void produce(const size_t which_output, const size_t how_many_items);
 
     /*******************************************************************

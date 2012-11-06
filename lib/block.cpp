@@ -104,14 +104,6 @@ void Block::consume(const size_t which_input, const size_t how_many_items)
     (*this)->block->consume_items[which_input] += how_many_items;
 }
 
-void Block::consume_each(const size_t how_many_items)
-{
-    for (size_t i = 0; i < (*this)->block->consume_items.size(); i++)
-    {
-        (*this)->block->consume_items[i] += how_many_items;
-    }
-}
-
 void Block::produce(const size_t which_output, const size_t how_many_items)
 {
     (*this)->block->produce_items[which_output] += how_many_items;
