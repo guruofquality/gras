@@ -59,6 +59,7 @@ struct OutputBufferQueues
 
     GRAS_FORCE_INLINE T &front(const size_t i)
     {
+        ASSERT(not _queues[i].empty());
         return _queues[i].front();
     }
 

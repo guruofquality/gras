@@ -86,8 +86,8 @@ struct PyGILPhondler
 %include <std_pair.i>
 %include <std_vector.i>
 
-%template () std::pair<ptrdiff_t, size_t>;
-%template () std::vector<std::pair<ptrdiff_t, size_t> >;
+%template () std::pair<size_t, size_t>;
+%template () std::vector<std::pair<size_t, size_t> >;
 
 ////////////////////////////////////////////////////////////////////////
 // Pull in the implementation goodies
@@ -139,6 +139,9 @@ struct BlockPython : Block
 
     void notify_topology(const size_t num_inputs, const size_t num_outputs)
     {
+        _input_items.resize(num_inputs);
+        _output_items.resize(num_outputs);
+
         PyGILPhondler phil();
         return this->_Py_notify_topology(num_inputs, num_outputs);
     }
@@ -151,17 +154,15 @@ struct BlockPython : Block
         const OutputItems &output_items
     )
     {
-        _input_items.resize(input_items.size());
         for (size_t i = 0; i < input_items.size(); i++)
         {
-            _input_items[i].first = ptrdiff_t(input_items[i].get());
+            _input_items[i].first = size_t(input_items[i].get());
             _input_items[i].second = input_items[i].size();
         }
 
-        _output_items.resize(output_items.size());
         for (size_t i = 0; i < output_items.size(); i++)
         {
-            _output_items[i].first = ptrdiff_t(output_items[i].get());
+            _output_items[i].first = size_t(output_items[i].get());
             _output_items[i].second = output_items[i].size();
         }
 
@@ -169,7 +170,7 @@ struct BlockPython : Block
         return this->_Py_work(_input_items, _output_items);
     }
 
-    typedef std::vector<std::pair<ptrdiff_t, size_t> > IOPairVec;
+    typedef std::vector<std::pair<size_t, size_t> > IOPairVec;
     IOPairVec _input_items;
     IOPairVec _output_items;
 
@@ -218,9 +219,8 @@ def sig_to_dtype_sig(sig):
 class Block(BlockPython):
     def __init__(self, name='Block', in_sig=None, out_sig=None):
         BlockPython.__init__(self, name)
-        print 'BlockPython.__init__(self, name)'
         self.set_input_signature(in_sig)
-        self.set_output_signature(in_sig)
+        self.set_output_signature(out_sig)
 
     def set_input_signature(self, sig):
         self.__in_sig = sig_to_dtype_sig(sig)
