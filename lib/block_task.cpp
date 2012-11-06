@@ -71,7 +71,7 @@ void BlockActor::mark_done(void)
         << std::flush;
 }
 
-GRAS_FORCE_INLINE void BlockActor::input_fail(const size_t i)
+void BlockActor::input_fail(const size_t i)
 {
     //input failed, accumulate and try again
     if (not this->input_queues.is_accumulated(i))
@@ -82,6 +82,13 @@ GRAS_FORCE_INLINE void BlockActor::input_fail(const size_t i)
     }
     //otherwise check for done, else wait for more
     if (this->inputs_done[i]) this->mark_done();
+
+    //TODO check if input buffer is max size and throw
+}
+
+void BlockActor::output_fail(const size_t i)
+{
+    //TODO
 }
 
 void BlockActor::handle_task(void)
@@ -103,7 +110,6 @@ void BlockActor::handle_task(void)
 
     const size_t num_inputs = this->get_num_inputs();
     const size_t num_outputs = this->get_num_outputs();
-    this->work_io_ptr_mask = 0; //reset
 
     //------------------------------------------------------------------
     //-- initialize input buffers before work
@@ -160,7 +166,6 @@ void BlockActor::handle_task(void)
     //------------------------------------------------------------------
     //-- the work
     //------------------------------------------------------------------
-    this->work_ret = -1;
     if (this->interruptible_thread)
     {
         this->interruptible_thread->call();
@@ -170,24 +175,13 @@ void BlockActor::handle_task(void)
         this->task_work();
     }
 
-    if (work_ret >= 0)
-    {
-        this->input_fail(work_ret);
-        return;
-    }
-
-    if (work_ret == -1)
-    {
-        this->mark_done();
-        return;
-    }
-
     //------------------------------------------------------------------
     //-- process input consumption
     //------------------------------------------------------------------
     for (size_t i = 0; i < num_inputs; i++)
     {
         const size_t items = this->consume_items[i];
+        if (items == 0) continue;
 
         this->items_consumed[i] += items;
         const size_t bytes = items*this->input_items_sizes[i];

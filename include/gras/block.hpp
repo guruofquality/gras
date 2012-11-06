@@ -194,13 +194,59 @@ struct GRAS_API Block : Element
     typedef std::vector<WorkBuffer<void *> > OutputItems;
 
     //! The official call into the work routine (overload please)
-    virtual int work(
+    virtual void work(
         const InputItems &input_items,
         const OutputItems &output_items
     ) = 0;
 
-    //! scheduler calls when the topology is updated, can be overloaded
-    virtual bool check_topology(int ninputs, int noutputs);
+    /*!
+     * Tell the scheduler that an output requirement could not be met.
+     *
+     * - If the output buffer was partially filled (ie, not flushed downstream),
+     * this will cause the output buffer to flush to the downstream.
+     * The next call to work will be with a full size output buffer.
+     *
+     * - If the output buffer was not partially filled, this call will throw.
+     * In this case, the user should set larger reserve_items on this port.
+     * \param which_output the output port index
+     */
+    void mark_output_fail(const size_t which_output);
+
+    /*!
+     * Tell the scheduler that an input requirement could not be met.
+     *
+     *  - If there are more inputs enqueued ahead of this buffer,
+     * the enqueued inputs will be accumulated into a larger buffer.
+     * The next call to work will be with a larger input buffer.
+     *
+     * - If the buffer is already accumlated and the upstream provider
+     * is no longer producing, then the scheduler will mark this block done.
+     *
+     * - If the input buffer at the maximum size, this call will throw.
+     * In this case, the user should set larger reserve_items on this port.
+     *
+     * If the output buffer was partially filled (ie, not flushed downstream),
+     * this will cause the output buffer to flush to the downstream.
+     * The next call to work will be with a full size output buffer.
+     * If the output buffer was not partially filled, this call will throw.
+     * In this case, the user should set larger reserve_items on this port.
+     * \param which_output the output port index
+     */
+    void mark_input_fail(const size_t which_input);
+
+    /*!
+     * Mark this block as done.
+     * The scheduler will no longer call the work() routine.
+     * Downstream consumers and upstream providers will be notified.
+     */
+    void mark_done(void);
+
+    /*!
+     * Overload notify_topology to get called on topological changes.
+     * Use notify_topology to perform one-time resizing operations
+     * to avoid a conditional resizing operation inside the work().
+     */
+    virtual void notify_topology(const size_t num_inputs, const size_t num_outputs);
 
     /*!
      * Set if the work call should be interruptible by stop().

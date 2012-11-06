@@ -26,7 +26,7 @@
 %feature("nodirector") gras::BlockPython::propagate_tags;
 %feature("nodirector") gras::BlockPython::start;
 %feature("nodirector") gras::BlockPython::stop;
-%feature("nodirector") gras::BlockPython::check_topology;
+%feature("nodirector") gras::BlockPython::notify_topology;
 %feature("nodirector") gras::BlockPython::work;
 
 ////////////////////////////////////////////////////////////////////////
@@ -137,15 +137,15 @@ struct BlockPython : Block
 
     virtual bool _Py_stop(void) = 0;
 
-    bool check_topology(int ninputs, int noutputs)
+    void notify_topology(const size_t num_inputs, const size_t num_outputs)
     {
         PyGILPhondler phil();
-        return this->_Py_check_topology(ninputs, noutputs);
+        return this->_Py_notify_topology(num_inputs, num_outputs);
     }
 
-    virtual bool _Py_check_topology(int ninputs, int noutputs) = 0;
+    virtual void _Py_notify_topology(const size_t num_inputs, const size_t num_outputs) = 0;
 
-    int work
+    void work
     (
         const InputItems &input_items,
         const OutputItems &output_items
@@ -173,7 +173,7 @@ struct BlockPython : Block
     IOPairVec _input_items;
     IOPairVec _output_items;
 
-    virtual int _Py_work
+    virtual void _Py_work
     (
         const IOPairVec &input_items,
         const IOPairVec &output_items
@@ -247,14 +247,15 @@ class Block(BlockPython):
             ndarray = pointer_to_ndarray(addr=addr, dtype=self.__out_sig[i], nitems=nitems, readonly=False)
             output_arrays.append(ndarray)
 
-        return self.work(input_arrays, output_arrays)
+        ret = self.work(input_arrays, output_arrays)
+        if ret is not None:
+            raise Exception, 'work return != None, did you call consume/produce?'
 
     def work(self, *args):
         print 'Implement Work!'
-        return -1
 
-    def _Py_check_topology(self, *args): return self.check_topology(*args)
-    def check_topology(self, *args): return True
+    def _Py_notify_topology(self, *args): return self.notify_topology(*args)
+    def notify_topology(self, *args): return
 
     def _Py_start(self): return self.start()
     def start(self): return True

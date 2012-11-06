@@ -52,7 +52,7 @@ void BlockActor::handle_topology(
     const size_t num_outputs = this->get_num_outputs();
 
     //call check_topology on block before committing settings
-    this->block_ptr->check_topology(num_inputs, num_outputs);
+    this->block_ptr->notify_topology(num_inputs, num_outputs);
 
     //fill the item sizes from the IO signatures
     fill_item_sizes_from_sig(this->input_items_sizes, block_ptr->input_signature(), num_inputs);
@@ -67,10 +67,6 @@ void BlockActor::handle_topology(
     resize_fill_grow(this->items_produced, num_outputs, 0);
 
     //resize all work buffers to match current connections
-    this->work_input_items.resize(num_inputs);
-    this->work_output_items.resize(num_outputs);
-    this->work_ninput_items.resize(num_inputs);
-    this->fcast_ninput_items.resize(num_inputs);
     this->input_items.resize(num_inputs);
     this->output_items.resize(num_outputs);
     this->consume_items.resize(num_inputs, 0);

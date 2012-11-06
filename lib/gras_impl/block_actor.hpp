@@ -101,6 +101,7 @@ struct BlockActor : Apology::Worker
     void mark_done(void);
     void handle_task(void);
     void input_fail(const size_t index);
+    void output_fail(const size_t index);
     void sort_tags(const size_t index);
     void trim_tags(const size_t index);
     GRAS_FORCE_INLINE bool any_inputs_done(void)
@@ -126,17 +127,9 @@ struct BlockActor : Apology::Worker
     std::vector<uint64_t> items_consumed;
     std::vector<uint64_t> items_produced;
 
-    //work buffers for the classic interface
-    size_t work_noutput_items;
-    std::vector<const void *> work_input_items;
-    std::vector<void *> work_output_items;
-    std::vector<int> work_ninput_items;
-    std::vector<int> fcast_ninput_items;
-
     //work buffers for the new work interface
     Block::InputItems input_items;
     Block::OutputItems output_items;
-    ptrdiff_t work_io_ptr_mask;
 
     //track work's calls to produce and consume
     std::vector<size_t> produce_items;
@@ -164,10 +157,9 @@ struct BlockActor : Apology::Worker
     boost::shared_ptr<InterruptibleThread> interruptible_thread;
 
     //work helpers
-    int work_ret;
     inline void task_work(void)
     {
-        this->work_ret = block_ptr->work(this->input_items, this->output_items);
+        block_ptr->work(this->input_items, this->output_items);
     }
 
     //is the fg running?

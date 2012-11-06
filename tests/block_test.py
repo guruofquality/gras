@@ -8,16 +8,16 @@ class NullSource(gras.Block):
         gras.Block.__init__(self, 'NullSource')
         self.set_output_signature([numpy.int32])
 
-    def callback(self, x):
-        print x
+    def work(self, ins, outs):
+        self.mark_done()
 
 class NullSink(gras.Block):
     def __init__(self):
         gras.Block.__init__(self, 'NullSink')
         self.set_input_signature([numpy.int32])
 
-    def callback(self, x):
-        print x
+    def work(self, ins, outs):
+        self.mark_done()
 
 class BlockTest(unittest.TestCase):
 
@@ -25,10 +25,6 @@ class BlockTest(unittest.TestCase):
         null_src = NullSource()
 
         null_sink = NullSink()
-
-        #null_src.doit(321)
-
-        #return
 
         tb = gras.TopBlock()
 

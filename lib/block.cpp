@@ -156,9 +156,9 @@ bool Block::stop(void)
     return true;
 }
 
-bool Block::check_topology(int, int)
+void Block::notify_topology(const size_t, const size_t)
 {
-    return true;
+    return;
 }
 
 void Block::set_buffer_affinity(const long affinity)
@@ -169,4 +169,19 @@ void Block::set_buffer_affinity(const long affinity)
 void Block::set_interruptible_work(const bool enb)
 {
     (*this)->block->interruptible_work = enb;
+}
+
+void Block::mark_output_fail(const size_t which_output)
+{
+    (*this)->block->output_fail(which_output);
+}
+
+void Block::mark_input_fail(const size_t which_input)
+{
+    (*this)->block->input_fail(which_input);
+}
+
+void Block::mark_done(void)
+{
+    (*this)->block->mark_done();
 }
