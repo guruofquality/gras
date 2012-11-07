@@ -40,7 +40,7 @@ struct InputBufferQueues
         this->resize(0);
     }
 
-    void update_history_bytes(const size_t i, const size_t hist_bytes);
+    void update_config(const size_t i, const size_t, const size_t, const size_t);
 
     //! Call to get an input buffer for work
     GRAS_FORCE_INLINE SBuffer &front(const size_t i)
@@ -114,11 +114,12 @@ struct InputBufferQueues
 
     GRAS_FORCE_INLINE void __update(const size_t i)
     {
-        _bitset.set(i, _enqueued_bytes[i] != 0);
+        _bitset.set(i, _enqueued_bytes[i] >= _reserve_bytes[i]);
     }
 
     BitSet _bitset;
     std::vector<size_t> _enqueued_bytes;
+    std::vector<size_t> _reserve_bytes;
     std::vector<boost::circular_buffer<SBuffer> > _queues;
     std::vector<size_t> _history_bytes;
     std::vector<boost::shared_ptr<BufferQueue> > _aux_queues;
@@ -129,24 +130,33 @@ GRAS_FORCE_INLINE void InputBufferQueues::resize(const size_t size)
 {
     _bitset.resize(size);
     _enqueued_bytes.resize(size, 0);
+    _reserve_bytes.resize(size, 1);
     _queues.resize(size, boost::circular_buffer<SBuffer>(MAX_QUEUE_SIZE));
     _history_bytes.resize(size, 0);
     _aux_queues.resize(size);
 
-    for (size_t i = 0; i < this->size(); i++)
-    {
-        if (_aux_queues[i]) continue;
-        _aux_queues[i] = boost::shared_ptr<BufferQueue>(new BufferQueue());
-        _aux_queues[i]->allocate_one(MAX_AUX_BUFF_BYTES);
-        _aux_queues[i]->allocate_one(MAX_AUX_BUFF_BYTES);
-        _aux_queues[i]->allocate_one(MAX_AUX_BUFF_BYTES);
-        _aux_queues[i]->allocate_one(MAX_AUX_BUFF_BYTES);
-    }
-
 }
 
-inline void InputBufferQueues::update_history_bytes(const size_t i, const size_t hist_bytes)
+inline void InputBufferQueues::update_config(
+    const size_t i,
+    const size_t hist_bytes,
+    const size_t reserve_bytes,
+    size_t maximum_bytes
+)
 {
+    //first allocate the aux buffer
+    if (maximum_bytes == 0) maximum_bytes = MAX_AUX_BUFF_BYTES;
+    if (
+        not _aux_queues[i] or
+        _aux_queues[i]->empty() or
+        _aux_queues[i]->front().get_actual_length() != maximum_bytes
+    ){
+        _aux_queues[i] = boost::shared_ptr<BufferQueue>(new BufferQueue());
+        _aux_queues[i]->allocate_one(maximum_bytes);
+        _aux_queues[i]->allocate_one(maximum_bytes);
+        _aux_queues[i]->allocate_one(maximum_bytes);
+    }
+
     //there is history, so enqueue some initial history
     if (hist_bytes > _history_bytes[i])
     {
@@ -169,6 +179,8 @@ inline void InputBufferQueues::update_history_bytes(const size_t i, const size_t
     }
 
     _history_bytes[i] = hist_bytes;
+    _reserve_bytes[i] = reserve_bytes;
+    this->__update(i);
 }
 
 GRAS_FORCE_INLINE void InputBufferQueues::accumulate(const size_t i, const size_t item_size)

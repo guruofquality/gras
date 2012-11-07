@@ -33,6 +33,25 @@ struct GRAS_API InputPortConfig
     InputPortConfig(void);
 
     /*!
+     * Set an input reserve requirement such that work is called
+     * with an input buffer at least reserve items in size.
+     *
+     * Default = 1.
+     */
+    size_t reserve_items;
+
+    /*!
+     * Constrain the input buffer allocation size:
+     * The scheduler may accumulate multiple buffers
+     * into a single larger buffer under failure conditions.
+     * The maximum size of this accumulated buffer
+     * is constrained by this maximum_items setting.
+     *
+     * Default = 0 aka disabled.
+     */
+    size_t maximum_items;
+
+    /*!
      * Set buffer inlining for this port config.
      * Inlining means that the input buffer can be used as an output buffer.
      * The goal is to make better use of cache and memory bandwidth.
@@ -78,8 +97,10 @@ struct GRAS_API OutputPortConfig
     size_t reserve_items;
 
     /*!
-     * Constrain the maximum number of items that
-     * work can be called with for this port.
+     * Constrain the output buffer allocation size:
+     * The user might set a small maximum items
+     * to reduce the amount of buffered items
+     * waiting for processing in downstream queues.
      *
      * Default = 0 aka disabled.
      */
@@ -204,7 +225,8 @@ struct GRAS_API Block : Element
      * The next call to work will be with a full size output buffer.
      *
      * - If the output buffer was not partially filled, this call will throw.
-     * In this case, the user should set larger reserve_items on this port.
+     * In this case, the user should set larger maximum_items on this port.
+     *
      * \param which_output the output port index
      */
     void mark_output_fail(const size_t which_output);
@@ -220,14 +242,9 @@ struct GRAS_API Block : Element
      * is no longer producing, then the scheduler will mark this block done.
      *
      * - If the input buffer at the maximum size, this call will throw.
-     * In this case, the user should set larger reserve_items on this port.
+     * In this case, the user should set larger maximum_items on this port.
      *
-     * If the output buffer was partially filled (ie, not flushed downstream),
-     * this will cause the output buffer to flush to the downstream.
-     * The next call to work will be with a full size output buffer.
-     * If the output buffer was not partially filled, this call will throw.
-     * In this case, the user should set larger reserve_items on this port.
-     * \param which_output the output port index
+     * \param which_input the input port index
      */
     void mark_input_fail(const size_t which_input);
 

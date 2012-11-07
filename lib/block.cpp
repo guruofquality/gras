@@ -21,6 +21,8 @@ using namespace gras;
 
 InputPortConfig::InputPortConfig(void)
 {
+    reserve_items = 1;
+    maximum_items = 0;
     inline_buffer = false;
     lookahead_items = 0;
 }

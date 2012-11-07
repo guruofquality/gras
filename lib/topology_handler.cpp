@@ -102,10 +102,11 @@ void BlockActor::handle_update_inputs(
     const size_t num_inputs = this->get_num_inputs();
     this->input_queues.resize(num_inputs);
 
-    //impose input reserve requirements based on relative rate and output multiple
     for (size_t i = 0; i < num_inputs; i++)
     {
         const size_t hist_bytes = this->input_items_sizes[i]*this->input_configs[i].lookahead_items;
-        this->input_queues.update_history_bytes(i, hist_bytes);
+        const size_t reserve_bytes = this->input_items_sizes[i]*this->input_configs[i].reserve_items;
+        const size_t maximum_bytes = this->input_items_sizes[i]*this->input_configs[i].maximum_items;
+        this->input_queues.update_config(i, hist_bytes, reserve_bytes, maximum_bytes);
     }
 }
