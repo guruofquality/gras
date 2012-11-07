@@ -101,12 +101,12 @@ void Block::set_output_config(const OutputPortConfig &config, const size_t which
 
 void Block::consume(const size_t which_input, const size_t how_many_items)
 {
-    (*this)->block->consume_items[which_input] += how_many_items;
+    (*this)->block->consume(which_input, how_many_items);
 }
 
 void Block::produce(const size_t which_output, const size_t how_many_items)
 {
-    (*this)->block->produce_items[which_output] += how_many_items;
+    (*this)->block->produce(which_output, how_many_items);
 }
 
 uint64_t Block::nitems_read(const size_t which_input)

@@ -104,6 +104,8 @@ struct BlockActor : Apology::Worker
     void output_fail(const size_t index);
     void sort_tags(const size_t index);
     void trim_tags(const size_t index);
+    void produce(const size_t index, const size_t items);
+    void consume(const size_t index, const size_t items);
     GRAS_FORCE_INLINE bool any_inputs_done(void)
     {
         if (this->inputs_done.none() or this->input_queues.all_ready()) return false;
@@ -130,10 +132,6 @@ struct BlockActor : Apology::Worker
     //work buffers for the new work interface
     Block::InputItems input_items;
     Block::OutputItems output_items;
-
-    //track work's calls to produce and consume
-    std::vector<size_t> produce_items;
-    std::vector<size_t> consume_items;
 
     //track the subscriber counts
     std::vector<Token> input_tokens;

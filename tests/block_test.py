@@ -31,19 +31,11 @@ class VectorSource(gras.Block):
     def work(self, ins, outs):
         print 'vector source work'
         num = min(len(outs[0]), len(self._vec))
-        if num == 0:
-            self.mark_done()
-            return
-        #print 'outs[0][:num] is '
-        #print len(outs)
-        #print len(outs[0])
-        #print outs[0][0]
-        #print outs[0][:num]
         outs[0][:num] = self._vec[:num]
         self.produce(0, num)
         self._vec = self._vec[num:]
-        #if not self._vec:
-        #    self.mark_done()
+        if not self._vec:
+            self.mark_done()
         print 'vector source work done'
 
 class VectorSink(gras.Block):
@@ -84,7 +76,7 @@ class BlockTest(unittest.TestCase):
         vec_sink = None
 
     def test_make_block(self):
-        return
+        #return
         null_src = NullSource()
 
         null_sink = NullSink()

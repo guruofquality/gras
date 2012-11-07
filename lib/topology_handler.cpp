@@ -69,8 +69,6 @@ void BlockActor::handle_topology(
     //resize all work buffers to match current connections
     this->input_items.resize(num_inputs);
     this->output_items.resize(num_outputs);
-    this->consume_items.resize(num_inputs, 0);
-    this->produce_items.resize(num_outputs, 0);
     this->input_queues.resize(num_inputs);
     this->output_queues.resize(num_outputs);
 
