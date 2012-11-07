@@ -68,7 +68,7 @@ struct InputBufferQueues
         ASSERT(not _queues[i].empty());
         return
             (_queues[i].front().length == _enqueued_bytes[i]) or
-            (_queues[i].front().length >= MAX_AUX_BUFF_BYTES);
+            (_queues[i].front().length >= _maximum_bytes[i]);
     }
 
     GRAS_FORCE_INLINE void push(const size_t i, const SBuffer &buffer)
@@ -120,6 +120,7 @@ struct InputBufferQueues
     BitSet _bitset;
     std::vector<size_t> _enqueued_bytes;
     std::vector<size_t> _reserve_bytes;
+    std::vector<size_t> _maximum_bytes;
     std::vector<boost::circular_buffer<SBuffer> > _queues;
     std::vector<size_t> _history_bytes;
     std::vector<boost::shared_ptr<BufferQueue> > _aux_queues;
@@ -131,6 +132,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::resize(const size_t size)
     _bitset.resize(size);
     _enqueued_bytes.resize(size, 0);
     _reserve_bytes.resize(size, 1);
+    _maximum_bytes.resize(size, MAX_AUX_BUFF_BYTES);
     _queues.resize(size, boost::circular_buffer<SBuffer>(MAX_QUEUE_SIZE));
     _history_bytes.resize(size, 0);
     _aux_queues.resize(size);
@@ -141,20 +143,20 @@ inline void InputBufferQueues::update_config(
     const size_t i,
     const size_t hist_bytes,
     const size_t reserve_bytes,
-    size_t maximum_bytes
+    const size_t maximum_bytes
 )
 {
     //first allocate the aux buffer
-    if (maximum_bytes == 0) maximum_bytes = MAX_AUX_BUFF_BYTES;
+    if (maximum_bytes != 0) _maximum_bytes[i] = maximum_bytes;
     if (
         not _aux_queues[i] or
         _aux_queues[i]->empty() or
-        _aux_queues[i]->front().get_actual_length() != maximum_bytes
+        _aux_queues[i]->front().get_actual_length() != _maximum_bytes[i]
     ){
         _aux_queues[i] = boost::shared_ptr<BufferQueue>(new BufferQueue());
-        _aux_queues[i]->allocate_one(maximum_bytes);
-        _aux_queues[i]->allocate_one(maximum_bytes);
-        _aux_queues[i]->allocate_one(maximum_bytes);
+        _aux_queues[i]->allocate_one(_maximum_bytes[i]);
+        _aux_queues[i]->allocate_one(_maximum_bytes[i]);
+        _aux_queues[i]->allocate_one(_maximum_bytes[i]);
     }
 
     //there is history, so enqueue some initial history

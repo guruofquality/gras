@@ -75,13 +75,6 @@ void BlockActor::input_fail(const size_t i)
 {
     SBuffer &buff = this->input_queues.front(i);
 
-    //check that the input is not already maxed
-    const size_t front_items = buff.length/this->input_items_sizes[i];
-    if (front_items >= this->input_configs[i].maximum_items)
-    {
-        //throw std::runtime_error("input_fail called on maximum_items buffer");
-    }
-
     //input failed, accumulate and try again
     if (not this->input_queues.is_accumulated(i))
     {
@@ -91,7 +84,18 @@ void BlockActor::input_fail(const size_t i)
     }
 
     //otherwise check for done, else wait for more
-    if (this->inputs_done[i]) this->mark_done();
+    if (this->inputs_done[i])
+    {
+        this->mark_done();
+        return;
+    }
+
+    //check that the input is not already maxed
+    const size_t front_items = buff.length/this->input_items_sizes[i];
+    if (front_items >= this->input_configs[i].maximum_items)
+    {
+        //throw std::runtime_error("input_fail called on maximum_items buffer");
+    }
 }
 
 void BlockActor::output_fail(const size_t i)
