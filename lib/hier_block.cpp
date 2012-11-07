@@ -45,6 +45,13 @@ void HierBlock::disconnect(const Element &elem)
     (*this)->topology->remove_topology(elem->topology.get());
 }
 
+static Apology::Wax get_ref(const Element &elem)
+{
+    boost::shared_ptr<Element> shared_self = elem.weak_self.lock();
+    if (shared_self) return shared_self;
+    return elem;
+}
+
 void HierBlock::connect(
     const Element &src,
     const size_t src_index,
@@ -53,8 +60,8 @@ void HierBlock::connect(
 ){
     //TODO, this is the perfect place to validate IO sigs
     const Apology::Flow flow(
-        Apology::Port(src->get_elem(), src_index, src.weak_self.lock()),
-        Apology::Port(sink->get_elem(), sink_index, sink.weak_self.lock())
+        Apology::Port(src->get_elem(), src_index, get_ref(src)),
+        Apology::Port(sink->get_elem(), sink_index, get_ref(sink))
     );
     (*this)->topology->add_flow(flow);
 }
