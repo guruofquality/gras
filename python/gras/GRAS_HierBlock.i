@@ -33,6 +33,27 @@
     }
 }
 
+////////////////////////////////////////////////////////////////////////
+// Simple class to deal with smart save/restore of python thread state
+////////////////////////////////////////////////////////////////////////
+%{
+
+struct PyTSPhondler
+{
+    PyTSPhondler(void):
+        s(PyEval_SaveThread())
+    {
+        //NOP
+    }
+    ~PyTSPhondler(void)
+    {
+        PyEval_RestoreThread(s);
+    }
+    PyThreadState *s;
+};
+
+%}
+
 %{
 #include <gras/hier_block.hpp>
 #include <gras/top_block.hpp>
@@ -64,19 +85,28 @@ struct TopBlockPython : TopBlock
         //NOP
     }
 
+    void start(void)
+    {
+        PyTSPhondler phil;
+        TopBlock::start();
+    }
+
+    void stop(void)
+    {
+        PyTSPhondler phil;
+        TopBlock::stop();
+    }
+
     void wait(void)
     {
-        PyThreadState *s = PyEval_SaveThread();
+        PyTSPhondler phil;
         TopBlock::wait();
-        PyEval_RestoreThread(s);
     }
 
     bool wait(const double timeout)
     {
-        PyThreadState *s = PyEval_SaveThread();
-        const bool ret = TopBlock::wait(timeout);
-        PyEval_RestoreThread(s);
-        return ret;
+        PyTSPhondler phil;
+        return TopBlock::wait(timeout);
     }
 };
 

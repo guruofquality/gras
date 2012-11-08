@@ -29,6 +29,7 @@
 %feature("nodirector") gras::BlockPython::notify_topology;
 %feature("nodirector") gras::BlockPython::work;
 
+
 ////////////////////////////////////////////////////////////////////////
 // http://www.swig.org/Doc2.0/Library.html#Library_stl_exceptions
 ////////////////////////////////////////////////////////////////////////
@@ -39,6 +40,10 @@
     try
     {
         $action
+    }
+    catch (const Swig::DirectorException &e)
+    {
+        SWIG_fail;
     }
     catch (const std::exception& e)
     {
@@ -83,11 +88,9 @@ struct PyGILPhondler
 ////////////////////////////////////////////////////////////////////////
 // SWIG up the representation for IO work arrays
 ////////////////////////////////////////////////////////////////////////
-%include <std_pair.i>
 %include <std_vector.i>
-
-%template () std::pair<size_t, size_t>;
-%template () std::vector<std::pair<size_t, size_t> >;
+%template (IntVec) std::vector<size_t>;
+%template (VoidStarVec) std::vector<void *>;
 
 ////////////////////////////////////////////////////////////////////////
 // Pull in the implementation goodies
@@ -123,7 +126,7 @@ struct BlockPython : Block
 
     bool start(void)
     {
-        PyGILPhondler phil();
+        PyGILPhondler phil;
         return this->_Py_start();
     }
 
@@ -131,7 +134,7 @@ struct BlockPython : Block
 
     bool stop(void)
     {
-        PyGILPhondler phil();
+        PyGILPhondler phil;
         return this->_Py_stop();
     }
 
@@ -139,14 +142,16 @@ struct BlockPython : Block
 
     void notify_topology(const size_t num_inputs, const size_t num_outputs)
     {
-        _input_items.resize(num_inputs);
-        _output_items.resize(num_outputs);
+        _input_addrs.resize(num_inputs);
+        _input_sizes.resize(num_inputs);
+        _output_addrs.resize(num_outputs);
+        _output_sizes.resize(num_outputs);
 
-        PyGILPhondler phil();
+        PyGILPhondler phil;
         return this->_Py_notify_topology(num_inputs, num_outputs);
     }
 
-    virtual void _Py_notify_topology(const size_t num_inputs, const size_t num_outputs) = 0;
+    virtual void _Py_notify_topology(const size_t, const size_t) = 0;
 
     void work
     (
@@ -156,28 +161,31 @@ struct BlockPython : Block
     {
         for (size_t i = 0; i < input_items.size(); i++)
         {
-            _input_items[i].first = size_t(input_items[i].get());
-            _input_items[i].second = input_items[i].size();
+            _input_addrs[i] = (void *)(input_items[i].get());
+            _input_sizes[i] = input_items[i].size();
         }
 
         for (size_t i = 0; i < output_items.size(); i++)
         {
-            _output_items[i].first = size_t(output_items[i].get());
-            _output_items[i].second = output_items[i].size();
+            _output_addrs[i] = (void *)(output_items[i].get());
+            _output_sizes[i] = output_items[i].size();
         }
 
-        PyGILPhondler phil();
-        return this->_Py_work(_input_items, _output_items);
+        PyGILPhondler phil;
+        return this->_Py_work(_input_addrs, _input_sizes, _output_addrs, _output_sizes);
     }
 
-    typedef std::vector<std::pair<size_t, size_t> > IOPairVec;
-    IOPairVec _input_items;
-    IOPairVec _output_items;
+    std::vector<void *> _input_addrs;
+    std::vector<size_t> _input_sizes;
+    std::vector<void *> _output_addrs;
+    std::vector<size_t> _output_sizes;
 
     virtual void _Py_work
     (
-        const IOPairVec &input_items,
-        const IOPairVec &output_items
+        const std::vector<void *> &,
+        const std::vector<size_t> &,
+        const std::vector<void *> &,
+        const std::vector<size_t> &
     ) = 0;
 };
 
@@ -233,28 +241,44 @@ class Block(BlockPython):
     def input_signature(self): return self.__in_sig
     def output_signature(self): return self.__out_sig
 
-    def _Py_work(self, input_items, output_items):
+    def _Py_work(self, input_addrs, input_sizes, output_addrs, output_sizes):
 
-        input_arrays = list()
-        for i, item in enumerate(input_items):
-            addr, nitems = item
-            ndarray = pointer_to_ndarray(addr=addr, dtype=self.__in_sig[i], nitems=nitems, readonly=True)
-            input_arrays.append(ndarray)
+        try:
 
-        output_arrays = list()
-        for i, item in enumerate(output_items):
-            addr, nitems = item
-            ndarray = pointer_to_ndarray(addr=addr, dtype=self.__out_sig[i], nitems=nitems, readonly=False)
-            output_arrays.append(ndarray)
+            input_arrays = list()
+            for i in self.__in_indexes:
+                addr = long(input_addrs[i])
+                nitems = input_sizes[i]
+                ndarray = pointer_to_ndarray(addr=addr, dtype=self.__in_sig[i], nitems=nitems, readonly=True)
+                input_arrays.append(ndarray)
 
-        ret = self.work(input_arrays, output_arrays)
-        if ret is not None:
-            raise Exception, 'work return != None, did you call consume/produce?'
+            output_arrays = list()
+            for i in self.__out_indexes:
+                addr = long(output_addrs[i])
+                nitems = output_sizes[i]
+                ndarray = pointer_to_ndarray(addr=addr, dtype=self.__out_sig[i], nitems=nitems, readonly=False)
+                output_arrays.append(ndarray)
+
+            if True:
+            #try:
+                ret = self.work(input_arrays, output_arrays)
+                if ret is not None:
+                    raise Exception, 'work return != None, did you call consume/produce?'
+            #except Exception, e:
+            #    print e
+            #    raise
+        except Exception as ex:
+            import traceback; traceback.print_exc()
+            raise ex
 
     def work(self, *args):
         print 'Implement Work!'
 
-    def _Py_notify_topology(self, *args): return self.notify_topology(*args)
+    def _Py_notify_topology(self, num_inputs, num_outputs):
+        self.__in_indexes = range(num_inputs)
+        self.__out_indexes = range(num_outputs)
+        return self.notify_topology(num_inputs, num_outputs)
+
     def notify_topology(self, *args): return
 
     def _Py_start(self): return self.start()

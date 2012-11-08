@@ -70,10 +70,10 @@ struct GRAS_API TopBlock : HierBlock
     void run(void);
 
     //! Start a flow graph execution (does not block)
-    void start(void);
+    virtual void start(void);
 
     //! Stop a flow graph execution (does not block)
-    void stop(void);
+    virtual void stop(void);
 
     /*!
      * Wait for threads to exit after stop() or run().

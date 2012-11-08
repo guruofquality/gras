@@ -51,7 +51,7 @@ void BlockActor::handle_topology(
     const size_t num_inputs = this->get_num_inputs();
     const size_t num_outputs = this->get_num_outputs();
 
-    //call check_topology on block before committing settings
+    //call notify_topology on block before committing settings
     this->block_ptr->notify_topology(num_inputs, num_outputs);
 
     //fill the item sizes from the IO signatures
