@@ -13,7 +13,6 @@ class BlockTest(unittest.TestCase):
         tb = gras.TopBlock()
         tb.connect(vec_source, vec_sink)
         tb.run()
-        tb.commit()
         tb = None
 
         self.assertEqual(vec_sink.get_vector(), (0, 9, 8, 7, 6))
@@ -28,7 +27,6 @@ class BlockTest(unittest.TestCase):
         tb.connect((src1, 0), (adder, 1))
         tb.connect(adder, sink)
         tb.run()
-        tb.commit()
         tb = None
         self.assertEqual(sink.get_vector(), (1, 5, 9, 13, 17))
 

@@ -85,6 +85,12 @@ struct TopBlockPython : TopBlock
         //NOP
     }
 
+    ~TopBlockPython(void)
+    {
+        PyTSPhondler phil;
+        this->reset();
+    }
+
     void start(void)
     {
         PyTSPhondler phil;
