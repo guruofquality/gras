@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#define GRAS_API
-
 ////////////////////////////////////////////////////////////////////////
 // SWIG director shit - be explicit with all virtual methods
 ////////////////////////////////////////////////////////////////////////
@@ -28,7 +26,6 @@
 %feature("nodirector") gras::BlockPython::stop;
 %feature("nodirector") gras::BlockPython::notify_topology;
 %feature("nodirector") gras::BlockPython::work;
-
 
 ////////////////////////////////////////////////////////////////////////
 // http://www.swig.org/Doc2.0/Library.html#Library_stl_exceptions
@@ -95,6 +92,7 @@ struct PyGILPhondler
 ////////////////////////////////////////////////////////////////////////
 // Pull in the implementation goodies
 ////////////////////////////////////////////////////////////////////////
+%include <gras/gras.hpp>
 %include <gras/element.i>
 %include <gras/io_signature.i>
 %include <gras/sbuffer.hpp>
@@ -225,6 +223,15 @@ def sig_to_dtype_sig(sig):
     if sig is None: sig = ()
     return map(numpy.dtype, sig)
 
+Tag__ = Tag
+
+class Tag(object):
+    def __init__(self, offset=0, key=None, value=None, srcid=None):
+        self.offset = offset
+        self.key = key
+        self.value = value
+        self.srcid = srcid
+
 class Block(BlockPython):
     def __init__(self, name='Block', in_sig=None, out_sig=None):
         BlockPython.__init__(self, name)
@@ -287,5 +294,14 @@ class Block(BlockPython):
         except: traceback.print_exc(); raise
 
     def stop(self): return True
+
+    def post_output_tag(self, which_output, tag):
+        t = Tag__(
+            tag.offset,
+            Py2PMC(tag.key),
+            Py2PMC(tag.value),
+            Py2PMC(tag.srcid),
+        )
+        BlockPython.post_output_tag(self, which_output, t)
 
 %}

@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#define GRAS_API
-
 ////////////////////////////////////////////////////////////////////////
 // http://www.swig.org/Doc2.0/Library.html#Library_stl_exceptions
 ////////////////////////////////////////////////////////////////////////
@@ -59,6 +57,7 @@ struct PyTSPhondler
 #include <gras/top_block.hpp>
 %}
 
+%include <gras/gras.hpp>
 %include <gras/element.i>
 %include <gras/io_signature.i>
 
