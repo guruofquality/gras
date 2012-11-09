@@ -20,7 +20,6 @@
 #include <gras/gras.hpp>
 #include <boost/operators.hpp>
 #include <PMC/PMC.hpp>
-#include <boost/cstdint.hpp>
 
 namespace gras
 {
@@ -31,10 +30,10 @@ struct GRAS_API Tag : boost::less_than_comparable<Tag>
     Tag(void);
 
     //! Make a tag from parameters to initialize the members
-    Tag(const uint64_t &offset, const PMCC &key, const PMCC &value, const PMCC &srcid = PMCC());
+    Tag(const item_index_t &offset, const PMCC &key, const PMCC &value, const PMCC &srcid = PMCC());
 
     //! the absolute item count associated with this tag
-    boost::uint64_t offset;
+    item_index_t offset;
 
     //! A symbolic name identifying the type of tag
     PMCC key;

@@ -21,8 +21,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     add_definitions(-fvisibility-inlines-hidden)
 endif()
 
-add_definitions(-DGRAS_DLL=1) #this project builds a dll
-
 ########################################################################
 # Component names for install rules
 ########################################################################

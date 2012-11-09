@@ -24,7 +24,7 @@ Tag::Tag(void):
     //NOP
 }
 
-Tag::Tag(const uint64_t &offset, const PMCC &key, const PMCC &value, const PMCC &srcid):
+Tag::Tag(const item_index_t &offset, const PMCC &key, const PMCC &value, const PMCC &srcid):
     offset(offset), key(key), value(value), srcid(srcid)
 {
     //NOP

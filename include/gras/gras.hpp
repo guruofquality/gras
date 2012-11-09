@@ -37,6 +37,8 @@
   #endif
 #endif
 
+#define GRAS_DLL //always build a dll
+
 // Now we use the generic helper definitions above to define GRAS_API and GRAS_LOCAL.
 // GRAS_API is used for the public API symbols. It either DLL imports or DLL exports (or does nothing for static build)
 // GRAS_LOCAL is used for non-api symbols.
@@ -65,5 +67,11 @@
 #else
     #define GRAS_FORCE_INLINE         inline
 #endif
+
+namespace gras
+{
+    //! Typedef for absolute item indexes
+    typedef unsigned long long item_index_t;
+}
 
 #endif /*INCLUDED_GRAS_GRAS_HPP*/

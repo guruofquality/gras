@@ -126,8 +126,8 @@ struct BlockActor : Apology::Worker
     std::vector<OutputPortConfig> output_configs;
 
     //keeps track of production
-    std::vector<uint64_t> items_consumed;
-    std::vector<uint64_t> items_produced;
+    std::vector<item_index_t> items_consumed;
+    std::vector<item_index_t> items_produced;
 
     //work buffers for the new work interface
     Block::InputItems input_items;

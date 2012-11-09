@@ -111,12 +111,12 @@ void Block::produce(const size_t which_output, const size_t how_many_items)
     (*this)->block->produce(which_output, how_many_items);
 }
 
-uint64_t Block::nitems_read(const size_t which_input)
+item_index_t Block::nitems_read(const size_t which_input)
 {
     return (*this)->block->items_consumed[which_input];
 }
 
-uint64_t Block::nitems_written(const size_t which_output)
+item_index_t Block::nitems_written(const size_t which_output)
 {
     return (*this)->block->items_produced[which_output];
 }

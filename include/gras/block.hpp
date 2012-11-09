@@ -182,9 +182,9 @@ struct GRAS_API Block : Element
      * Deal with tag handling and tag configuration
      ******************************************************************/
 
-    uint64_t nitems_read(const size_t which_input);
+    item_index_t nitems_read(const size_t which_input);
 
-    uint64_t nitems_written(const size_t which_output);
+    item_index_t nitems_written(const size_t which_output);
 
     //! Send a tag to the downstream on the given output port
     void post_output_tag(const size_t which_output, const Tag &tag);
