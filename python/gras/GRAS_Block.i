@@ -72,8 +72,9 @@ struct PyGILPhondler
 // SWIG up the representation for IO work arrays
 ////////////////////////////////////////////////////////////////////////
 %include <std_vector.i>
-%template (IntVec) std::vector<size_t>;
-%template (VoidStarVec) std::vector<void *>;
+%template () std::vector<size_t>;
+%template () std::vector<void *>;
+%template () std::vector<gras::Tag>;
 
 ////////////////////////////////////////////////////////////////////////
 // Pull in the implementation goodies
