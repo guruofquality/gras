@@ -52,9 +52,9 @@ ThreadPool::ThreadPool(const ThreadPoolConfig &config)
         config.processor_mask
     );
 
-    if (config.yield_strategy == "POLITE") params.mYieldStrategy = Theron::Framework::YIELD_STRATEGY_POLITE;
-    if (config.yield_strategy == "STRONG") params.mYieldStrategy = Theron::Framework::YIELD_STRATEGY_STRONG;
-    if (config.yield_strategy == "AGGRESSIVE") params.mYieldStrategy = Theron::Framework::YIELD_STRATEGY_AGGRESSIVE;
+    if (config.yield_strategy == "POLITE") params.mYieldStrategy = Theron::YIELD_STRATEGY_POLITE;
+    if (config.yield_strategy == "STRONG") params.mYieldStrategy = Theron::YIELD_STRATEGY_STRONG;
+    if (config.yield_strategy == "AGGRESSIVE") params.mYieldStrategy = Theron::YIELD_STRATEGY_AGGRESSIVE;
 
     this->reset(new Theron::Framework(Theron::Framework::Parameters(params)));
 }
