@@ -171,6 +171,13 @@ struct BlockPython : Block
         const std::vector<void *> &,
         const std::vector<size_t> &
     ) = 0;
+
+    std::vector<Tag> get_input_tags(const size_t which_input)
+    {
+        Block::TagIter it = Block::get_input_tags(which_input);
+        std::vector<Tag> tags(it.begin(), it.end());
+        return tags;
+    }
 };
 
 }
@@ -289,5 +296,14 @@ class Block(BlockPython):
             Py2PMC(tag.srcid),
         )
         BlockPython.post_output_tag(self, which_output, t)
+
+    def get_input_tags(self, which_input):
+        for t in BlockPython.get_input_tags(self, which_input):
+            yield Tag(
+                offset=t.offset,
+                key=PMC2Py(t.key),
+                value=PMC2Py(t.value),
+                srcid=PMC2Py(t.srcid),
+            )
 
 %}
