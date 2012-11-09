@@ -219,6 +219,7 @@ def pointer_to_ndarray(addr, dtype, nitems, readonly=False):
 %pythoncode %{
 
 import numpy
+import traceback
 
 def sig_to_dtype_sig(sig):
     if sig is None: sig = ()
@@ -259,17 +260,10 @@ class Block(BlockPython):
                 ndarray = pointer_to_ndarray(addr=addr, dtype=self.__out_sig[i], nitems=nitems, readonly=False)
                 output_arrays.append(ndarray)
 
-            if True:
-            #try:
-                ret = self.work(input_arrays, output_arrays)
-                if ret is not None:
-                    raise Exception, 'work return != None, did you call consume/produce?'
-            #except Exception, e:
-            #    print e
-            #    raise
-        except Exception as ex:
-            import traceback; traceback.print_exc()
-            raise ex
+            ret = self.work(input_arrays, output_arrays)
+            if ret is not None:
+                raise Exception, 'work return != None, did you call consume/produce?'
+        except: traceback.print_exc(); raise
 
     def work(self, *args):
         print 'Implement Work!'
@@ -277,14 +271,21 @@ class Block(BlockPython):
     def _Py_notify_topology(self, num_inputs, num_outputs):
         self.__in_indexes = range(num_inputs)
         self.__out_indexes = range(num_outputs)
-        return self.notify_topology(num_inputs, num_outputs)
+        try: return self.notify_topology(num_inputs, num_outputs)
+        except: traceback.print_exc(); raise
 
     def notify_topology(self, *args): return
 
-    def _Py_start(self): return self.start()
+    def _Py_start(self):
+        try: return self.start()
+        except: traceback.print_exc(); raise
+
     def start(self): return True
 
-    def _Py_stop(self): return self.stop()
+    def _Py_stop(self):
+        try: return self.stop()
+        except: traceback.print_exc(); raise
+
     def stop(self): return True
 
 %}
