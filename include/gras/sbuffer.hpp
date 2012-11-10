@@ -1,29 +1,15 @@
-//
-// Copyright 2012 Josh Blum
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
-#ifndef INCLUDED_GNURADIO_SBUFFER_HPP
-#define INCLUDED_GNURADIO_SBUFFER_HPP
+#ifndef INCLUDED_GRAS_SBUFFER_HPP
+#define INCLUDED_GRAS_SBUFFER_HPP
 
-#include <gnuradio/gras.hpp>
+#include <gras/gras.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/intrusive_ptr.hpp>
 #include <boost/function.hpp>
 
-namespace gnuradio
+namespace gras
 {
 
 struct SBufferImpl;
@@ -135,8 +121,8 @@ struct GRAS_API SBuffer : boost::intrusive_ptr<SBufferImpl>
     size_t use_count(void) const;
 };
 
-} //namespace gnuradio
+} //namespace gras
 
-#include <gnuradio/sbuffer.ipp>
+#include <gras/sbuffer.ipp>
 
-#endif /*INCLUDED_GNURADIO_SBUFFER_HPP*/
+#endif /*INCLUDED_GRAS_SBUFFER_HPP*/

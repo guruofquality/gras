@@ -1,26 +1,14 @@
-//
-// Copyright 2012 Josh Blum
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
 #include "element_impl.hpp"
-#include <gnuradio/block.hpp>
+#include <gras/block.hpp>
 
-using namespace gnuradio;
+using namespace gras;
 
 InputPortConfig::InputPortConfig(void)
 {
+    reserve_items = 1;
+    maximum_items = 0;
     inline_buffer = false;
     lookahead_items = 0;
 }
@@ -51,12 +39,8 @@ Block::Block(const std::string &name):
     //call block methods to init stuff
     this->set_input_config(InputPortConfig());
     this->set_output_config(OutputPortConfig());
-    this->set_fixed_rate(true);
-    this->set_relative_rate(1.0);
-    this->set_tag_propagation_policy(TPP_ALL_TO_ALL);
     this->set_interruptible_work(false);
     this->set_buffer_affinity(-1);
-    (*this)->block->output_multiple_items = 1;
 }
 
 template <typename V, typename T>
@@ -105,75 +89,22 @@ void Block::set_output_config(const OutputPortConfig &config, const size_t which
 
 void Block::consume(const size_t which_input, const size_t how_many_items)
 {
-    (*this)->block->consume_items[which_input] += how_many_items;
-    (*this)->block->consume_called[which_input] = true;
-}
-
-void Block::consume_each(const size_t how_many_items)
-{
-    for (size_t i = 0; i < (*this)->block->consume_items.size(); i++)
-    {
-        (*this)->block->consume_items[i] += how_many_items;
-        (*this)->block->consume_called[i] = true;
-    }
+    (*this)->block->consume(which_input, how_many_items);
 }
 
 void Block::produce(const size_t which_output, const size_t how_many_items)
 {
-    (*this)->block->produce_items[which_output] += how_many_items;
+    (*this)->block->produce(which_output, how_many_items);
 }
 
-void Block::set_fixed_rate(const bool fixed_rate)
-{
-    (*this)->block->enable_fixed_rate = fixed_rate;
-}
-
-bool Block::fixed_rate(void) const
-{
-    return (*this)->block->enable_fixed_rate;
-}
-
-void Block::set_output_multiple(const size_t multiple)
-{
-    (*this)->block->output_multiple_items = multiple;
-    gnuradio::OutputPortConfig config = this->output_config();
-    config.reserve_items = multiple;
-    this->set_output_config(config);
-}
-
-size_t Block::output_multiple(void) const
-{
-    return (*this)->block->output_multiple_items;
-}
-
-void Block::set_relative_rate(double relative_rate)
-{
-    (*this)->block->relative_rate = relative_rate;
-}
-
-double Block::relative_rate(void) const
-{
-    return (*this)->block->relative_rate;
-}
-
-uint64_t Block::nitems_read(const size_t which_input)
+item_index_t Block::nitems_read(const size_t which_input)
 {
     return (*this)->block->items_consumed[which_input];
 }
 
-uint64_t Block::nitems_written(const size_t which_output)
+item_index_t Block::nitems_written(const size_t which_output)
 {
     return (*this)->block->items_produced[which_output];
-}
-
-Block::tag_propagation_policy_t Block::tag_propagation_policy(void)
-{
-    return (*this)->block->tag_prop_policy;
-}
-
-void Block::set_tag_propagation_policy(Block::tag_propagation_policy_t p)
-{
-    (*this)->block->tag_prop_policy = p;
 }
 
 void Block::post_output_tag(
@@ -190,7 +121,7 @@ Block::TagIter Block::get_input_tags(
     return boost::make_iterator_range(input_tags.begin(), input_tags.end());
 }
 
-void Block::forecast(int, std::vector<int> &)
+void Block::propagate_tags(const size_t, const TagIter &)
 {
     //NOP
 }
@@ -205,9 +136,9 @@ bool Block::stop(void)
     return true;
 }
 
-bool Block::check_topology(int, int)
+void Block::notify_topology(const size_t, const size_t)
 {
-    return true;
+    return;
 }
 
 void Block::set_buffer_affinity(const long affinity)
@@ -218,4 +149,19 @@ void Block::set_buffer_affinity(const long affinity)
 void Block::set_interruptible_work(const bool enb)
 {
     (*this)->block->interruptible_work = enb;
+}
+
+void Block::mark_output_fail(const size_t which_output)
+{
+    (*this)->block->output_fail(which_output);
+}
+
+void Block::mark_input_fail(const size_t which_input)
+{
+    (*this)->block->input_fail(which_input);
+}
+
+void Block::mark_done(void)
+{
+    (*this)->block->mark_done();
 }

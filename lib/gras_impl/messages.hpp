@@ -1,28 +1,14 @@
-//
-// Copyright 2012 Josh Blum
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
 #ifndef INCLUDED_LIBGRAS_IMPL_MESSAGES_HPP
 #define INCLUDED_LIBGRAS_IMPL_MESSAGES_HPP
 
-#include <gnuradio/sbuffer.hpp>
-#include <gnuradio/tags.hpp>
-#include <gnuradio/sbuffer.hpp>
+#include <gras/sbuffer.hpp>
+#include <gras/tags.hpp>
+#include <gras/sbuffer.hpp>
 #include <gras_impl/token.hpp>
 
-namespace gnuradio
+namespace gras
 {
 
 //----------------------------------------------------------------------
@@ -137,33 +123,33 @@ struct UpdateInputsMessage
     //empty
 };
 
-} //namespace gnuradio
+} //namespace gras
 
 #include <Theron/Register.h>
-#include <gnuradio/top_block.hpp>
+#include <gras/top_block.hpp>
 #include <gras_impl/messages.hpp>
 #include <gras_impl/interruptible_thread.hpp>
 
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::TopAllocMessage);
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::TopActiveMessage);
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::TopInertMessage);
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::TopTokenMessage);
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::GlobalBlockConfig);
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::SharedThreadGroup);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::TopAllocMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::TopActiveMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::TopInertMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::TopTokenMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::GlobalBlockConfig);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::SharedThreadGroup);
 
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::InputTagMessage);
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::InputBufferMessage);
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::InputTokenMessage);
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::InputCheckMessage);
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::InputAllocMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::InputTagMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::InputBufferMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::InputTokenMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::InputCheckMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::InputAllocMessage);
 
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::OutputBufferMessage);
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::OutputTokenMessage);
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::OutputCheckMessage);
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::OutputHintMessage);
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::OutputAllocMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputBufferMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputTokenMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputCheckMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputHintMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputAllocMessage);
 
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::SelfKickMessage);
-THERON_DECLARE_REGISTERED_MESSAGE(gnuradio::UpdateInputsMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::SelfKickMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::UpdateInputsMessage);
 
 #endif /*INCLUDED_LIBGRAS_IMPL_MESSAGES_HPP*/

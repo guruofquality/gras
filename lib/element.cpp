@@ -1,27 +1,13 @@
-//
-// Copyright 2012 Josh Blum
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
 #include "element_impl.hpp"
-#include <gnuradio/element.hpp>
+#include <gras/element.hpp>
 #include <boost/format.hpp>
 #include <boost/detail/atomic_count.hpp>
 
 static boost::detail::atomic_count unique_id_pool(0);
 
-using namespace gnuradio;
+using namespace gras;
 
 Element::Element(void)
 {
@@ -52,7 +38,11 @@ ElementImpl::~ElementImpl(void)
 
 Element &Element::shared_to_element(void)
 {
-    this->weak_self = this->shared_from_this();
+    try
+    {
+        this->weak_self = this->shared_from_this();
+    }
+    catch(...){}
     return *this;
 }
 

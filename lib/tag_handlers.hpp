@@ -1,18 +1,4 @@
-//
-// Copyright 2012 Josh Blum
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
 #ifndef INCLUDED_LIBGRAS_TAG_HANDLERS_HPP
 #define INCLUDED_LIBGRAS_TAG_HANDLERS_HPP
@@ -20,7 +6,7 @@
 #include <gras_impl/block_actor.hpp>
 #include <algorithm>
 
-namespace gnuradio
+namespace gras
 {
 
 GRAS_FORCE_INLINE void BlockActor::sort_tags(const size_t i)
@@ -33,8 +19,6 @@ GRAS_FORCE_INLINE void BlockActor::sort_tags(const size_t i)
 
 GRAS_FORCE_INLINE void BlockActor::trim_tags(const size_t i)
 {
-    const size_t num_outputs = this->get_num_outputs();
-
     //------------------------------------------------------------------
     //-- trim the input tags that are past the consumption zone
     //-- and post trimmed tags to the downstream based on policy
@@ -48,38 +32,15 @@ GRAS_FORCE_INLINE void BlockActor::trim_tags(const size_t i)
         last++;
     }
 
-    //follow the tag propagation policy before erasure
-    switch (this->tag_prop_policy)
-    {
-    case Block::TPP_DONT: break; //well that was ez
-    case Block::TPP_ALL_TO_ALL:
-        for (size_t out_i = 0; out_i < num_outputs; out_i++)
-        {
-            for (size_t tag_i = 0; tag_i < last; tag_i++)
-            {
-                Tag t = tags_i[tag_i];
-                t.offset = myullround(t.offset * this->relative_rate);
-                this->post_downstream(out_i, InputTagMessage(t));
-            }
-        }
-        break;
-    case Block::TPP_ONE_TO_ONE:
-        if (i < num_outputs)
-        {
-            for (size_t tag_i = 0; tag_i < last; tag_i++)
-            {
-                Tag t = tags_i[tag_i];
-                t.offset = myullround(t.offset * this->relative_rate);
-                this->post_downstream(i, InputTagMessage(t));
-            }
-        }
-        break;
-    };
+    if (last == 0) return;
+
+    //call the overloaded propagate_tags to do the dirty work
+    this->block_ptr->propagate_tags(i, boost::make_iterator_range(tags_i.begin(), tags_i.begin()+last));
 
     //now its safe to perform the erasure
-    if (last != 0) tags_i.erase(tags_i.begin(), tags_i.begin()+last);
+    tags_i.erase(tags_i.begin(), tags_i.begin()+last);
 }
 
-} //namespace gnuradio
+} //namespace gras
 
 #endif /*INCLUDED_LIBGRAS_TAG_HANDLERS_HPP*/

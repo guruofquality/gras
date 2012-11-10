@@ -1,25 +1,9 @@
-//
-// Copyright 2012 Josh Blum
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
 #include <gras_impl/block_actor.hpp>
 #include "tag_handlers.hpp"
 
-#define REALLY_BIG size_t(1 << 30)
-
-using namespace gnuradio;
+using namespace gras;
 
 void BlockActor::mark_done(void)
 {
@@ -73,8 +57,10 @@ void BlockActor::mark_done(void)
         << std::flush;
 }
 
-GRAS_FORCE_INLINE void BlockActor::input_fail(const size_t i)
+void BlockActor::input_fail(const size_t i)
 {
+    SBuffer &buff = this->input_queues.front(i);
+
     //input failed, accumulate and try again
     if (not this->input_queues.is_accumulated(i))
     {
@@ -82,8 +68,40 @@ GRAS_FORCE_INLINE void BlockActor::input_fail(const size_t i)
         this->Push(SelfKickMessage(), Theron::Address());
         return;
     }
+
     //otherwise check for done, else wait for more
-    if (this->inputs_done[i]) this->mark_done();
+    if (this->inputs_done[i])
+    {
+        this->mark_done();
+        return;
+    }
+
+    //check that the input is not already maxed
+    const size_t front_items = buff.length/this->input_items_sizes[i];
+    if (front_items >= this->input_configs[i].maximum_items)
+    {
+        //throw std::runtime_error("input_fail called on maximum_items buffer");
+    }
+}
+
+void BlockActor::output_fail(const size_t i)
+{
+    SBuffer &buff = this->output_queues.front(i);
+
+    //check that the input is not already maxed
+    const size_t front_items = buff.length/this->output_items_sizes[i];
+    if (front_items >= this->output_configs[i].maximum_items)
+    {
+        throw std::runtime_error("output_fail called on maximum_items buffer");
+    }
+
+    if (buff.length != 0)
+    {
+        InputBufferMessage buff_msg;
+        buff_msg.buffer = buff;
+        this->post_downstream(i, buff_msg);
+        this->output_queues.pop(i);
+    }
 }
 
 void BlockActor::handle_task(void)
@@ -105,12 +123,10 @@ void BlockActor::handle_task(void)
 
     const size_t num_inputs = this->get_num_inputs();
     const size_t num_outputs = this->get_num_outputs();
-    this->work_io_ptr_mask = 0; //reset
 
     //------------------------------------------------------------------
     //-- initialize input buffers before work
     //------------------------------------------------------------------
-    size_t num_input_items = REALLY_BIG; //so big that it must std::min
     size_t output_inline_index = 0;
     for (size_t i = 0; i < num_inputs; i++)
     {
@@ -122,24 +138,8 @@ void BlockActor::handle_task(void)
         void *mem = buff.get();
         size_t items = buff.length/this->input_items_sizes[i];
 
-        this->work_io_ptr_mask |= ptrdiff_t(mem);
         this->input_items[i].get() = mem;
         this->input_items[i].size() = items;
-        this->work_input_items[i] = mem;
-        this->work_ninput_items[i] = items;
-
-        if (this->enable_fixed_rate)
-        {
-            if (items <= this->input_configs[i].lookahead_items)
-            {
-                this->input_fail(i); return;
-            }
-            items -= this->input_configs[i].lookahead_items;
-        }
-
-        num_input_items = std::min(num_input_items, items);
-        this->consume_items[i] = 0;
-        this->consume_called[i] = false;
 
         //inline dealings, how and when input buffers can be inlined into output buffers
         //continue;
@@ -160,7 +160,6 @@ void BlockActor::handle_task(void)
     //------------------------------------------------------------------
     //-- initialize output buffers before work
     //------------------------------------------------------------------
-    size_t num_output_items = REALLY_BIG; //so big that it must std::min
     for (size_t i = 0; i < num_outputs; i++)
     {
         ASSERT(this->output_queues.ready(i));
@@ -169,66 +168,13 @@ void BlockActor::handle_task(void)
         const size_t bytes = buff.get_actual_length() - buff.length - buff.offset;
         size_t items = bytes/this->output_items_sizes[i];
 
-        this->work_io_ptr_mask |= ptrdiff_t(mem);
         this->output_items[i].get() = mem;
         this->output_items[i].size() = items;
-        this->work_output_items[i] = mem;
-
-        items /= this->output_multiple_items;
-        items *= this->output_multiple_items;
-        num_output_items = std::min(num_output_items, items);
-        this->produce_items[i] = 0;
-    }
-
-    //------------------------------------------------------------------
-    //-- calculate the work_noutput_items given:
-    //-- min of num_input_items
-    //-- min of num_output_items
-    //-- relative rate and output multiple items
-    //------------------------------------------------------------------
-    work_noutput_items = num_output_items;
-    if (num_inputs and (this->enable_fixed_rate or not num_outputs))
-    {
-        size_t calc_output_items = size_t(num_input_items*this->relative_rate);
-        calc_output_items += this->output_multiple_items-1;
-        calc_output_items /= this->output_multiple_items;
-        calc_output_items *= this->output_multiple_items;
-        if (calc_output_items and calc_output_items < work_noutput_items)
-            work_noutput_items = calc_output_items;
-    }
-
-    //------------------------------------------------------------------
-    //-- forecast
-    //------------------------------------------------------------------
-    //VAR(work_noutput_items);
-    if (this->forecast_enable)
-    {
-        forecast_again_you_jerk:
-        fcast_ninput_items = work_ninput_items; //init for NOP case
-        block_ptr->forecast(work_noutput_items, fcast_ninput_items);
-        for (size_t i = 0; i < num_inputs; i++)
-        {
-            if (fcast_ninput_items[i] <= work_ninput_items[i]) continue;
-
-            //handle the case of forecast failing
-            if (work_noutput_items <= this->output_multiple_items)
-            {
-                this->input_fail(i); return;
-            }
-
-            work_noutput_items = work_noutput_items/2; //backoff regime
-            work_noutput_items += this->output_multiple_items-1;
-            work_noutput_items /= this->output_multiple_items;
-            work_noutput_items *= this->output_multiple_items;
-            goto forecast_again_you_jerk;
-        }
     }
 
     //------------------------------------------------------------------
     //-- the work
     //------------------------------------------------------------------
-    //VAR(work_noutput_items);
-    this->work_ret = -1;
     if (this->interruptible_thread)
     {
         this->interruptible_thread->call();
@@ -237,46 +183,22 @@ void BlockActor::handle_task(void)
     {
         this->task_work();
     }
-    const size_t noutput_items = size_t(work_ret);
-    //VAR(work_ret);
-
-    if (work_ret == Block::WORK_DONE)
-    {
-        this->mark_done();
-        return;
-    }
 
     //------------------------------------------------------------------
-    //-- process input consumption
-    //------------------------------------------------------------------
-    for (size_t i = 0; i < num_inputs; i++)
-    {
-        ASSERT(enable_fixed_rate or work_ret != Block::WORK_CALLED_PRODUCE);
-        const bool use_consume = (not this->enable_fixed_rate) or (this->consume_called[i]);
-        const size_t items = (use_consume)? this->consume_items[i] : (myulround((noutput_items/this->relative_rate)));
-
-        this->items_consumed[i] += items;
-        const size_t bytes = items*this->input_items_sizes[i];
-        this->input_queues.consume(i, bytes);
-
-        this->trim_tags(i);
-    }
-
-    //------------------------------------------------------------------
-    //-- process output production
+    //-- Flush output buffers downstream
     //------------------------------------------------------------------
     for (size_t i = 0; i < num_outputs; i++)
     {
-        const size_t items = (work_ret == Block::WORK_CALLED_PRODUCE)? this->produce_items[i] : noutput_items;
-        if (items == 0) continue;
-
+        if (not this->output_queues.ready(i)) continue;
         SBuffer &buff = this->output_queues.front(i);
-        this->items_produced[i] += items;
-        const size_t bytes = items*this->output_items_sizes[i];
-        buff.length += bytes;
+        const size_t reserve_bytes = this->output_configs[i].reserve_items/this->output_items_sizes[i];
 
         //dont always pass output buffers downstream for the sake of efficiency
-        if (not this->input_queues.all_ready() or buff.length*2 > buff.get_actual_length())
+        if (
+            not this->input_queues.all_ready() or
+            buff.length*2 > buff.get_actual_length() or
+            (buff.get_actual_length() - buff.length) < reserve_bytes
+        )
         {
             InputBufferMessage buff_msg;
             buff_msg.buffer = buff;
@@ -297,4 +219,20 @@ void BlockActor::handle_task(void)
     {
         this->Push(SelfKickMessage(), Theron::Address());
     }
+}
+
+void BlockActor::consume(const size_t i, const size_t items)
+{
+    this->items_consumed[i] += items;
+    const size_t bytes = items*this->input_items_sizes[i];
+    this->input_queues.consume(i, bytes);
+    this->trim_tags(i);
+}
+
+void BlockActor::produce(const size_t i, const size_t items)
+{
+    SBuffer &buff = this->output_queues.front(i);
+    this->items_produced[i] += items;
+    const size_t bytes = items*this->output_items_sizes[i];
+    buff.length += bytes;
 }

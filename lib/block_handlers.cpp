@@ -1,24 +1,10 @@
-//
-// Copyright 2012 Josh Blum
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
 #include <gras_impl/block_actor.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/bind.hpp>
 
-using namespace gnuradio;
+using namespace gras;
 
 
 void BlockActor::handle_top_active(
@@ -68,7 +54,7 @@ void BlockActor::handle_top_token(
         //tell the upstream about the input requirements
         OutputHintMessage output_hints;
         output_hints.history_bytes = this->input_configs[i].lookahead_items*this->input_items_sizes[i];
-        output_hints.reserve_bytes = size_t(std::ceil(this->output_multiple_items/this->relative_rate));
+        output_hints.reserve_bytes = 1; //TODO what do we want here, and so we like these hints at all?
         output_hints.token = this->input_tokens[i];
         this->post_upstream(i, output_hints);
 

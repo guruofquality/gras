@@ -1,22 +1,8 @@
-//
-// Copyright 2012 Josh Blum
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
 #include <gras_impl/block_actor.hpp>
 
-using namespace gnuradio;
+using namespace gras;
 
 template <typename V, typename Sig>
 void fill_item_sizes_from_sig(V &v, const Sig &s, const size_t size)
@@ -51,8 +37,8 @@ void BlockActor::handle_topology(
     const size_t num_inputs = this->get_num_inputs();
     const size_t num_outputs = this->get_num_outputs();
 
-    //call check_topology on block before committing settings
-    this->block_ptr->check_topology(num_inputs, num_outputs);
+    //call notify_topology on block before committing settings
+    this->block_ptr->notify_topology(num_inputs, num_outputs);
 
     //fill the item sizes from the IO signatures
     fill_item_sizes_from_sig(this->input_items_sizes, block_ptr->input_signature(), num_inputs);
@@ -67,18 +53,10 @@ void BlockActor::handle_topology(
     resize_fill_grow(this->items_produced, num_outputs, 0);
 
     //resize all work buffers to match current connections
-    this->work_input_items.resize(num_inputs);
-    this->work_output_items.resize(num_outputs);
-    this->work_ninput_items.resize(num_inputs);
-    this->fcast_ninput_items.resize(num_inputs);
     this->input_items.resize(num_inputs);
     this->output_items.resize(num_outputs);
-    this->consume_items.resize(num_inputs, 0);
-    this->consume_called.resize(num_inputs, false);
-    this->produce_items.resize(num_outputs, 0);
     this->input_queues.resize(num_inputs);
     this->output_queues.resize(num_outputs);
-    this->forecast_enable = num_outputs != 0 and num_inputs != 0;
 
     this->input_tokens.resize(num_inputs);
     this->output_tokens.resize(num_outputs);
@@ -110,10 +88,11 @@ void BlockActor::handle_update_inputs(
     const size_t num_inputs = this->get_num_inputs();
     this->input_queues.resize(num_inputs);
 
-    //impose input reserve requirements based on relative rate and output multiple
     for (size_t i = 0; i < num_inputs; i++)
     {
         const size_t hist_bytes = this->input_items_sizes[i]*this->input_configs[i].lookahead_items;
-        this->input_queues.update_history_bytes(i, hist_bytes);
+        const size_t reserve_bytes = this->input_items_sizes[i]*this->input_configs[i].reserve_items;
+        const size_t maximum_bytes = this->input_items_sizes[i]*this->input_configs[i].maximum_items;
+        this->input_queues.update_config(i, hist_bytes, reserve_bytes, maximum_bytes);
     }
 }

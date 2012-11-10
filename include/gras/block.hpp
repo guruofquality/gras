@@ -1,36 +1,41 @@
-//
-// Copyright 2012 Josh Blum
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
-#ifndef INCLUDED_GNURADIO_BLOCK_HPP
-#define INCLUDED_GNURADIO_BLOCK_HPP
+#ifndef INCLUDED_GRAS_BLOCK_HPP
+#define INCLUDED_GRAS_BLOCK_HPP
 
-#include <gnuradio/element.hpp>
-#include <gnuradio/sbuffer.hpp>
-#include <gnuradio/tags.hpp>
+#include <gras/element.hpp>
+#include <gras/sbuffer.hpp>
+#include <gras/tags.hpp>
 #include <vector>
 #include <string>
 #include <boost/range.hpp> //iterator range
 
-namespace gnuradio
+namespace gras
 {
 
 //! Configuration parameters for an input port
 struct GRAS_API InputPortConfig
 {
     InputPortConfig(void);
+
+    /*!
+     * Set an input reserve requirement such that work is called
+     * with an input buffer at least reserve items in size.
+     *
+     * Default = 1.
+     */
+    size_t reserve_items;
+
+    /*!
+     * Constrain the input buffer allocation size:
+     * The scheduler may accumulate multiple buffers
+     * into a single larger buffer under failure conditions.
+     * The maximum size of this accumulated buffer
+     * is constrained by this maximum_items setting.
+     *
+     * Default = 0 aka disabled.
+     */
+    size_t maximum_items;
 
     /*!
      * Set buffer inlining for this port config.
@@ -78,8 +83,10 @@ struct GRAS_API OutputPortConfig
     size_t reserve_items;
 
     /*!
-     * Constrain the maximum number of items that
-     * work can be called with for this port.
+     * Constrain the output buffer allocation size:
+     * The user might set a small maximum items
+     * to reduce the amount of buffered items
+     * waiting for processing in downstream queues.
      *
      * Default = 0 aka disabled.
      */
@@ -147,73 +154,23 @@ struct GRAS_API Block : Element
     //! Set the configuration rules for an output port
     void set_output_config(const OutputPortConfig &config, const size_t which_output = 0);
 
-    /*!
-     * Enable fixed rate logic.
-     * When enabled, relative rate is assumed to be set,
-     * and forecast is automatically called.
-     * Also, consume will be called automatically.
-     */
-    void set_fixed_rate(const bool fixed_rate);
-
-    //! Get the fixed rate setting
-    bool fixed_rate(void) const;
-
-    /*!
-     * The relative rate can be thought of as interpolation/decimation.
-     * In other words, relative rate is the ratio of output items to input items.
-     */
-    void set_relative_rate(const double relative_rate);
-
-    //! Get the relative rate setting
-    double relative_rate(void) const;
-
-    /*!
-     * The output multiple setting controls work output buffer sizes.
-     * Buffers will be number of items modulo rounted to the multiple.
-     */
-    void set_output_multiple(const size_t multiple);
-
-    //! Get the output multiple setting
-    size_t output_multiple(void) const;
-
     /*******************************************************************
      * Deal with data production and consumption
      ******************************************************************/
 
-    //! Return options for the work call
-    enum
-    {
-        WORK_CALLED_PRODUCE = -2,
-        WORK_DONE = -1
-    };
-
     //! Call during work to consume items
     void consume(const size_t which_input, const size_t how_many_items);
 
-    //! Call during work to consume items
-    void consume_each(const size_t how_many_items);
-
-    //! Call during work to produce items, must return WORK_CALLED_PRODUCE
+    //! Call during work to produce items
     void produce(const size_t which_output, const size_t how_many_items);
 
     /*******************************************************************
      * Deal with tag handling and tag configuration
      ******************************************************************/
 
-    enum tag_propagation_policy_t
-    {
-        TPP_DONT = 0,
-        TPP_ALL_TO_ALL = 1,
-        TPP_ONE_TO_ONE = 2
-    };
+    item_index_t nitems_read(const size_t which_input);
 
-    uint64_t nitems_read(const size_t which_input);
-
-    uint64_t nitems_written(const size_t which_output);
-
-    tag_propagation_policy_t tag_propagation_policy(void);
-
-    void set_tag_propagation_policy(tag_propagation_policy_t p);
+    item_index_t nitems_written(const size_t which_output);
 
     //! Send a tag to the downstream on the given output port
     void post_output_tag(const size_t which_output, const Tag &tag);
@@ -223,6 +180,9 @@ struct GRAS_API Block : Element
 
     //! Get an iterator of item tags for the given input
     TagIter get_input_tags(const size_t which_input = 0);
+
+    //! Overload me to implement tag propagation logic
+    virtual void propagate_tags(const size_t which_input, const TagIter &iter);
 
     /*******************************************************************
      * Work related routines from basic block
@@ -238,19 +198,55 @@ struct GRAS_API Block : Element
     typedef std::vector<WorkBuffer<void *> > OutputItems;
 
     //! The official call into the work routine (overload please)
-    virtual int work(
+    virtual void work(
         const InputItems &input_items,
         const OutputItems &output_items
     ) = 0;
 
-    //! forcast requirements, can be overloaded
-    virtual void forecast(
-        int noutput_items,
-        std::vector<int> &ninput_items_required
-    );
+    /*!
+     * Tell the scheduler that an output requirement could not be met.
+     *
+     * - If the output buffer was partially filled (ie, not flushed downstream),
+     * this will cause the output buffer to flush to the downstream.
+     * The next call to work will be with a full size output buffer.
+     *
+     * - If the output buffer was not partially filled, this call will throw.
+     * In this case, the user should set larger maximum_items on this port.
+     *
+     * \param which_output the output port index
+     */
+    void mark_output_fail(const size_t which_output);
 
-    //! scheduler calls when the topology is updated, can be overloaded
-    virtual bool check_topology(int ninputs, int noutputs);
+    /*!
+     * Tell the scheduler that an input requirement could not be met.
+     *
+     *  - If there are more inputs enqueued ahead of this buffer,
+     * the enqueued inputs will be accumulated into a larger buffer.
+     * The next call to work will be with a larger input buffer.
+     *
+     * - If the buffer is already accumlated and the upstream provider
+     * is no longer producing, then the scheduler will mark this block done.
+     *
+     * - If the input buffer at the maximum size, this call will throw.
+     * In this case, the user should set larger maximum_items on this port.
+     *
+     * \param which_input the input port index
+     */
+    void mark_input_fail(const size_t which_input);
+
+    /*!
+     * Mark this block as done.
+     * The scheduler will no longer call the work() routine.
+     * Downstream consumers and upstream providers will be notified.
+     */
+    void mark_done(void);
+
+    /*!
+     * Overload notify_topology to get called on topological changes.
+     * Use notify_topology to perform one-time resizing operations
+     * to avoid a conditional resizing operation inside the work().
+     */
+    virtual void notify_topology(const size_t num_inputs, const size_t num_outputs);
 
     /*!
      * Set if the work call should be interruptible by stop().
@@ -315,6 +311,6 @@ struct GRAS_API Block : Element
 
 };
 
-} //namespace gnuradio
+} //namespace gras
 
-#endif /*INCLUDED_GNURADIO_BLOCK_HPP*/
+#endif /*INCLUDED_GRAS_BLOCK_HPP*/

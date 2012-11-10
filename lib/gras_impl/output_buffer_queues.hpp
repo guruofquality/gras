@@ -1,18 +1,4 @@
-//
-// Copyright 2012 Josh Blum
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
 #ifndef INCLUDED_LIBGRAS_IMPL_OUTPUT_BUFFER_QUEUES_HPP
 #define INCLUDED_LIBGRAS_IMPL_OUTPUT_BUFFER_QUEUES_HPP
@@ -21,7 +7,7 @@
 #include <vector>
 #include <boost/circular_buffer.hpp>
 
-namespace gnuradio
+namespace gras
 {
 
 template <typename T>
@@ -59,6 +45,7 @@ struct OutputBufferQueues
 
     GRAS_FORCE_INLINE T &front(const size_t i)
     {
+        ASSERT(not _queues[i].empty());
         return _queues[i].front();
     }
 
@@ -100,6 +87,6 @@ struct OutputBufferQueues
     }
 };
 
-} //namespace gnuradio
+} //namespace gras
 
 #endif /*INCLUDED_LIBGRAS_IMPL_OUTPUT_BUFFER_QUEUES_HPP*/

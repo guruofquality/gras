@@ -1,24 +1,10 @@
-//
-// Copyright 2012 Josh Blum
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
 #include "element_impl.hpp"
-#include <gnuradio/top_block.hpp>
+#include <gras/top_block.hpp>
 #include <boost/thread/thread.hpp> //sleep
 
-using namespace gnuradio;
+using namespace gras;
 
 GlobalBlockConfig::GlobalBlockConfig(void)
 {
@@ -47,7 +33,7 @@ TopBlock::TopBlock(const std::string &name):
 void ElementImpl::top_block_cleanup(void)
 {
     this->executor->post_all(TopInertMessage());
-    this->topology->clear_all();;
+    this->topology->clear_all();
     this->executor->commit();
     if (ARMAGEDDON) std::cerr
         << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"
@@ -143,4 +129,30 @@ bool TopBlock::wait(const double timeout)
     }
 
     return (*this)->token.unique();
+}
+
+///////////////////////// Deprecated interfaces ////////////////////////
+
+void TopBlock::start(const size_t max_items)
+{
+    this->set_max_noutput_items(max_items);
+    this->start();
+}
+
+void TopBlock::run(const size_t max_items)
+{
+    this->set_max_noutput_items(max_items);
+    this->run();
+}
+
+int TopBlock::max_noutput_items(void) const
+{
+    return this->global_config().maximum_output_items;
+}
+
+void TopBlock::set_max_noutput_items(int max_items)
+{
+    gras::GlobalBlockConfig config = this->global_config();
+    config.maximum_output_items = max_items;
+    this->set_global_config(config);
 }

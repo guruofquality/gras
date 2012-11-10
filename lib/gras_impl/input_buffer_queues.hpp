@@ -1,18 +1,4 @@
-//
-// Copyright 2012 Josh Blum
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
 #ifndef INCLUDED_LIBGRAS_IMPL_INPUT_BUFFERS_HPP
 #define INCLUDED_LIBGRAS_IMPL_INPUT_BUFFERS_HPP
@@ -20,14 +6,14 @@
 #include <gras_impl/debug.hpp>
 #include <gras_impl/bitset.hpp>
 #include <gras_impl/buffer_queue.hpp>
-#include <gnuradio/sbuffer.hpp>
+#include <gras/sbuffer.hpp>
 #include <vector>
 #include <queue>
 #include <deque>
 #include <cstring> //memcpy/memset
 #include <boost/circular_buffer.hpp>
 
-namespace gnuradio
+namespace gras
 {
 
 struct InputBufferQueues
@@ -40,7 +26,7 @@ struct InputBufferQueues
         this->resize(0);
     }
 
-    void update_history_bytes(const size_t i, const size_t hist_bytes);
+    void update_config(const size_t i, const size_t, const size_t, const size_t);
 
     //! Call to get an input buffer for work
     GRAS_FORCE_INLINE SBuffer &front(const size_t i)
@@ -68,12 +54,13 @@ struct InputBufferQueues
         ASSERT(not _queues[i].empty());
         return
             (_queues[i].front().length == _enqueued_bytes[i]) or
-            (_queues[i].front().length >= MAX_AUX_BUFF_BYTES);
+            (_queues[i].front().length >= _maximum_bytes[i]);
     }
 
     GRAS_FORCE_INLINE void push(const size_t i, const SBuffer &buffer)
     {
         ASSERT(not _queues[i].full());
+        if (buffer.length == 0) return;
         _queues[i].push_back(buffer);
         _enqueued_bytes[i] += _queues[i].back().length;
         __update(i);
@@ -114,11 +101,13 @@ struct InputBufferQueues
 
     GRAS_FORCE_INLINE void __update(const size_t i)
     {
-        _bitset.set(i, _enqueued_bytes[i] != 0);
+        _bitset.set(i, _enqueued_bytes[i] >= _reserve_bytes[i]);
     }
 
     BitSet _bitset;
     std::vector<size_t> _enqueued_bytes;
+    std::vector<size_t> _reserve_bytes;
+    std::vector<size_t> _maximum_bytes;
     std::vector<boost::circular_buffer<SBuffer> > _queues;
     std::vector<size_t> _history_bytes;
     std::vector<boost::shared_ptr<BufferQueue> > _aux_queues;
@@ -129,24 +118,34 @@ GRAS_FORCE_INLINE void InputBufferQueues::resize(const size_t size)
 {
     _bitset.resize(size);
     _enqueued_bytes.resize(size, 0);
+    _reserve_bytes.resize(size, 1);
+    _maximum_bytes.resize(size, MAX_AUX_BUFF_BYTES);
     _queues.resize(size, boost::circular_buffer<SBuffer>(MAX_QUEUE_SIZE));
     _history_bytes.resize(size, 0);
     _aux_queues.resize(size);
 
-    for (size_t i = 0; i < this->size(); i++)
-    {
-        if (_aux_queues[i]) continue;
-        _aux_queues[i] = boost::shared_ptr<BufferQueue>(new BufferQueue());
-        _aux_queues[i]->allocate_one(MAX_AUX_BUFF_BYTES);
-        _aux_queues[i]->allocate_one(MAX_AUX_BUFF_BYTES);
-        _aux_queues[i]->allocate_one(MAX_AUX_BUFF_BYTES);
-        _aux_queues[i]->allocate_one(MAX_AUX_BUFF_BYTES);
-    }
-
 }
 
-inline void InputBufferQueues::update_history_bytes(const size_t i, const size_t hist_bytes)
+inline void InputBufferQueues::update_config(
+    const size_t i,
+    const size_t hist_bytes,
+    const size_t reserve_bytes,
+    const size_t maximum_bytes
+)
 {
+    //first allocate the aux buffer
+    if (maximum_bytes != 0) _maximum_bytes[i] = maximum_bytes;
+    if (
+        not _aux_queues[i] or
+        _aux_queues[i]->empty() or
+        _aux_queues[i]->front().get_actual_length() != _maximum_bytes[i]
+    ){
+        _aux_queues[i] = boost::shared_ptr<BufferQueue>(new BufferQueue());
+        _aux_queues[i]->allocate_one(_maximum_bytes[i]);
+        _aux_queues[i]->allocate_one(_maximum_bytes[i]);
+        _aux_queues[i]->allocate_one(_maximum_bytes[i]);
+    }
+
     //there is history, so enqueue some initial history
     if (hist_bytes > _history_bytes[i])
     {
@@ -169,6 +168,8 @@ inline void InputBufferQueues::update_history_bytes(const size_t i, const size_t
     }
 
     _history_bytes[i] = hist_bytes;
+    _reserve_bytes[i] = reserve_bytes;
+    this->__update(i);
 }
 
 GRAS_FORCE_INLINE void InputBufferQueues::accumulate(const size_t i, const size_t item_size)
@@ -201,14 +202,16 @@ GRAS_FORCE_INLINE void InputBufferQueues::accumulate(const size_t i, const size_
 
 GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t bytes_consumed)
 {
+    SBuffer &front = _queues[i].front();
+
     //assert that we dont consume past the bounds of the buffer
-    ASSERT(_queues[i].front().length >= bytes_consumed);
+    ASSERT(front.length >= bytes_consumed);
 
     //update bounds on the current buffer
-    _queues[i].front().offset += bytes_consumed;
-    _queues[i].front().length -= bytes_consumed;
-
-    ASSERT(_queues[i].front().offset <= _queues[i].front().get_actual_length());
+    front.offset += bytes_consumed;
+    front.length -= bytes_consumed;
+    ASSERT(front.offset <= front.get_actual_length());
+    if (front.length == 0) _queues[i].pop_front();
 
     //update the number of bytes in this queue
     ASSERT(_enqueued_bytes[i] >= bytes_consumed);
@@ -217,6 +220,6 @@ GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t b
     __update(i);
 }
 
-} //namespace gnuradio
+} //namespace gras
 
 #endif /*INCLUDED_LIBGRAS_IMPL_INPUT_BUFFERS_HPP*/

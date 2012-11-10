@@ -1,0 +1,42 @@
+// Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
+
+#ifndef INCLUDED_GRAS_ELEMENT_I
+#define INCLUDED_GRAS_ELEMENT_I
+
+%{
+#include <gras/element.hpp>
+%}
+
+////////////////////////////////////////////////////////////////////////
+// remove base class warning
+////////////////////////////////////////////////////////////////////////
+#pragma SWIG nowarn=401
+
+////////////////////////////////////////////////////////////////////////
+// Export swig element comprehension
+////////////////////////////////////////////////////////////////////////
+%include <std_string.i>
+%include <gras/element.hpp>
+
+////////////////////////////////////////////////////////////////////////
+// Create a __str__ for this object
+////////////////////////////////////////////////////////////////////////
+
+namespace gras
+{
+    %extend Element
+    {
+        std::string __str__(void)
+        {
+           return ($self)->to_string();
+        }
+
+        bool __eq__(const Element &rhs)
+        {
+            return ($self)->get() == rhs.get();
+        }
+
+    }
+}
+
+#endif /*INCLUDED_GRAS_ELEMENT_I*/
