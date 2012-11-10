@@ -76,6 +76,8 @@ set(GR_TEST_EXTRA_PYTHON_DIRS ${GRAS_PYTHON_DIRS}) #helps QA tests
 
 set(GRAS_LIBRARIES gras) #for submodule linking
 
+set(CMAKE_PROJECT_NAME gnuradio) #for submodule vars
+
 add_subdirectory(gnuradio)
 
 ########################################################################
