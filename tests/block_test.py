@@ -44,13 +44,15 @@ class BlockTest(unittest.TestCase):
         tb = None
         self.assertEqual(sink.get_vector(), (1, 5j, 9, 13j, 17))
 
-    def test_tag_source(self):
+    def test_tag_source_sink(self):
+        values = (0, 'hello', 4.2, True, None, [2, 3, 4], (9, 8, 7), 1j, {2:'d'})
         tb = gras.TopBlock()
-        src = TagSource([1, 2, 3])
-        sink = NullSink(numpy.uint8)
+        src = TagSource(values)
+        sink = TagSink()
         tb.connect(src, sink)
         tb.run()
         tb = None
+        self.assertEqual(sink.get_values(), values)
 
 if __name__ == '__main__':
     unittest.main()
