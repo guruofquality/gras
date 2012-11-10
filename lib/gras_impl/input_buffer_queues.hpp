@@ -60,6 +60,7 @@ struct InputBufferQueues
     GRAS_FORCE_INLINE void push(const size_t i, const SBuffer &buffer)
     {
         ASSERT(not _queues[i].full());
+        if (buffer.length == 0) return;
         _queues[i].push_back(buffer);
         _enqueued_bytes[i] += _queues[i].back().length;
         __update(i);
@@ -201,14 +202,16 @@ GRAS_FORCE_INLINE void InputBufferQueues::accumulate(const size_t i, const size_
 
 GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t bytes_consumed)
 {
+    SBuffer &front = _queues[i].front();
+
     //assert that we dont consume past the bounds of the buffer
-    ASSERT(_queues[i].front().length >= bytes_consumed);
+    ASSERT(front.length >= bytes_consumed);
 
     //update bounds on the current buffer
-    _queues[i].front().offset += bytes_consumed;
-    _queues[i].front().length -= bytes_consumed;
-
-    ASSERT(_queues[i].front().offset <= _queues[i].front().get_actual_length());
+    front.offset += bytes_consumed;
+    front.length -= bytes_consumed;
+    ASSERT(front.offset <= front.get_actual_length());
+    if (front.length == 0) _queues[i].pop_front();
 
     //update the number of bytes in this queue
     ASSERT(_enqueued_bytes[i] >= bytes_consumed);
