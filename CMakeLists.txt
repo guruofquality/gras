@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 2.6)
 project(gras CXX C)
 enable_testing()
 
+set(GRAS_VERSION "0.0.0")
 set(GRAS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(GRAS_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 

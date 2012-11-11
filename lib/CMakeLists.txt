@@ -60,9 +60,24 @@ list(APPEND GRAS_SOURCES
 ########################################################################
 add_library(gras SHARED ${GRAS_SOURCES})
 target_link_libraries(gras ${GRAS_LIBRARIES})
+set_target_properties(gras PROPERTIES VERSION ${GRAS_VERSION})
 
 install(TARGETS gras
     LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT ${GRAS_COMP_RUNTIME} # .so file
     ARCHIVE DESTINATION lib${LIB_SUFFIX} COMPONENT ${GRAS_COMP_DEVEL}   # .lib file
     RUNTIME DESTINATION bin              COMPONENT ${GRAS_COMP_RUNTIME} # .dll file
+)
+
+########################################################################
+# Build pkg config file
+########################################################################
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/gras.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/gras.pc
+@ONLY)
+
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/gras.pc
+    DESTINATION lib${LIB_SUFFIX}/pkgconfig
+    COMPONENT ${GRAS_COMP_DEVEL}
 )

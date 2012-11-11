@@ -1,0 +1,15 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib@LIB_SUFFIX@
+includedir=${prefix}/include
+
+Name: GRAS
+Description: GNU Radio Advanced Scheduler
+URL: https://github.com/guruofquality/gras/wiki
+Version: @GRAS_VERSION@
+Requires:
+Requires.private:
+Conflicts:
+Cflags: -I${includedir}
+Libs: -L${libdir} -lgras
+Libs.private:
