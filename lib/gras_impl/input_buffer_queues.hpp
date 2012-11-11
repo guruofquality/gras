@@ -51,10 +51,14 @@ struct InputBufferQueues
      */
     GRAS_FORCE_INLINE bool is_accumulated(const size_t i) const
     {
+        return (_queues[i].size() <= 1) or this->is_front_maximal(i);
+    }
+
+    //! Return true if the front buffer is at least max size
+    GRAS_FORCE_INLINE bool is_front_maximal(const size_t i) const
+    {
         ASSERT(not _queues[i].empty());
-        return
-            (_queues[i].front().length == _enqueued_bytes[i]) or
-            (_queues[i].front().length >= _maximum_bytes[i]);
+        return _queues[i].front().length >= _maximum_bytes[i];
     }
 
     GRAS_FORCE_INLINE void push(const size_t i, const SBuffer &buffer)
@@ -135,6 +139,7 @@ inline void InputBufferQueues::update_config(
 {
     //first allocate the aux buffer
     if (maximum_bytes != 0) _maximum_bytes[i] = maximum_bytes;
+    _maximum_bytes[i] = std::max(_maximum_bytes[i], reserve_bytes);
     if (
         not _aux_queues[i] or
         _aux_queues[i]->empty() or
