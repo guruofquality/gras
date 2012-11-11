@@ -54,5 +54,25 @@ class BlockTest(unittest.TestCase):
         tb = None
         self.assertEqual(sink.get_values(), values)
 
+    def test_ro_buffers(self):
+        class BadTouch(gras.Block):
+            def __init__(self, in_sig):
+                gras.Block.__init__(self, 'BadTouch', in_sig=[in_sig])
+
+            def work(self, ins, outs):
+                try:
+                    ins[0][0] = 0 #assign to ro buffer should fail
+                    raise Exception, 'ins should not be writeable!'
+                except: pass
+                self.consume(0, len(ins[0]))
+
+        source = VectorSource(numpy.uint32, [0, 9, 8, 7, 6])
+        sink = BadTouch(numpy.uint32)
+
+        tb = gras.TopBlock()
+        tb.connect(source, sink)
+        tb.run()
+        tb = None
+
 if __name__ == '__main__':
     unittest.main()
