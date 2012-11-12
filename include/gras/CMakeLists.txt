@@ -15,6 +15,7 @@ install(FILES
     tags.hpp
     thread_pool.hpp
     top_block.hpp
+    work_buffer.hpp
 
     DESTINATION include/gras
     COMPONENT ${GRAS_COMP_DEVEL}

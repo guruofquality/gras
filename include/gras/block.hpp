@@ -6,6 +6,7 @@
 #include <gras/element.hpp>
 #include <gras/sbuffer.hpp>
 #include <gras/tags.hpp>
+#include <gras/work_buffer.hpp>
 #include <vector>
 #include <string>
 
@@ -90,42 +91,6 @@ struct GRAS_API OutputPortConfig
      * Default = 0 aka disabled.
      */
     size_t maximum_items;
-};
-
-template <typename PtrType> struct WorkBuffer
-{
-    //! get a native pointer type to this buffer
-    inline PtrType get(void) const
-    {
-        return _mem;
-    }
-
-    //! get a pointer of the desired type to this buffer
-    template <typename T> inline T cast(void) const
-    {
-        return reinterpret_cast<T>(this->get());
-    }
-
-    //! get the number of items in this buffer
-    inline size_t size(void) const
-    {
-        return _len;
-    }
-
-    //! Get the memory pointer reference
-    inline PtrType &get(void)
-    {
-        return _mem;
-    }
-
-    //! Get the buffer length reference
-    inline size_t &size(void)
-    {
-        return _len;
-    }
-
-    PtrType _mem;
-    size_t _len;
 };
 
 struct GRAS_API Block : Element

@@ -12,11 +12,14 @@ namespace gras
 
 struct GRAS_API Tag : boost::less_than_comparable<Tag>
 {
-    //! Make an empty tag with null members
-    Tag(void);
-
     //! Make a tag from parameters to initialize the members
-    Tag(const item_index_t &offset, const PMCC &key, const PMCC &value, const PMCC &srcid = PMCC());
+    Tag
+    (
+        const item_index_t &offset = 0,
+        const PMCC &key = PMCC(),
+        const PMCC &value = PMCC(),
+        const PMCC &srcid = PMCC()
+    );
 
     //! the absolute item count associated with this tag
     item_index_t offset;

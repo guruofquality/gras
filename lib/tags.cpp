@@ -4,12 +4,6 @@
 
 using namespace gras;
 
-Tag::Tag(void):
-    offset(0)
-{
-    //NOP
-}
-
 Tag::Tag(const item_index_t &offset, const PMCC &key, const PMCC &value, const PMCC &srcid):
     offset(offset), key(key), value(value), srcid(srcid)
 {
