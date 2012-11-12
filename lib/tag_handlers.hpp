@@ -35,7 +35,7 @@ GRAS_FORCE_INLINE void BlockActor::trim_tags(const size_t i)
     if (last == 0) return;
 
     //call the overloaded propagate_tags to do the dirty work
-    this->block_ptr->propagate_tags(i, boost::make_iterator_range(tags_i.begin(), tags_i.begin()+last));
+    this->block_ptr->propagate_tags(i, TagIter(tags_i.begin(), tags_i.begin()+last));
 
     //now its safe to perform the erasure
     tags_i.erase(tags_i.begin(), tags_i.begin()+last);

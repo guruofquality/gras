@@ -175,7 +175,7 @@ struct BlockPython : Block
 
     std::vector<Tag> get_input_tags(const size_t which_input)
     {
-        Block::TagIter it = Block::get_input_tags(which_input);
+        const TagIter it = Block::get_input_tags(which_input);
         std::vector<Tag> tags(it.begin(), it.end());
         return tags;
     }

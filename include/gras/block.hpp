@@ -8,7 +8,6 @@
 #include <gras/tags.hpp>
 #include <vector>
 #include <string>
-#include <boost/range.hpp> //iterator range
 
 namespace gras
 {
@@ -143,45 +142,53 @@ struct GRAS_API Block : Element
      ******************************************************************/
 
     //! Get the configuration rules of an input port
-    InputPortConfig input_config(const size_t which_input = 0) const;
+    InputPortConfig input_config(const size_t which_input) const;
 
     //! Set the configuration rules for an input port
-    void set_input_config(const InputPortConfig &config, const size_t which_input = 0);
+    void set_input_config(const size_t which_input, const InputPortConfig &config);
 
     //! Get the configuration rules of an output port
-    OutputPortConfig output_config(const size_t which_output = 0) const;
+    OutputPortConfig output_config(const size_t which_output) const;
 
     //! Set the configuration rules for an output port
-    void set_output_config(const OutputPortConfig &config, const size_t which_output = 0);
+    void set_output_config(const size_t which_output, const OutputPortConfig &config);
 
     /*******************************************************************
      * Deal with data production and consumption
      ******************************************************************/
 
     //! Call during work to consume items
-    void consume(const size_t which_input, const size_t how_many_items);
+    void consume(const size_t num_items, const size_t which_input);
 
     //! Call during work to produce items
-    void produce(const size_t which_output, const size_t how_many_items);
+    void produce(const size_t num_items, const size_t which_output);
+
+    //! Get absolute count of all items consumed on the given input port
+    item_index_t num_items_consumed(const size_t which_input);
+
+    //! Get absolute count of all items produced on the given output port
+    item_index_t num_items_produced(const size_t which_output);
 
     /*******************************************************************
      * Deal with tag handling and tag configuration
      ******************************************************************/
 
-    item_index_t nitems_read(const size_t which_input);
-
-    item_index_t nitems_written(const size_t which_output);
-
     //! Send a tag to the downstream on the given output port
     void post_output_tag(const size_t which_output, const Tag &tag);
 
-    //! Iterator return type get_input_tags - stl and boost compliant
-    typedef boost::iterator_range<std::vector<Tag>::const_iterator> TagIter;
-
     //! Get an iterator of item tags for the given input
-    TagIter get_input_tags(const size_t which_input = 0);
+    TagIter get_input_tags(const size_t which_input);
 
-    //! Overload me to implement tag propagation logic
+    /*!
+     * Overload me to implement tag propagation logic:
+     *
+     * Propagate tags will be given an iterator for all input tags
+     * whose offset counts is less than the number of items consumed.
+     * It is the job of the propagate_tags overload to
+     * propagate tags to the downstream and interpolate the offset.
+     * By default, the propagate_tags implementation is a NOP.
+     * Also, the user may simple propagate tags from within work.
+     */
     virtual void propagate_tags(const size_t which_input, const TagIter &iter);
 
     /*******************************************************************

@@ -35,4 +35,14 @@ GRAS_API bool operator<(const Tag &lhs, const Tag &rhs);
 
 } //namespace gras
 
+#include <boost/range.hpp> //iterator range
+#include <vector>
+
+namespace gras
+{
+    //! Iterator return type stl and boost compliant
+    typedef boost::iterator_range<std::vector<Tag>::const_iterator> TagIter;
+
+} //namespace gras
+
 #endif /*INCLUDED_GRAS_TAGS_HPP*/

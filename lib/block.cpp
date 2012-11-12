@@ -37,8 +37,8 @@ Block::Block(const std::string &name):
     (*this)->block->block_state = BlockActor::BLOCK_STATE_INIT;
 
     //call block methods to init stuff
-    this->set_input_config(InputPortConfig());
-    this->set_output_config(OutputPortConfig());
+    this->set_input_config(0, InputPortConfig());
+    this->set_output_config(0, OutputPortConfig());
     this->set_interruptible_work(false);
     this->set_buffer_affinity(-1);
 }
@@ -68,7 +68,7 @@ InputPortConfig Block::input_config(const size_t which_input) const
     return vector_get((*this)->block->input_configs, which_input);
 }
 
-void Block::set_input_config(const InputPortConfig &config, const size_t which_input)
+void Block::set_input_config(const size_t which_input, const InputPortConfig &config)
 {
     vector_set((*this)->block->input_configs, config, which_input);
     if ((*this)->block->topology_init)
@@ -80,45 +80,42 @@ OutputPortConfig Block::output_config(const size_t which_output) const
     return vector_get((*this)->block->output_configs, which_output);
 }
 
-void Block::set_output_config(const OutputPortConfig &config, const size_t which_output)
+void Block::set_output_config(const size_t which_output, const OutputPortConfig &config)
 {
     vector_set((*this)->block->output_configs, config, which_output);
     if ((*this)->block->topology_init)
         (*this)->block->Push(UpdateInputsMessage(), Theron::Address());
 }
 
-void Block::consume(const size_t which_input, const size_t how_many_items)
+void Block::consume(const size_t which_input, const size_t num_items)
 {
-    (*this)->block->consume(which_input, how_many_items);
+    (*this)->block->consume(which_input, num_items);
 }
 
-void Block::produce(const size_t which_output, const size_t how_many_items)
+void Block::produce(const size_t which_output, const size_t num_items)
 {
-    (*this)->block->produce(which_output, how_many_items);
+    (*this)->block->produce(which_output, num_items);
 }
 
-item_index_t Block::nitems_read(const size_t which_input)
+item_index_t Block::num_items_consumed(const size_t which_input)
 {
     return (*this)->block->items_consumed[which_input];
 }
 
-item_index_t Block::nitems_written(const size_t which_output)
+item_index_t Block::num_items_produced(const size_t which_output)
 {
     return (*this)->block->items_produced[which_output];
 }
 
-void Block::post_output_tag(
-    const size_t which_output,
-    const Tag &tag
-){
+void Block::post_output_tag(const size_t which_output, const Tag &tag)
+{
     (*this)->block->post_downstream(which_output, InputTagMessage(tag));
 }
 
-Block::TagIter Block::get_input_tags(
-    const size_t which_input
-){
+TagIter Block::get_input_tags(const size_t which_input)
+{
     const std::vector<Tag> &input_tags = (*this)->block->input_tags[which_input];
-    return boost::make_iterator_range(input_tags.begin(), input_tags.end());
+    return TagIter(input_tags.begin(), input_tags.end());
 }
 
 void Block::propagate_tags(const size_t, const TagIter &)
