@@ -63,7 +63,7 @@ typename V::value_type vector_get(const V &v, const size_t index)
     return v[index];
 }
 
-InputPortConfig Block::input_config(const size_t which_input) const
+InputPortConfig Block::get_input_config(const size_t which_input) const
 {
     return vector_get((*this)->block->input_configs, which_input);
 }
@@ -75,7 +75,7 @@ void Block::set_input_config(const size_t which_input, const InputPortConfig &co
         (*this)->block->Push(UpdateInputsMessage(), Theron::Address());
 }
 
-OutputPortConfig Block::output_config(const size_t which_output) const
+OutputPortConfig Block::get_output_config(const size_t which_output) const
 {
     return vector_get((*this)->block->output_configs, which_output);
 }
@@ -97,12 +97,12 @@ void Block::produce(const size_t which_output, const size_t num_items)
     (*this)->block->produce(which_output, num_items);
 }
 
-item_index_t Block::num_items_consumed(const size_t which_input)
+item_index_t Block::get_consumed(const size_t which_input)
 {
     return (*this)->block->items_consumed[which_input];
 }
 
-item_index_t Block::num_items_produced(const size_t which_output)
+item_index_t Block::get_produced(const size_t which_output)
 {
     return (*this)->block->items_produced[which_output];
 }
@@ -116,6 +116,11 @@ TagIter Block::get_input_tags(const size_t which_input)
 {
     const std::vector<Tag> &input_tags = (*this)->block->input_tags[which_input];
     return TagIter(input_tags.begin(), input_tags.end());
+}
+
+void Block::erase_input_tags(const size_t which_input)
+{
+    (*this)->block->input_tags[which_input].clear();
 }
 
 void Block::propagate_tags(const size_t, const TagIter &)

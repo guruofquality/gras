@@ -67,7 +67,7 @@ class TagSource(gras.Block):
         self._values = values
 
     def work(self, ins, outs):
-        offset = self.num_items_produced(0)
+        offset = self.get_produced(0)
         tag = gras.Tag(offset, 'key', self._values[0])
         self.post_output_tag(0, tag)
         self.produce(0, len(outs[0]))
@@ -87,7 +87,7 @@ class TagSink(gras.Block):
         return tuple(self._values)
 
     def work(self, ins, outs):
-        max_read = self.num_items_consumed(0) + len(ins[0])
+        max_read = self.get_consumed(0) + len(ins[0])
         for tag in self.get_input_tags(0):
             if tag.offset < max_read:
                 self._values.append(tag.value)

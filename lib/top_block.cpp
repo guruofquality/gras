@@ -42,7 +42,7 @@ void ElementImpl::top_block_cleanup(void)
         << std::flush;
 }
 
-GlobalBlockConfig TopBlock::global_config(void) const
+GlobalBlockConfig TopBlock::get_global_config(void) const
 {
     return (*this)->top_config;
 }
@@ -147,12 +147,12 @@ void TopBlock::run(const size_t max_items)
 
 int TopBlock::max_noutput_items(void) const
 {
-    return this->global_config().maximum_output_items;
+    return this->get_global_config().maximum_output_items;
 }
 
 void TopBlock::set_max_noutput_items(int max_items)
 {
-    gras::GlobalBlockConfig config = this->global_config();
+    gras::GlobalBlockConfig config = this->get_global_config();
     config.maximum_output_items = max_items;
     this->set_global_config(config);
 }

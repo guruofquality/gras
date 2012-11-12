@@ -107,13 +107,13 @@ struct GRAS_API Block : Element
      ******************************************************************/
 
     //! Get the configuration rules of an input port
-    InputPortConfig input_config(const size_t which_input) const;
+    InputPortConfig get_input_config(const size_t which_input) const;
 
     //! Set the configuration rules for an input port
     void set_input_config(const size_t which_input, const InputPortConfig &config);
 
     //! Get the configuration rules of an output port
-    OutputPortConfig output_config(const size_t which_output) const;
+    OutputPortConfig get_output_config(const size_t which_output) const;
 
     //! Set the configuration rules for an output port
     void set_output_config(const size_t which_output, const OutputPortConfig &config);
@@ -129,10 +129,10 @@ struct GRAS_API Block : Element
     void produce(const size_t num_items, const size_t which_output);
 
     //! Get absolute count of all items consumed on the given input port
-    item_index_t num_items_consumed(const size_t which_input);
+    item_index_t get_consumed(const size_t which_input);
 
     //! Get absolute count of all items produced on the given output port
-    item_index_t num_items_produced(const size_t which_output);
+    item_index_t get_produced(const size_t which_output);
 
     /*******************************************************************
      * Deal with tag handling and tag configuration
@@ -143,6 +143,18 @@ struct GRAS_API Block : Element
 
     //! Get an iterator of item tags for the given input
     TagIter get_input_tags(const size_t which_input);
+
+    /*!
+     * Erase all tags on the given input port.
+     * This method may be called from the work() context
+     * to erase all of the queued up tags on the input.
+     * Once erased, messages cannot be propagated downstream.
+     * This method allows a user to treat an input port
+     * as an async message source without a data stream.
+     * In this case, after processing messages from get_input_tags(),
+     * the user should call erase_input_tags() before retuning from work().
+     */
+    void erase_input_tags(const size_t which_input);
 
     /*!
      * Overload me to implement tag propagation logic:
@@ -157,7 +169,7 @@ struct GRAS_API Block : Element
     virtual void propagate_tags(const size_t which_input, const TagIter &iter);
 
     /*******************************************************************
-     * Work related routines from basic block
+     * Work related routines and fail states
      ******************************************************************/
 
     //! Called when the flow graph is started, can overload
