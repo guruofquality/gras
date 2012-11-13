@@ -13,6 +13,7 @@ install(FILES
     sbuffer.hpp
     sbuffer.ipp
     tags.hpp
+    tags.i
     thread_pool.hpp
     top_block.hpp
     work_buffer.hpp

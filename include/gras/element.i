@@ -19,24 +19,20 @@
 %include <gras/element.hpp>
 
 ////////////////////////////////////////////////////////////////////////
-// Create a __str__ for this object
+// Operator overloads for Element
 ////////////////////////////////////////////////////////////////////////
-
-namespace gras
+%extend gras::Element
 {
-    %extend Element
+    std::string __str__(void) const
     {
-        std::string __str__(void)
-        {
-           return ($self)->to_string();
-        }
-
-        bool __eq__(const Element &rhs)
-        {
-            return ($self)->get() == rhs.get();
-        }
-
+       return ($self)->to_string();
     }
+
+    bool __eq__(const Element &rhs) const
+    {
+        return ($self)->get() == rhs.get();
+    }
+
 }
 
 #endif /*INCLUDED_GRAS_ELEMENT_I*/
