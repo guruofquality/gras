@@ -88,9 +88,57 @@ struct PyGILPhondler
 %include <PMC/PMC.i>
 
 ////////////////////////////////////////////////////////////////////////
+// Create a python iterator class
+////////////////////////////////////////////////////////////////////////
+%typemap(throws) Stop_Iteration
+%{
+    PyErr_SetNone(PyExc_StopIteration);
+    SWIG_fail;
+%}
+
+%extend gras::TagIterPython
+{
+%insert("python")
+%{
+    def __iter__(self): return self
+%}
+}
+
+%inline %{
+
+struct Stop_Iteration
+{
+    Stop_Iteration(void){}
+};
+
+namespace gras
+{
+
+struct TagIterPython
+{
+    TagIterPython(const TagIter &iter):
+        _iter(iter), _it(iter.begin())
+    {
+        //NOP
+    }
+
+    const Tag &next(void) throw (Stop_Iteration)
+    {
+        if (_it == _iter.end()) throw Stop_Iteration();
+        return *(_it++);
+    }
+
+    TagIter _iter;
+    TagIter::const_iterator _it;
+};
+
+}
+
+%}
+
+////////////////////////////////////////////////////////////////////////
 // Make a special block with safe overloads
 ////////////////////////////////////////////////////////////////////////
-
 %inline %{
 
 namespace gras
@@ -173,11 +221,10 @@ struct BlockPython : Block
         const std::vector<size_t> &
     ) = 0;
 
-    std::vector<Tag> get_input_tags(const size_t which_input)
+    TagIterPython get_input_tags(const size_t which_input)
     {
         const TagIter it = Block::get_input_tags(which_input);
-        std::vector<Tag> tags(it.begin(), it.end());
-        return tags;
+        return TagIterPython(it);
     }
 };
 
