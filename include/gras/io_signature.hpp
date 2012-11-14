@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include <cstdlib>
 
 namespace gras
 {
@@ -15,13 +16,21 @@ namespace gras
  * Properties are a maximum and minimum number of ports,
  * and an item size in bytes for each port.
  */
-struct IOSignature : std::vector<int>
+struct IOSignature : std::vector<size_t>
 {
-    static const int IO_INFINITE = -1;
+    static const int IO_INFINITE = ~0;
 
-    //! Create an empty signature with infinite IO
+    //! Create an empty signature
     IOSignature(void)
     {
+        this->set_min_streams(IO_INFINITE);
+        this->set_max_streams(IO_INFINITE);
+    }
+
+    //! Create a signature with a single item size
+    IOSignature(const size_t size)
+    {
+        this->push_back(size);
         this->set_min_streams(IO_INFINITE);
         this->set_max_streams(IO_INFINITE);
     }
@@ -38,14 +47,14 @@ struct IOSignature : std::vector<int>
     }
 
     //! Create a signature from a vector of IO widths
-    IOSignature(const std::vector<int> &sig)
+    IOSignature(const std::vector<size_t> &sig)
     {
         this->assign(sig.begin(), sig.end());
-        this->set_min_streams(this->size());
-        this->set_max_streams(this->size());
+        this->set_min_streams(IO_INFINITE);
+        this->set_max_streams(IO_INFINITE);
     }
 
-    //! Construct from pointer for backwards compatible shared_ptr usage.
+    //! Construct from posize_ter for backwards compatible shared_ptr usage.
     IOSignature(const IOSignature *sig)
     {
         *this = *sig;
@@ -62,6 +71,24 @@ struct IOSignature : std::vector<int>
     {
         return this;
     };
+
+    const size_t &at(const size_t index) const
+    {
+        if (this->empty())
+        {
+            throw std::invalid_argument("io signature fail: indexing empty vector");
+        }
+        if (this->size() > index)
+        {
+            return std::vector<size_t>::at(index);
+        }
+        return this->back();
+    }
+
+    const size_t &operator[](const size_t index) const
+    {
+        return this->at(index);
+    }
 
     void set_min_streams(const int val)
     {
@@ -83,17 +110,12 @@ struct IOSignature : std::vector<int>
         return _max_streams;
     }
 
-    int sizeof_stream_item(const int index) const
+    int sizeof_stream_item(const size_t index) const
     {
-        if (this->empty()) return 0;
-        if (this->size() > unsigned(index))
-        {
-            return this->at(index);
-        }
-        return this->back();
+        return this->at(index);
     }
 
-    std::vector<int> sizeof_stream_items(void) const
+    const std::vector<size_t> &sizeof_stream_items(void) const
     {
         return *this;
     }
