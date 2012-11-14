@@ -233,3 +233,12 @@ void BlockActor::produce(const size_t i, const size_t items)
     const size_t bytes = items*this->output_items_sizes[i];
     buff.length += bytes;
 }
+
+void BlockActor::produce_buffer(const size_t i, const SBuffer &buffer)
+{
+    const size_t items = buffer.length/output_items_sizes[i];
+    this->items_produced[i] += items;
+    InputBufferMessage buff_msg;
+    buff_msg.buffer = buffer;
+    this->post_downstream(i, buff_msg);
+}

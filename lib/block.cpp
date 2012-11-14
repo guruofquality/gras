@@ -167,3 +167,13 @@ void Block::mark_done(void)
 {
     (*this)->block->mark_done();
 }
+
+const SBuffer &Block::get_input_buffer(const size_t which_input)
+{
+    return (*this)->block->input_queues.front(which_input);
+}
+
+void Block::post_output_buffer(const size_t which_output, const SBuffer &buffer)
+{
+    (*this)->block->produce_buffer(which_output, buffer);
+}

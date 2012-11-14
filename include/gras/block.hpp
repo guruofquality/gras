@@ -226,6 +226,34 @@ struct GRAS_API Block : Element
     void mark_done(void);
 
     /*!
+     * Get access to the underlying reference counted buffer.
+     * This is the same buffer pointed to by input_items[which].
+     * This function must be called during the call to work().
+     * Use this function to implement passive work-flows.
+     *
+     * \param which_input the input port index
+     * \return a const reference to the buffer
+     */
+    const SBuffer &get_input_buffer(const size_t which_input);
+
+    /*!
+     * Post the given output buffer to the downstream.
+     * This function must be called during the call to work().
+     * Use this function to implement passive work-flows.
+     *
+     * Take the following rules into account:
+     *  - The buffer will be immediately sent to the downstream.
+     *  - The value for get_produced will automatically increase.
+     *  - buffer.length should be in number of bytes (not items).
+     *  - Do not call produce() for items in this buffer.
+     *  - Call post_output_tag() before post_output_buffer().
+     *
+     * \param which_output the output port index
+     * \param buffer the buffer to send downstream
+     */
+    void post_output_buffer(const size_t which_output, const SBuffer &buffer);
+
+    /*!
      * Overload notify_topology to get called on topological changes.
      * Use notify_topology to perform one-time resizing operations
      * to avoid a conditional resizing operation inside the work().
