@@ -61,6 +61,7 @@ list(APPEND GRAS_SOURCES
 add_library(gras SHARED ${GRAS_SOURCES})
 target_link_libraries(gras ${GRAS_LIBRARIES})
 set_target_properties(gras PROPERTIES VERSION ${GRAS_VERSION})
+set_target_properties(gras PROPERTIES DEFINE_SYMBOL "GRAS_DLL_EXPORTS")
 
 install(TARGETS gras
     LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT ${GRAS_COMP_RUNTIME} # .so file
