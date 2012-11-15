@@ -73,9 +73,11 @@ add_subdirectory(tests)
 set(CMAKE_SOURCE_DIR ${GRAS_SOURCE_DIR}/gnuradio)
 set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/gnuradio)
 
-set(GR_TEST_EXTRA_PYTHON_DIRS ${GRAS_PYTHON_DIRS}) #helps QA tests
-
 set(GRAS_LIBRARIES gras) #for submodule linking
+
+#append gras deps for test code:
+list(APPEND GR_TEST_TARGET_DEPS ${GRAS_LIBRARIES})
+list(APPEND GR_TEST_PYTHON_DIRS ${GRAS_PYTHON_DIRS})
 
 set(CMAKE_PROJECT_NAME gnuradio) #for submodule vars
 
