@@ -7,6 +7,7 @@
 #include <gras/tags.hpp>
 %}
 
+%include <gras/gras.hpp>
 %include <gras/tags.hpp>
 %include <PMC/PMC.i>
 

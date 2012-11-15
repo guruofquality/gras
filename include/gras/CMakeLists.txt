@@ -4,6 +4,7 @@
 install(FILES
 
     block.hpp
+    block.i
     element.hpp
     element.i
     gras.hpp

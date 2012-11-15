@@ -54,8 +54,8 @@ struct IOSignature : std::vector<size_t>
         this->set_max_streams(IO_INFINITE);
     }
 
-    //! Construct from posize_ter for backwards compatible shared_ptr usage.
-    IOSignature(const IOSignature *sig)
+    //! Construct from pointer for backwards compatible shared_ptr usage.
+    explicit IOSignature(const IOSignature *sig)
     {
         *this = *sig;
     }
