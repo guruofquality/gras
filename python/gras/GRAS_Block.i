@@ -79,12 +79,7 @@ struct PyGILPhondler
 #include <iostream>
 %}
 
-%include <gras/gras.hpp>
-%include <gras/element.i>
-%include <gras/io_signature.i>
-%include <gras/sbuffer.hpp>
-%include <gras/tags.i>
-%include <gras/block.hpp>
+%include <gras/block.i>
 
 ////////////////////////////////////////////////////////////////////////
 // Make a special block with safe overloads

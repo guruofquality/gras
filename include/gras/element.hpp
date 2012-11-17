@@ -11,9 +11,11 @@
 namespace gras
 {
 
-class ElementImpl;
+struct ElementImpl;
 
-struct GRAS_API Element : boost::shared_ptr<ElementImpl>, boost::enable_shared_from_this<Element>
+typedef boost::shared_ptr<ElementImpl> ElementBase;
+
+struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
 {
 
     //! Create an empty element
