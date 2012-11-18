@@ -18,6 +18,7 @@ install(FILES
     thread_pool.hpp
     top_block.hpp
     work_buffer.hpp
+    work_buffer.ipp
 
     DESTINATION include/gras
     COMPONENT ${GRAS_COMP_DEVEL}

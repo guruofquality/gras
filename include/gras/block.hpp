@@ -178,8 +178,8 @@ struct GRAS_API Block : Element
     //! Called when the flow graph is stopped, can overload
     virtual bool stop(void);
 
-    typedef std::vector<WorkBuffer<const void *> > InputItems;
-    typedef std::vector<WorkBuffer<void *> > OutputItems;
+    typedef WorkBufferArray<const void *> InputItems;
+    typedef WorkBufferArray<void *> OutputItems;
 
     //! The official call into the work routine (overload please)
     virtual void work(

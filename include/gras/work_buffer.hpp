@@ -5,13 +5,15 @@
 
 #include <gras/gras.hpp>
 #include <cstdlib>
+#include <vector>
 
 namespace gras
 {
 
 template <typename PtrType>
-struct WorkBuffer
+class WorkBuffer
 {
+public:
     //! get a pointer of the desired type to this buffer
     template <typename T> T cast(void) const;
 
@@ -27,40 +29,34 @@ struct WorkBuffer
     //! Get the buffer length reference
     size_t &size(void);
 
+private:
     PtrType _mem;
     size_t _len;
 };
 
-template <typename PtrType> template <typename T>
-inline T WorkBuffer<PtrType>::cast(void) const
-{
-    return reinterpret_cast<T>(_mem);
-}
-
 template <typename PtrType>
-inline PtrType WorkBuffer<PtrType>::get(void) const
+class WorkBufferArray : public std::vector<WorkBuffer<PtrType> >
 {
-    return _mem;
-}
+public:
+    //! Get the std::min all item sizes
+    size_t min_items(void) const;
 
-template <typename PtrType>
-inline PtrType &WorkBuffer<PtrType>::get(void)
-{
-    return _mem;
-}
+    //! Get a reference to the min items
+    size_t &min_items(void);
 
-template <typename PtrType>
-inline size_t WorkBuffer<PtrType>::size(void) const
-{
-    return _len;
-}
+    //! Get the std::max of all item sizes
+    size_t max_items(void) const;
 
-template <typename PtrType>
-inline size_t &WorkBuffer<PtrType>::size(void)
-{
-    return _len;
-}
+    //! Get a reference to the max items
+    size_t &max_items(void);
+
+private:
+    size_t _min_items;
+    size_t _max_items;
+};
 
 } //namespace gras
+
+#include <gras/work_buffer.ipp>
 
 #endif /*INCLUDED_GRAS_WORK_BUFFER_HPP*/
