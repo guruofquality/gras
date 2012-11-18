@@ -165,6 +165,11 @@ struct BlockPython : Block
         const std::vector<void *> &,
         const std::vector<size_t> &
     ) = 0;
+
+    void propagate_tags(const size_t which_input, const TagIter &iter)
+    {
+        //TODO implement _Py_ version of this
+    }
 };
 
 }

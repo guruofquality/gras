@@ -123,10 +123,16 @@ struct GRAS_API Block : Element
      ******************************************************************/
 
     //! Call during work to consume items
-    void consume(const size_t num_items, const size_t which_input);
+    void consume(const size_t which_input, const size_t num_items);
 
     //! Call during work to produce items
-    void produce(const size_t num_items, const size_t which_output);
+    void produce(const size_t which_output, const size_t num_items);
+
+    //! Convenience method to consume items on all inputs
+    void consume(const size_t num_items);
+
+    //! Convenience method to produce items on all outputs
+    void produce(const size_t num_items);
 
     //! Get absolute count of all items consumed on the given input port
     item_index_t get_consumed(const size_t which_input);

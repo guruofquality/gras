@@ -2,6 +2,7 @@
 
 #include "element_impl.hpp"
 #include <gras/block.hpp>
+#include <boost/foreach.hpp>
 
 using namespace gras;
 
@@ -97,6 +98,24 @@ void Block::produce(const size_t which_output, const size_t num_items)
     (*this)->block->produce(which_output, num_items);
 }
 
+void Block::consume(const size_t num_items)
+{
+    const size_t num_inputs = (*this)->block->get_num_inputs();
+    for (size_t i = 0; i < num_inputs; i++)
+    {
+        (*this)->block->consume(i, num_items);
+    }
+}
+
+void Block::produce(const size_t num_items)
+{
+    const size_t num_outputs = (*this)->block->get_num_outputs();
+    for (size_t o = 0; o < num_outputs; o++)
+    {
+        (*this)->block->produce(o, num_items);
+    }
+}
+
 item_index_t Block::get_consumed(const size_t which_input)
 {
     return (*this)->block->items_consumed[which_input];
@@ -123,9 +142,18 @@ void Block::erase_input_tags(const size_t which_input)
     (*this)->block->input_tags[which_input].clear();
 }
 
-void Block::propagate_tags(const size_t, const TagIter &)
+void Block::propagate_tags(const size_t i, const TagIter &iter)
 {
-    //NOP
+    const size_t num_outputs = (*this)->block->get_num_outputs();
+    for (size_t o = 0; o < num_outputs; o++)
+        {
+            BOOST_FOREACH(gras::Tag t, iter)
+            {
+                t.offset -= this->get_consumed(i);
+                t.offset += this->get_produced(o);
+                this->post_output_tag(o, t);
+            }
+        }
 }
 
 bool Block::start(void)
