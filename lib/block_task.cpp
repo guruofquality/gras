@@ -125,8 +125,8 @@ void BlockActor::handle_task(void)
     //-- initialize input buffers before work
     //------------------------------------------------------------------
     size_t output_inline_index = 0;
-    this->input_items.min_items() = ~0;
-    this->input_items.max_items() = 0;
+    this->input_items.min() = ~0;
+    this->input_items.max() = 0;
     for (size_t i = 0; i < num_inputs; i++)
     {
         this->sort_tags(i);
@@ -139,8 +139,8 @@ void BlockActor::handle_task(void)
 
         this->input_items[i].get() = mem;
         this->input_items[i].size() = items;
-        this->input_items.min_items() = std::min(this->input_items.min_items(), items);
-        this->input_items.max_items() = std::max(this->input_items.max_items(), items);
+        this->input_items.min() = std::min(this->input_items.min(), items);
+        this->input_items.max() = std::max(this->input_items.max(), items);
 
         //inline dealings, how and when input buffers can be inlined into output buffers
         //continue;
@@ -161,8 +161,8 @@ void BlockActor::handle_task(void)
     //------------------------------------------------------------------
     //-- initialize output buffers before work
     //------------------------------------------------------------------
-    this->output_items.min_items() = ~0;
-    this->output_items.max_items() = 0;
+    this->output_items.min() = ~0;
+    this->output_items.max() = 0;
     for (size_t i = 0; i < num_outputs; i++)
     {
         ASSERT(this->output_queues.ready(i));
@@ -173,8 +173,8 @@ void BlockActor::handle_task(void)
 
         this->output_items[i].get() = mem;
         this->output_items[i].size() = items;
-        this->output_items.min_items() = std::min(this->output_items.min_items(), items);
-        this->output_items.max_items() = std::max(this->output_items.max_items(), items);
+        this->output_items.min() = std::min(this->output_items.min(), items);
+        this->output_items.max() = std::max(this->output_items.max(), items);
     }
 
     //------------------------------------------------------------------

@@ -37,27 +37,27 @@ inline size_t &WorkBuffer<PtrType>::size(void)
 }
 
 template <typename PtrType>
-inline size_t WorkBufferArray<PtrType>::min_items(void) const
+inline size_t WorkBufferArray<PtrType>::min(void) const
 {
-    return _min_items;
+    return _min;
 }
 
 template <typename PtrType>
-inline size_t &WorkBufferArray<PtrType>::min_items(void)
+inline size_t &WorkBufferArray<PtrType>::min(void)
 {
-    return _min_items;
+    return _min;
 }
 
 template <typename PtrType>
-inline size_t WorkBufferArray<PtrType>::max_items(void) const
+inline size_t WorkBufferArray<PtrType>::max(void) const
 {
-    return _max_items;
+    return _max;
 }
 
 template <typename PtrType>
-inline size_t &WorkBufferArray<PtrType>::max_items(void)
+inline size_t &WorkBufferArray<PtrType>::max(void)
 {
-    return _max_items;
+    return _max;
 }
 
 } //namespace gras

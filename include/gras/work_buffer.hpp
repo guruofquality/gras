@@ -39,20 +39,20 @@ class WorkBufferArray : public std::vector<WorkBuffer<PtrType> >
 {
 public:
     //! Get the std::min all item sizes
-    size_t min_items(void) const;
+    size_t min(void) const;
 
     //! Get a reference to the min items
-    size_t &min_items(void);
+    size_t &min(void);
 
     //! Get the std::max of all item sizes
-    size_t max_items(void) const;
+    size_t max(void) const;
 
     //! Get a reference to the max items
-    size_t &max_items(void);
+    size_t &max(void);
 
 private:
-    size_t _min_items;
-    size_t _max_items;
+    size_t _min;
+    size_t _max;
 };
 
 } //namespace gras
