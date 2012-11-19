@@ -113,7 +113,7 @@ struct InputBufferQueues
 
     GRAS_FORCE_INLINE bool empty(const size_t i) const
     {
-        return not _bitset[i];
+        return _queues[i].empty();
     }
 
     GRAS_FORCE_INLINE bool all_ready(void) const

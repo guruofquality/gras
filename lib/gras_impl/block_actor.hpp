@@ -95,17 +95,10 @@ struct BlockActor : Apology::Worker
     void produce_buffer(const size_t index, const SBuffer &buffer);
     void flush_output(const size_t index);
 
-    GRAS_FORCE_INLINE bool any_inputs_done(void)
+    GRAS_FORCE_INLINE bool is_input_done(const size_t i)
     {
-        if (this->inputs_done.none() or this->input_queues.all_ready()) return false;
-        for (size_t i = 0; i < this->get_num_inputs(); i++)
-        {
-            if (this->inputs_done[i] and not this->input_queues.ready(i))
-            {
-                return true;
-            }
-        }
-        return false;
+        const bool available = this->input_queues.ready(i) and not this->input_queues.empty(i);
+        return this->inputs_done[i] and not available;
     }
 
     //per port properties

@@ -215,7 +215,10 @@ void BlockActor::handle_task(void)
     //------------------------------------------------------------------
     //missing at least one upstream provider?
     //since nothing else is coming in, its safe to mark done
-    if (this->any_inputs_done()) this->mark_done();
+    for (size_t i = 0; i < num_inputs; i++)
+    {
+        if (this->is_input_done(i)) this->mark_done();
+    }
 
     //still have IO ready? kick off another task
     if (this->input_queues.all_ready() and this->output_queues.all_ready())
