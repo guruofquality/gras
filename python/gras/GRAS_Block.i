@@ -69,7 +69,6 @@ struct PyGILPhondler
 %include <std_vector.i>
 %template () std::vector<size_t>;
 %template () std::vector<void *>;
-%template () std::vector<gras::Tag>;
 
 ////////////////////////////////////////////////////////////////////////
 // Pull in the implementation goodies
@@ -168,8 +167,11 @@ struct BlockPython : Block
 
     void propagate_tags(const size_t which_input, const TagIter &iter)
     {
-        //TODO implement _Py_ version of this
+        PyGILPhondler phil;
+        return this->_Py_propagate_tags(which_input, iter);
     }
+
+    virtual void _Py_propagate_tags(const size_t which_input, const TagIter &iter) = 0;
 };
 
 }
@@ -216,6 +218,14 @@ class Tag(object):
         self.key = key
         self.value = value
         self.srcid = srcid
+
+def YieldTagIter(iter):
+    for t in iter: yield Tag(
+        offset=t.offset,
+        key=PMC2Py(t.key),
+        value=PMC2Py(t.value),
+        srcid=PMC2Py(t.srcid),
+    )
 
 class Block(BlockPython):
     def __init__(self, name='Block', in_sig=None, out_sig=None):
@@ -290,12 +300,17 @@ class Block(BlockPython):
         BlockPython.post_output_tag(self, which_output, t)
 
     def get_input_tags(self, which_input):
-        for t in BlockPython.get_input_tags(self, which_input):
-            yield Tag(
-                offset=t.offset,
-                key=PMC2Py(t.key),
-                value=PMC2Py(t.value),
-                srcid=PMC2Py(t.srcid),
-            )
+        return YieldTagIter(BlockPython.get_input_tags(self, which_input))
+
+    def _Py_propagate_tags(self, which_input, iter):
+        try: return self.propagate_tags(which_input, iter)
+        except: traceback.print_exc(); raise
+
+    def propagate_tags(self, i, iter):
+        for o in self.__out_indexes:
+            for t in YieldTagIter(iter):
+                t.offset -= self.get_consumed(i)
+                t.offset += self.get_produced(o)
+                self.post_output_tag(o, t)
 
 %}

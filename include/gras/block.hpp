@@ -163,14 +163,18 @@ struct GRAS_API Block : Element
     void erase_input_tags(const size_t which_input);
 
     /*!
-     * Overload me to implement tag propagation logic:
+     * Overload me to implement custom tag propagation logic:
      *
      * Propagate tags will be given an iterator for all input tags
      * whose offset counts is less than the number of items consumed.
-     * It is the job of the propagate_tags overload to
+     * It is the job of the propagate_tags overloaded function to
      * propagate tags to the downstream and interpolate the offset.
-     * By default, the propagate_tags implementation is a NOP.
-     * Also, the user may simple propagate tags from within work.
+     *
+     * By default, the propagate_tags implementation is to:
+     * broadcast each consumed input tags to all output ports
+     * using the local input offset as the local output offset.
+     *
+     * Also, the user may simply propagate tags from within work.
      */
     virtual void propagate_tags(const size_t which_input, const TagIter &iter);
 
