@@ -153,7 +153,8 @@ void BlockActor::handle_task(void)
             //copy buffer reference but push with zero length, same offset
             SBuffer new_obuff = buff;
             new_obuff.length = 0;
-            this->output_queues.push_front(i, new_obuff); //you got inlined!
+            this->flush_output(output_inline_index);
+            this->output_queues.push_front(output_inline_index, new_obuff); //you got inlined!
             output_inline_index++; //done do this output port again
         }
     }
