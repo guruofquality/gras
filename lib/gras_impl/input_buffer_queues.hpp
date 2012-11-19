@@ -21,6 +21,22 @@ struct InputBufferQueues
     enum {MAX_QUEUE_SIZE = 128};
     enum {MAX_AUX_BUFF_BYTES=(1<<16)};
 
+    static SBuffer make_null_buff(void)
+    {
+        SBufferConfig config;
+        config.memory = NULL;
+        config.length = 1;
+        return SBuffer(config);
+    }
+
+    static  SBuffer &get_null_buff(void)
+    {
+        static SBuffer null = make_null_buff();
+        null.offset = 0;
+        null.length = 0;
+        return null;
+    }
+
     ~InputBufferQueues(void)
     {
         this->resize(0);
@@ -31,8 +47,10 @@ struct InputBufferQueues
     //! Call to get an input buffer for work
     GRAS_FORCE_INLINE SBuffer &front(const size_t i)
     {
-        ASSERT(not _queues[i].empty());
         ASSERT(this->ready(i));
+
+        //special case when the null buffer is possible
+        if (_queues[i].empty()) return get_null_buff();
 
         return _queues[i].front();
     }
