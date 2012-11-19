@@ -46,7 +46,7 @@ void BlockActor::handle_input_check(const InputCheckMessage &message, const Ther
     {
         this->mark_done();
     }
-    //or re-enter handle task so forecast logic can mark done
+    //or re-enter handle task so fail logic can mark done
     else
     {
         this->handle_task();
