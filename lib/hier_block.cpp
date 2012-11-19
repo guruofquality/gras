@@ -33,7 +33,7 @@ void HierBlock::disconnect(const Element &elem)
 
 static Apology::Wax get_ref(const Element &elem)
 {
-    boost::shared_ptr<Element> shared_self = elem.weak_self.lock();
+    boost::shared_ptr<void> shared_self = elem.weak_self.lock();
     if (shared_self) return shared_self;
     return elem;
 }

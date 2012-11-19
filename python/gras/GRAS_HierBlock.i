@@ -135,12 +135,11 @@ def to_element(obj):
     try: return obj.shared_to_element()
     except: raise Exception('cant coerce obj %s to element'%(obj))
 
-def internal_connect__(fcn, obj, refs, action, *args):
+def internal_connect__(fcn, obj, *args):
 
     if len(args) == 1:
         elem = (args[0])
         fcn(obj, elem)
-        if elem != to_element(obj): action(refs, elem)
         return
 
     for src, sink in zip(args, args[1:]):
@@ -155,30 +154,24 @@ def internal_connect__(fcn, obj, refs, action, *args):
 
         fcn(obj, src, src_index, sink, sink_index)
 
-        #incr/decr the python obj ref counts
-        if src != to_element(obj): action(refs, src)
-        if sink != to_element(obj): action(refs, sink)
-
 class TopBlock(TopBlockPython):
     def __init__(self, *args, **kwargs):
         TopBlockPython.__init__(self, *args, **kwargs)
-        self.__refs = list()
 
     def connect(self, *args):
-        return internal_connect__(TopBlockPython.connect, self, self.__refs, list.append, *args)
+        return internal_connect__(TopBlockPython.connect, self, *args)
 
     def disconnect(self, *args):
-        return internal_connect__(TopBlockPython.disconnect, self, self.__refs, list.remove, *args)
+        return internal_connect__(TopBlockPython.disconnect, self, *args)
 
 class HierBlock(HierBlockPython):
     def __init__(self, *args, **kwargs):
         HierBlockPython.__init__(self, *args, **kwargs)
-        self.__refs = list()
 
     def connect(self, *args):
-        return internal_connect__(HierBlockPython.connect, self, self.__refs, list.append, *args)
+        return internal_connect__(HierBlockPython.connect, self, *args)
 
     def disconnect(self, *args):
-        return internal_connect__(HierBlockPython.disconnect, self, self.__refs, list.remove, *args)
+        return internal_connect__(HierBlockPython.disconnect, self, *args)
 
 %}

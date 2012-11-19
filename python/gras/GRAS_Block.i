@@ -174,6 +174,15 @@ struct BlockPython : Block
     virtual void _Py_propagate_tags(const size_t which_input, const TagIter &iter) = 0;
 };
 
+struct PythonBlockRef : boost::shared_ptr<void>
+{
+    PythonBlockRef(BlockPython *o)
+    {
+        this->reset(o);
+        o->weak_self = *this;
+    }
+};
+
 }
 
 %}
@@ -232,6 +241,11 @@ class Block(BlockPython):
         BlockPython.__init__(self, name)
         self.set_input_signature(in_sig)
         self.set_output_signature(out_sig)
+
+        #move ownership into a shared ptr object
+        self.__ref = PythonBlockRef(self)
+        #self.thisown = 0
+        self.__disown__()
 
     def set_input_signature(self, sig):
         self.__in_sig = sig_to_dtype_sig(sig)
