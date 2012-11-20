@@ -36,11 +36,24 @@ ElementImpl::~ElementImpl(void)
     this->thread_pool.reset(); //must be deleted after actor
 }
 
+struct WeakElementSharedPtr : WeakElement
+{
+    WeakElementSharedPtr(boost::weak_ptr<Element> weak_self)
+    {
+        _weak_self = weak_self;
+    }
+    boost::shared_ptr<void> lock(void)
+    {
+        return _weak_self.lock();
+    }
+    boost::weak_ptr<Element> _weak_self;
+};
+
 Element &Element::shared_to_element(void)
 {
     try
     {
-        this->weak_self = this->shared_from_this();
+        this->weak_self.reset(new WeakElementSharedPtr(this->shared_from_this()));
     }
     catch(...){}
     return *this;

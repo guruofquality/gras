@@ -81,6 +81,50 @@ struct PyGILPhondler
 %include <gras/block.i>
 
 ////////////////////////////////////////////////////////////////////////
+// Support for the ref counted container
+////////////////////////////////////////////////////////////////////////
+%{
+#include <boost/make_shared.hpp>
+%}
+
+%inline %{
+
+namespace gras
+{
+
+struct PyObjectRefHolder
+{
+    PyObjectRefHolder(PyObject *o):
+        o(o)
+    {
+        Py_INCREF(o);
+    }
+    ~PyObjectRefHolder(void)
+    {
+        Py_DECREF(o);
+    }
+    PyObject *o;
+};
+
+struct WeakElementPyObject : WeakElement
+{
+    WeakElementPyObject(PyObject *o):
+        o(o)
+    {
+        //NOP
+    }
+    boost::shared_ptr<void> lock(void)
+    {
+        return boost::make_shared<PyObjectRefHolder>(o);
+    }
+    PyObject *o;
+};
+
+}
+
+%}
+
+////////////////////////////////////////////////////////////////////////
 // Make a special block with safe overloads
 ////////////////////////////////////////////////////////////////////////
 %inline %{
@@ -99,6 +143,11 @@ struct BlockPython : Block
     virtual ~BlockPython(void)
     {
         //NOP
+    }
+
+    void _Py_set_ref(PyObject *o)
+    {
+        this->weak_self.reset(new WeakElementPyObject(o));
     }
 
     bool start(void)
@@ -174,15 +223,6 @@ struct BlockPython : Block
     virtual void _Py_propagate_tags(const size_t which_input, const TagIter &iter) = 0;
 };
 
-struct PythonBlockRef : boost::shared_ptr<void>
-{
-    PythonBlockRef(BlockPython *o)
-    {
-        this->reset(o);
-        o->weak_self = *this;
-    }
-};
-
 }
 
 %}
@@ -242,10 +282,19 @@ class Block(BlockPython):
         self.set_input_signature(in_sig)
         self.set_output_signature(out_sig)
 
-        #move ownership into a shared ptr object
-        self.__ref = PythonBlockRef(self)
-        #self.thisown = 0
-        self.__disown__()
+        '''
+        Setup reference counting foo:
+        This logic allows a topology to hold a container reference.
+        However, getting this to actually work was quite a adventure.
+        We are using the reference to this class's internal dictionary;
+        but I would prefer that the reference be to this PyObject.
+        Anyway, this seems to be working properly, but could be fragile.
+        '''
+
+        # 1) give the element a PyObject ptr to this elements dict
+        # 2) set self as a member so the dict hold a reference to self
+        self._Py_set_ref(self)
+        self.__ref = self
 
     def set_input_signature(self, sig):
         self.__in_sig = sig_to_dtype_sig(sig)

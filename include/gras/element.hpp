@@ -15,6 +15,11 @@ struct ElementImpl;
 
 typedef boost::shared_ptr<ElementImpl> ElementBase;
 
+struct WeakElement
+{
+    virtual boost::shared_ptr<void> lock(void) = 0;
+};
+
 struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
 {
 
@@ -58,7 +63,7 @@ struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
     Element &shared_to_element(void);
 
     //! for internal use only
-    boost::weak_ptr<void> weak_self;
+    boost::shared_ptr<WeakElement> weak_self;
 
 };
 
