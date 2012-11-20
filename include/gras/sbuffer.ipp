@@ -44,7 +44,12 @@ GRAS_FORCE_INLINE SBuffer::SBuffer(void):
     //NOP
 }
 
-GRAS_FORCE_INLINE void *SBuffer::get_actual_memory(void) const
+GRAS_FORCE_INLINE const void *SBuffer::get_actual_memory(void) const
+{
+    return (*this)->config.memory;
+}
+
+GRAS_FORCE_INLINE void *SBuffer::get_actual_memory(void)
 {
     return (*this)->config.memory;
 }
@@ -54,7 +59,12 @@ GRAS_FORCE_INLINE size_t SBuffer::get_actual_length(void) const
     return (*this)->config.length;
 }
 
-GRAS_FORCE_INLINE void *SBuffer::get(const ptrdiff_t delta_bytes) const
+GRAS_FORCE_INLINE const void *SBuffer::get(const ptrdiff_t delta_bytes) const
+{
+    return ((char *)(*this)->config.memory) + this->offset + delta_bytes;
+}
+
+GRAS_FORCE_INLINE void *SBuffer::get(const ptrdiff_t delta_bytes)
 {
     return ((char *)(*this)->config.memory) + this->offset + delta_bytes;
 }

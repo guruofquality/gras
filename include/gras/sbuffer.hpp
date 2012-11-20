@@ -92,7 +92,12 @@ struct GRAS_API SBuffer : boost::intrusive_ptr<SBufferImpl>
     /*!
      * Get a pointer to the start of the underlying memory
      */
-    void *get_actual_memory(void) const;
+    const void *get_actual_memory(void) const;
+
+    /*!
+     * Get a pointer to the start of the underlying memory
+     */
+    void *get_actual_memory(void);
 
     /*!
      * Get the length of the underlying memory in bytes
@@ -100,7 +105,10 @@ struct GRAS_API SBuffer : boost::intrusive_ptr<SBufferImpl>
     size_t get_actual_length(void) const;
 
     //! Get a pointer into valid memory
-    void *get(const ptrdiff_t delta_bytes = 0) const;
+    const void *get(const ptrdiff_t delta_bytes = 0) const;
+
+    //! Get a pointer into valid memory
+    void *get(const ptrdiff_t delta_bytes = 0);
 
     //! The offset into valid memory in bytes
     size_t offset;

@@ -45,7 +45,7 @@ struct InputBufferQueues
     void update_config(const size_t i, const size_t, const size_t, const size_t);
 
     //! Call to get an input buffer for work
-    GRAS_FORCE_INLINE SBuffer &front(const size_t i)
+    GRAS_FORCE_INLINE const SBuffer &front(const size_t i)
     {
         ASSERT(this->ready(i));
 

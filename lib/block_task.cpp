@@ -134,7 +134,7 @@ void BlockActor::handle_task(void)
         ASSERT(this->input_queues.ready(i));
         //this->input_queues.accumulate(i, this->input_items_sizes[i]);
         const SBuffer &buff = this->input_queues.front(i);
-        void *mem = buff.get();
+        const void *mem = buff.get();
         size_t items = buff.length/this->input_items_sizes[i];
 
         this->input_items[i].get() = mem;
@@ -167,7 +167,7 @@ void BlockActor::handle_task(void)
     for (size_t i = 0; i < num_outputs; i++)
     {
         ASSERT(this->output_queues.ready(i));
-        const SBuffer &buff = this->output_queues.front(i);
+        SBuffer &buff = this->output_queues.front(i);
         void *mem = buff.get(buff.length);
         const size_t bytes = buff.get_actual_length() - buff.length - buff.offset;
         size_t items = bytes/this->output_items_sizes[i];
