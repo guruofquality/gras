@@ -34,7 +34,6 @@
     {
         return ($self)->get() == rhs.get();
     }
-
 }
 
 #endif /*INCLUDED_GRAS_ELEMENT_I*/

@@ -227,11 +227,15 @@ def YieldTagIter(iter):
         srcid=PMC2Py(t.srcid),
     )
 
+#FIXME major kludge for ref holding
+blocks_ref_container = list()
+
 class Block(BlockPython):
     def __init__(self, name='Block', in_sig=None, out_sig=None):
         BlockPython.__init__(self, name)
         self.set_input_signature(in_sig)
         self.set_output_signature(out_sig)
+        blocks_ref_container.append(self)
 
     def set_input_signature(self, sig):
         self.__in_sig = sig_to_dtype_sig(sig)
