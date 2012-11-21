@@ -2,6 +2,8 @@
 
 import unittest
 import gras
+from PMC import *
+import numpy
 
 class SBufferTest(unittest.TestCase):
 
@@ -42,6 +44,19 @@ class SBufferTest(unittest.TestCase):
         self.assertEqual(2, len(s))
         self.assertEqual(2, len(a2))
         self.assertEqual(tuple(a2), (3, 4))
+
+    def test_with_pmc(self):
+        c = gras.SBufferConfig()
+        c.length = 4
+        s0 = gras.SBuffer(c)
+        p = Py2PMC(s0)
+        print p
+        s1 = PMC2Py(p)
+        self.assertEqual(c.length, s1.length)
+        self.assertEqual(c.length, len(s1))
+
+        s0.get()[:] = numpy.random.randint(0, 200, 4)
+        self.assertEqual(tuple(s0.get()), tuple(s1.get()))
 
 if __name__ == '__main__':
     unittest.main()
