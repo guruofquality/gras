@@ -89,9 +89,6 @@ struct PyGILPhondler
 
 %inline %{
 
-namespace gras
-{
-
 struct PyObjectRefHolder
 {
     PyObjectRefHolder(PyObject *o):
@@ -101,12 +98,21 @@ struct PyObjectRefHolder
     }
     ~PyObjectRefHolder(void)
     {
+        std::cout << "Py_DECREF(o);\n";
+        std::cout << "ref " << o->ob_refcnt <<std::endl;
+        //if (o->ob_refcnt == 1)
+        //{
+        //    PyObject_DEL(o);
+        //    return;
+        //}
         Py_DECREF(o);
+        std::cout << "....?Py_DECREF(o);\n";
+        std::cout << "ref " << o->ob_refcnt <<std::endl;
     }
     PyObject *o;
 };
 
-struct WeakElementPyObject : WeakElement
+struct WeakElementPyObject : gras::WeakElement
 {
     WeakElementPyObject(PyObject *o):
         o(o)
@@ -119,8 +125,6 @@ struct WeakElementPyObject : WeakElement
     }
     PyObject *o;
 };
-
-}
 
 %}
 
@@ -143,10 +147,12 @@ struct BlockPython : Block
     virtual ~BlockPython(void)
     {
         //NOP
+        std::cout << "~BlockPython" <<std::endl;
     }
 
     void _Py_set_ref(PyObject *o)
     {
+        std::cout << o->ob_refcnt <<std::endl;
         this->weak_self.reset(new WeakElementPyObject(o));
     }
 
@@ -160,6 +166,7 @@ struct BlockPython : Block
 
     bool stop(void)
     {
+        std::cout << "stop " << std::endl;
         PyGILPhondler phil;
         return this->_Py_stop();
     }
@@ -168,6 +175,7 @@ struct BlockPython : Block
 
     void notify_topology(const size_t num_inputs, const size_t num_outputs)
     {
+        std::cout << "notify_topology " << std::endl;
         _input_addrs.resize(num_inputs);
         _input_sizes.resize(num_inputs);
         _output_addrs.resize(num_outputs);
@@ -255,6 +263,8 @@ def pointer_to_ndarray(addr, dtype, nitems, readonly=False):
 import numpy
 import traceback
 
+ahhh = list()
+
 def sig_to_dtype_sig(sig):
     if sig is None: sig = ()
     return map(numpy.dtype, sig)
@@ -281,20 +291,13 @@ class Block(BlockPython):
         BlockPython.__init__(self, name)
         self.set_input_signature(in_sig)
         self.set_output_signature(out_sig)
+        self._Py_set_ref(self.this)
+        self.thisown = 0
+        #self.__disown__()
+        #ahhh.append(self)
 
-        '''
-        Setup reference counting foo:
-        This logic allows a topology to hold a container reference.
-        However, getting this to actually work was quite a adventure.
-        We are using the reference to this class's internal dictionary;
-        but I would prefer that the reference be to this PyObject.
-        Anyway, this seems to be working properly, but could be fragile.
-        '''
-
-        # 1) give the element a PyObject ptr to this elements dict
-        # 2) set self as a member so the dict hold a reference to self
-        self._Py_set_ref(self)
-        self.__ref = self
+    def __del__(self):
+        print "ahhh!!"
 
     def set_input_signature(self, sig):
         self.__in_sig = sig_to_dtype_sig(sig)
