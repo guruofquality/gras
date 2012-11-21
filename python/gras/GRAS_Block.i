@@ -179,32 +179,13 @@ struct BlockPython : Block
 %}
 
 ////////////////////////////////////////////////////////////////////////
-// Conversion to the numpy array
-////////////////////////////////////////////////////////////////////////
-%pythoncode %{
-
-import numpy
-
-def pointer_to_ndarray(addr, dtype, nitems, readonly=False):
-    class array_like:
-        __array_interface__ = {
-            'data' : (addr, readonly),
-            'typestr' : dtype.base.str,
-            'descr' : dtype.base.descr,
-            'shape' : (nitems,) + dtype.shape,
-            'strides' : None,
-            'version' : 3,
-        }
-    return numpy.asarray(array_like()).view(dtype.base)
-%}
-
-////////////////////////////////////////////////////////////////////////
 // Python overload for adding pythonic interfaces
 ////////////////////////////////////////////////////////////////////////
 %pythoncode %{
 
 import numpy
 import traceback
+from GRAS_Utils import pointer_to_ndarray
 
 def sig_to_dtype_sig(sig):
     if sig is None: sig = ()
