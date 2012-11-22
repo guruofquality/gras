@@ -83,7 +83,20 @@ struct InputBufferQueues
     {
         ASSERT(not _queues[i].full());
         if (buffer.length == 0) return;
-        _queues[i].push_back(buffer);
+
+        //does this buffer starts where the last one ends?
+        //perform buffer stitching into back of buffer
+        if (
+            not _queues[i].empty() and _queues[i].back() == buffer and
+            (_queues[i].back().length + _queues[i].back().offset) == buffer.offset
+        ){
+            _queues[i].back().length += buffer.length;
+        }
+        else
+        {
+            _queues[i].push_back(buffer);
+        }
+
         _enqueued_bytes[i] += _queues[i].back().length;
         __update(i);
     }
@@ -225,6 +238,8 @@ GRAS_FORCE_INLINE void InputBufferQueues::accumulate(const size_t i, const size_
 
 GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t bytes_consumed)
 {
+    if (bytes_consumed == 0) return;
+
     ASSERT(not _queues[i].empty());
     SBuffer &front = _queues[i].front();
 

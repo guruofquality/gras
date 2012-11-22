@@ -195,19 +195,7 @@ void BlockActor::handle_task(void)
     //------------------------------------------------------------------
     for (size_t i = 0; i < num_outputs; i++)
     {
-        if (not this->output_queues.ready(i)) continue;
-        SBuffer &buff = this->output_queues.front(i);
-        const size_t reserve_bytes = this->output_configs[i].reserve_items/this->output_items_sizes[i];
-
-        //dont always pass output buffers downstream for the sake of efficiency
-        if (
-            not this->input_queues.all_ready() or
-            buff.length*2 > buff.get_actual_length() or
-            (buff.get_actual_length() - buff.length) < reserve_bytes
-        )
-        {
-            this->flush_output(i);
-        }
+        this->flush_output(i);
     }
 
     //------------------------------------------------------------------
@@ -229,7 +217,6 @@ void BlockActor::handle_task(void)
 
 void BlockActor::consume(const size_t i, const size_t items)
 {
-    if (items == 0) return;
     this->items_consumed[i] += items;
     const size_t bytes = items*this->input_items_sizes[i];
     this->input_queues.consume(i, bytes);
@@ -256,10 +243,9 @@ void BlockActor::produce_buffer(const size_t i, const SBuffer &buffer)
 
 GRAS_FORCE_INLINE void BlockActor::flush_output(const size_t i)
 {
-    if (not this->output_queues.ready(i)) return;
-    SBuffer &buff = this->output_queues.front(i);
+    if (not this->output_queues.ready(i) or this->output_queues.front(i).length == 0) return;
     InputBufferMessage buff_msg;
-    buff_msg.buffer = buff;
+    buff_msg.buffer = this->output_queues.front(i);
     this->post_downstream(i, buff_msg);
     this->output_queues.pop(i);
 }
