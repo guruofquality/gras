@@ -97,7 +97,7 @@ struct InputBufferQueues
             _queues[i].push_back(buffer);
         }
 
-        _enqueued_bytes[i] += _queues[i].back().length;
+        _enqueued_bytes[i] += buffer.length;
         __update(i);
     }
 
