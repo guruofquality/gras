@@ -225,6 +225,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::accumulate(const size_t i, const size_
 
 GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t bytes_consumed)
 {
+    ASSERT(not _queues[i].empty());
     SBuffer &front = _queues[i].front();
 
     //assert that we dont consume past the bounds of the buffer

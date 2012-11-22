@@ -229,6 +229,7 @@ void BlockActor::handle_task(void)
 
 void BlockActor::consume(const size_t i, const size_t items)
 {
+    if (items == 0) return;
     this->items_consumed[i] += items;
     const size_t bytes = items*this->input_items_sizes[i];
     this->input_queues.consume(i, bytes);
