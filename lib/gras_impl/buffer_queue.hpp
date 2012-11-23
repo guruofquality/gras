@@ -14,7 +14,7 @@ struct BufferQueue : std::queue<SBuffer>
 {
     BufferQueue(void)
     {
-        SBufferDeleter deleter = boost::bind(&BufferQueue::push, this, _1);
+        SBufferDeleter deleter = boost::bind(&BufferQueue::push_back, this, _1);
         _token = SBufferToken(new SBufferDeleter(deleter));
     }
 
@@ -25,6 +25,11 @@ struct BufferQueue : std::queue<SBuffer>
         {
             this->pop();
         }
+    }
+
+    void push_back(const SBuffer &buff)
+    {
+        this->push(buff);
     }
 
     void allocate_one(const size_t num_bytes)
