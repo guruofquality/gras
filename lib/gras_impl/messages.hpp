@@ -23,7 +23,7 @@ struct TopAllocMessage
 
 struct TopActiveMessage
 {
-    //empty
+    Token token;
 };
 
 struct TopInertMessage

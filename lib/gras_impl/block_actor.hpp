@@ -149,6 +149,7 @@ struct BlockActor : Apology::Worker
         BLOCK_STATE_LIVE,
         BLOCK_STATE_DONE,
     } block_state;
+    WeakToken active_token;
     long buffer_affinity;
 
     std::vector<std::vector<OutputHintMessage> > output_allocation_hints;

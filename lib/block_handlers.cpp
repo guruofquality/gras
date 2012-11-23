@@ -8,7 +8,7 @@ using namespace gras;
 
 
 void BlockActor::handle_top_active(
-    const TopActiveMessage &,
+    const TopActiveMessage &message,
     const Theron::Address from
 ){
     MESSAGE_TRACER();
@@ -18,6 +18,7 @@ void BlockActor::handle_top_active(
         this->block_ptr->start();
     }
     this->block_state = BLOCK_STATE_LIVE;
+    this->active_token = message.token;
 
     this->Push(SelfKickMessage(), Theron::Address());
 

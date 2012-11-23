@@ -76,12 +76,19 @@ void TopBlock::start(void)
         (*this)->executor->post_all(TopAllocMessage());
     }
     {
-        (*this)->executor->post_all(TopActiveMessage());
+        TopActiveMessage message;
+        message.token = Token::make();
+        (*this)->active_token = message.token;
+        (*this)->executor->post_all(message);
     }
 }
 
 void TopBlock::stop(void)
 {
+    //reset only reference to active token
+    //workers about to call work see expired
+    (*this)->active_token.reset();
+
     //interrupt these "special" threads
     (*this)->thread_group->interrupt_all();
 

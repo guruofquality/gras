@@ -31,6 +31,7 @@ struct ElementImpl
     //top block stuff
     SharedThreadGroup thread_group;
     Token token;
+    Token active_token;
     GlobalBlockConfig top_config;
 
     //things may be in this element
