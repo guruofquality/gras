@@ -168,6 +168,10 @@ class HierBlock(HierBlockPython):
     def __init__(self, *args, **kwargs):
         HierBlockPython.__init__(self, *args, **kwargs)
 
+        #backwards compatible silliness
+        import weakref
+        self._hb = weakref.proxy(self)
+
     def connect(self, *args):
         return internal_connect__(HierBlockPython.connect, self, *args)
 
