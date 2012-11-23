@@ -14,6 +14,7 @@ install(FILES
     io_signature.i
     sbuffer.hpp
     sbuffer.ipp
+    sbuffer.i
     tags.hpp
     tags.i
     thread_pool.hpp

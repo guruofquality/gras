@@ -9,7 +9,7 @@
 
 %include <gras/element.i>
 %include <gras/tags.i>
-%include <gras/sbuffer.hpp>
+%import <gras/sbuffer.i>
 %include <gras/block.hpp>
 
 #endif /*INCLUDED_GRAS_BLOCK_I*/
