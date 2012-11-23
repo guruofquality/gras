@@ -90,11 +90,13 @@ void Block::set_output_config(const size_t which_output, const OutputPortConfig 
 
 void Block::consume(const size_t which_input, const size_t num_items)
 {
+    ASSERT(long(num_items) > 0); //sign bit set? you dont want a negative
     (*this)->block->consume(which_input, num_items);
 }
 
 void Block::produce(const size_t which_output, const size_t num_items)
 {
+    ASSERT(long(num_items) > 0); //sign bit set? you dont want a negative
     (*this)->block->produce(which_output, num_items);
 }
 

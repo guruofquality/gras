@@ -163,6 +163,7 @@ void BlockActor::handle_task(void)
     {
         ASSERT(this->output_queues.ready(i));
         SBuffer &buff = this->output_queues.front(i);
+        ASSERT(buff.length == 0); //assumes it was flushed last call
         void *mem = buff.get();
         const size_t bytes = buff.get_actual_length() - buff.offset;
         size_t items = bytes/this->output_items_sizes[i];

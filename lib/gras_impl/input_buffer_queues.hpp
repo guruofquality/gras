@@ -29,7 +29,7 @@ struct InputBufferQueues
         return SBuffer(config);
     }
 
-    static  SBuffer &get_null_buff(void)
+    static SBuffer &get_null_buff(void)
     {
         static SBuffer null = make_null_buff();
         null.offset = 0;
