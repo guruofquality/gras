@@ -30,10 +30,17 @@
        return ($self)->to_string();
     }
 
-    bool __eq__(const Element &rhs) const
+    bool _equal(const Element &rhs) const
     {
         return ($self)->get() == rhs.get();
     }
+
+    %insert("python")
+    %{
+        def __eq__(self, rhs):
+            if not isinstance(rhs, Element): return False
+            return self._equal(rhs)
+    %}
 }
 
 #endif /*INCLUDED_GRAS_ELEMENT_I*/
