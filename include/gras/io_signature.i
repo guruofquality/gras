@@ -12,13 +12,13 @@
 %ignore gras::IOSignature::operator[]; //ignore warnings about %extend
 
 %include <std_vector.i>
-%template (std_vector_gras_io_signature_size_t) std::vector<size_t>;
+%template (std_vector_gras_io_signature_unsigned) std::vector<unsigned>;
 
 %include <gras/io_signature.hpp>
 
 %extend gras::IOSignature
 {
-    const size_t &__getitem__(const size_t index)
+    const unsigned &__getitem__(const unsigned index)
     {
         return ($self)->at(index);
     }
