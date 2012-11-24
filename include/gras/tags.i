@@ -9,7 +9,7 @@
 
 %include <gras/gras.hpp>
 %include <gras/tags.hpp>
-%include <PMC/PMC.i>
+%import <PMC/PMC.i>
 
 ////////////////////////////////////////////////////////////////////////
 // Turn TagIter into a python iterable object

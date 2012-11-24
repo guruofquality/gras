@@ -186,6 +186,7 @@ struct BlockPython : Block
 import numpy
 import traceback
 from GRAS_Utils import pointer_to_ndarray
+from PMC import *
 
 def sig_to_dtype_sig(sig):
     if sig is None: sig = ()

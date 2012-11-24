@@ -2,11 +2,17 @@
 
 %include <gras/sbuffer.i>
 
+%{
+#include <PMC/PMC.hpp>
+%}
+
 %include <PMC/PMC.i>
 
 DECL_PMC_SWIG_TYPE(gras::SBuffer, swig_sbuffer)
 
 %pythoncode %{
+
+from PMC import *
 
 RegisterPy2PMC(
     is_py = lambda x: isinstance(x, SBuffer),
