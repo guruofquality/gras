@@ -9,11 +9,10 @@
 
 %ignore gras::IOSignature::operator->();
 %ignore gras::IOSignature::operator->() const;
+%ignore gras::IOSignature::operator[]; //ignore warnings about %extend
 
 %include <std_vector.i>
-%template () std::vector<size_t>;
-
-%ignore gras::IOSignature::operator[]; //ignore warnings about %extend
+%template (std_vector_gras_io_signature_size_t) std::vector<size_t>;
 
 %include <gras/io_signature.hpp>
 
