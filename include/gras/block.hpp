@@ -251,11 +251,12 @@ struct GRAS_API Block : Element
      * This is the same buffer pointed to by output_items[which].
      * This function must be called during the call to work().
      * Use this to get a pool of buffers for datagram message ports.
+     * This function removes the output buffer from the internal queue.
      *
      * \param which_output the output port index
-     * \return a const reference to the buffer
+     * \return a reference counted copy of the buffer
      */
-    const SBuffer &get_output_buffer(const size_t which_output) const;
+    SBuffer pop_output_buffer(const size_t which_output);
 
     /*!
      * Post the given output buffer to the downstream.

@@ -203,9 +203,11 @@ const SBuffer &Block::get_input_buffer(const size_t which_input) const
     return (*this)->block->input_queues.front(which_input);
 }
 
-const SBuffer &Block::get_output_buffer(const size_t which_output) const
+SBuffer Block::pop_output_buffer(const size_t which_output)
 {
-    return (*this)->block->output_queues.front(which_output);
+    SBuffer buff = (*this)->block->output_queues.front(which_output);
+    (*this)->block->output_queues.pop(which_output);
+    return buff;
 }
 
 void Block::post_output_buffer(const size_t which_output, const SBuffer &buffer)
