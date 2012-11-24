@@ -236,7 +236,7 @@ struct GRAS_API Block : Element
     void mark_done(void);
 
     /*!
-     * Get access to the underlying reference counted buffer.
+     * Get access to the underlying reference counted input buffer.
      * This is the same buffer pointed to by input_items[which].
      * This function must be called during the call to work().
      * Use this function to implement passive work-flows.
@@ -244,7 +244,18 @@ struct GRAS_API Block : Element
      * \param which_input the input port index
      * \return a const reference to the buffer
      */
-    const SBuffer &get_input_buffer(const size_t which_input);
+    const SBuffer &get_input_buffer(const size_t which_input) const;
+
+    /*!
+     * Get access to the underlying reference counted output buffer.
+     * This is the same buffer pointed to by output_items[which].
+     * This function must be called during the call to work().
+     * Use this to get a pool of buffers for datagram message ports.
+     *
+     * \param which_output the output port index
+     * \return a const reference to the buffer
+     */
+    const SBuffer &get_output_buffer(const size_t which_output) const;
 
     /*!
      * Post the given output buffer to the downstream.
