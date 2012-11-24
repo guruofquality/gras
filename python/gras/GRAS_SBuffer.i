@@ -6,7 +6,7 @@
 #include <PMC/PMC.hpp>
 %}
 
-%include <PMC/PMC.i>
+%import <PMC/PMC.i>
 
 DECL_PMC_SWIG_TYPE(gras::SBuffer, swig_sbuffer)
 
