@@ -62,7 +62,7 @@ void BlockActor::input_fail(const size_t i)
     //input failed, accumulate and try again
     if (not this->input_queues.is_accumulated(i))
     {
-        this->input_queues.accumulate(i, this->input_items_sizes[i]);
+        this->input_queues.accumulate(i);
         this->Push(SelfKickMessage(), Theron::Address());
         return;
     }
@@ -143,7 +143,6 @@ void BlockActor::handle_task(void)
         this->sort_tags(i);
 
         ASSERT(this->input_queues.ready(i));
-        //this->input_queues.accumulate(i, this->input_items_sizes[i]);
         const SBuffer &buff = this->input_queues.front(i);
         const void *mem = buff.get();
         size_t items = buff.length/this->input_items_sizes[i];
