@@ -2,17 +2,11 @@
 
 %include <gras/sbuffer.i>
 
-%{
-#include <PMC/PMC.hpp>
-%}
-
-%import <PMC/PMC.i>
+%include <PMC/Registry.i>
 
 DECL_PMC_SWIG_TYPE(gras::SBuffer, swig_sbuffer)
 
 %pythoncode %{
-
-from PMC import *
 
 def pmc_to_sbuffer(p):
     s = pmc_to_swig_sbuffer(p)
