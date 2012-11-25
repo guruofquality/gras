@@ -68,16 +68,19 @@ add_subdirectory(python/gras)
 add_subdirectory(tests)
 
 ########################################################################
-# add gnuradio as sub-project
+# setup helpful submodule vars
 ########################################################################
-set(CMAKE_SOURCE_DIR ${GRAS_SOURCE_DIR}/gnuradio)
-set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/gnuradio)
-
-set(GRAS_LIBRARIES gras) #for submodule linking
+list(APPEND GRAS_LIBRARIES gras) #for submodule linking
 
 #append gras deps for test code:
 list(APPEND GR_TEST_TARGET_DEPS ${GRAS_LIBRARIES})
 list(APPEND GR_TEST_PYTHON_DIRS ${GRAS_PYTHON_DIRS})
+
+########################################################################
+# add gnuradio as sub-project
+########################################################################
+set(CMAKE_SOURCE_DIR ${GRAS_SOURCE_DIR}/gnuradio)
+set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/gnuradio)
 
 set(CMAKE_PROJECT_NAME gnuradio) #for submodule vars
 
@@ -109,4 +112,68 @@ CPACK_COMPONENT("${GRAS_COMP_PYTHON}"
     DISPLAY_NAME "Python"
     DESCRIPTION  "Python modules for runtime"
     DEPENDS      "${GRAS_COMP_RUNTIME}"
+)
+
+########################################################################
+# GNU Radio Extras as sub-project
+########################################################################
+set(GRAS_FOUND TRUE)
+#GRAS_INCLUDE_DIRS, GRAS_LIBRARIES set above
+
+set(VOLK_FOUND TRUE)
+set(VOLK_INCLUDE_DIRS
+    ${GRAS_SOURCE_DIR}/gnuradio/volk/include
+    ${GRAS_BINARY_DIR}/gnuradio/volk/include
+)
+set(VOLK_LIBRARIES volk)
+
+set(GNURADIO_CORE_FOUND TRUE)
+#GNURADIO_CORE_INCLUDE_DIRS set global by gnuradio
+set(GNURADIO_CORE_LIBRARIES gnuradio-core)
+list(APPEND GR_TEST_PYTHON_DIRS
+    ${GRAS_SOURCE_DIR}/gnuradio/gnuradio-core/src/python
+    ${GRAS_BINARY_DIR}/gnuradio/gnuradio-core/src/lib/swig
+)
+
+#packet stuffs uses gr-digtal:
+list(APPEND GR_TEST_PYTHON_DIRS
+    ${GRAS_BINARY_DIR}/gnuradio/gr-digital/python
+    ${GRAS_BINARY_DIR}/gnuradio/gr-digital/swig
+    ${GRAS_BINARY_DIR}/gnuradio/gr-filter/python
+    ${GRAS_BINARY_DIR}/gnuradio/gr-filter/swig
+    ${GRAS_BINARY_DIR}/gnuradio/gr-analog/python
+    ${GRAS_BINARY_DIR}/gnuradio/gr-analog/swig
+)
+list(APPEND GR_TEST_TARGET_DEPS gnuradio-digital gnuradio-filter gnuradio-fft gnuradio-analog)
+
+add_subdirectory(grextras)
+
+########################################################################
+# add GrExtras to gnuradio cpack registry
+# this must come after the submodule
+########################################################################
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
+include(GrPackage)
+
+CPACK_SET(CPACK_COMPONENT_GROUP_GREXTRAS_DESCRIPTION "GNU Radio Extras")
+
+CPACK_COMPONENT("extras_runtime"
+    GROUP        "GrExtras"
+    DISPLAY_NAME "Runtime"
+    DESCRIPTION  "Runtime"
+    DEPENDS      "${GRAS_RUNTIME}"
+)
+
+CPACK_COMPONENT("extras_devel"
+    GROUP        "GrExtras"
+    DISPLAY_NAME "Development"
+    DESCRIPTION  "C++ headers and import libraries"
+    DEPENDS      "${GRAS_COMP_DEVEL}"
+)
+
+CPACK_COMPONENT("extras_python"
+    GROUP        "GrExtras"
+    DISPLAY_NAME "Python"
+    DESCRIPTION  "Python modules for runtime"
+    DEPENDS      "extras_runtime;${GRAS_COMP_PYTHON}"
 )
