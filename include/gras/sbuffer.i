@@ -31,9 +31,11 @@
         def get(self):
             from gras.GRAS_Utils import pointer_to_ndarray
             addr = long(self.get_actual_memory())
+            readonly = hasattr(self, 'readonly') and getattr(self, 'readonly')
             return pointer_to_ndarray(
                 addr=addr + self.offset,
                 nitems=self.length,
+                readonly=readonly
             )
 
         def __len__(self): return self.length
