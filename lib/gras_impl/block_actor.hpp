@@ -94,6 +94,7 @@ struct BlockActor : Apology::Worker
     void consume(const size_t index, const size_t items);
     void produce_buffer(const size_t index, const SBuffer &buffer);
     void flush_output(const size_t index, const bool force_pop = false);
+    bool is_work_allowed(void);
 
     GRAS_FORCE_INLINE bool is_input_done(const size_t i)
     {
@@ -126,6 +127,7 @@ struct BlockActor : Apology::Worker
     //buffer queues and ready conditions
     InputBufferQueues input_queues;
     OutputBufferQueues<SBuffer> output_queues;
+    BitSet inputs_available;
 
     //tag tracking
     std::vector<bool> input_tags_changed;

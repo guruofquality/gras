@@ -13,6 +13,7 @@ void BlockActor::handle_input_tag(const InputTagMessage &message, const Theron::
     //handle incoming stream tag, push into the tag storage
     this->input_tags[index].push_back(message.tag);
     this->input_tags_changed[index] = true;
+    this->inputs_available.set(index);
     this->handle_task();
 }
 
@@ -24,6 +25,7 @@ void BlockActor::handle_input_buffer(const InputBufferMessage &message, const Th
     //handle incoming stream buffer, push into the queue
     if (this->block_state == BLOCK_STATE_DONE) return;
     this->input_queues.push(index, message.buffer);
+    this->inputs_available.set(index);
     this->handle_task();
 }
 

@@ -96,6 +96,16 @@ void BlockActor::output_fail(const size_t i)
     this->flush_output(i, true);
 }
 
+GRAS_FORCE_INLINE bool BlockActor::is_work_allowed(void)
+{
+    return (
+        this->block_state == BLOCK_STATE_LIVE and
+        this->input_queues.all_ready() and
+        this->inputs_available.any() and
+        this->output_queues.all_ready()
+    );
+}
+
 void BlockActor::handle_task(void)
 {
     #ifdef WORK_DEBUG
@@ -107,11 +117,7 @@ void BlockActor::handle_task(void)
     //-- Handle task may get called for incoming buffers,
     //-- however, not all ports may have available buffers.
     //------------------------------------------------------------------
-    if (not(
-        this->block_state == BLOCK_STATE_LIVE and
-        this->input_queues.all_ready() and
-        this->output_queues.all_ready()
-    )) return;
+    if (not this->is_work_allowed()) return;
 
     //------------------------------------------------------------------
     //-- Asynchronous notification through atomic variable
@@ -211,11 +217,13 @@ void BlockActor::handle_task(void)
     //since nothing else is coming in, its safe to mark done
     for (size_t i = 0; i < num_inputs; i++)
     {
+        const bool nothing = this->input_queues.empty(i) and this->input_tags[i].empty();
+        this->inputs_available.set(i, not nothing);
         if (this->is_input_done(i)) this->mark_done();
     }
 
     //still have IO ready? kick off another task
-    if (this->input_queues.all_ready() and this->output_queues.all_ready())
+    if (this->is_work_allowed())
     {
         this->Push(SelfKickMessage(), Theron::Address());
     }
