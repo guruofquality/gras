@@ -117,6 +117,9 @@ CPACK_COMPONENT("${GRAS_COMP_PYTHON}"
 ########################################################################
 # GNU Radio Extras as sub-project
 ########################################################################
+set(CMAKE_SOURCE_DIR ${GRAS_SOURCE_DIR}/grextras)
+set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/grextras)
+
 set(GRAS_FOUND TRUE)
 #GRAS_INCLUDE_DIRS, GRAS_LIBRARIES set above
 
