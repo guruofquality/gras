@@ -5,7 +5,6 @@
 
 #include <vector>
 #include <stdexcept>
-#include <cstdlib>
 
 namespace gras
 {
@@ -16,7 +15,7 @@ namespace gras
  * Properties are a maximum and minimum number of ports,
  * and an item size in bytes for each port.
  */
-struct IOSignature : std::vector<size_t>
+struct IOSignature : std::vector<unsigned>
 {
     static const int IO_INFINITE = ~0;
 
@@ -28,7 +27,7 @@ struct IOSignature : std::vector<size_t>
     }
 
     //! Create a signature with a single item size
-    IOSignature(const size_t size)
+    IOSignature(const unsigned size)
     {
         this->push_back(size);
         this->set_min_streams(IO_INFINITE);
@@ -47,7 +46,7 @@ struct IOSignature : std::vector<size_t>
     }
 
     //! Create a signature from a vector of IO widths
-    IOSignature(const std::vector<size_t> &sig)
+    IOSignature(const std::vector<unsigned> &sig)
     {
         this->assign(sig.begin(), sig.end());
         this->set_min_streams(IO_INFINITE);
@@ -72,7 +71,7 @@ struct IOSignature : std::vector<size_t>
         return this;
     };
 
-    const size_t &at(const size_t index) const
+    const unsigned &at(const unsigned index) const
     {
         if (this->empty())
         {
@@ -80,12 +79,12 @@ struct IOSignature : std::vector<size_t>
         }
         if (this->size() > index)
         {
-            return std::vector<size_t>::at(index);
+            return std::vector<unsigned>::at(index);
         }
         return this->back();
     }
 
-    const size_t &operator[](const size_t index) const
+    const unsigned &operator[](const unsigned index) const
     {
         return this->at(index);
     }
@@ -110,12 +109,12 @@ struct IOSignature : std::vector<size_t>
         return _max_streams;
     }
 
-    int sizeof_stream_item(const size_t index) const
+    int sizeof_stream_item(const unsigned index) const
     {
         return this->at(index);
     }
 
-    const std::vector<size_t> &sizeof_stream_items(void) const
+    const std::vector<unsigned> &sizeof_stream_items(void) const
     {
         return *this;
     }

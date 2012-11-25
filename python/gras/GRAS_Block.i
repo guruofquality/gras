@@ -78,6 +78,7 @@ struct PyGILPhondler
 #include <iostream>
 %}
 
+%include <gras/io_signature.i>
 %include <gras/block.i>
 
 ////////////////////////////////////////////////////////////////////////
