@@ -59,6 +59,8 @@ struct InputBufferQueues
         }
         ASSERT(_queues[i].front().length >= _reserve_bytes[i]);
 
+        ASSERT((_queues[i].front().length % _items_sizes[i]) == 0);
+
         return _queues[i].front();
     }
 
@@ -84,6 +86,13 @@ struct InputBufferQueues
     {
         ASSERT(not _queues[i].empty());
         return _queues[i].front().length >= _maximum_bytes[i];
+    }
+
+    GRAS_FORCE_INLINE void pop(const size_t i)
+    {
+        ASSERT(not _queues[i].empty());
+        _queues[i].front().reset();
+        _queues[i].pop_front();
     }
 
     GRAS_FORCE_INLINE void push(const size_t i, const SBuffer &buffer)
@@ -245,7 +254,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::accumulate(const size_t i)
         free_bytes -= bytes;
         front.length -= bytes;
         front.offset += bytes;
-        if (front.length == 0) _queues[i].pop_front();
+        if (front.length == 0) this->pop(i);
     }
 
     _queues[i].push_front(accum_buff);
@@ -267,7 +276,8 @@ GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t b
     front.offset += bytes_consumed;
     front.length -= bytes_consumed;
     ASSERT(front.offset <= front.get_actual_length());
-    if (front.length == 0) _queues[i].pop_front();
+    ASSERT((_queues[i].front().length % _items_sizes[i]) == 0);
+    if (front.length == 0) this->pop(i);
 
     //update the number of bytes in this queue
     ASSERT(_enqueued_bytes[i] >= bytes_consumed);

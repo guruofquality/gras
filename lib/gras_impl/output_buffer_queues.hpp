@@ -51,6 +51,7 @@ struct OutputBufferQueues
 
     GRAS_FORCE_INLINE void pop(const size_t i)
     {
+        _queues[i].front() = T();
         _queues[i].pop_front();
         _bitset.set(i, not _queues[i].empty());
     }
