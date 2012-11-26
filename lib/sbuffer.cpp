@@ -43,7 +43,7 @@ static void numa_mem_deleter(SBuffer &buff)
 
 static void default_allocator_deleter(SBuffer &, char *m)
 {
-    delete m;
+    delete [] m;
 }
 
 static void default_allocator(SBufferConfig &config)
