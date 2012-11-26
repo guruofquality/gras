@@ -32,13 +32,16 @@
 #ifdef GRAS_DLL // defined if GRAS is compiled as a DLL
   #ifdef GRAS_DLL_EXPORTS // defined if we are building the GRAS DLL (instead of using it)
     #define GRAS_API GRAS_HELPER_DLL_EXPORT
+    #define GRAS_EXTERN
   #else
     #define GRAS_API GRAS_HELPER_DLL_IMPORT
+    #define GRAS_EXTERN extern
   #endif // GRAS_DLL_EXPORTS
   #define GRAS_LOCAL GRAS_HELPER_DLL_LOCAL
 #else // GRAS_DLL is not defined: this means GRAS is a static lib.
   #define GRAS_API
   #define GRAS_LOCAL
+  #define GRAS_EXTERN
 #endif // GRAS_DLL
 
 #define GRAS_MAX_ALIGNMENT 32

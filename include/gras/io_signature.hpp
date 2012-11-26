@@ -3,6 +3,7 @@
 #ifndef INCLUDED_GRAS_IO_SIGNATURE_HPP
 #define INCLUDED_GRAS_IO_SIGNATURE_HPP
 
+#include <gras/gras.hpp>
 #include <vector>
 #include <stdexcept>
 

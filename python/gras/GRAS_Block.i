@@ -78,7 +78,7 @@ struct PyGILPhondler
 #include <iostream>
 %}
 
-%include <gras/io_signature.i>
+%import <gras/io_signature.i>
 %include <gras/block.i>
 
 ////////////////////////////////////////////////////////////////////////
@@ -187,6 +187,7 @@ struct BlockPython : Block
 import numpy
 import traceback
 from GRAS_Utils import pointer_to_ndarray
+from GRAS_IOSignature import IOSignature
 from PMC import *
 
 def sig_to_dtype_sig(sig):

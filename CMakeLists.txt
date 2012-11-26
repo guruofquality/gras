@@ -18,9 +18,16 @@ endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     add_definitions(-Wall)
+    add_definitions(-Wextra)
     add_definitions(-fvisibility=hidden)
     add_definitions(-fvisibility-inlines-hidden)
 endif()
+
+if(MSVC)
+    add_definitions(-D_WIN32_WINNT=0x0501) #minimum version required is windows xp
+    add_definitions(-DNOMINMAX) #disables stupidity and enables std::min and std::max
+    add_definitions(-DBOOST_ALL_DYN_LINK) #setup boost auto-linking in msvc
+endif(MSVC)
 
 ########################################################################
 # Component names for install rules
@@ -123,31 +130,39 @@ set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/grextras)
 set(GRAS_FOUND TRUE)
 #GRAS_INCLUDE_DIRS, GRAS_LIBRARIES set above
 
-set(VOLK_FOUND TRUE)
+set(VOLK_FOUND ${ENABLE_VOLK})
 set(VOLK_INCLUDE_DIRS
     ${GRAS_SOURCE_DIR}/gnuradio/volk/include
     ${GRAS_BINARY_DIR}/gnuradio/volk/include
 )
+if(MSVC)
+    #add compatibility includes for stdint types
+    list(APPEND VOLK_INCLUDE_DIRS ${GRAS_SOURCE_DIR}/gnuradio/volk/cmake/msvc)
+endif()
 set(VOLK_LIBRARIES volk)
 
-set(GNURADIO_CORE_FOUND TRUE)
+set(GNURADIO_CORE_FOUND ${ENABLE_GR_CORE})
 #GNURADIO_CORE_INCLUDE_DIRS set global by gnuradio
 set(GNURADIO_CORE_LIBRARIES gnuradio-core)
-list(APPEND GR_TEST_PYTHON_DIRS
-    ${GRAS_SOURCE_DIR}/gnuradio/gnuradio-core/src/python
-    ${GRAS_BINARY_DIR}/gnuradio/gnuradio-core/src/lib/swig
-)
+if(ENABLE_GR_CORE)
+    list(APPEND GR_TEST_PYTHON_DIRS
+        ${GRAS_SOURCE_DIR}/gnuradio/gnuradio-core/src/python
+        ${GRAS_BINARY_DIR}/gnuradio/gnuradio-core/src/lib/swig
+    )
+endif(ENABLE_GR_CORE)
 
 #packet stuffs uses gr-digtal:
-list(APPEND GR_TEST_PYTHON_DIRS
-    ${GRAS_BINARY_DIR}/gnuradio/gr-digital/python
-    ${GRAS_BINARY_DIR}/gnuradio/gr-digital/swig
-    ${GRAS_BINARY_DIR}/gnuradio/gr-filter/python
-    ${GRAS_BINARY_DIR}/gnuradio/gr-filter/swig
-    ${GRAS_BINARY_DIR}/gnuradio/gr-analog/python
-    ${GRAS_BINARY_DIR}/gnuradio/gr-analog/swig
-)
-list(APPEND GR_TEST_TARGET_DEPS gnuradio-digital gnuradio-filter gnuradio-fft gnuradio-analog)
+if(ENABLE_GR_DIGITAL)
+    list(APPEND GR_TEST_PYTHON_DIRS
+        ${GRAS_BINARY_DIR}/gnuradio/gr-digital/python
+        ${GRAS_BINARY_DIR}/gnuradio/gr-digital/swig
+        ${GRAS_BINARY_DIR}/gnuradio/gr-filter/python
+        ${GRAS_BINARY_DIR}/gnuradio/gr-filter/swig
+        ${GRAS_BINARY_DIR}/gnuradio/gr-analog/python
+        ${GRAS_BINARY_DIR}/gnuradio/gr-analog/swig
+    )
+    list(APPEND GR_TEST_TARGET_DEPS gnuradio-digital gnuradio-filter gnuradio-fft gnuradio-analog)
+endif(ENABLE_GR_DIGITAL)
 
 add_subdirectory(grextras)
 

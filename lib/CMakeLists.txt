@@ -7,7 +7,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 ########################################################################
 # Setup Boost
 ########################################################################
-find_package(Boost)
+find_package(Boost COMPONENTS thread date_time)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 list(APPEND GRAS_LIBRARIES ${Boost_LIBRARIES})
