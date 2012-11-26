@@ -7,11 +7,14 @@ using namespace gras;
 template <typename V, typename Sig>
 void fill_item_sizes_from_sig(V &v, const Sig &s, const size_t size)
 {
-    v.resize(size);
-    for (size_t i = 0; i < v.size(); i++)
-    {
-        v[i] = s->sizeof_stream_item(i);
-    }
+    //default item size of 1 in case we cant set
+    v.resize(size, 1);
+
+    //empty signature? maybe it was a message port
+    if (s.empty()) return;
+
+    //fill v by copying signature (with back extend mode)
+    for (size_t i = 0; i < v.size(); i++) v[i] = s[i];
 }
 
 template <typename V, typename T>
