@@ -57,7 +57,7 @@ static struct WorkerAllocator : Theron::IAllocator
         else
         {
             //std::cout << "malloc size " << size << std::endl;
-            return new char[size];
+            return std::malloc(size);
         }
     }
 
@@ -72,7 +72,7 @@ static struct WorkerAllocator : Theron::IAllocator
         }
         else
         {
-            delete [] ((char *)memory);
+            std::free(memory);
         }
     }
 
