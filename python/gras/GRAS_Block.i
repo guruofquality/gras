@@ -258,6 +258,15 @@ class Block(BlockPython):
         print 'Implement Work!'
 
     def _Py_notify_topology(self, num_inputs, num_outputs):
+
+        #extend input signature from back to match topology
+        while len(self.__in_sig) < num_inputs:
+            self.__in_sig.append(self.__in_sig[-1])
+
+        #extend output signature from back to match topology
+        while len(self.__out_sig) < num_outputs:
+            self.__out_sig.append(self.__out_sig[-1])
+
         self.__in_indexes = range(num_inputs)
         self.__out_indexes = range(num_outputs)
         try: return self.notify_topology(num_inputs, num_outputs)
