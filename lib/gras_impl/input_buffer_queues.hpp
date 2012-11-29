@@ -53,10 +53,13 @@ struct InputBufferQueues
         if (_queues[i].empty()) return get_null_buff();
 
         //there are enough enqueued bytes, but not in the front buffer
-        if (_queues[i].front().length < _reserve_bytes[i])
-        {
-            this->accumulate(i);
-        }
+        const bool must_accumulate = _queues[i].front().length < _reserve_bytes[i];
+
+        //should we accumulate? a guess at heuristic improvement
+        const bool should_accumulate = _queues[i].front().length <= 128;
+
+        if (must_accumulate or should_accumulate) this->accumulate(i);
+
         ASSERT(_queues[i].front().length >= _reserve_bytes[i]);
 
         ASSERT((_queues[i].front().length % _items_sizes[i]) == 0);
@@ -231,6 +234,8 @@ inline void InputBufferQueues::update_config(
 
 GRAS_FORCE_INLINE void InputBufferQueues::accumulate(const size_t i)
 {
+    if (this->is_accumulated(i)) return;
+
     if (_aux_queues[i]->empty())
     {
         _aux_queues[i]->allocate_one(_maximum_bytes[i]);
