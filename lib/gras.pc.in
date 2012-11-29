@@ -7,7 +7,7 @@ Name: GRAS
 Description: GNU Radio Advanced Scheduler
 URL: https://github.com/guruofquality/gras/wiki
 Version: @GRAS_VERSION@
-Requires:
+Requires: pmc
 Requires.private:
 Conflicts:
 Cflags: -I${includedir}

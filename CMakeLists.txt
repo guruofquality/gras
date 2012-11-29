@@ -77,7 +77,7 @@ add_subdirectory(tests)
 ########################################################################
 # setup helpful submodule vars
 ########################################################################
-list(APPEND GRAS_LIBRARIES gras) #for submodule linking
+list(APPEND GRAS_LIBRARIES gras pmc) #for submodule linking
 
 #append gras deps for test code:
 list(APPEND GR_TEST_TARGET_DEPS ${GRAS_LIBRARIES})
@@ -129,6 +129,9 @@ set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/grextras)
 
 set(GRAS_FOUND TRUE)
 #GRAS_INCLUDE_DIRS, GRAS_LIBRARIES set above
+
+set(PMC_FOUND TRUE)
+set(PMC_LIBRARIES pmc)
 
 set(VOLK_FOUND ${ENABLE_VOLK})
 set(VOLK_INCLUDE_DIRS
