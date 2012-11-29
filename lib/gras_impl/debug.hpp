@@ -12,6 +12,8 @@ extern void *operator new(std::size_t n) throw (std::bad_alloc);
 #include <iostream>
 #include <stdexcept>
 #include <boost/current_function.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/thread/thread.hpp>
 
 //----------------------------------------------------------------------
 //-- set to 1 to enable these debugs:
@@ -25,6 +27,20 @@ extern void *operator new(std::size_t n) throw (std::bad_alloc);
 //#define WORK_DEBUG
 #define ASSERTING
 //#define MESSAGE_TRACING
+//#define ITEM_CONSPROD
+
+//----------------------------------------------------------------------
+//-- time accumulation printer
+//----------------------------------------------------------------------
+#define TIME_ACCUM_PRINT(code) \
+{\
+    static boost::posix_time::time_duration __t; \
+    const boost::system_time __t0 = boost::get_system_time(); \
+    {code} \
+    const boost::system_time __t1 = boost::get_system_time(); \
+    __t += __t1 - __t0; \
+    std::cerr << __FILE__ << ":" << __LINE__ << " total time: " << boost::posix_time::to_simple_string(__t) << std::endl; \
+}
 
 //----------------------------------------------------------------------
 //-- various debug prints

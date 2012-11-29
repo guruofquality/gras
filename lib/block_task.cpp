@@ -108,16 +108,16 @@ GRAS_FORCE_INLINE bool BlockActor::is_work_allowed(void)
 
 void BlockActor::handle_task(void)
 {
-    #ifdef WORK_DEBUG
-    WorkDebugPrinter WDP(block_ptr->to_string());
-    #endif
-
     //------------------------------------------------------------------
     //-- Decide if its possible to continue any processing:
     //-- Handle task may get called for incoming buffers,
     //-- however, not all ports may have available buffers.
     //------------------------------------------------------------------
     if (not this->is_work_allowed()) return;
+
+    #ifdef WORK_DEBUG
+    WorkDebugPrinter WDP(block_ptr->to_string());
+    #endif
 
     //------------------------------------------------------------------
     //-- Asynchronous notification through atomic variable
@@ -230,6 +230,9 @@ void BlockActor::handle_task(void)
 
 void BlockActor::consume(const size_t i, const size_t items)
 {
+    #ifdef ITEM_CONSPROD
+    std::cerr << "consume " << items << std::endl;
+    #endif
     this->items_consumed[i] += items;
     const size_t bytes = items*this->input_items_sizes[i];
     this->input_queues.consume(i, bytes);
@@ -238,6 +241,9 @@ void BlockActor::consume(const size_t i, const size_t items)
 
 void BlockActor::produce(const size_t i, const size_t items)
 {
+    #ifdef ITEM_CONSPROD
+    std::cerr << "produce " << items << std::endl;
+    #endif
     SBuffer &buff = this->output_queues.front(i);
     this->items_produced[i] += items;
     const size_t bytes = items*this->output_items_sizes[i];
