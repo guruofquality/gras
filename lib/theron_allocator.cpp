@@ -16,7 +16,21 @@
 #include <boost/circular_buffer.hpp>
 
 #define MY_ALLOCATOR_CHUNK_SIZE 256
-#define MY_ALLOCATOR_POOL_SIZE (MY_ALLOCATOR_CHUNK_SIZE * (1 << 16))
+#define MY_ALLOCATOR_POOL_SIZE (MY_ALLOCATOR_CHUNK_SIZE * (1 << 18))
+
+static unsigned long long unwanted_malloc_count = 0;
+
+static struct ExitPrinter
+{
+    ExitPrinter(void){}
+    ~ExitPrinter(void)
+    {
+        if (unwanted_malloc_count)
+        {
+            VAR(unwanted_malloc_count);
+        }
+    }
+} exit_printer;
 
 static struct WorkerAllocator : Theron::IAllocator
 {
@@ -45,8 +59,8 @@ static struct WorkerAllocator : Theron::IAllocator
             mSpinLock.Lock();
             if (queue.empty())
             {
+                unwanted_malloc_count++;
                 mSpinLock.Unlock();
-                std::cout << "~" << std::flush;
                 return std::malloc(size);
             }
             void *memory = queue.front();
