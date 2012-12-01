@@ -58,15 +58,19 @@ struct GRAS_API InputPortConfig
     bool inline_buffer;
 
     /*!
-     * Set the number of input buffer look-ahead items.
-     * When num look-ahead items are not consumed,
-     * they will be available for the next work call.
-     * This is used to implement sample memory for
+     * Preload the input queue with num preload items.
+     * All items preloaded into the buffer will be 0.
+     * This is used to implement zero-padding for
      * things like sliding dot products/FIR filters.
+     *
+     *  - Increasing the preload at runtime will
+     * inject more items into the input queue.
+     *  - Decreasing the preload at runtime will
+     * consume random items from the input queue.
      *
      * Default = 0.
      */
-    size_t lookahead_items;
+    size_t preload_items;
 };
 
 //! Configuration parameters for an output port

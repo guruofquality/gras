@@ -11,7 +11,7 @@ InputPortConfig::InputPortConfig(void)
     reserve_items = 1;
     maximum_items = 0;
     inline_buffer = false;
-    lookahead_items = 0;
+    preload_items = 0;
 }
 
 OutputPortConfig::OutputPortConfig(void)

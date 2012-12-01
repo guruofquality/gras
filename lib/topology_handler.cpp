@@ -95,9 +95,9 @@ void BlockActor::handle_update_inputs(
 
     for (size_t i = 0; i < num_inputs; i++)
     {
-        const size_t hist_bytes = this->input_items_sizes[i]*this->input_configs[i].lookahead_items;
+        const size_t preload_bytes = this->input_items_sizes[i]*this->input_configs[i].preload_items;
         const size_t reserve_bytes = this->input_items_sizes[i]*this->input_configs[i].reserve_items;
         const size_t maximum_bytes = this->input_items_sizes[i]*this->input_configs[i].maximum_items;
-        this->input_queues.update_config(i, this->input_items_sizes[i], hist_bytes, reserve_bytes, maximum_bytes);
+        this->input_queues.update_config(i, this->input_items_sizes[i], preload_bytes, reserve_bytes, maximum_bytes);
     }
 }

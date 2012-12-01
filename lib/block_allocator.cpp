@@ -10,7 +10,6 @@ using namespace gras;
 const size_t AT_LEAST_DEFAULT_ITEMS = 1 << 13;
 const size_t AHH_TOO_MANY_BYTES = 1 << 20; //TODO
 const size_t THIS_MANY_BUFFERS = 32;
-const double EDGE_CASE_MITIGATION = 8.0; //edge case mitigation constant
 
 //TODO will need more complicated later
 
@@ -39,15 +38,8 @@ static size_t recommend_length(
         min_bytes = std::max(min_bytes, hint.reserve_bytes);
     }
 
-    //step 2) N x super reserve to minimize history edge case
+    //step 2) N x super reserve of hard-coded mimimum items
     size_t Nmin_bytes = min_bytes;
-    BOOST_FOREACH(const OutputHintMessage &hint, hints)
-    {
-        while (hint.history_bytes*EDGE_CASE_MITIGATION > Nmin_bytes)
-        {
-            Nmin_bytes += min_bytes;
-        }
-    }
     while (hint_bytes > Nmin_bytes)
     {
         Nmin_bytes += min_bytes;

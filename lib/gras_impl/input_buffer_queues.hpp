@@ -169,7 +169,7 @@ struct InputBufferQueues
     std::vector<size_t> _reserve_bytes;
     std::vector<size_t> _maximum_bytes;
     std::vector<boost::circular_buffer<SBuffer> > _queues;
-    std::vector<size_t> _history_bytes;
+    std::vector<size_t> _preload_bytes;
     std::vector<boost::shared_ptr<BufferQueue> > _aux_queues;
 };
 
@@ -182,7 +182,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::resize(const size_t size)
     _reserve_bytes.resize(size, 1);
     _maximum_bytes.resize(size, MAX_AUX_BUFF_BYTES);
     _queues.resize(size, boost::circular_buffer<SBuffer>(MAX_QUEUE_SIZE));
-    _history_bytes.resize(size, 0);
+    _preload_bytes.resize(size, 0);
     _aux_queues.resize(size);
 
 }
@@ -190,7 +190,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::resize(const size_t size)
 inline void InputBufferQueues::update_config(
     const size_t i,
     const size_t item_size,
-    const size_t hist_bytes,
+    const size_t preload_bytes,
     const size_t reserve_bytes,
     const size_t maximum_bytes
 )
@@ -211,28 +211,28 @@ inline void InputBufferQueues::update_config(
         _aux_queues[i]->allocate_one(_maximum_bytes[i]);
     }
 
-    //there is history, so enqueue some initial history
-    if (hist_bytes > _history_bytes[i])
+    //there is preload, so enqueue some initial preload
+    if (preload_bytes > _preload_bytes[i])
     {
         SBuffer buff = _aux_queues[i]->front();
         _aux_queues[i]->pop();
 
-        const size_t delta = hist_bytes - _history_bytes[i];
+        const size_t delta = preload_bytes - _preload_bytes[i];
         std::memset(buff.get_actual_memory(), 0, delta);
         buff.offset = 0;
         buff.length = delta;
 
         this->push(i, buff);
     }
-    if (hist_bytes < _history_bytes[i])
+    if (preload_bytes < _preload_bytes[i])
     {
-        size_t delta = _history_bytes[i] - hist_bytes;
+        size_t delta = _preload_bytes[i] - preload_bytes;
         delta = std::min(delta, _enqueued_bytes[i]); //FIXME
         //TODO consume extra delta on push...? so we dont need std::min
         this->consume(i, delta);
     }
 
-    _history_bytes[i] = hist_bytes;
+    _preload_bytes[i] = preload_bytes;
     _reserve_bytes[i] = reserve_bytes;
     this->__update(i);
 }
