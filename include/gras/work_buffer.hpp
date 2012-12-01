@@ -57,6 +57,6 @@ private:
 
 } //namespace gras
 
-#include <gras/work_buffer.ipp>
+#include <gras/detail/work_buffer.hpp>
 
 #endif /*INCLUDED_GRAS_WORK_BUFFER_HPP*/

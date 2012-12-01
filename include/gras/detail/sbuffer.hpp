@@ -1,7 +1,7 @@
 // Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
-#ifndef INCLUDED_GRAS_SBUFFER_IPP
-#define INCLUDED_GRAS_SBUFFER_IPP
+#ifndef INCLUDED_GRAS_DETAIL_SBUFFER_HPP
+#define INCLUDED_GRAS_DETAIL_SBUFFER_HPP
 
 #include <boost/detail/atomic_count.hpp>
 
@@ -91,4 +91,4 @@ GRAS_FORCE_INLINE size_t SBuffer::use_count(void) const
 
 } //namespace gras
 
-#endif /*INCLUDED_GRAS_SBUFFER_IPP*/
+#endif /*INCLUDED_GRAS_DETAIL_SBUFFER_HPP*/

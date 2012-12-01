@@ -1,7 +1,7 @@
 // Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
-#ifndef INCLUDED_GRAS_WORK_BUFFER_IPP
-#define INCLUDED_GRAS_WORK_BUFFER_IPP
+#ifndef INCLUDED_GRAS_DETAIL_WORK_BUFFER_HPP
+#define INCLUDED_GRAS_DETAIL_WORK_BUFFER_HPP
 
 namespace gras
 {
@@ -62,4 +62,4 @@ inline size_t &WorkBufferArray<PtrType>::max(void)
 
 } //namespace gras
 
-#endif /*INCLUDED_GRAS_WORK_BUFFER_IPP*/
+#endif /*INCLUDED_GRAS_DETAIL_WORK_BUFFER_HPP*/

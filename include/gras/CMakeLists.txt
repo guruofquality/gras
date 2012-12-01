@@ -13,15 +13,22 @@ install(FILES
     io_signature.hpp
     io_signature.i
     sbuffer.hpp
-    sbuffer.ipp
     sbuffer.i
     tags.hpp
     tags.i
     thread_pool.hpp
     top_block.hpp
     work_buffer.hpp
-    work_buffer.ipp
 
     DESTINATION include/gras
+    COMPONENT ${GRAS_COMP_DEVEL}
+)
+
+install(FILES
+
+    detail/sbuffer.hpp
+    detail/work_buffer.hpp
+
+    DESTINATION include/gras/detail
     COMPONENT ${GRAS_COMP_DEVEL}
 )

@@ -131,6 +131,6 @@ struct GRAS_API SBuffer : boost::intrusive_ptr<SBufferImpl>
 
 } //namespace gras
 
-#include <gras/sbuffer.ipp>
+#include <gras/detail/sbuffer.hpp>
 
 #endif /*INCLUDED_GRAS_SBUFFER_HPP*/
