@@ -12,7 +12,10 @@ void BlockActor::handle_input_tag(const InputTagMessage &message, const Theron::
 
     //handle incoming stream tag, push into the tag storage
     this->input_tags[index].push_back(message.tag);
-    this->input_tags_changed[index] = true;
+
+    //Changed is a boolean to enable sorting of tags: If the offset is 0, there is nothing to sort,
+    //because tags are being used for message passing, or this is just the first tag in a stream.
+    this->input_tags_changed[index] = this->input_tags_changed[index] or message.tag.offset != 0;
     this->inputs_available.set(index);
     this->handle_task();
 }
