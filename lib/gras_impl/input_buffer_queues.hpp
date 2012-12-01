@@ -126,6 +126,11 @@ struct InputBufferQueues
         _bitset.reset(i);
     }
 
+    GRAS_FORCE_INLINE void fail(const size_t i)
+    {
+        _bitset.reset(i);
+    }
+
     size_t size(void) const
     {
         return _queues.size();

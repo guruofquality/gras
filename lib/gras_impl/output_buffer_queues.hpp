@@ -56,6 +56,11 @@ struct OutputBufferQueues
         _bitset.set(i, not _queues[i].empty());
     }
 
+    GRAS_FORCE_INLINE void fail(const size_t i)
+    {
+        _bitset.reset(i);
+    }
+
     GRAS_FORCE_INLINE void flush(const size_t i)
     {
         _queues[i].clear();

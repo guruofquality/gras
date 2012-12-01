@@ -79,6 +79,9 @@ void BlockActor::input_fail(const size_t i)
     {
         throw std::runtime_error("input_fail called on maximum_items buffer");
     }
+
+    //mark fail: not ready until a new buffer appears
+    this->input_queues.fail(i);
 }
 
 void BlockActor::output_fail(const size_t i)
