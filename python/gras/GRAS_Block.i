@@ -197,11 +197,12 @@ def sig_to_dtype_sig(sig):
 Tag__ = Tag
 
 class Tag(object):
-    def __init__(self, offset=0, key=None, value=None, srcid=None):
+    def __init__(self, offset=0, key=None, value=None, srcid=None, tag=None):
         self.offset = offset
         self.key = key
         self.value = value
         self.srcid = srcid
+        self.tag = tag
 
 def YieldTagIter(iter):
     for t in iter: yield Tag(
@@ -209,6 +210,7 @@ def YieldTagIter(iter):
         key=PMC2Py(t.key),
         value=PMC2Py(t.value),
         srcid=PMC2Py(t.srcid),
+        tag=t,
     )
 
 #FIXME major kludge for ref holding
@@ -309,5 +311,8 @@ class Block(BlockPython):
                 t.offset -= self.get_consumed(i)
                 t.offset += self.get_produced(o)
                 self.post_output_tag(o, t)
+
+    def pop_input_msg(self, which_input):
+        return list(YieldTagIter([BlockPython.pop_input_msg(self, which_input)]))[0]
 
 %}

@@ -144,18 +144,27 @@ void Block::erase_input_tags(const size_t which_input)
     (*this)->block->input_tags[which_input].clear();
 }
 
+Tag Block::pop_input_msg(const size_t which_input)
+{
+    std::vector<Tag> &input_tags = (*this)->block->input_tags[which_input];
+    if (input_tags.empty()) return Tag();
+    Tag t = input_tags.front();
+    input_tags.erase(input_tags.begin());
+    return t;
+}
+
 void Block::propagate_tags(const size_t i, const TagIter &iter)
 {
     const size_t num_outputs = (*this)->block->get_num_outputs();
     for (size_t o = 0; o < num_outputs; o++)
+    {
+        BOOST_FOREACH(gras::Tag t, iter)
         {
-            BOOST_FOREACH(gras::Tag t, iter)
-            {
-                t.offset -= this->get_consumed(i);
-                t.offset += this->get_produced(o);
-                this->post_output_tag(o, t);
-            }
+            t.offset -= this->get_consumed(i);
+            t.offset += this->get_produced(o);
+            this->post_output_tag(o, t);
         }
+    }
 }
 
 bool Block::start(void)

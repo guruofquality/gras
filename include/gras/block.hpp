@@ -163,6 +163,15 @@ struct GRAS_API Block : Element
     void erase_input_tags(const size_t which_input);
 
     /*!
+     * Pop input message convenience routine.
+     * This routine reads the first input tag,
+     * and erases this tag from the given port.
+     * The intention is to simplify the use case
+     * for using this for port messages only.
+     */
+    Tag pop_input_msg(const size_t which_input);
+
+    /*!
      * Overload me to implement custom tag propagation logic:
      *
      * Propagate tags will be given an iterator for all input tags
