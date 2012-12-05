@@ -78,7 +78,6 @@ struct PyGILPhondler
 #include <iostream>
 %}
 
-%import <gras/io_signature.i>
 %include <gras/block.i>
 
 ////////////////////////////////////////////////////////////////////////
@@ -194,25 +193,6 @@ def sig_to_dtype_sig(sig):
     if sig is None: sig = ()
     return map(numpy.dtype, sig)
 
-Tag__ = Tag
-
-class Tag(object):
-    def __init__(self, offset=0, key=None, value=None, srcid=None, tag=None):
-        self.offset = offset
-        self.key = key
-        self.value = value
-        self.srcid = srcid
-        self.tag = tag
-
-def YieldTagIter(iter):
-    for t in iter: yield Tag(
-        offset=t.offset,
-        key=PMC2Py(t.key),
-        value=PMC2Py(t.value),
-        srcid=PMC2Py(t.srcid),
-        tag=t,
-    )
-
 #FIXME major kludge for ref holding
 blocks_ref_container = list()
 
@@ -289,30 +269,15 @@ class Block(BlockPython):
 
     def stop(self): return True
 
-    def post_output_tag(self, which_output, tag):
-        t = Tag__(
-            tag.offset,
-            Py2PMC(tag.key),
-            Py2PMC(tag.value),
-            Py2PMC(tag.srcid),
-        )
-        BlockPython.post_output_tag(self, which_output, t)
-
-    def get_input_tags(self, which_input):
-        return YieldTagIter(BlockPython.get_input_tags(self, which_input))
-
     def _Py_propagate_tags(self, which_input, iter):
         try: return self.propagate_tags(which_input, iter)
         except: traceback.print_exc(); raise
 
     def propagate_tags(self, i, iter):
         for o in self.__out_indexes:
-            for t in YieldTagIter(iter):
+            for t in iter:
                 t.offset -= self.get_consumed(i)
                 t.offset += self.get_produced(o)
                 self.post_output_tag(o, t)
-
-    def pop_input_msg(self, which_input):
-        return list(YieldTagIter([BlockPython.pop_input_msg(self, which_input)]))[0]
 
 %}

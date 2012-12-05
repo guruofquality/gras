@@ -155,27 +155,6 @@ struct GRAS_API Block : Element
     TagIter get_input_tags(const size_t which_input);
 
     /*!
-     * Erase all tags on the given input port.
-     * This method may be called from the work() context
-     * to erase all of the queued up tags on the input.
-     * Once erased, messages cannot be propagated downstream.
-     * This method allows a user to treat an input port
-     * as an async message source without a data stream.
-     * In this case, after processing messages from get_input_tags(),
-     * the user should call erase_input_tags() before retuning from work().
-     */
-    void erase_input_tags(const size_t which_input);
-
-    /*!
-     * Pop input message convenience routine.
-     * This routine reads the first input tag,
-     * and erases this tag from the given port.
-     * The intention is to simplify the use case
-     * for using this for port messages only.
-     */
-    Tag pop_input_msg(const size_t which_input);
-
-    /*!
      * Overload me to implement custom tag propagation logic:
      *
      * Propagate tags will be given an iterator for all input tags
@@ -190,6 +169,34 @@ struct GRAS_API Block : Element
      * Also, the user may simply propagate tags from within work.
      */
     virtual void propagate_tags(const size_t which_input, const TagIter &iter);
+
+
+    /*******************************************************************
+     * Deal with message passing
+     ******************************************************************/
+
+    /*!
+     * Post output message convenience routine.
+     * Send a message to the downstream on the given output port.
+     * The underlying implementation is a tag with an offset of 0.
+     *
+     * \param which_output the index of the output port
+     * \param msg the message object to pass downstream
+     */
+    void post_output_msg(const size_t which_output, const PMCC &msg);
+
+    /*!
+     * Pop input message convenience routine.
+     * This routine reads the first input message,
+     * and erases this message from the given port.
+     * The intention is to simplify the use case
+     * for using this for port messages only.
+     * If no message, the return value is null.
+     *
+     * \param which_input the index of the input port
+     * \return the message on the front of the queue
+     */
+    PMCC pop_input_msg(const size_t which_input);
 
     /*******************************************************************
      * Work related routines and fail states

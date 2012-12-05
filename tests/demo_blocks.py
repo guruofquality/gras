@@ -2,6 +2,7 @@
 
 import gras
 import numpy
+from PMC import *
 
 class NullSource(gras.Block):
     def __init__(self, out_sig):
@@ -68,7 +69,7 @@ class TagSource(gras.Block):
 
     def work(self, ins, outs):
         offset = self.get_produced(0)
-        tag = gras.Tag(offset, 'key', self._values[0])
+        tag = gras.Tag(offset, Py2PMC(self._values[0]))
         self.post_output_tag(0, tag)
         self.produce(0, len(outs[0]))
         self._values = self._values[1:]
@@ -90,5 +91,5 @@ class TagSink(gras.Block):
         max_read = self.get_consumed(0) + len(ins[0])
         for tag in self.get_input_tags(0):
             if tag.offset < max_read:
-                self._values.append(tag.value)
+                self._values.append(PMC2Py(tag.object))
         self.consume(0, len(ins[0]))

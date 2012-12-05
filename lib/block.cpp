@@ -139,18 +139,18 @@ TagIter Block::get_input_tags(const size_t which_input)
     return TagIter(input_tags.begin(), input_tags.end());
 }
 
-void Block::erase_input_tags(const size_t which_input)
+void Block::post_output_msg(const size_t which_output, const PMCC &msg)
 {
-    (*this)->block->input_tags[which_input].clear();
+    this->post_output_tag(which_output, Tag(0, msg));
 }
 
-Tag Block::pop_input_msg(const size_t which_input)
+PMCC Block::pop_input_msg(const size_t which_input)
 {
     std::vector<Tag> &input_tags = (*this)->block->input_tags[which_input];
-    if (input_tags.empty()) return Tag();
-    Tag t = input_tags.front();
+    if (input_tags.empty()) return PMCC();
+    PMCC p = input_tags.front().object;
     input_tags.erase(input_tags.begin());
-    return t;
+    return p;
 }
 
 void Block::propagate_tags(const size_t i, const TagIter &iter)

@@ -9,19 +9,12 @@
 
 %include <gras/gras.hpp>
 %include <gras/tags.hpp>
+%import <gras/sbuffer.i>
 %import <PMC/PMC.i>
 
 ////////////////////////////////////////////////////////////////////////
 // Turn TagIter into a python iterable object
 ////////////////////////////////////////////////////////////////////////
-namespace gras
-{
-    struct TagIter
-    {
-        //declared empty
-    };
-}
-
 %extend gras::TagIter
 {
     %insert("python")

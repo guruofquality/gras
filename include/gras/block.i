@@ -8,7 +8,7 @@
 %}
 
 %include <gras/element.i>
-%include <gras/tags.i>
+%import <gras/tags.i>
 %import <gras/sbuffer.i>
 %include <gras/block.hpp>
 
