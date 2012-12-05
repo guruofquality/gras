@@ -49,9 +49,9 @@ class SBufferTest(unittest.TestCase):
         c = gras.SBufferConfig()
         c.length = 4
         s0 = gras.SBuffer(c)
-        p = Py2PMC(s0)
+        p = PMC_M(s0)
         print p
-        s1 = PMC2Py(p)
+        s1 = p()
         self.assertEqual(c.length, s1.length)
         self.assertEqual(c.length, len(s1))
 
