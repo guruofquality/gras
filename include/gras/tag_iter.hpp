@@ -4,12 +4,15 @@
 #define INCLUDED_GRAS_TAG_ITER_HPP
 
 #include <gras/gras.hpp>
-#include <gras/tags.hpp>
 #include <boost/range.hpp> //iterator range
 #include <vector>
 
 namespace gras
 {
+
+    //! forward declared Tag type
+    struct Tag;
+
     //! Iterator return type stl and boost compliant
     typedef boost::iterator_range<std::vector<Tag>::const_iterator> TagIter;
 
