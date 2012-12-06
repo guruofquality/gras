@@ -94,20 +94,4 @@ GRAS_API bool operator==(const PacketMsg &lhs, const PacketMsg &rhs);
 
 } //namespace gras
 
-#include <boost/range.hpp> //iterator range
-#include <vector>
-
-namespace gras
-{
-    //! Iterator return type stl and boost compliant
-    //typedef boost::iterator_range<std::vector<Tag>::const_iterator> TagIter;
-    struct TagIter : boost::iterator_range<std::vector<Tag>::const_iterator>
-    {
-        TagIter(void){}
-        template <typename T>
-        TagIter(const T &t0, const T &t1): boost::iterator_range<std::vector<Tag>::const_iterator>(t0, t1){}
-    };
-
-} //namespace gras
-
 #endif /*INCLUDED_GRAS_TAGS_HPP*/

@@ -2,7 +2,7 @@
 
 from PMC import *
 from GRAS_SBuffer import SBufferConfig, SBuffer
-from GRAS_Tags import Tag, TagIter, StreamTag, PacketMsg
+from GRAS_Tags import Tag, StreamTag, PacketMsg
 from GRAS_IOSignature import IOSignature
 from GRAS_Block import Block
 from GRAS_HierBlock import HierBlock, TopBlock
