@@ -65,15 +65,6 @@ list(APPEND GRAS_PYTHON_DIRS ${GRAS_BINARY_DIR}/PMC/python/PMC)
 list(APPEND GRAS_PYTHON_DIRS ${GRAS_BINARY_DIR}/PMC/python/PMC/${CMAKE_BUILD_TYPE})
 
 ########################################################################
-# Add subdirectories
-########################################################################
-add_subdirectory(include/gras)
-add_subdirectory(lib)
-add_subdirectory(PMC)
-add_subdirectory(python/gras)
-add_subdirectory(tests)
-
-########################################################################
 # setup helpful submodule vars
 ########################################################################
 list(APPEND GRAS_LIBRARIES gras pmc) #for submodule linking
@@ -81,6 +72,15 @@ list(APPEND GRAS_LIBRARIES gras pmc) #for submodule linking
 #append gras deps for test code:
 list(APPEND GR_TEST_TARGET_DEPS ${GRAS_LIBRARIES})
 list(APPEND GR_TEST_PYTHON_DIRS ${GRAS_PYTHON_DIRS})
+
+########################################################################
+# Add subdirectories
+########################################################################
+add_subdirectory(include/gras)
+add_subdirectory(lib)
+add_subdirectory(PMC)
+add_subdirectory(python/gras)
+add_subdirectory(tests)
 
 ########################################################################
 # add gnuradio as sub-project
@@ -142,6 +142,9 @@ if(MSVC)
     list(APPEND VOLK_INCLUDE_DIRS ${GRAS_SOURCE_DIR}/gnuradio/volk/cmake/msvc)
 endif()
 set(VOLK_LIBRARIES volk)
+if(ENABLE_VOLK)
+    list(APPEND GR_TEST_TARGET_DEPS volk)
+endif(ENABLE_VOLK)
 
 set(GNURADIO_CORE_FOUND ${ENABLE_GR_CORE})
 #GNURADIO_CORE_INCLUDE_DIRS set global by gnuradio
