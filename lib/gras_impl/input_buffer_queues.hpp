@@ -53,7 +53,14 @@ struct InputBufferQueues
         if (_queues[i].empty()) return get_null_buff();
 
         //there are enough enqueued bytes, but not in the front buffer
-        if (_queues[i].front().length < _reserve_bytes[i]) this->accumulate(i);
+        const bool must_accumulate = _queues[i].front().length < _reserve_bytes[i];
+
+        //should we accumulate? a guess at heuristic improvement
+        const bool heavy_load = _enqueued_bytes[i] >= _maximum_bytes[i];
+        const bool light_front = _queues[i].front().length <= _maximum_bytes[i]/2;
+        const bool should_accumulate = heavy_load and light_front;
+
+        if (must_accumulate or should_accumulate) this->accumulate(i);
 
         ASSERT(_queues[i].front().length >= _reserve_bytes[i]);
 
