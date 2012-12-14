@@ -40,6 +40,7 @@ list(APPEND GRAS_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/debug.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/element.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sbuffer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/circular_buffer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tags.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_actor.cpp
