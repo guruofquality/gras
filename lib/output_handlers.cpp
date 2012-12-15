@@ -70,9 +70,5 @@ void BlockActor::handle_output_alloc(const OutputAllocMessage &message, const Th
     const size_t index = message.index;
 
     //return of a positive downstream allocation
-    //reset the token, and clear old output buffers
-    //the new token from the downstream is installed
-    this->output_buffer_tokens[index].reset();
-    this->output_queues.flush(index);
-    this->output_buffer_tokens[index] = message.token;
+    this->output_queues.set_buffer_queue(index, message.queue);
 }

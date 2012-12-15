@@ -3,6 +3,7 @@
 #ifndef INCLUDED_LIBGRAS_IMPL_MESSAGES_HPP
 #define INCLUDED_LIBGRAS_IMPL_MESSAGES_HPP
 
+#include <gras/buffer_queue.hpp>
 #include <gras/sbuffer.hpp>
 #include <gras/tags.hpp>
 #include <gras/sbuffer.hpp>
@@ -104,7 +105,7 @@ struct OutputHintMessage
 struct OutputAllocMessage
 {
     size_t index;
-    SBufferToken token;
+    BufferQueueSptr queue;
 };
 
 //----------------------------------------------------------------------

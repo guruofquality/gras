@@ -31,9 +31,6 @@ void BlockActor::mark_done(void)
     //release upstream, downstream, and executor tokens
     this->token_pool.clear();
 
-    //release allocator tokens, buffers can now call deleters
-    this->output_buffer_tokens.clear();
-
     //release all buffers in queues
     this->input_queues.flush_all();
     this->output_queues.flush_all();
@@ -156,7 +153,8 @@ void BlockActor::handle_task(void)
         this->input_items.max() = std::max(this->input_items.max(), items);
 
         //inline dealings, how and when input buffers can be inlined into output buffers
-        //continue;
+        continue; //FIXME to implement needs change
+        /*
         if (
             buff.unique() and
             input_configs[i].inline_buffer and
@@ -170,6 +168,7 @@ void BlockActor::handle_task(void)
             this->output_queues.push_front(output_inline_index, new_obuff); //you got inlined!
             output_inline_index++; //done do this output port again
         }
+        */
     }
 
     //------------------------------------------------------------------

@@ -5,7 +5,7 @@
 
 #include <gras_impl/debug.hpp>
 #include <gras_impl/bitset.hpp>
-#include <gras_impl/buffer_queue.hpp>
+#include <gras_impl/simple_buffer_queue.hpp>
 #include <gras/sbuffer.hpp>
 #include <vector>
 #include <queue>
@@ -172,7 +172,7 @@ struct InputBufferQueues
     std::vector<size_t> _maximum_bytes;
     std::vector<boost::circular_buffer<SBuffer> > _queues;
     std::vector<size_t> _preload_bytes;
-    std::vector<boost::shared_ptr<BufferQueue> > _aux_queues;
+    std::vector<boost::shared_ptr<SimpleBufferQueue> > _aux_queues;
 };
 
 
@@ -207,7 +207,7 @@ inline void InputBufferQueues::update_config(
         _aux_queues[i]->empty() or
         _aux_queues[i]->front().get_actual_length() != _maximum_bytes[i]
     ){
-        _aux_queues[i] = boost::shared_ptr<BufferQueue>(new BufferQueue());
+        _aux_queues[i].reset(new SimpleBufferQueue());
         _aux_queues[i]->allocate_one(_maximum_bytes[i]);
         _aux_queues[i]->allocate_one(_maximum_bytes[i]);
         _aux_queues[i]->allocate_one(_maximum_bytes[i]);

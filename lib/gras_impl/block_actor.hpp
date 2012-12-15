@@ -122,11 +122,10 @@ struct BlockActor : Apology::Worker
     BitSet inputs_done;
     BitSet outputs_done;
     std::set<Token> token_pool;
-    std::vector<SBufferToken> output_buffer_tokens;
 
     //buffer queues and ready conditions
     InputBufferQueues input_queues;
-    OutputBufferQueues<SBuffer> output_queues;
+    OutputBufferQueues output_queues;
     BitSet inputs_available;
 
     //tag tracking

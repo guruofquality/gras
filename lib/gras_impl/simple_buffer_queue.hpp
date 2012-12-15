@@ -1,7 +1,7 @@
 // Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
-#ifndef INCLUDED_LIBGRAS_IMPL_BUFFER_QUEUE_HPP
-#define INCLUDED_LIBGRAS_IMPL_BUFFER_QUEUE_HPP
+#ifndef INCLUDED_LIBGRAS_IMPL_SIMPLE_BUFFER_QUEUE_HPP
+#define INCLUDED_LIBGRAS_IMPL_SIMPLE_BUFFER_QUEUE_HPP
 
 #include <gras/sbuffer.hpp>
 #include <boost/bind.hpp>
@@ -10,15 +10,15 @@
 namespace gras
 {
 
-struct BufferQueue : std::queue<SBuffer>
+struct SimpleBufferQueue : std::queue<SBuffer>
 {
-    BufferQueue(void)
+    SimpleBufferQueue(void)
     {
-        SBufferDeleter deleter = boost::bind(&BufferQueue::push_back, this, _1);
+        SBufferDeleter deleter = boost::bind(&SimpleBufferQueue::push_back, this, _1);
         _token = SBufferToken(new SBufferDeleter(deleter));
     }
 
-    ~BufferQueue(void)
+    ~SimpleBufferQueue(void)
     {
         _token.reset();
         while (not this->empty())
@@ -47,4 +47,4 @@ struct BufferQueue : std::queue<SBuffer>
 
 } //namespace gras
 
-#endif /*INCLUDED_LIBGRAS_IMPL_BUFFER_QUEUE_HPP*/
+#endif /*INCLUDED_LIBGRAS_IMPL_SIMPLE_BUFFER_QUEUE_HPP*/

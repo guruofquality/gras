@@ -58,7 +58,6 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
 
     //allocate output buffers which will also wake up the task
     const size_t num_outputs = this->get_num_outputs();
-    this->output_buffer_tokens.resize(num_outputs);
     for (size_t i = 0; i < num_outputs; i++)
     {
         const size_t bytes = recommend_length(
@@ -71,7 +70,8 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
         SBufferDeleter deleter = boost::bind(&BlockActor::buffer_returner, this, i, _1);
         SBufferToken token = SBufferToken(new SBufferDeleter(deleter));
 
-        this->output_buffer_tokens[i] = block_ptr->output_buffer_allocator(i, token, bytes);
+        BufferQueueSptr queue = block_ptr->output_buffer_allocator(i, token, bytes);
+        this->output_queues.set_buffer_queue(i, queue);
 
         InputAllocMessage message;
         message.token = SBufferToken(new SBufferDeleter(deleter));
@@ -82,29 +82,23 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
     this->Send(0, from); //ACK
 }
 
-SBufferToken Block::output_buffer_allocator(
+BufferQueueSptr Block::output_buffer_allocator(
     const size_t,
     const SBufferToken &token,
     const size_t recommend_length
 ){
-    for (size_t j = 0; j < THIS_MANY_BUFFERS; j++)
-    {
-        SBufferConfig config;
-        config.memory = NULL;
-        config.length = recommend_length;
-        config.affinity = (*this)->block->buffer_affinity;
-        config.token = token;
-        SBuffer buff(config);
-        std::memset(buff.get_actual_memory(), 0, buff.get_actual_length());
-        //buffer derefs here and the token messages it back to the block
-    }
-    return token;
+    SBufferConfig config;
+    config.memory = NULL;
+    config.length = recommend_length;
+    config.affinity = (*this)->block->buffer_affinity;
+    config.token = token;
+    return BufferQueue::make_pool(config, THIS_MANY_BUFFERS);
 }
 
-SBufferToken Block::input_buffer_allocator(
+BufferQueueSptr Block::input_buffer_allocator(
     const size_t,
     const SBufferToken &,
     const size_t
 ){
-    return SBufferToken(); //null
+    return BufferQueueSptr(); //null
 }

@@ -1,6 +1,6 @@
 // Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
-#include <gras_impl/endless_buffer_queue.hpp>
+#include <gras/buffer_queue.hpp>
 #include <boost/format.hpp>
 #include <boost/bind.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>
@@ -137,6 +137,7 @@ static void circular_buffer_delete(SBuffer &buff, CircularBuffer *circ_buff)
     delete circ_buff;
 }
 
+/*
 SBuffer EndlessBufferQueue::make_circular_buffer(const size_t num_bytes)
 {
     CircularBuffer *circ_buff = new CircularBuffer(num_bytes);
@@ -147,3 +148,4 @@ SBuffer EndlessBufferQueue::make_circular_buffer(const size_t num_bytes)
     config.deleter = deleter;
     return SBuffer(config);
 }
+*/
