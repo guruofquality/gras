@@ -46,15 +46,16 @@ struct BlockActor : Apology::Worker
         this->RegisterHandler(this, &BlockActor::handle_input_token);
         this->RegisterHandler(this, &BlockActor::handle_input_check);
         this->RegisterHandler(this, &BlockActor::handle_input_alloc);
+        this->RegisterHandler(this, &BlockActor::handle_input_update);
 
         this->RegisterHandler(this, &BlockActor::handle_output_buffer);
         this->RegisterHandler(this, &BlockActor::handle_output_token);
         this->RegisterHandler(this, &BlockActor::handle_output_check);
         this->RegisterHandler(this, &BlockActor::handle_output_hint);
         this->RegisterHandler(this, &BlockActor::handle_output_alloc);
+        this->RegisterHandler(this, &BlockActor::handle_output_update);
 
         this->RegisterHandler(this, &BlockActor::handle_self_kick);
-        this->RegisterHandler(this, &BlockActor::handle_update_inputs);
     }
 
     //handlers
@@ -72,15 +73,16 @@ struct BlockActor : Apology::Worker
     void handle_input_token(const InputTokenMessage &, const Theron::Address);
     void handle_input_check(const InputCheckMessage &, const Theron::Address);
     void handle_input_alloc(const InputAllocMessage &, const Theron::Address);
+    void handle_input_update(const InputUpdateMessage &, const Theron::Address);
 
     void handle_output_buffer(const OutputBufferMessage &, const Theron::Address);
     void handle_output_token(const OutputTokenMessage &, const Theron::Address);
     void handle_output_check(const OutputCheckMessage &, const Theron::Address);
     void handle_output_hint(const OutputHintMessage &, const Theron::Address);
     void handle_output_alloc(const OutputAllocMessage &, const Theron::Address);
+    void handle_output_update(const OutputUpdateMessage &, const Theron::Address);
 
     void handle_self_kick(const SelfKickMessage &, const Theron::Address);
-    void handle_update_inputs(const UpdateInputsMessage &, const Theron::Address);
 
     //helpers
     void buffer_returner(const size_t index, SBuffer &buffer);

@@ -73,7 +73,11 @@ void Block::set_input_config(const size_t which_input, const InputPortConfig &co
 {
     vector_set((*this)->block->input_configs, config, which_input);
     if ((*this)->block->topology_init)
-        (*this)->block->Push(UpdateInputsMessage(), Theron::Address());
+    {
+        InputUpdateMessage message;
+        message.index = which_input;
+        (*this)->block->Push(message, Theron::Address());
+    }
 }
 
 OutputPortConfig Block::get_output_config(const size_t which_output) const
@@ -85,7 +89,11 @@ void Block::set_output_config(const size_t which_output, const OutputPortConfig 
 {
     vector_set((*this)->block->output_configs, config, which_output);
     if ((*this)->block->topology_init)
-        (*this)->block->Push(UpdateInputsMessage(), Theron::Address());
+    {
+        OutputUpdateMessage message;
+        message.index = which_output;
+        (*this)->block->Push(message, Theron::Address());
+    }
 }
 
 void Block::consume(const size_t which_input, const size_t num_items)

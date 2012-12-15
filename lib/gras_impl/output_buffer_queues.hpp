@@ -57,7 +57,7 @@ struct OutputBufferQueues
 
     GRAS_FORCE_INLINE SBuffer &front(const size_t i)
     {
-        ASSERT(not _queues[i]->empty());
+        ASSERT(not this->empty(i));
         return _queues[i]->front();
     }
 
@@ -93,6 +93,7 @@ struct OutputBufferQueues
 
     GRAS_FORCE_INLINE bool empty(const size_t i) const
     {
+        ASSERT(_queues[i]);
         return _queues[i]->empty();
     }
 

@@ -73,6 +73,11 @@ struct InputCheckMessage
     size_t index;
 };
 
+struct InputUpdateMessage
+{
+    size_t index;
+};
+
 //----------------------------------------------------------------------
 //-- message to an output port
 //-- do not ack
@@ -108,17 +113,17 @@ struct OutputAllocMessage
     BufferQueueSptr queue;
 };
 
+struct OutputUpdateMessage
+{
+    size_t index;
+};
+
 //----------------------------------------------------------------------
 //-- message to just the block
 //-- do not ack
 //----------------------------------------------------------------------
 
 struct SelfKickMessage
-{
-    //empty
-};
-
-struct UpdateInputsMessage
 {
     //empty
 };
@@ -142,14 +147,15 @@ THERON_DECLARE_REGISTERED_MESSAGE(gras::InputBufferMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::InputTokenMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::InputCheckMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::InputAllocMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::InputUpdateMessage);
 
 THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputBufferMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputTokenMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputCheckMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputHintMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputAllocMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputUpdateMessage);
 
 THERON_DECLARE_REGISTERED_MESSAGE(gras::SelfKickMessage);
-THERON_DECLARE_REGISTERED_MESSAGE(gras::UpdateInputsMessage);
 
 #endif /*INCLUDED_LIBGRAS_IMPL_MESSAGES_HPP*/

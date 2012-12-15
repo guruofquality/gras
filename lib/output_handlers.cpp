@@ -72,3 +72,13 @@ void BlockActor::handle_output_alloc(const OutputAllocMessage &message, const Th
     //return of a positive downstream allocation
     this->output_queues.set_buffer_queue(index, message.queue);
 }
+
+void BlockActor::handle_output_update(const OutputUpdateMessage &message, const Theron::Address)
+{
+    MESSAGE_TRACER();
+    const size_t i = message.index;
+
+    //update buffer queue configuration
+    const size_t reserve_bytes = this->output_items_sizes[i]*this->output_configs[i].reserve_items;
+    this->output_queues.set_reserve_bytes(i, reserve_bytes);
+}

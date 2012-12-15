@@ -80,24 +80,18 @@ void BlockActor::handle_topology(
     }
 
     this->topology_init = true;
-    this->handle_update_inputs(UpdateInputsMessage(), Theron::Address());
-
-    this->Send(0, from); //ACK
-}
-
-void BlockActor::handle_update_inputs(
-    const UpdateInputsMessage &,
-    const Theron::Address
-){
-    MESSAGE_TRACER();
-    const size_t num_inputs = this->get_num_inputs();
-    this->input_queues.resize(num_inputs);
-
     for (size_t i = 0; i < num_inputs; i++)
     {
-        const size_t preload_bytes = this->input_items_sizes[i]*this->input_configs[i].preload_items;
-        const size_t reserve_bytes = this->input_items_sizes[i]*this->input_configs[i].reserve_items;
-        const size_t maximum_bytes = this->input_items_sizes[i]*this->input_configs[i].maximum_items;
-        this->input_queues.update_config(i, this->input_items_sizes[i], preload_bytes, reserve_bytes, maximum_bytes);
+        InputUpdateMessage message;
+        message.index = i;
+        this->handle_input_update(message, Theron::Address());
     }
+    for (size_t i = 0; i < num_outputs; i++)
+    {
+        OutputUpdateMessage message;
+        message.index = i;
+        this->handle_output_update(message, Theron::Address());
+    }
+
+    this->Send(0, from); //ACK
 }

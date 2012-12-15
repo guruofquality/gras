@@ -71,3 +71,15 @@ void BlockActor::handle_input_alloc(const InputAllocMessage &message, const Ther
     );
     if (new_msg.queue) this->post_upstream(index, new_msg);
 }
+
+void BlockActor::handle_input_update(const InputUpdateMessage &message, const Theron::Address)
+{
+    MESSAGE_TRACER();
+    const size_t i = message.index;
+
+    //update buffer queue configuration
+    const size_t preload_bytes = this->input_items_sizes[i]*this->input_configs[i].preload_items;
+    const size_t reserve_bytes = this->input_items_sizes[i]*this->input_configs[i].reserve_items;
+    const size_t maximum_bytes = this->input_items_sizes[i]*this->input_configs[i].maximum_items;
+    this->input_queues.update_config(i, this->input_items_sizes[i], preload_bytes, reserve_bytes, maximum_bytes);
+}
