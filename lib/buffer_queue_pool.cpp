@@ -8,13 +8,16 @@ using namespace gras;
 
 struct BufferQueuePool : BufferQueue
 {
-    BufferQueuePool(const size_t num)
+    BufferQueuePool(const size_t num):
+        queue(boost::circular_buffer<SBuffer>(num))
     {
-        queue.resize(num);
+        //NOP
     }
 
     SBuffer &front(void)
     {
+        ASSERT(not queue.empty());
+        ASSERT(queue.front());
         return queue.front();
     }
 
@@ -27,6 +30,7 @@ struct BufferQueuePool : BufferQueue
 
     void push(const SBuffer &buff)
     {
+        ASSERT(buff);
         queue.push_back(buff);
     }
 
@@ -48,7 +52,7 @@ BufferQueueSptr BufferQueue::make_pool(
     {
         SBuffer buff(config);
         std::memset(buff.get_actual_memory(), 0, buff.get_actual_length());
-        bq->push(buff);
+        //bq->push(buff);
     }
     return bq;
 }

@@ -274,6 +274,10 @@ GRAS_FORCE_INLINE void BlockActor::flush_output(const size_t i, const bool force
     buff.offset += buff.length;
     buff.length = 0;
 
+    //simply just pop
+    this->output_queues.pop(i);
+
+    /*
     //when to pop the buffer and give next work a new one
     const size_t reserve_bytes = this->output_configs[i].reserve_items/this->output_items_sizes[i];
     if (
@@ -282,5 +286,5 @@ GRAS_FORCE_INLINE void BlockActor::flush_output(const size_t i, const bool force
     )
     {
         this->output_queues.pop(i);
-    }
+    }*/
 }
