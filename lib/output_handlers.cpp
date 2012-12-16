@@ -79,6 +79,7 @@ void BlockActor::handle_output_update(const OutputUpdateMessage &message, const 
     const size_t i = message.index;
 
     //update buffer queue configuration
+    if (i >= this->output_queues.size()) return;
     const size_t reserve_bytes = this->output_items_sizes[i]*this->output_configs[i].reserve_items;
     this->output_queues.set_reserve_bytes(i, reserve_bytes);
 }

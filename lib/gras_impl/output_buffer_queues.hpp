@@ -34,8 +34,7 @@ struct OutputBufferQueues
 
     GRAS_FORCE_INLINE void push(const size_t i, const SBuffer &buff)
     {
-        ASSERT(buff);
-        ASSERT(_queues[i]);
+        if (not _queues[i]) return; //block is likely done, throw out buffer
         _queues[i]->push(buff);
         _update(i);
     }
