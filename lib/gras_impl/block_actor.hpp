@@ -156,8 +156,6 @@ struct BlockActor : Apology::Worker
     long buffer_affinity;
 
     std::vector<std::vector<OutputHintMessage> > output_allocation_hints;
-
-    bool topology_init;
 };
 
 } //namespace gras

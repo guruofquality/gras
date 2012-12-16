@@ -33,7 +33,6 @@ Block::Block(const std::string &name):
     (*this)->block->name = name; //for debug purposes
 
     //setup some state variables
-    (*this)->block->topology_init = false;
     (*this)->block->block_ptr = this;
     (*this)->block->block_state = BlockActor::BLOCK_STATE_INIT;
 
@@ -72,7 +71,6 @@ InputPortConfig Block::get_input_config(const size_t which_input) const
 void Block::set_input_config(const size_t which_input, const InputPortConfig &config)
 {
     vector_set((*this)->block->input_configs, config, which_input);
-    if ((*this)->block->topology_init)
     {
         InputUpdateMessage message;
         message.index = which_input;
@@ -88,7 +86,6 @@ OutputPortConfig Block::get_output_config(const size_t which_output) const
 void Block::set_output_config(const size_t which_output, const OutputPortConfig &config)
 {
     vector_set((*this)->block->output_configs, config, which_output);
-    if ((*this)->block->topology_init)
     {
         OutputUpdateMessage message;
         message.index = which_output;

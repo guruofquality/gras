@@ -79,7 +79,6 @@ void BlockActor::handle_topology(
         this->mark_done();
     }
 
-    this->topology_init = true;
     for (size_t i = 0; i < num_inputs; i++)
     {
         InputUpdateMessage message;
