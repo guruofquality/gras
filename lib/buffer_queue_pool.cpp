@@ -9,44 +9,44 @@ using namespace gras;
 struct BufferQueuePool : BufferQueue
 {
     BufferQueuePool(const SBufferConfig &config, const size_t num):
-        token(config.token), //save config, its holds token
-        queue(boost::circular_buffer<SBuffer>(num))
+        _token(config.token), //save config, its holds token
+        _queue(boost::circular_buffer<SBuffer>(num))
     {
         //NOP
     }
 
     ~BufferQueuePool(void)
     {
-        token.reset();
-        queue.clear();
+        _token.reset();
+        _queue.clear();
     }
 
     SBuffer &front(void)
     {
-        ASSERT(not queue.empty());
-        ASSERT(queue.front());
-        return queue.front();
+        ASSERT(not _queue.empty());
+        ASSERT(_queue.front());
+        return _queue.front();
     }
 
     void pop(void)
     {
-        ASSERT(not queue.empty());
-        queue.front().reset(); //dont hold ref
-        queue.pop_front();
+        ASSERT(not _queue.empty());
+        _queue.front().reset(); //dont hold ref
+        _queue.pop_front();
     }
 
     void push(const SBuffer &buff)
     {
-        queue.push_back(buff);
+        _queue.push_back(buff);
     }
 
     bool empty(void) const
     {
-        return queue.empty();
+        return _queue.empty();
     }
 
-    SBufferToken token;
-    boost::circular_buffer<SBuffer> queue;
+    SBufferToken _token;
+    boost::circular_buffer<SBuffer> _queue;
 
 };
 
@@ -60,7 +60,7 @@ BufferQueueSptr BufferQueue::make_pool(
     {
         SBuffer buff(config);
         std::memset(buff.get_actual_memory(), 0, buff.get_actual_length());
-        //bq->push(buff);
+        //buffer derefs and returns to this queue thru token callback
     }
 
     return queue;

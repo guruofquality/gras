@@ -18,11 +18,41 @@ typedef boost::shared_ptr<BufferQueue> BufferQueueSptr;
 struct BufferQueue
 {
 
-    //! Create a buffer queue using the pool allocator
-    GRAS_API static BufferQueueSptr make_pool(const SBufferConfig &config, const size_t num_buffs);
+    /*!
+     * Create a buffer queue object using the pool allocator.
+     * A pool of buffers contains individual buffer allocations.
+     *
+     * The config param is used to pass information
+     * about per-buffer size, affinity, and token.
+     *
+     * \param config used to alloc one buffer
+     * \param num_buffs alloc this many buffs
+     * \return a new buffer queue sptr
+     */
+    GRAS_API static BufferQueueSptr make_pool(
+        const SBufferConfig &config,
+        const size_t num_buffs
+    );
 
-    //! Create a buffer queue using the circular buffer allocator
-    GRAS_API static BufferQueueSptr make_circ(const SBufferConfig &config);
+    /*!
+     * Create a buffer queue object using the circular allocator.
+     * The circular allocator contains one large double-mapped buffer.
+     * This buffer is virtually mapped so that buff[n+len] = buff[n].
+     *
+     * Pieces of this buffer can be passed around in smaller chunks.
+     * The number of chunks is dictated by num_buffs,
+     * the size of the chunks is dictated by config.length.
+     * The size of the circular buffer will be num_buffs*config.length
+     *
+     * \param config used to alloc one buffer
+     * \param num_buffs this many smaller chunks
+     *
+     * \return a new buffer queue sptr
+     */
+    GRAS_API static BufferQueueSptr make_circ(
+        const SBufferConfig &config,
+        const size_t num_buffs
+    );
 
     //! Get a reference to the buffer at the front of the queue
     virtual SBuffer &front(void) = 0;

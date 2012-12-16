@@ -94,6 +94,9 @@ void BlockActor::output_fail(const size_t i)
 
     //force pop so next work() gets a new buffer
     this->flush_output(i, true);
+
+    //mark fail: not ready until a new buffer appears
+    this->output_queues.fail(i);
 }
 
 GRAS_FORCE_INLINE bool BlockActor::is_work_allowed(void)
@@ -264,7 +267,7 @@ void BlockActor::produce_buffer(const size_t i, const SBuffer &buffer)
 
 GRAS_FORCE_INLINE void BlockActor::flush_output(const size_t i, const bool force_pop)
 {
-    if (not this->output_queues.ready(i) or this->output_queues.front(i).length == 0) return;
+    if (this->output_queues.empty(i) or this->output_queues.front(i).length == 0) return;
     SBuffer &buff = this->output_queues.front(i);
     InputBufferMessage buff_msg;
     buff_msg.buffer = buff;

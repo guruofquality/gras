@@ -137,8 +137,7 @@ static void circular_buffer_delete(SBuffer &buff, CircularBuffer *circ_buff)
     delete circ_buff;
 }
 
-/*
-SBuffer EndlessBufferQueue::make_circular_buffer(const size_t num_bytes)
+SBuffer make_circular_buffer(const size_t num_bytes)
 {
     CircularBuffer *circ_buff = new CircularBuffer(num_bytes);
     SBufferDeleter deleter = boost::bind(&circular_buffer_delete, _1, circ_buff);
@@ -148,4 +147,3 @@ SBuffer EndlessBufferQueue::make_circular_buffer(const size_t num_bytes)
     config.deleter = deleter;
     return SBuffer(config);
 }
-*/
