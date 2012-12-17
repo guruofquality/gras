@@ -72,8 +72,7 @@ struct OutputBufferQueues
 
     GRAS_FORCE_INLINE bool empty(const size_t i) const
     {
-        ASSERT(_queues[i]);
-        return _queues[i]->empty();
+        return (not _queues[i] or _queues[i]->empty());
     }
 
     GRAS_FORCE_INLINE bool all_ready(void) const

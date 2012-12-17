@@ -95,7 +95,7 @@ struct BlockActor : Apology::Worker
     void produce(const size_t index, const size_t items);
     void consume(const size_t index, const size_t items);
     void produce_buffer(const size_t index, const SBuffer &buffer);
-    void flush_output(const size_t index, const bool force_pop = false);
+    void flush_output(const size_t index);
     bool is_work_allowed(void);
 
     GRAS_FORCE_INLINE bool is_input_done(const size_t i)

@@ -92,9 +92,6 @@ void BlockActor::output_fail(const size_t i)
         throw std::runtime_error("output_fail called on maximum_items buffer");
     }
 
-    //force pop so next work() gets a new buffer
-    this->flush_output(i, true);
-
     //mark fail: not ready until a new buffer appears
     this->output_queues.fail(i);
 }
@@ -265,7 +262,7 @@ void BlockActor::produce_buffer(const size_t i, const SBuffer &buffer)
     this->post_downstream(i, buff_msg);
 }
 
-GRAS_FORCE_INLINE void BlockActor::flush_output(const size_t i, const bool force_pop)
+GRAS_FORCE_INLINE void BlockActor::flush_output(const size_t i)
 {
     if (this->output_queues.empty(i) or this->output_queues.front(i).length == 0) return;
     SBuffer &buff = this->output_queues.front(i);
@@ -277,17 +274,6 @@ GRAS_FORCE_INLINE void BlockActor::flush_output(const size_t i, const bool force
     buff.offset += buff.length;
     buff.length = 0;
 
-    //simply just pop
+    //release whatever has been used of the output buffer
     this->output_queues.pop(i);
-
-    /*
-    //when to pop the buffer and give next work a new one
-    const size_t reserve_bytes = this->output_configs[i].reserve_items/this->output_items_sizes[i];
-    if (
-        force_pop or (buff.offset*2 > buff.get_actual_length()) or
-        (buff.get_actual_length() - buff.offset) < reserve_bytes
-    )
-    {
-        this->output_queues.pop(i);
-    }*/
 }

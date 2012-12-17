@@ -1,6 +1,7 @@
 // Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
 #include <gras/buffer_queue.hpp>
+#include <gras_impl/debug.hpp>
 #include <boost/format.hpp>
 #include <boost/bind.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>

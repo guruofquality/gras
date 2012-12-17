@@ -53,7 +53,7 @@ BufferQueueCirc::BufferQueueCirc(const SBufferConfig &config, const size_t num_b
     _bytes_avail = _circ_buff.get_actual_length();
 
     //allocate pool of sbuffers
-    _available_buffers.resize(num_buffs);
+    _available_buffers.set_capacity(num_buffs);
     _returned_buffers.resize(num_buffs);
     _outgone_bytes.resize(num_buffs, 0);
     SBufferConfig sconfig = config;
@@ -70,6 +70,7 @@ SBuffer &BufferQueueCirc::front(void)
 {
     ASSERT(not this->empty());
     SBuffer &front = _available_buffers.front();
+    ASSERT(front);
     front->config.memory = _write_ptr;
     return front;
 }
