@@ -6,12 +6,14 @@
 #include <boost/bind.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/mapped_region.hpp>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <ctime>
+#include <boost/lexical_cast.hpp>
+#include <boost/thread/thread.hpp>
+#include <boost/thread/mutex.hpp>
 
 using namespace gras;
 namespace ipc = boost::interprocess;
+
+static boost::mutex alloc_mutex;
 
 /*!
 * This routine generates an incredibly unique name for the allocation.
@@ -24,9 +26,9 @@ namespace ipc = boost::interprocess;
 */
 static std::string omg_so_unique(void)
 {
-    boost::uuids::uuid u1; // initialize uuid
-    return boost::str(boost::format("shmem-%s-%u-%u-%u")
-        % to_string(u1) % std::rand() % clock() % time(NULL));
+    const std::string tid = boost::lexical_cast<std::string>(boost::this_thread::get_id());
+    static size_t count = 0;
+    return boost::str(boost::format("shmem-%s-%u") % tid % count++);
 }
 
 struct CircularBuffer
@@ -48,6 +50,8 @@ struct CircularBuffer
 
 CircularBuffer::CircularBuffer(const size_t num_bytes)
 {
+    boost::mutex::scoped_lock lock(alloc_mutex);
+
     const size_t chunk = ipc::mapped_region::get_page_size();
     const size_t len = chunk*((num_bytes + chunk - 1)/chunk);
     actual_length = len;

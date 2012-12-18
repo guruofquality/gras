@@ -9,6 +9,11 @@ using namespace gras;
 
 SBuffer make_circular_buffer(const size_t num_bytes); //circular_buffer.cpp
 
+static void buffer_dummy_delete(SBuffer &, const SBuffer /*ref holder*/)
+{
+    //NOP
+}
+
 struct BufferQueueCirc : BufferQueue
 {
     BufferQueueCirc(const SBufferConfig &config, const size_t num);
@@ -52,16 +57,20 @@ BufferQueueCirc::BufferQueueCirc(const SBufferConfig &config, const size_t num_b
     _write_ptr = (char *)_circ_buff.get_actual_memory();
     _bytes_avail = _circ_buff.get_actual_length();
 
+    //create dummy deleter to hold ref to circ buff
+    SBufferDeleter deleter = boost::bind(&buffer_dummy_delete, _1, _circ_buff);
+
     //allocate pool of sbuffers
     _available_buffers.set_capacity(num_buffs);
     _returned_buffers.resize(num_buffs);
     _outgone_bytes.resize(num_buffs, 0);
     SBufferConfig sconfig = config;
+    sconfig.deleter = deleter;
     sconfig.memory = _circ_buff.get_actual_memory();
-    for (size_t i = 0; i < _available_buffers.size(); i++)
+    for (size_t i = 0; i < num_buffs; i++)
     {
         sconfig.user_index = i;
-        SBuffer(sconfig);
+        SBuffer buff(sconfig);
         //buffer derefs and returns to this queue thru token callback
     }
 }
