@@ -21,6 +21,7 @@ struct ElementImpl
     ~ElementImpl(void);
     void top_block_cleanup(void);
     void hier_block_cleanup(void);
+    void block_cleanup(void);
 
     //common element properties
     std::string name;
