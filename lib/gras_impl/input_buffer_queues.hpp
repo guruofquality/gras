@@ -52,6 +52,8 @@ struct InputBufferQueues
         //special case when the null buffer is possible
         if (_queues[i].empty()) return get_null_buff();
 
+        this->try_stitch(i);
+
         //there are enough enqueued bytes, but not in the front buffer
         const bool must_accumulate = _queues[i].front().length < _reserve_bytes[i];
 
@@ -60,13 +62,35 @@ struct InputBufferQueues
         const bool light_front = _queues[i].front().length <= _maximum_bytes[i]/2;
         const bool should_accumulate = heavy_load and light_front;
 
-        if (must_accumulate or should_accumulate) this->accumulate(i);
+        if (must_accumulate/* or should_accumulate*/) this->accumulate(i);
 
         ASSERT(_queues[i].front().length >= _reserve_bytes[i]);
 
         ASSERT((_queues[i].front().length % _items_sizes[i]) == 0);
 
         return _queues[i].front();
+    }
+
+    GRAS_FORCE_INLINE void try_stitch(const size_t i)
+    {
+        if (_queues[i].size() < 2) return;
+        SBuffer &b0 = _queues[i][0];
+        SBuffer &b1 = _queues[i][1];
+
+        if (b0.offset > b0.get_actual_length())
+        {
+            const size_t xfer_bytes = b0.length;
+            ASSERT(b1.offset >= xfer_bytes);
+            b1.offset -= xfer_bytes;
+            b1.length += xfer_bytes;
+            _queues[i].pop_front();
+            return;
+        }
+
+        const size_t xfer_bytes = b1.length;
+        b0.length += xfer_bytes;
+        b1.length = 0;
+        b1.offset += xfer_bytes;
     }
 
     //! Call when input bytes consumed by work
@@ -104,20 +128,7 @@ struct InputBufferQueues
     {
         ASSERT(not _queues[i].full());
         if (buffer.length == 0) return;
-
-        //does this buffer starts where the last one ends?
-        //perform buffer stitching into back of buffer
-        if (
-            not _queues[i].empty() and _queues[i].back() == buffer and
-            (_queues[i].back().length + _queues[i].back().offset) == buffer.offset
-        ){
-            _queues[i].back().length += buffer.length;
-        }
-        else
-        {
-            _queues[i].push_back(buffer);
-        }
-
+        _queues[i].push_back(buffer);
         _enqueued_bytes[i] += buffer.length;
         __update(i);
     }
@@ -287,7 +298,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t b
     //update bounds on the current buffer
     front.offset += bytes_consumed;
     front.length -= bytes_consumed;
-    ASSERT(front.offset <= front.get_actual_length());
+    //ASSERT(front.offset <= front.get_actual_length());
     ASSERT((_queues[i].front().length % _items_sizes[i]) == 0);
     if (front.length == 0) this->pop(i);
 

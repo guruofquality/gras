@@ -5,6 +5,7 @@
 #include <boost/format.hpp>
 #include <boost/bind.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>
+#include <boost/interprocess/anonymous_shared_memory.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/thread/thread.hpp>
@@ -58,35 +59,12 @@ CircularBuffer::CircularBuffer(const size_t num_bytes)
 
     ////////////////////////////////////////////////////////////////
     // Step 0) Find an address that can be mapped across 2x length:
-    // Allocate physical memory 2x the required size.
-    // Map a virtual memory region across this memory.
-    // Now we have a 2x length swath of virtual memory.
     ////////////////////////////////////////////////////////////////
     {
-        shm_name = omg_so_unique();
-
-        //std::cout << "make shmem 2x\n" << std::endl;
-        ipc::shared_memory_object shm_obj_2x(
-            ipc::create_only, //only create
-            shm_name.c_str(), //name
-            ipc::read_write //read-write mode
-        );
-
-        //std::cout << "truncate 2x\n" << std::endl;
-        shm_obj_2x.truncate(2*len);
-
-        //std::cout << "map region 0\n" << std::endl;
-        ipc::mapped_region region0(
-            shm_obj_2x, //Memory-mappable object
-            ipc::read_write, //Access mode
-            0, //Offset from the beginning of shm
-            2*len //Length of the region
-        );
-        //std::cout << "region0.get_address() " << size_t(region0.get_address()) << std::endl;
-
-        ipc::shared_memory_object::remove(shm_name.c_str());
+        ipc::mapped_region region0(ipc::anonymous_shared_memory(len*2));
         buff_addr = (char *)region0.get_address();
     }
+    std::cout << "reserve addr " << std::hex << size_t(buff_addr) << std::dec << std::endl;
 
     ////////////////////////////////////////////////////////////////
     // Step 1) Allocate a chunk of physical memory of length bytes

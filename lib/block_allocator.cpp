@@ -92,7 +92,7 @@ BufferQueueSptr Block::output_buffer_allocator(
     config.length = recommend_length;
     config.affinity = (*this)->block->buffer_affinity;
     config.token = token;
-    return BufferQueue::make_pool(config, THIS_MANY_BUFFERS);
+    return BufferQueue::make_circ(config, THIS_MANY_BUFFERS);
 }
 
 BufferQueueSptr Block::input_buffer_allocator(
