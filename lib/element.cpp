@@ -32,8 +32,7 @@ ElementImpl::~ElementImpl(void)
 {
     if (this->executor) this->top_block_cleanup();
     if (this->topology) this->hier_block_cleanup();
-    this->block.reset();
-    this->thread_pool.reset(); //must be deleted after actor
+    if (this->block) this->block_cleanup();
 }
 
 Element &Element::shared_to_element(void)

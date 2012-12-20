@@ -3,6 +3,7 @@
 #include "element_impl.hpp"
 #include <gras/block.hpp>
 #include <boost/foreach.hpp>
+#include <boost/thread/thread.hpp> //yield
 
 using namespace gras;
 
@@ -28,7 +29,7 @@ Block::Block(void)
 Block::Block(const std::string &name):
     Element(name)
 {
-    (*this)->block = boost::shared_ptr<BlockActor>(new BlockActor());
+    (*this)->block.reset(new BlockActor());
     (*this)->thread_pool = (*this)->block->thread_pool; //ref copy of pool
     (*this)->block->name = name; //for debug purposes
 
@@ -41,6 +42,22 @@ Block::Block(const std::string &name):
     this->set_output_config(0, OutputPortConfig());
     this->set_interruptible_work(false);
     this->set_buffer_affinity(-1);
+}
+
+void ElementImpl::block_cleanup(void)
+{
+    //wait for actor to chew through enqueued messages
+    while (this->block->GetNumQueuedMessages())
+    {
+        //TODO timeout if this does not stop
+        boost::this_thread::yield();
+    }
+
+    //delete the actor
+    this->block.reset();
+
+    //unref actor's framework
+    this->thread_pool.reset(); //must be deleted after actor
 }
 
 template <typename V, typename T>
