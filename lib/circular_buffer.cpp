@@ -32,6 +32,58 @@ static std::string omg_so_unique(void)
     return boost::str(boost::format("shmem-%s-%u") % tid % count++);
 }
 
+//! Round a number (length or address) to an IPC boundary
+static size_t round_up_to_ipc_page(const size_t bytes)
+{
+    const size_t chunk = ipc::mapped_region::get_page_size();
+    return chunk*((bytes + chunk - 1)/chunk);
+}
+
+/*!
+ * OK, we need a chunk of virtual memory that can be mapped.
+ * But we cant actually be holding exclusive access to that memory
+ * until it it mapped... This is naturally a race condition.
+ */
+static void *probably_get_vmem(const size_t length)
+{
+    void *addr = NULL;
+
+    /*
+    #if defined(linux) || defined(__linux) || defined(__linux__)
+    addr = mmap(NULL, length, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    munmap(addr, length);
+    return addr;
+    #endif
+    //*/
+
+    const std::string shm_name = omg_so_unique();
+
+    //std::cout << "make shmem 2x\n" << std::endl;
+    ipc::shared_memory_object shm_obj_2x(
+        ipc::create_only, //only create
+        shm_name.c_str(), //name
+        ipc::read_write //read-write mode
+    );
+
+    //std::cout << "truncate 2x\n" << std::endl;
+    shm_obj_2x.truncate(length);
+
+    {
+        //std::cout << "map region 0\n" << std::endl;
+        ipc::mapped_region region0(
+            shm_obj_2x, //Memory-mappable object
+            ipc::read_write, //Access mode
+            0, //Offset from the beginning of shm
+            length //Length of the region
+        );
+        //std::cout << "region0.get_address() " << size_t(region0.get_address()) << std::endl;
+        addr = region0.get_address();
+    }
+
+    ipc::shared_memory_object::remove(shm_name.c_str());
+    return addr;
+}
+
 struct CircularBuffer
 {
     CircularBuffer(const size_t);
@@ -42,29 +94,24 @@ struct CircularBuffer
     }
 
     char *buff_addr;
-    size_t actual_length;
+    const size_t actual_length;
     std::string shm_name;
     ipc::shared_memory_object shm_obj;
     ipc::mapped_region region1;
     ipc::mapped_region region2;
 };
 
-CircularBuffer::CircularBuffer(const size_t num_bytes)
+CircularBuffer::CircularBuffer(const size_t num_bytes):
+    buff_addr(NULL),
+    actual_length(round_up_to_ipc_page(num_bytes))
 {
     boost::mutex::scoped_lock lock(alloc_mutex);
-
-    const size_t chunk = ipc::mapped_region::get_page_size();
-    const size_t len = chunk*((num_bytes + chunk - 1)/chunk);
-    actual_length = len;
 
     ////////////////////////////////////////////////////////////////
     // Step 0) Find an address that can be mapped across 2x length:
     ////////////////////////////////////////////////////////////////
-    {
-        ipc::mapped_region region0(ipc::anonymous_shared_memory(len*2));
-        buff_addr = (char *)region0.get_address();
-    }
-    std::cout << "reserve addr " << std::hex << size_t(buff_addr) << std::dec << std::endl;
+    buff_addr = (char *)probably_get_vmem(actual_length*2);
+    //std::cout << "reserve addr " << std::hex << size_t(buff_addr) << std::dec << std::endl;
 
     ////////////////////////////////////////////////////////////////
     // Step 1) Allocate a chunk of physical memory of length bytes
@@ -78,7 +125,7 @@ CircularBuffer::CircularBuffer(const size_t num_bytes)
     );
 
     //std::cout << "truncate\n" << std::endl;
-    shm_obj.truncate(len);
+    shm_obj.truncate(actual_length);
 
     ////////////////////////////////////////////////////////////////
     //Step 2) Remap region1 of the virtual memory space
@@ -88,7 +135,7 @@ CircularBuffer::CircularBuffer(const size_t num_bytes)
         shm_obj, //Memory-mappable object
         ipc::read_write, //Access mode
         0, //Offset from the beginning of shm
-        len, //Length of the region
+        actual_length, //Length of the region
         buff_addr
     );
     //std::cout << "region1.get_address() " << size_t(region1.get_address()) << std::endl;
@@ -101,8 +148,8 @@ CircularBuffer::CircularBuffer(const size_t num_bytes)
         shm_obj, //Memory-mappable object
         ipc::read_write, //Access mode
         0, //Offset from the beginning of shm
-        len, //Length of the region
-        buff_addr + len
+        actual_length, //Length of the region
+        buff_addr + actual_length
     );
 
     //std::cout << "region2.get_address() " << size_t(region2.get_address()) << std::endl;
