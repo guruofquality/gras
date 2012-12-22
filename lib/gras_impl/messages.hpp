@@ -64,8 +64,8 @@ struct InputTokenMessage
 struct InputAllocMessage
 {
     size_t index;
-    SBufferToken token;
-    size_t recommend_length;
+    SBufferConfig config;
+    SBufferToken token; //holds reference
 };
 
 struct InputCheckMessage

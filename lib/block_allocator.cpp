@@ -70,12 +70,18 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
         SBufferDeleter deleter = boost::bind(&BlockActor::buffer_returner, this, i, _1);
         SBufferToken token = SBufferToken(new SBufferDeleter(deleter));
 
-        BufferQueueSptr queue = block_ptr->output_buffer_allocator(i, token, bytes);
+        SBufferConfig config;
+        config.memory = NULL;
+        config.length = bytes;
+        config.affinity = this->buffer_affinity;
+        config.token = token;
+
+        BufferQueueSptr queue = block_ptr->output_buffer_allocator(i, config);
         this->output_queues.set_buffer_queue(i, queue);
 
         InputAllocMessage message;
-        message.token = SBufferToken(new SBufferDeleter(deleter));
-        message.recommend_length = bytes;
+        message.config = config;
+        message.token = token;
         this->post_downstream(i, message);
     }
 
@@ -84,21 +90,14 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
 
 BufferQueueSptr Block::output_buffer_allocator(
     const size_t,
-    const SBufferToken &token,
-    const size_t recommend_length
+    const SBufferConfig &config
 ){
-    SBufferConfig config;
-    config.memory = NULL;
-    config.length = recommend_length;
-    config.affinity = (*this)->block->buffer_affinity;
-    config.token = token;
-    return BufferQueue::make_circ(config, THIS_MANY_BUFFERS);
+    return BufferQueue::make_pool(config, THIS_MANY_BUFFERS);
 }
 
 BufferQueueSptr Block::input_buffer_allocator(
     const size_t,
-    const SBufferToken &,
-    const size_t
+    const SBufferConfig &
 ){
     return BufferQueueSptr(); //null
 }

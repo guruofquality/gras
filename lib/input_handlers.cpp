@@ -66,9 +66,7 @@ void BlockActor::handle_input_alloc(const InputAllocMessage &message, const Ther
 
     //handle the upstream block allocation request
     OutputAllocMessage new_msg;
-    new_msg.queue = block_ptr->input_buffer_allocator(
-        index, message.token, message.recommend_length
-    );
+    new_msg.queue = block_ptr->input_buffer_allocator(index, message.config);
     if (new_msg.queue) this->post_upstream(index, new_msg);
 }
 

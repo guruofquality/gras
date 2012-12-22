@@ -336,14 +336,12 @@ struct GRAS_API Block : Element
      * //TODO code example
      *
      * \param which_output the output port index number
-     * \param token the token for the buffer's returner
-     * \param recommend_length the schedulers recommended length in bytes
+     * \param config holds token and recommended length
      * \return a shared ptr to a new buffer queue object
      */
     virtual BufferQueueSptr output_buffer_allocator(
         const size_t which_output,
-        const SBufferToken &token,
-        const size_t recommend_length
+        const SBufferConfig &config
     );
 
     /*!
@@ -355,14 +353,12 @@ struct GRAS_API Block : Element
      * input buffers which were actually allocated by this method.
      *
      * \param which_input the input port index number
-     * \param token the token for the buffer's returner
-     * \param recommend_length the schedulers recommended length in bytes
+     * \param config holds token and recommended length
      * \return a shared ptr to a new buffer queue object
      */
     virtual BufferQueueSptr input_buffer_allocator(
         const size_t which_input,
-        const SBufferToken &token,
-        const size_t recommend_length
+        const SBufferConfig &config
     );
 
 };
