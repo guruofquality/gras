@@ -89,15 +89,13 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
 }
 
 BufferQueueSptr Block::output_buffer_allocator(
-    const size_t,
-    const SBufferConfig &config
+    const size_t, const SBufferConfig &config
 ){
     return BufferQueue::make_pool(config, THIS_MANY_BUFFERS);
 }
 
 BufferQueueSptr Block::input_buffer_allocator(
-    const size_t,
-    const SBufferConfig &
+    const size_t, const SBufferConfig &
 ){
     return BufferQueueSptr(); //null
 }

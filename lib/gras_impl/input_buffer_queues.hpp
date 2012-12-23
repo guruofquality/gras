@@ -52,45 +52,14 @@ struct InputBufferQueues
         //special case when the null buffer is possible
         if (_queues[i].empty()) return get_null_buff();
 
-        this->try_stitch(i);
-
         //there are enough enqueued bytes, but not in the front buffer
-        const bool must_accumulate = _queues[i].front().length < _reserve_bytes[i];
-
-        //should we accumulate? a guess at heuristic improvement
-        const bool heavy_load = _enqueued_bytes[i] >= _maximum_bytes[i];
-        const bool light_front = _queues[i].front().length <= _maximum_bytes[i]/2;
-        const bool should_accumulate = heavy_load and light_front;
-
-        if (must_accumulate/* or should_accumulate*/) this->accumulate(i);
+        if (_queues[i].front().length < _reserve_bytes[i]) this->accumulate(i);
 
         ASSERT(_queues[i].front().length >= _reserve_bytes[i]);
 
         ASSERT((_queues[i].front().length % _items_sizes[i]) == 0);
 
         return _queues[i].front();
-    }
-
-    GRAS_FORCE_INLINE void try_stitch(const size_t i)
-    {
-        if (_queues[i].size() < 2) return;
-        SBuffer &b0 = _queues[i][0];
-        SBuffer &b1 = _queues[i][1];
-
-        if (b0.offset > b0.get_actual_length())
-        {
-            const size_t xfer_bytes = b0.length;
-            ASSERT(b1.offset >= xfer_bytes);
-            b1.offset -= xfer_bytes;
-            b1.length += xfer_bytes;
-            _queues[i].pop_front();
-            return;
-        }
-
-        const size_t xfer_bytes = b1.length;
-        b0.length += xfer_bytes;
-        b1.length = 0;
-        b1.offset += xfer_bytes;
     }
 
     //! Call when input bytes consumed by work
@@ -131,6 +100,22 @@ struct InputBufferQueues
         _queues[i].push_back(buffer);
         _enqueued_bytes[i] += buffer.length;
         __update(i);
+
+        //stitch:
+        for (size_t j = _queues[i].size()-1; j > 0; j--)
+        {
+            SBuffer &b1 = _queues[i][j];
+            SBuffer &b0 = _queues[i][j-1];
+            if (b1.last == b0.get(b0.length))
+            {
+                const size_t bytes = b1.length;
+                b0.length += bytes;
+                b1.offset += bytes;
+                b1.length = 0;
+                b1.last = b0.get(b0.length);
+            }
+        }
+
     }
 
     GRAS_FORCE_INLINE void flush(const size_t i)
@@ -273,10 +258,12 @@ GRAS_FORCE_INLINE void InputBufferQueues::accumulate(const size_t i)
         SBuffer &front = _queues[i].front();
         const size_t bytes = std::min(front.length, free_bytes);
         std::memcpy(accum_buff.get(accum_buff.length), front.get(), bytes);
+        //std::cerr << "memcpy " << bytes << std::endl;
         accum_buff.length += bytes;
         free_bytes -= bytes;
         front.length -= bytes;
         front.offset += bytes;
+        front.last = accum_buff.get(accum_buff.length);
         if (front.length == 0) this->pop(i);
     }
 
@@ -307,6 +294,18 @@ GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t b
     _enqueued_bytes[i] -= bytes_consumed;
 
     __update(i);
+
+    //unstitch:
+    //If the remaining parts of b0 are entirely sitting in b1, pop()
+    if (_queues[i].size() < 2) return;
+    SBuffer &b0 = _queues[i][0];
+    SBuffer &b1 = _queues[i][1];
+    if (b0.length <= b1.offset and b0.get(b0.length) == b1.last)
+    {
+        b1.offset -= b0.length;
+        b1.length += b0.length;
+        this->pop(i);
+    }
 }
 
 } //namespace gras

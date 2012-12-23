@@ -39,6 +39,7 @@ struct BufferQueueCirc : BufferQueue
     SBufferToken _token;
     SBuffer _circ_buff;
     char *_write_ptr;
+    char *_last_ptr;
     size_t _bytes_avail;
     size_t _ack_index;
     boost::circular_buffer<SBuffer> _available_buffers;
@@ -49,6 +50,8 @@ struct BufferQueueCirc : BufferQueue
 
 BufferQueueCirc::BufferQueueCirc(const SBufferConfig &config, const size_t num_buffs):
     _token(config.token),
+    _write_ptr(NULL),
+    _last_ptr(NULL),
     _ack_index(0)
 {
     //allocate a large buffer
@@ -81,6 +84,7 @@ SBuffer &BufferQueueCirc::front(void)
     SBuffer &front = _available_buffers.front();
     ASSERT(front);
     front->config.memory = _write_ptr;
+    front.last = _last_ptr;
     return front;
 }
 
@@ -98,6 +102,7 @@ void BufferQueueCirc::pop(void)
 
     //adjust the write pointer
     _write_ptr += num_bytes;
+    _last_ptr = _write_ptr;
 
     //handle circular wrap
     if (_write_ptr > (char *)_circ_buff.get(_circ_buff.get_actual_length()))
@@ -112,6 +117,9 @@ void BufferQueueCirc::pop(void)
 
 void BufferQueueCirc::push(const SBuffer &buff)
 {
+    //is it my buffer? otherwise dont keep it
+    if (buff->config.token.lock() != _token) return;
+
     _returned_buffers[buff.get_user_index()] = buff;
 
     //ack starting at the expected index and up

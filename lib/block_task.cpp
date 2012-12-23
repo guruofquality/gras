@@ -153,7 +153,6 @@ void BlockActor::handle_task(void)
         this->input_items.max() = std::max(this->input_items.max(), items);
 
         //inline dealings, how and when input buffers can be inlined into output buffers
-        continue; //FIXME to implement needs change
         /*
         if (
             buff.unique() and
@@ -165,10 +164,10 @@ void BlockActor::handle_task(void)
             SBuffer new_obuff = buff;
             new_obuff.length = 0;
             this->flush_output(output_inline_index);
-            this->output_queues.push_front(output_inline_index, new_obuff); //you got inlined!
+            this->output_queues.push(output_inline_index, new_obuff); //you got inlined!
             output_inline_index++; //done do this output port again
         }
-        */
+        //*/
     }
 
     //------------------------------------------------------------------
