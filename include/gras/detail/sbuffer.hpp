@@ -39,7 +39,8 @@ GRAS_FORCE_INLINE void intrusive_ptr_release(SBufferImpl *impl)
 
 GRAS_FORCE_INLINE SBuffer::SBuffer(void):
     offset(0),
-    length(0)
+    length(0),
+    last(NULL)
 {
     //NOP
 }

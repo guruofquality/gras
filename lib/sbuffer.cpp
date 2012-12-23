@@ -34,6 +34,7 @@ SBufferConfig::SBufferConfig(void)
     memory = NULL;
     length = 0;
     affinity = -1;
+    user_index = ~0;
 }
 
 static void numa_mem_deleter(SBuffer &buff)

@@ -116,6 +116,9 @@ struct GRAS_API SBuffer : boost::intrusive_ptr<SBufferImpl>
     //! The number of valid bytes past offset
     size_t length;
 
+    //! Pointer to the end of the last buffer
+    void *last;
+
     //! Get the affinity of the memory
     long get_affinity(void) const;
 
