@@ -120,6 +120,7 @@ void BufferQueueCirc::push(const SBuffer &buff)
     //is it my buffer? otherwise dont keep it
     if (buff->config.token.lock() != _token) return;
 
+    ASSERT(buff.get_user_index() < _returned_buffers.size());
     _returned_buffers[buff.get_user_index()] = buff;
 
     //ack starting at the expected index and up
