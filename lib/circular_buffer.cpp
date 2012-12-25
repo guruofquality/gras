@@ -10,6 +10,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
+#include <ctime>
 
 using namespace gras;
 namespace ipc = boost::interprocess;
@@ -29,7 +30,7 @@ static std::string omg_so_unique(void)
 {
     const std::string tid = boost::lexical_cast<std::string>(boost::this_thread::get_id());
     static size_t count = 0;
-    return boost::str(boost::format("shmem-%s-%u") % tid % count++);
+    return boost::str(boost::format("shmem-%s-%u-%u") % tid % count++ % clock());
 }
 
 //! Round a number (length or address) to an IPC boundary
@@ -156,10 +157,20 @@ CircularBuffer::CircularBuffer(const size_t num_bytes):
     //std::cout << "diff " << (long(region2.get_address()) - long(region1.get_address())) << std::endl;
 
     ////////////////////////////////////////////////////////////////
-    //4) Zero out the memory for good measure
+    //4) Self memory test
     ////////////////////////////////////////////////////////////////
-    std::memset(region1.get_address(), 0, region1.get_size());
-    std::memset(region2.get_address(), 0, region2.get_size());
+    boost::uint32_t *mem = (boost::uint32_t*)buff_addr;
+    for (size_t i = 0; i < actual_length/sizeof(*mem); i++)
+    {
+        const boost::uint32_t num = std::rand();
+        mem[i] = num;
+        ASSERT(mem[i+actual_length/sizeof(*mem)] == num);
+    }
+
+    ////////////////////////////////////////////////////////////////
+    //5) Zero out the memory for good measure
+    ////////////////////////////////////////////////////////////////
+    std::memset(buff_addr, 0, actual_length);
 }
 
 static void circular_buffer_delete(SBuffer &buff, CircularBuffer *circ_buff)
