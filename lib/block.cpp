@@ -237,6 +237,11 @@ const SBuffer &Block::get_input_buffer(const size_t which_input) const
 SBuffer Block::pop_output_buffer(const size_t which_output)
 {
     SBuffer buff = (*this)->block->output_queues.front(which_output);
+    //set the offset on the buffer to be popped so that something will be removed
+    //TODO this basically addresses popping on the circ buff,
+    //but perhaps there is a better API for output buffer access.
+    //like using get_output_buffer() + pop(some length)
+    (*this)->block->output_queues.front(which_output).offset = buff.get_actual_length();
     (*this)->block->output_queues.pop(which_output);
     return buff;
 }
