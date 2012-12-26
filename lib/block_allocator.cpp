@@ -11,8 +11,6 @@ const size_t AT_LEAST_DEFAULT_ITEMS = 1 << 13;
 const size_t AHH_TOO_MANY_BYTES = 1 << 20; //TODO
 const size_t THIS_MANY_BUFFERS = 32;
 
-//TODO will need more complicated later
-
 void BlockActor::buffer_returner(const size_t index, SBuffer &buffer)
 {
     //reset offset and length

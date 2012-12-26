@@ -156,6 +156,10 @@ struct BlockActor : Apology::Worker
     long buffer_affinity;
 
     std::vector<std::vector<OutputHintMessage> > output_allocation_hints;
+
+    //status keepers
+    size_t handle_task_count;
+    size_t work_count;
 };
 
 } //namespace gras

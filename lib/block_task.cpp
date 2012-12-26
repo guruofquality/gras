@@ -113,7 +113,9 @@ void BlockActor::handle_task(void)
     //-- Handle task may get called for incoming buffers,
     //-- however, not all ports may have available buffers.
     //------------------------------------------------------------------
+    this->handle_task_count++;
     if (not this->is_work_allowed()) return;
+    this->work_count++;
 
     #ifdef WORK_DEBUG
     WorkDebugPrinter WDP(block_ptr->to_string());
