@@ -155,7 +155,7 @@ void BlockActor::handle_task(void)
         this->input_items.max() = std::max(this->input_items.max(), items);
 
         //inline dealings, how and when input buffers can be inlined into output buffers
-        /*
+        //*
         if (
             buff.unique() and
             input_configs[i].inline_buffer and

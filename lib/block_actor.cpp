@@ -75,8 +75,18 @@ static ThreadPool get_active_thread_pool(void)
 BlockActor::BlockActor(void):
     Apology::Worker(*get_active_thread_pool())
 {
-    thread_pool = get_active_thread_pool();
-    active_thread_pool.reset(); //actors hold this, now its safe to reset, weak_framework only
+    const char * gras_tpp = getenv("GRAS_TPP");
+    if (gras_tpp != NULL)
+    {
+        ThreadPoolConfig config;
+        config.thread_count = 1;
+        this->thread_pool = ThreadPool(config);
+    }
+    else
+    {
+        this->thread_pool = get_active_thread_pool();
+        active_thread_pool.reset(); //actors hold this, now its safe to reset, weak_framework only
+    }
     this->register_handlers();
     this->handle_task_count = 0;
     this->work_count = 0;
