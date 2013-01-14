@@ -45,7 +45,31 @@ BENCHMARK_MANY_11_BLOCKS = tokwargs(
     to_result = lambda t: 1e8/t
 )
 
+BENCHMARK_FILTER_BLOCK = tokwargs(
+    wat='Benchmark the schedulers with a filter block',
+    moar='''TODO''',
+    tests = [
+        tokwargs(wat='GRAS decim FIR',     args=['tb_filter_block.py', '--num', '1e7', '--which', 'dfir'], env=GRAS_ENV),
+        tokwargs(wat='GR decim FIR',       args=['tb_filter_block.py', '--num', '1e7', '--which', 'dfir'], env=GR_ENV),
+        tokwargs(wat='GRAS resampler',     args=['tb_filter_block.py', '--num', '1e7', '--which', 'resamp'], env=GRAS_ENV),
+        tokwargs(wat='GR resampler',       args=['tb_filter_block.py', '--num', '1e7', '--which', 'resamp'], env=GR_ENV),
+    ],
+    to_result = lambda t: 1e7/t
+)
+
+BENCHMARK_DELAY_BLOCKS = tokwargs(
+    wat='Benchmark GrExtras vs gr-core delay block',
+    moar='''TODO''',
+    tests = [
+        tokwargs(wat='GrExtras Delay\n(zero-copy)',          args=['tb_grextras_delay.py', '1e8', 'extras_delay'], env=GRAS_ENV),
+        tokwargs(wat='gr-core Delay\n(mem-copy)',            args=['tb_grextras_delay.py', '1e8', 'core_delay'], env=GRAS_ENV),
+    ],
+    to_result = lambda t: 1e8/t
+)
+
 BENCHMARKS = (
     BENCHMARK_MATH_OPS,
     BENCHMARK_MANY_11_BLOCKS,
+    BENCHMARK_FILTER_BLOCK,
+    BENCHMARK_DELAY_BLOCKS,
 )

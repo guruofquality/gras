@@ -38,7 +38,7 @@ def do_a_benchmark(bm):
     for run in bm['tests']:
         test_name = run['wat']
         print '-'*(len(test_name)+25)
-        print '-- running test:', test_name
+        print '-- running test:', test_name.replace('\n', ' ')
         print '-'*(len(test_name)+25)
         test_names.append(test_name)
         args = run['args']
