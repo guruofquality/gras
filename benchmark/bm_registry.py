@@ -18,25 +18,12 @@ GR_ENV = {
     'PYTHONPATH': os.path.join(INSTALL_PREFIX, 'gr/lib/python2.7/dist-packages:%s'%os.getenv('PYTHONPATH')),
 }
 
-BENCHMARK_MATH_OPS = tokwargs(
-    wat='Benchmark GrExtras vs gr-blocks math blocks',
-    moar='''
-        All blocks are using vector optimization.
-        - GrExtras math blocks avoid an unnecessary memcpy.
-        - GrExtras math blocks enable automatic bufer in-placing.
-    ''',
-    tests = [
-        tokwargs(wat='GrExtras Adder',          args=['tb_grextras_math.py', '1e8', 'extras_add'], env=GRAS_ENV),
-        tokwargs(wat='gr-blocks Adder',         args=['tb_grextras_math.py', '1e8', 'blocks_add'], env=GRAS_ENV),
-        tokwargs(wat='GrExtras Multiplier',     args=['tb_grextras_math.py', '1e8', 'extras_mult'], env=GRAS_ENV),
-        tokwargs(wat='gr-blocks Multiplier',    args=['tb_grextras_math.py', '1e8', 'blocks_mult'], env=GRAS_ENV),
-    ],
-    to_result = lambda t: 1e8/t
-)
-
 BENCHMARK_MANY_11_BLOCKS = tokwargs(
     wat='Benchmark the schedulers with many 1:1 ratio blocks',
-    moar='''TODO''',
+    moar='''\
+- Compare simultaneous 1:1 radio blocks in each scheduler.
+- GRAS will use only the buffer pool allocator,
+and every work will fully consume available buffers.''',
     tests = [
         tokwargs(wat='Many 1:1 GRAS',     args=['tb_many_1_to_1_blocks.py', '1e8'], env=GRAS_ENV),
         #tokwargs(wat='Many 1:1 GRAS - TPP',         args=['tb_many_1_to_1_blocks.py', '1e8'], env=GRAS_ENV, envextra=tokwargs(GRAS_TPP='1')),
@@ -47,7 +34,11 @@ BENCHMARK_MANY_11_BLOCKS = tokwargs(
 
 BENCHMARK_FILTER_BLOCK = tokwargs(
     wat='Benchmark the schedulers with a filter block',
-    moar='''TODO''',
+    moar='''\
+- Compare filter blocks in each scheduler.
+- Shows both schedulers using circular buffer.
+- The decimating FIR filter is compared.
+- The rational resampler filter is compared.''',
     tests = [
         tokwargs(wat='GRAS decim FIR',     args=['tb_filter_block.py', '--num', '1e7', '--which', 'dfir'], env=GRAS_ENV),
         tokwargs(wat='GR decim FIR',       args=['tb_filter_block.py', '--num', '1e7', '--which', 'dfir'], env=GR_ENV),
@@ -57,9 +48,27 @@ BENCHMARK_FILTER_BLOCK = tokwargs(
     to_result = lambda t: 1e7/t
 )
 
+BENCHMARK_MATH_OPS = tokwargs(
+    wat='Benchmark GrExtras vs gr-blocks math blocks',
+    moar='''\
+- Compare math block implementations using GRAS.
+- All blocks are using vector optimization.
+- GrExtras math blocks avoid an unnecessary memcpy.
+- GrExtras math blocks enable automatic bufer in-placing.''',
+    tests = [
+        tokwargs(wat='GrExtras Adder',          args=['tb_grextras_math.py', '1e8', 'extras_add'], env=GRAS_ENV),
+        tokwargs(wat='gr-blocks Adder',         args=['tb_grextras_math.py', '1e8', 'blocks_add'], env=GRAS_ENV),
+        tokwargs(wat='GrExtras Multiplier',     args=['tb_grextras_math.py', '1e8', 'extras_mult'], env=GRAS_ENV),
+        tokwargs(wat='gr-blocks Multiplier',    args=['tb_grextras_math.py', '1e8', 'blocks_mult'], env=GRAS_ENV),
+    ],
+    to_result = lambda t: 1e8/t
+)
+
 BENCHMARK_DELAY_BLOCKS = tokwargs(
     wat='Benchmark GrExtras vs gr-core delay block',
-    moar='''TODO''',
+    moar='''\
+- Compare delay block implementations using GRAS.
+- The GrExtras implementation uses zero-copy.''',
     tests = [
         tokwargs(wat='GrExtras Delay\n(zero-copy)',          args=['tb_grextras_delay.py', '1e8', 'extras_delay'], env=GRAS_ENV),
         tokwargs(wat='gr-core Delay\n(mem-copy)',            args=['tb_grextras_delay.py', '1e8', 'core_delay'], env=GRAS_ENV),
@@ -68,8 +77,8 @@ BENCHMARK_DELAY_BLOCKS = tokwargs(
 )
 
 BENCHMARKS = (
-    BENCHMARK_MATH_OPS,
     BENCHMARK_MANY_11_BLOCKS,
     BENCHMARK_FILTER_BLOCK,
+    BENCHMARK_MATH_OPS,
     BENCHMARK_DELAY_BLOCKS,
 )

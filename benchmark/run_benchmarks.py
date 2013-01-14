@@ -72,13 +72,20 @@ def do_a_benchmark(bm):
     rects = ax.bar(ind, bogomips, width, color='blue',
         yerr=bogomips_dev,
         error_kw=dict(elinewidth=6, ecolor='pink'),
+        label=bm['moar']
     )
     ax.set_xlim(-width, max(len(ind), 4))
-    ax.set_ylim(0, max(*bogomips) + max(*bogomips_dev)*3)
+    ax.set_ylim(0, max(*bogomips)*1.1 + max(*bogomips_dev)*2)
     for rect in rects:
         height = rect.get_height()
         ax.text(rect.get_x()+rect.get_width()/2.0, 1.01*height, '%.3f'%height, horizontalalignment='center')
     ax.grid(True)
+
+    fontP = FontProperties()
+    fontP.set_size('small')
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles, labels, prop=fontP, loc="upper right")
+
     print '\n'
     return fig
 
