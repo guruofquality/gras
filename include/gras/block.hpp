@@ -264,21 +264,31 @@ struct GRAS_API Block : Element
      * Use this function to implement passive work-flows.
      *
      * \param which_input the input port index
-     * \return a const reference to the buffer
+     * \return a reference counted copy of the buffer
      */
-    const SBuffer &get_input_buffer(const size_t which_input) const;
+    SBuffer get_input_buffer(const size_t which_input) const;
 
     /*!
      * Get access to the underlying reference counted output buffer.
      * This is the same buffer pointed to by output_items[which].
      * This function must be called during the call to work().
      * Use this to get a pool of buffers for datagram message ports.
-     * This function removes the output buffer from the internal queue.
      *
      * \param which_output the output port index
      * \return a reference counted copy of the buffer
      */
-    SBuffer pop_output_buffer(const size_t which_output);
+    SBuffer get_output_buffer(const size_t which_output) const;
+
+    /*!
+     * Remove a given number of bytes from the output buffer queue.
+     * This call is intended to be used with get_output_buffer().
+     * If pop_output_buffer() is not called after get_output_buffer(),
+     * The full-size of the buffer will be automatically popped.
+     *
+     * \param which_output the output port index
+     * \param num_bytes bytes to pop from the output buffer queue
+     */
+    void pop_output_buffer(const size_t which_output, const size_t num_bytes);
 
     /*!
      * Post the given output buffer to the downstream.

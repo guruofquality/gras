@@ -229,21 +229,23 @@ void Block::mark_done(void)
     (*this)->block->mark_done();
 }
 
-const SBuffer &Block::get_input_buffer(const size_t which_input) const
+SBuffer Block::get_input_buffer(const size_t which_input) const
 {
     return (*this)->block->input_queues.front(which_input);
 }
 
-SBuffer Block::pop_output_buffer(const size_t which_output)
+SBuffer Block::get_output_buffer(const size_t which_output) const
 {
-    SBuffer buff = (*this)->block->output_queues.front(which_output);
-    //set the offset on the buffer to be popped so that something will be removed
-    //TODO this basically addresses popping on the circ buff,
-    //but perhaps there is a better API for output buffer access.
-    //like using get_output_buffer() + pop(some length)
-    (*this)->block->output_queues.front(which_output).offset = buff.get_actual_length();
-    (*this)->block->output_queues.pop(which_output);
+    SBuffer &buff = (*this)->block->output_queues.front(which_output);
+    //increment length to auto pop full buffer size,
+    //when user doesnt call pop_output_buffer()
+    buff.length = buff.get_actual_length();
     return buff;
+}
+
+void Block::pop_output_buffer(const size_t which_output, const size_t num_bytes)
+{
+    (*this)->block->output_queues.front(which_output).length = num_bytes;
 }
 
 void Block::post_output_buffer(const size_t which_output, const SBuffer &buffer)
