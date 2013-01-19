@@ -9,6 +9,23 @@ set(GRAS_VERSION "0.0.0")
 set(GRAS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(GRAS_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
+function(GRAS_CHECK_SUBMODULE directory)
+    if(NOT EXISTS ${GRAS_SOURCE_DIR}/${directory})
+        message(FATAL_ERROR "
+submodule ${directory} does not exist!!
+Did you remember to run the following commands?
+    git submodule init
+    git submodule update
+")
+    endif()
+endfunction(GRAS_CHECK_SUBMODULE)
+
+GRAS_CHECK_SUBMODULE(Theron)
+GRAS_CHECK_SUBMODULE(Apology)
+GRAS_CHECK_SUBMODULE(PMC)
+GRAS_CHECK_SUBMODULE(gnuradio)
+GRAS_CHECK_SUBMODULE(grextras)
+
 list(APPEND CMAKE_MODULE_PATH ${GRAS_SOURCE_DIR}/PMC/cmake/Modules)
 include(CMakeDefsHelper)
 
