@@ -21,15 +21,27 @@ GR_ENV = {
 BENCHMARK_MANY_11_BLOCKS = tokwargs(
     wat='Benchmark the schedulers with many 1:1 ratio blocks',
     moar='''\
-- Compare simultaneous 1:1 radio blocks in each scheduler.
+- Compare simultaneous 1:1 ratio blocks in each scheduler.
 - GRAS will use only the buffer pool allocator,
 and every work will fully consume available buffers.''',
     tests = [
-        tokwargs(wat='Many 1:1 GRAS',     args=['tb_many_1_to_1_blocks.py', '1e8'], env=GRAS_ENV),
-        #tokwargs(wat='Many 1:1 GRAS - TPP',         args=['tb_many_1_to_1_blocks.py', '1e8'], env=GRAS_ENV, envextra=tokwargs(GRAS_TPP='1')),
-        tokwargs(wat='Many 1:1 GR',                 args=['tb_many_1_to_1_blocks.py', '1e8'], env=GR_ENV),
+        tokwargs(wat='GRAS',     args=['tb_many_1_to_1_blocks.py', '1e8'], env=GRAS_ENV),
+        tokwargs(wat='GR',       args=['tb_many_1_to_1_blocks.py', '1e8'], env=GR_ENV),
     ],
     to_result = lambda t: 1e8/t
+)
+
+BENCHMARK_MANY_RATE_BLOCKS = tokwargs(
+    wat='Benchmark the schedulers with many rate changing blocks',
+    moar='''\
+- Compare simultaneous changing ratio blocks in each scheduler.
+- GRAS will use only the buffer pool allocator,
+and every work will fully consume available buffers.''',
+    tests = [
+        tokwargs(wat='GRAS',     args=['tb_many_rate_changes.py', '1e4'], env=GRAS_ENV),
+        tokwargs(wat='GR',       args=['tb_many_rate_changes.py', '1e4'], env=GR_ENV),
+    ],
+    to_result = lambda t: 1e4/t
 )
 
 BENCHMARK_FILTER_BLOCK = tokwargs(
@@ -78,6 +90,7 @@ BENCHMARK_DELAY_BLOCKS = tokwargs(
 
 BENCHMARKS = (
     BENCHMARK_MANY_11_BLOCKS,
+    BENCHMARK_MANY_RATE_BLOCKS,
     BENCHMARK_FILTER_BLOCK,
     BENCHMARK_MATH_OPS,
     BENCHMARK_DELAY_BLOCKS,
