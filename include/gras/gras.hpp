@@ -44,7 +44,7 @@
   #define GRAS_EXTERN
 #endif // GRAS_DLL
 
-#define GRAS_MAX_ALIGNMENT 32
+#define GRAS_MAX_ALIGNMENT 64
 
 //define cross platform attribute macros
 #if defined(GRAS_DEBUG)

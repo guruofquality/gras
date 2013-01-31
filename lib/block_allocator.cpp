@@ -7,9 +7,9 @@
 
 using namespace gras;
 
-const size_t AT_LEAST_DEFAULT_ITEMS = 1 << 13;
+const size_t AT_LEAST_BYTES = 1 << 14;
 const size_t AHH_TOO_MANY_BYTES = 1 << 20; //TODO
-const size_t THIS_MANY_BUFFERS = 32;
+const size_t THIS_MANY_BUFFERS = 16;
 
 void BlockActor::buffer_returner(const size_t index, SBuffer &buffer)
 {
@@ -50,6 +50,8 @@ static size_t recommend_length(
     return Nmin_bytes;
 }
 
+#define my_round_up_mult(num, mult) (((num)*(mult))+(mult)-1)/(mult)
+
 void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address from)
 {
     MESSAGE_TRACER();
@@ -60,7 +62,7 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
     {
         const size_t bytes = recommend_length(
             this->output_allocation_hints[i],
-            AT_LEAST_DEFAULT_ITEMS*this->output_items_sizes[i],
+            my_round_up_mult(AT_LEAST_BYTES, this->output_items_sizes[i]),
             this->output_configs[i].reserve_items*this->output_items_sizes[i],
             this->output_configs[i].maximum_items*this->output_items_sizes[i]
         );
