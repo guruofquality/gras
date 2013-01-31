@@ -68,10 +68,12 @@ BENCHMARK_MATH_OPS = tokwargs(
 - GrExtras math blocks avoid an unnecessary memcpy.
 - GrExtras math blocks enable automatic bufer in-placing.''',
     tests = [
-        tokwargs(wat='GrExtras Adder',          args=['tb_grextras_math.py', '1e8', 'extras_add'], env=GRAS_ENV),
-        tokwargs(wat='gr-blocks Adder',         args=['tb_grextras_math.py', '1e8', 'blocks_add'], env=GRAS_ENV),
-        tokwargs(wat='GrExtras Multiplier',     args=['tb_grextras_math.py', '1e8', 'extras_mult'], env=GRAS_ENV),
-        tokwargs(wat='gr-blocks Multiplier',    args=['tb_grextras_math.py', '1e8', 'blocks_mult'], env=GRAS_ENV),
+        tokwargs(wat='GrExtras Add\n(GRAS)',        args=['tb_grextras_math.py', '1e8', 'extras_add'], env=GRAS_ENV),
+        tokwargs(wat='gr-blocks Add\n(GRAS)',       args=['tb_grextras_math.py', '1e8', 'blocks_add'], env=GRAS_ENV),
+        tokwargs(wat='gr-blocks Add\n(GR)',         args=['tb_grextras_math.py', '1e8', 'blocks_add'], env=GR_ENV),
+        tokwargs(wat='GrExtras Mult\n(GRAS)',       args=['tb_grextras_math.py', '1e8', 'extras_mult'], env=GRAS_ENV),
+        tokwargs(wat='gr-blocks Mult\n(GRAS)',      args=['tb_grextras_math.py', '1e8', 'blocks_mult'], env=GRAS_ENV),
+        tokwargs(wat='gr-blocks Mult\n(GR)',        args=['tb_grextras_math.py', '1e8', 'blocks_mult'], env=GR_ENV),
     ],
     to_result = lambda t: 1e8/t
 )
@@ -82,8 +84,9 @@ BENCHMARK_DELAY_BLOCKS = tokwargs(
 - Compare delay block implementations using GRAS.
 - The GrExtras implementation uses zero-copy.''',
     tests = [
-        tokwargs(wat='GrExtras Delay\n(zero-copy)',          args=['tb_grextras_delay.py', '1e8', 'extras_delay'], env=GRAS_ENV),
-        tokwargs(wat='gr-core Delay\n(mem-copy)',            args=['tb_grextras_delay.py', '1e8', 'core_delay'], env=GRAS_ENV),
+        tokwargs(wat='GrExtras Delay\n(GRAS)',          args=['tb_grextras_delay.py', '1e8', 'extras_delay'], env=GRAS_ENV),
+        tokwargs(wat='gr-core Delay\n(GRAS)',           args=['tb_grextras_delay.py', '1e8', 'core_delay'], env=GRAS_ENV),
+        tokwargs(wat='gr-core Delay\n(GR)',             args=['tb_grextras_delay.py', '1e8', 'core_delay'], env=GR_ENV),
     ],
     to_result = lambda t: 1e8/t
 )
