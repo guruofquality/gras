@@ -2,7 +2,7 @@
 ## All C++ headers, C++ sources, python .py files, swig .i files
 ########################################################################
 
-Copyright (C) 2011-2012 by Josh Blum
+Copyright (C) 2011-2013 by Josh Blum
 
 ========================================================================
 Boost Software License - Version 1.0 - August 17, 2003
