@@ -60,7 +60,7 @@ void BlockActor::input_fail(const size_t i)
     if (not this->input_queues.is_accumulated(i))
     {
         this->input_queues.accumulate(i);
-        this->Push(SelfKickMessage(), Theron::Address());
+        this->task_kicker();
         return;
     }
 
@@ -225,10 +225,7 @@ void BlockActor::handle_task(void)
     }
 
     //still have IO ready? kick off another task
-    if (this->is_work_allowed())
-    {
-        this->Push(SelfKickMessage(), Theron::Address());
-    }
+    this->task_kicker();
 }
 
 void BlockActor::consume(const size_t i, const size_t items)

@@ -27,7 +27,7 @@ void BlockActor::handle_top_active(
     //when I do the kick, but not with the direct call to handle
     //ideally, we always kick here and let the kick handler call handle_task
     this->handle_task();
-    //this->Push(SelfKickMessage(), Theron::Address());
+    //this->task_kicker();
 }
 
 void BlockActor::handle_top_inert(
