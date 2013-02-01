@@ -96,16 +96,6 @@ void BlockActor::output_fail(const size_t i)
     this->output_queues.fail(i);
 }
 
-GRAS_FORCE_INLINE bool BlockActor::is_work_allowed(void)
-{
-    return (
-        this->block_state == BLOCK_STATE_LIVE and
-        this->input_queues.all_ready() and
-        this->inputs_available.any() and
-        this->output_queues.all_ready()
-    );
-}
-
 void BlockActor::handle_task(void)
 {
     //------------------------------------------------------------------

@@ -96,7 +96,6 @@ struct BlockActor : Apology::Worker
     void consume(const size_t index, const size_t items);
     void produce_buffer(const size_t index, const SBuffer &buffer);
     void flush_output(const size_t index);
-    bool is_work_allowed(void);
 
     GRAS_FORCE_INLINE void task_kicker(void)
     {
@@ -107,6 +106,16 @@ struct BlockActor : Apology::Worker
     {
         const bool available = this->input_queues.ready(i) and not this->input_queues.empty(i);
         return this->inputs_done[i] and not available;
+    }
+
+    GRAS_FORCE_INLINE bool is_work_allowed(void)
+    {
+        return (
+            this->block_state == BLOCK_STATE_LIVE and
+            this->input_queues.all_ready() and
+            this->inputs_available.any() and
+            this->output_queues.all_ready()
+        );
     }
 
     //per port properties
