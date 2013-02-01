@@ -22,12 +22,7 @@ void BlockActor::handle_top_active(
 
     this->Send(0, from); //ACK
 
-    //TODO figure out for why under what funny reasons
-    //grextras packet test has an issue passing
-    //when I do the kick, but not with the direct call to handle
-    //ideally, we always kick here and let the kick handler call handle_task
-    this->handle_task();
-    //this->task_kicker();
+    this->task_kicker();
 }
 
 void BlockActor::handle_top_inert(
