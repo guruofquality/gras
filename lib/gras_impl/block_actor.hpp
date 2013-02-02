@@ -99,7 +99,7 @@ struct BlockActor : Apology::Worker
 
     GRAS_FORCE_INLINE void task_kicker(void)
     {
-        if (this->is_work_allowed()) this->TailSend(SelfKickMessage(), this->GetAddress());
+        if (this->is_work_allowed()) this->Send(SelfKickMessage(), this->GetAddress());
     }
 
     GRAS_FORCE_INLINE bool is_input_done(const size_t i)
