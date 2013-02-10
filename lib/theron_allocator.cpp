@@ -10,10 +10,10 @@
 
 #include <gras/gras.hpp>
 #include <gras_impl/debug.hpp>
+#include <gras_impl/cool_queue.hpp>
 #include <Theron/Detail/Threading/SpinLock.h>
 #include <Theron/IAllocator.h>
 #include <Theron/AllocatorManager.h>
-#include <boost/circular_buffer.hpp>
 
 #define MY_ALLOCATOR_CHUNK_SIZE 256
 #define MY_ALLOCATOR_POOL_SIZE (MY_ALLOCATOR_CHUNK_SIZE * (1 << 18))
@@ -37,7 +37,7 @@ static struct WorkerAllocator : Theron::IAllocator
     WorkerAllocator(void)
     {
         const size_t N = MY_ALLOCATOR_POOL_SIZE/MY_ALLOCATOR_CHUNK_SIZE;
-        queue.resize(N);
+        queue.set_capacity(N);
         for (size_t i = 0; i < N; i++)
         {
             const ptrdiff_t pool_ptr = ptrdiff_t(pool) + i*MY_ALLOCATOR_CHUNK_SIZE;
@@ -90,7 +90,7 @@ static struct WorkerAllocator : Theron::IAllocator
         }
     }
 
-    boost::circular_buffer<void *> queue;
+    gras::CoolQueue<void *> queue;
     THERON_PREALIGN(GRAS_MAX_ALIGNMENT)
         char pool[MY_ALLOCATOR_POOL_SIZE]
     THERON_POSTALIGN(GRAS_MAX_ALIGNMENT);

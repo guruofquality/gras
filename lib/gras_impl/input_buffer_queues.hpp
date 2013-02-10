@@ -5,13 +5,13 @@
 
 #include <gras_impl/debug.hpp>
 #include <gras_impl/bitset.hpp>
+#include <gras_impl/cool_queue.hpp>
 #include <gras_impl/simple_buffer_queue.hpp>
 #include <gras/sbuffer.hpp>
 #include <vector>
 #include <queue>
 #include <deque>
 #include <cstring> //memcpy/memset
-#include <boost/circular_buffer.hpp>
 
 namespace gras
 {
@@ -166,7 +166,7 @@ struct InputBufferQueues
     std::vector<size_t> _enqueued_bytes;
     std::vector<size_t> _reserve_bytes;
     std::vector<size_t> _maximum_bytes;
-    std::vector<boost::circular_buffer<SBuffer> > _queues;
+    std::vector<CoolQueue<SBuffer> > _queues;
     std::vector<size_t> _preload_bytes;
     std::vector<boost::shared_ptr<SimpleBufferQueue> > _aux_queues;
 };
@@ -179,7 +179,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::resize(const size_t size)
     _enqueued_bytes.resize(size, 0);
     _reserve_bytes.resize(size, 1);
     _maximum_bytes.resize(size, MAX_AUX_BUFF_BYTES);
-    _queues.resize(size, boost::circular_buffer<SBuffer>(MAX_QUEUE_SIZE));
+    _queues.resize(size, CoolQueue<SBuffer>(MAX_QUEUE_SIZE));
     _preload_bytes.resize(size, 0);
     _aux_queues.resize(size);
 

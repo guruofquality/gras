@@ -2,7 +2,7 @@
 
 #include <gras/buffer_queue.hpp>
 #include <gras_impl/debug.hpp>
-#include <boost/circular_buffer.hpp>
+#include <gras_impl/cool_queue.hpp>
 #include <vector>
 
 using namespace gras;
@@ -42,7 +42,7 @@ struct BufferQueueCirc : BufferQueue
     char *_last_ptr;
     size_t _bytes_avail;
     size_t _ack_index;
-    boost::circular_buffer<SBuffer> _available_buffers;
+    CoolQueue<SBuffer> _available_buffers;
     std::vector<SBuffer> _returned_buffers;
     std::vector<size_t> _outgone_bytes;
 
