@@ -37,7 +37,7 @@ static struct WorkerAllocator : Theron::IAllocator
     WorkerAllocator(void)
     {
         const size_t N = MY_ALLOCATOR_POOL_SIZE/MY_ALLOCATOR_CHUNK_SIZE;
-        queue.resize(N);
+        queue.set_capacity(N);
         for (size_t i = 0; i < N; i++)
         {
             const ptrdiff_t pool_ptr = ptrdiff_t(pool) + i*MY_ALLOCATOR_CHUNK_SIZE;
