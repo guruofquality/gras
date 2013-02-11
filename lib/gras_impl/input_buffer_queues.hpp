@@ -13,6 +13,8 @@
 #include <cstring> //memcpy/memset
 #include <boost/circular_buffer.hpp>
 
+#define GRAS_ENABLE_BUFFER_STITCHING 1
+
 namespace gras
 {
 
@@ -93,30 +95,7 @@ struct InputBufferQueues
         _queues[i].pop_front();
     }
 
-    GRAS_FORCE_INLINE void push(const size_t i, const SBuffer &buffer)
-    {
-        ASSERT(not _queues[i].full());
-        if (buffer.length == 0) return;
-        _queues[i].push_back(buffer);
-        _enqueued_bytes[i] += buffer.length;
-        __update(i);
-
-        //stitch:
-        for (size_t j = _queues[i].size()-1; j > 0; j--)
-        {
-            SBuffer &b1 = _queues[i][j];
-            SBuffer &b0 = _queues[i][j-1];
-            if (b1.last == b0.get(b0.length))
-            {
-                const size_t bytes = b1.length;
-                b0.length += bytes;
-                b1.offset += bytes;
-                b1.length = 0;
-                b1.last = b0.get(b0.length);
-            }
-        }
-
-    }
+    void push(const size_t i, const SBuffer &buffer);
 
     GRAS_FORCE_INLINE void flush(const size_t i)
     {
@@ -272,6 +251,33 @@ GRAS_FORCE_INLINE void InputBufferQueues::accumulate(const size_t i)
     ASSERT(this->is_accumulated(i));
 }
 
+GRAS_FORCE_INLINE void InputBufferQueues::push(const size_t i, const SBuffer &buffer)
+{
+    ASSERT(not _queues[i].full());
+    if (buffer.length == 0) return;
+    _queues[i].push_back(buffer);
+    _enqueued_bytes[i] += buffer.length;
+    __update(i);
+
+    #ifdef GRAS_ENABLE_BUFFER_STITCHING
+    //stitch:
+    for (size_t j = _queues[i].size()-1; j > 0; j--)
+    {
+        SBuffer &b1 = _queues[i][j];
+        SBuffer &b0 = _queues[i][j-1];
+        if (b1.last == b0.get(b0.length))
+        {
+            const size_t bytes = b1.length;
+            b0.length += bytes;
+            b1.offset += bytes;
+            b1.length = 0;
+            b1.last = b0.get(b0.length);
+        }
+    }
+    #endif //GRAS_ENABLE_BUFFER_STITCHING
+
+}
+
 GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t bytes_consumed)
 {
     if (bytes_consumed == 0) return;
@@ -295,6 +301,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t b
 
     __update(i);
 
+    #ifdef GRAS_ENABLE_BUFFER_STITCHING
     //unstitch:
     //If the remaining parts of b0 are entirely sitting in b1, pop()
     if (_queues[i].size() < 2) return;
@@ -306,6 +313,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t b
         b1.length += b0.length;
         this->pop(i);
     }
+    #endif //GRAS_ENABLE_BUFFER_STITCHING
 }
 
 } //namespace gras
