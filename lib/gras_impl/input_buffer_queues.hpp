@@ -20,7 +20,6 @@ namespace gras
 
 struct InputBufferQueues
 {
-    enum {MAX_QUEUE_SIZE = 128};
     enum {MAX_AUX_BUFF_BYTES=(1<<16)};
 
     static SBuffer make_null_buff(void)
@@ -158,7 +157,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::resize(const size_t size)
     _enqueued_bytes.resize(size, 0);
     _reserve_bytes.resize(size, 1);
     _maximum_bytes.resize(size, MAX_AUX_BUFF_BYTES);
-    _queues.resize(size, boost::circular_buffer<SBuffer>(MAX_QUEUE_SIZE));
+    _queues.resize(size, boost::circular_buffer<SBuffer>(1));
     _preload_bytes.resize(size, 0);
     _aux_queues.resize(size);
 
@@ -253,7 +252,12 @@ GRAS_FORCE_INLINE void InputBufferQueues::accumulate(const size_t i)
 
 GRAS_FORCE_INLINE void InputBufferQueues::push(const size_t i, const SBuffer &buffer)
 {
+    if (_queues[i].full())
+    {
+        _queues[i].set_capacity(_queues[i].size()*2);
+    }
     ASSERT(not _queues[i].full());
+
     if (buffer.length == 0) return;
     _queues[i].push_back(buffer);
     _enqueued_bytes[i] += buffer.length;
