@@ -6,6 +6,7 @@
 #include <gras_impl/debug.hpp>
 #include <gras_impl/bitset.hpp>
 #include <gras/gras.hpp>
+#include <gras/chrono.hpp>
 #include <gras/block.hpp>
 #include <gras/top_block.hpp>
 #include <gras/thread_pool.hpp>
