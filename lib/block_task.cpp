@@ -9,6 +9,7 @@ void BlockActor::mark_done(void)
 {
     if (this->block_state == BLOCK_STATE_DONE) return; //can re-enter checking done first
 
+    this->stats.stop_time = time_now();
     this->block_ptr->stop();
 
     //flush partial output buffers to the downstream
@@ -98,18 +99,13 @@ void BlockActor::output_fail(const size_t i)
 
 void BlockActor::handle_task(void)
 {
+    const time_ticks_t task_start = time_now();
     //------------------------------------------------------------------
     //-- Decide if its possible to continue any processing:
     //-- Handle task may get called for incoming buffers,
     //-- however, not all ports may have available buffers.
     //------------------------------------------------------------------
-    this->handle_task_count++;
     if GRAS_UNLIKELY(not this->is_work_allowed()) return;
-    this->work_count++;
-
-    #ifdef WORK_DEBUG
-    WorkDebugPrinter WDP(block_ptr->to_string());
-    #endif
 
     //------------------------------------------------------------------
     //-- Asynchronous notification through atomic variable
@@ -185,7 +181,12 @@ void BlockActor::handle_task(void)
     //------------------------------------------------------------------
     //-- the work
     //------------------------------------------------------------------
+<<<<<<< HEAD
     if GRAS_UNLIKELY(this->interruptible_thread)
+=======
+    const time_ticks_t work_start = time_now();
+    if (this->interruptible_thread)
+>>>>>>> gras: working on block stats
     {
         this->interruptible_thread->call();
     }
@@ -193,6 +194,7 @@ void BlockActor::handle_task(void)
     {
         this->task_work();
     }
+    const time_ticks_t work_stop = time_now();
 
     //------------------------------------------------------------------
     //-- Flush output buffers downstream
@@ -216,6 +218,13 @@ void BlockActor::handle_task(void)
 
     //still have IO ready? kick off another task
     this->task_kicker();
+
+    //save stats
+    const time_ticks_t task_time = time_now() - task_start;
+    const time_ticks_t work_time = work_stop - work_start;
+    this->stats.work_count++;
+    this->stats.total_time_work += work_time;
+    this->stats.total_time_work_other += task_time - work_time;
 }
 
 void BlockActor::consume(const size_t i, const size_t items)

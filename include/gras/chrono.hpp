@@ -3,72 +3,69 @@
 //Boost chrono has awesome high res timer!
 //But its only in very recent boosts,
 //so we have this little wrapper...
+//now/tps inspired by libnumanuma.
 
 #ifndef INCLUDED_GRAS_CHRONO_HPP
 #define INCLUDED_GRAS_CHRONO_HPP
 
 #include <gras/gras.hpp>
-#include <boost/version.hpp>
 
-#if BOOST_VERSION >= 104700
-#include <boost/chrono.hpp>
+namespace gras
+{
+    typedef long long time_ticks_t;
+
+    //! Get the time now in tick counts
+    time_ticks_t time_now(void);
+
+    //! Get the number of ticks per second
+    time_ticks_t time_tps(void);
+}
+
+//--------------------------------------------------------------------//
+//------------------ implementation details below --------------------//
+//--------------------------------------------------------------------//
+
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+
+#include <windows.h>
 
 namespace gras
 {
 
-namespace chrono
-{
+    GRAS_FORCE_INLINE time_ticks_t time_now(void)
+    {
+        LARGE_INTEGER counts;
+        QueryPerformanceCounter(&counts);
+        return counts.QuadPart;
+    }
 
-typedef boost::chrono::time_point TimePoint;
-typedef boost::chrono::nanoseconds Duration;
-
-GRAS_FORCE_INLINE TimePoint high_res_now(void)
-{
-    return boost::posix_time::microsec_clock::universal_time();
-}
-
-GRAS_FORCE_INLINE long long duration_to_ticks(const Duration &d)
-{
-    return d.count();
-}
-
-GRAS_FORCE_INLINE unsigned long long tps(void)
-{
-    return (unsigned long long)(1e9);
-}
-
-} //namespace chrono
+    GRAS_FORCE_INLINE time_ticks_t time_tps(void)
+    {
+        LARGE_INTEGER freq;
+        QueryPerformanceFrequency(&freq);
+        return freq.QuadPart;
+    }
 
 } //namespace gras
 
 #else
-#include <boost/date_time/posix_time/posix_time.hpp>
+
+#include <ctime>
 
 namespace gras
 {
 
-namespace chrono
-{
+    GRAS_FORCE_INLINE time_ticks_t time_now(void)
+    {
+        struct timespec ts;
+        clock_gettime(CLOCK_MONOTONIC, &ts);
+        return ts.tv_sec*1000000000UL + ts.tv_nsec;
+    }
 
-typedef boost::posix_time::ptime TimePoint;
-typedef boost::posix_time::time_duration Duration;
-
-GRAS_FORCE_INLINE TimePoint high_res_now(void)
-{
-    return boost::posix_time::microsec_clock::universal_time();
-}
-
-GRAS_FORCE_INLINE long long duration_to_ticks(const Duration &d)
-{
-    return d.ticks();
-}
-
-GRAS_FORCE_INLINE unsigned long long tps(void)
-{
-    return boost::posix_time::time_duration::ticks_per_second();
-}
-
-} //namespace chrono
+    GRAS_FORCE_INLINE time_ticks_t time_tps(void)
+    {
+        return 1000000000UL;
+    }
 
 } //namespace gras
 

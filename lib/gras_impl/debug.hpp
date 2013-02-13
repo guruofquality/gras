@@ -24,11 +24,9 @@ extern void *operator new(std::size_t n) throw (std::bad_alloc);
 //----------------------------------------------------------------------
 //-- define to enable these debugs:
 //----------------------------------------------------------------------
-//#define WORK_DEBUG
-//#define ASSERTING
+#define ASSERTING
 //#define MESSAGE_TRACING
 //#define ITEM_CONSPROD
-//#define WORK_COUNTS
 
 //----------------------------------------------------------------------
 //-- time accumulation printer
@@ -66,34 +64,6 @@ extern void *operator new(std::size_t n) throw (std::bad_alloc);
 }}
 #else
 #define ASSERT(x)
-#endif
-
-//----------------------------------------------------------------------
-//-- implementation for work debug
-//----------------------------------------------------------------------
-#ifdef WORK_DEBUG
-
-#include <boost/thread/mutex.hpp>
-
-static boost::mutex work_debug_mutex;
-
-struct WorkDebugPrinter
-{
-    WorkDebugPrinter(const std::string &name):
-        lock(work_debug_mutex), name(name)
-    {
-        std::cerr << "-----> begin work on " << name << std::endl;
-    }
-
-    ~WorkDebugPrinter(void)
-    {
-        std::cerr << "<----- end work on " << name << std::endl;
-    }
-
-    boost::mutex::scoped_lock lock;
-    std::string name;
-};
-
 #endif
 
 #endif /*INCLUDED_LIBGRAS_IMPL_DEBUG_HPP*/

@@ -88,16 +88,9 @@ BlockActor::BlockActor(void):
         active_thread_pool.reset(); //actors hold this, now its safe to reset, weak_framework only
     }
     this->register_handlers();
-    this->handle_task_count = 0;
-    this->work_count = 0;
 }
 
 BlockActor::~BlockActor(void)
 {
     this->mark_done();
-    #ifdef WORK_COUNTS
-    if (work_count == 0) std::cerr << "\n WORK FAIL!!!" << std::endl;
-    std::cerr << name << " handle_task_count " << handle_task_count << std::endl;
-    std::cerr << name << " work_count " << work_count << std::endl;
-    #endif
 }

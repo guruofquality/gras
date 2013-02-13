@@ -22,6 +22,16 @@
 namespace gras
 {
 
+struct BlockStats
+{
+    time_ticks_t start_time;
+    time_ticks_t stop_time;
+
+    size_t work_count;
+    time_ticks_t total_time_work;
+    time_ticks_t total_time_work_other;
+};
+
 struct BlockActor : Apology::Worker
 {
     BlockActor(void);
@@ -172,9 +182,7 @@ struct BlockActor : Apology::Worker
 
     std::vector<std::vector<OutputHintMessage> > output_allocation_hints;
 
-    //status keepers
-    size_t handle_task_count;
-    size_t work_count;
+    BlockStats stats;
 };
 
 } //namespace gras
