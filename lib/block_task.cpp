@@ -225,6 +225,7 @@ void BlockActor::handle_task(void)
     this->stats.work_count++;
     this->stats.total_time_work += work_time;
     this->stats.total_time_work_other += task_time - work_time;
+    this->stats.time_last_work = work_stop;
 }
 
 void BlockActor::consume(const size_t i, const size_t items)

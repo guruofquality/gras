@@ -6,12 +6,12 @@
 #include <gras_impl/debug.hpp>
 #include <gras_impl/bitset.hpp>
 #include <gras/gras.hpp>
-#include <gras/chrono.hpp>
 #include <gras/block.hpp>
 #include <gras/top_block.hpp>
 #include <gras/thread_pool.hpp>
 #include <Apology/Worker.hpp>
 #include <gras_impl/token.hpp>
+#include <gras_impl/stats.hpp>
 #include <gras_impl/messages.hpp>
 #include <gras_impl/output_buffer_queues.hpp>
 #include <gras_impl/input_buffer_queues.hpp>
@@ -21,16 +21,6 @@
 
 namespace gras
 {
-
-struct BlockStats
-{
-    time_ticks_t start_time;
-    time_ticks_t stop_time;
-
-    size_t work_count;
-    time_ticks_t total_time_work;
-    time_ticks_t total_time_work_other;
-};
 
 struct BlockActor : Apology::Worker
 {
@@ -67,6 +57,7 @@ struct BlockActor : Apology::Worker
         this->RegisterHandler(this, &BlockActor::handle_output_update);
 
         this->RegisterHandler(this, &BlockActor::handle_self_kick);
+        this->RegisterHandler(this, &BlockActor::handle_get_stats);
     }
 
     //handlers
@@ -94,6 +85,7 @@ struct BlockActor : Apology::Worker
     void handle_output_update(const OutputUpdateMessage &, const Theron::Address);
 
     void handle_self_kick(const SelfKickMessage &, const Theron::Address);
+    void handle_get_stats(const GetStatsMessage &, const Theron::Address);
 
     //helpers
     void buffer_returner(const size_t index, SBuffer &buffer);

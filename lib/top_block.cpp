@@ -3,6 +3,8 @@
 #include "element_impl.hpp"
 #include <gras/top_block.hpp>
 #include <boost/thread/thread.hpp> //sleep
+#include <boost/foreach.hpp>
+#include <boost/format.hpp>
 
 using namespace gras;
 
@@ -135,6 +137,40 @@ bool TopBlock::wait(const double timeout)
     }
 
     return (*this)->token.unique();
+}
+
+///////////////////////// Stats gathering interface ////////////////////////
+
+struct GetStatsReceiver : Theron::Receiver
+{
+    GetStatsReceiver(void)
+    {
+        this->RegisterHandler(this, &GetStatsReceiver::handle_get_stats);
+    }
+
+    void handle_get_stats(const GetStatsMessage &message, const Theron::Address)
+    {
+        this->messages.push_back(message);
+    }
+
+    std::vector<GetStatsMessage> messages;
+};
+
+std::string TopBlock::get_stats_xml(void)
+{
+    GetStatsReceiver receiver;
+    (*this)->executor->post_all(GetStatsMessage(), receiver);
+    std::string xml;
+    BOOST_FOREACH(const GetStatsMessage &message, receiver.messages)
+    {
+        std::string block_xml;
+        block_xml += str(boost::format("    <id>%s</id>\n") % message.block_id);
+        block_xml += str(boost::format("    <tps>%ull</tps>\n") % time_tps());
+        block_xml += str(boost::format("    <start_time>%llu</start_time>\n") % message.stats.start_time);
+        block_xml += str(boost::format("    <stop_time>%llu</stop_time>\n") % message.stats.stop_time);
+        xml += str(boost::format("<block>\n%s</block>\n") % block_xml);
+    }
+    return str(boost::format("<gras_stats>\n%s</gras_stats>") % xml);
 }
 
 ///////////////////////// Deprecated interfaces ////////////////////////

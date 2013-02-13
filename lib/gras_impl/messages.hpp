@@ -8,6 +8,7 @@
 #include <gras/tags.hpp>
 #include <gras/sbuffer.hpp>
 #include <gras_impl/token.hpp>
+#include <gras_impl/stats.hpp>
 
 namespace gras
 {
@@ -128,6 +129,13 @@ struct SelfKickMessage
     //empty
 };
 
+struct GetStatsMessage
+{
+    std::string block_id;
+    BlockStats stats;
+    time_ticks_t stats_time;
+};
+
 } //namespace gras
 
 #include <Theron/Register.h>
@@ -157,5 +165,6 @@ THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputAllocMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputUpdateMessage);
 
 THERON_DECLARE_REGISTERED_MESSAGE(gras::SelfKickMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::GetStatsMessage);
 
 #endif /*INCLUDED_LIBGRAS_IMPL_MESSAGES_HPP*/
