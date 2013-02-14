@@ -57,6 +57,15 @@
     #define GRAS_FORCE_INLINE         inline
 #endif
 
+//want to have fun with branch prediction hints?
+#ifdef __GNUC__
+    #define GRAS_LIKELY(expr)    (__builtin_expect(bool(expr), 1))
+    #define GRAS_UNLIKELY(expr)  (__builtin_expect(bool(expr), 0))
+#else
+    #define GRAS_LIKELY(expr)    (expr)
+    #define GRAS_UNLIKELY(expr)  (expr)
+#endif
+
 namespace gras
 {
     //! Typedef for absolute item indexes

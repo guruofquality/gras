@@ -104,7 +104,7 @@ void BlockActor::handle_task(void)
     //-- however, not all ports may have available buffers.
     //------------------------------------------------------------------
     this->handle_task_count++;
-    if (not this->is_work_allowed()) return;
+    if GRAS_UNLIKELY(not this->is_work_allowed()) return;
     this->work_count++;
 
     #ifdef WORK_DEBUG
@@ -115,7 +115,7 @@ void BlockActor::handle_task(void)
     //-- Asynchronous notification through atomic variable
     //-- that the executor has instructed workers to stop.
     //------------------------------------------------------------------
-    if (active_token.expired())
+    if GRAS_UNLIKELY(active_token.expired())
     {
         this->mark_done();
         return;
@@ -146,7 +146,7 @@ void BlockActor::handle_task(void)
 
         //inline dealings, how and when input buffers can be inlined into output buffers
         //*
-        if (
+        if GRAS_UNLIKELY(
             buff.unique() and
             input_configs[i].inline_buffer and
             output_inline_index < num_outputs and
@@ -185,7 +185,7 @@ void BlockActor::handle_task(void)
     //------------------------------------------------------------------
     //-- the work
     //------------------------------------------------------------------
-    if (this->interruptible_thread)
+    if GRAS_UNLIKELY(this->interruptible_thread)
     {
         this->interruptible_thread->call();
     }
@@ -211,7 +211,7 @@ void BlockActor::handle_task(void)
     {
         const bool nothing = this->input_queues.empty(i) and this->input_tags[i].empty();
         this->inputs_available.set(i, not nothing);
-        if (this->is_input_done(i)) this->mark_done();
+        if GRAS_UNLIKELY(this->is_input_done(i)) this->mark_done();
     }
 
     //still have IO ready? kick off another task
@@ -252,7 +252,7 @@ void BlockActor::produce_buffer(const size_t i, const SBuffer &buffer)
 
 GRAS_FORCE_INLINE void BlockActor::flush_output(const size_t i)
 {
-    if (this->output_queues.empty(i) or this->output_queues.front(i).length == 0) return;
+    if GRAS_UNLIKELY(this->output_queues.empty(i) or this->output_queues.front(i).length == 0) return;
     SBuffer &buff = this->output_queues.front(i);
     InputBufferMessage buff_msg;
     buff_msg.buffer = buff;

@@ -59,7 +59,7 @@ extern void *operator new(std::size_t n) throw (std::bad_alloc);
 //-- implementation for assert debug
 //----------------------------------------------------------------------
 #ifdef ASSERTING
-#define ASSERT(x) {if(not (x)) \
+#define ASSERT(x) {if GRAS_UNLIKELY(not (x)) \
 { \
     std::cerr << "ASSERT FAIL " << __FILE__ << ":" << __LINE__ << "\n\t" << #x << std::endl << std::flush; \
     throw std::runtime_error(std::string("ASSERT FAIL ") + #x); \
