@@ -161,14 +161,15 @@ std::string TopBlock::get_stats_xml(void)
     GetStatsReceiver receiver;
     (*this)->executor->post_all(GetStatsMessage(), receiver);
     std::string xml;
+    xml += str(boost::format("  <now>%ull</now>\n") % time_now());
+    xml += str(boost::format("  <tps>%ull</tps>\n") % time_tps());
     BOOST_FOREACH(const GetStatsMessage &message, receiver.messages)
     {
         std::string block_xml;
         block_xml += str(boost::format("    <id>%s</id>\n") % message.block_id);
-        block_xml += str(boost::format("    <tps>%ull</tps>\n") % time_tps());
         block_xml += str(boost::format("    <start_time>%llu</start_time>\n") % message.stats.start_time);
         block_xml += str(boost::format("    <stop_time>%llu</stop_time>\n") % message.stats.stop_time);
-        xml += str(boost::format("<block>\n%s</block>\n") % block_xml);
+        xml += str(boost::format("  <block>\n%s</block>\n") % block_xml);
     }
     return str(boost::format("<gras_stats>\n%s</gras_stats>") % xml);
 }
