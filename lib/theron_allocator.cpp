@@ -54,10 +54,10 @@ static struct WorkerAllocator : Theron::IAllocator
 
     void *Allocate(const SizeType size)
     {
-        if (size <= MY_ALLOCATOR_CHUNK_SIZE)
+        if GRAS_LIKELY(size <= MY_ALLOCATOR_CHUNK_SIZE)
         {
             mSpinLock.Lock();
-            if (queue.empty())
+            if GRAS_UNLIKELY(queue.empty())
             {
                 unwanted_malloc_count++;
                 mSpinLock.Unlock();
@@ -78,7 +78,7 @@ static struct WorkerAllocator : Theron::IAllocator
     void Free(void *const memory)
     {
         const bool in_pool = ptrdiff_t(memory) >= ptrdiff_t(pool) and ptrdiff_t(memory) < pool_end;
-        if (in_pool)
+        if GRAS_LIKELY(in_pool)
         {
             mSpinLock.Lock();
             queue.push_front(memory);

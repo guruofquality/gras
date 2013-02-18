@@ -11,7 +11,7 @@ namespace gras
 
 GRAS_FORCE_INLINE void BlockActor::sort_tags(const size_t i)
 {
-    if (not this->input_tags_changed[i]) return;
+    if GRAS_LIKELY(not this->input_tags_changed[i]) return;
     std::vector<Tag> &tags_i = this->input_tags[i];
     std::sort(tags_i.begin(), tags_i.end());
     this->input_tags_changed[i] = false;
@@ -32,7 +32,7 @@ GRAS_FORCE_INLINE void BlockActor::trim_tags(const size_t i)
         last++;
     }
 
-    if (last == 0) return;
+    if GRAS_LIKELY(last == 0) return;
 
     //call the overloaded propagate_tags to do the dirty work
     this->block_ptr->propagate_tags(i, TagIter(tags_i.begin(), tags_i.begin()+last));
