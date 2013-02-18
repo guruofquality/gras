@@ -181,12 +181,8 @@ void BlockActor::handle_task(void)
     //------------------------------------------------------------------
     //-- the work
     //------------------------------------------------------------------
-<<<<<<< HEAD
-    if GRAS_UNLIKELY(this->interruptible_thread)
-=======
     const time_ticks_t work_start = time_now();
-    if (this->interruptible_thread)
->>>>>>> gras: working on block stats
+    if GRAS_UNLIKELY(this->interruptible_thread)
     {
         this->interruptible_thread->call();
     }
