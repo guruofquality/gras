@@ -52,8 +52,10 @@ void BlockActor::handle_topology(
     resize_fill_back(this->output_configs, num_outputs);
 
     //resize the bytes consumed/produced
-    resize_fill_grow(this->items_consumed, num_inputs, 0);
-    resize_fill_grow(this->items_produced, num_outputs, 0);
+    resize_fill_grow(this->stats.items_consumed, num_inputs, 0);
+    resize_fill_grow(this->stats.tags_consumed, num_inputs, 0);
+    resize_fill_grow(this->stats.items_produced, num_outputs, 0);
+    resize_fill_grow(this->stats.tags_produced, num_outputs, 0);
 
     //resize all work buffers to match current connections
     this->input_items.resize(num_inputs);

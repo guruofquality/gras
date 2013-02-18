@@ -229,7 +229,7 @@ void BlockActor::consume(const size_t i, const size_t items)
     #ifdef ITEM_CONSPROD
     std::cerr << name << " consume " << items << std::endl;
     #endif
-    this->items_consumed[i] += items;
+    this->stats.items_consumed[i] += items;
     const size_t bytes = items*this->input_items_sizes[i];
     this->input_queues.consume(i, bytes);
     this->trim_tags(i);
@@ -241,7 +241,7 @@ void BlockActor::produce(const size_t i, const size_t items)
     std::cerr << name << " produce " << items << std::endl;
     #endif
     SBuffer &buff = this->output_queues.front(i);
-    this->items_produced[i] += items;
+    this->stats.items_produced[i] += items;
     const size_t bytes = items*this->output_items_sizes[i];
     buff.length += bytes;
 }
@@ -250,7 +250,7 @@ void BlockActor::produce_buffer(const size_t i, const SBuffer &buffer)
 {
     this->flush_output(i);
     const size_t items = buffer.length/output_items_sizes[i];
-    this->items_produced[i] += items;
+    this->stats.items_produced[i] += items;
     InputBufferMessage buff_msg;
     buff_msg.buffer = buffer;
     this->post_downstream(i, buff_msg);
