@@ -26,6 +26,7 @@ struct ElementImpl
     //common element properties
     std::string name;
     long unique_id;
+    std::string id;
     IOSignature input_signature;
     IOSignature output_signature;
 
