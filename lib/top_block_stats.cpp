@@ -27,13 +27,14 @@ std::string TopBlock::get_stats_xml(void)
     GetStatsReceiver receiver;
     (*this)->executor->post_all(GetStatsMessage(), receiver);
     std::string xml;
-    xml += str(boost::format("  <now>%ull</now>\n") % time_now());
-    xml += str(boost::format("  <tps>%ull</tps>\n") % time_tps());
+    xml += str(boost::format("  <now>%llu</now>\n") % time_now());
+    xml += str(boost::format("  <tps>%llu</tps>\n") % time_tps());
     BOOST_FOREACH(const GetStatsMessage &message, receiver.messages)
     {
         const BlockStats &stats = message.stats;
         std::string block_xml;
-        block_xml += str(boost::format("    <id>%s</id>\n") % message.block_id);
+        block_xml += str(boost::format("    <tps>%llu</tps>\n") % time_tps());
+        block_xml += str(boost::format("    <stats_time>%llu</stats_time>\n") % message.stats_time);
         block_xml += str(boost::format("    <start_time>%llu</start_time>\n") % stats.start_time);
         block_xml += str(boost::format("    <stop_time>%llu</stop_time>\n") % stats.stop_time);
         block_xml += str(boost::format("    <work_count>%llu</work_count>\n") % stats.work_count);
@@ -42,7 +43,7 @@ std::string TopBlock::get_stats_xml(void)
         block_xml += str(boost::format("    <total_time_work_other>%llu</total_time_work_other>\n") % stats.total_time_work_other);
         for (size_t i = 0; i < stats.items_consumed.size(); i++)
         {
-            block_xml += str(boost::format("    <input_items_consumed>%llu</input_items_consumed>\n") % stats.items_consumed[i]);
+            block_xml += str(boost::format("    <items_consumed>%llu</items_consumed>\n") % stats.items_consumed[i]);
         }
         for (size_t i = 0; i < stats.tags_consumed.size(); i++)
         {
@@ -56,7 +57,7 @@ std::string TopBlock::get_stats_xml(void)
         {
             block_xml += str(boost::format("    <tags_produced>%llu</tags_produced>\n") % stats.tags_produced[i]);
         }
-        xml += str(boost::format("  <block>\n%s</block>\n") % block_xml);
+        xml += str(boost::format("  <block id=\"%s\">\n%s</block>\n") % message.block_id % block_xml);
     }
     return str(boost::format("<gras_stats>\n%s</gras_stats>") % xml);
 }
