@@ -49,6 +49,7 @@ struct InputBufferQueues
     GRAS_FORCE_INLINE const SBuffer &front(const size_t i)
     {
         ASSERT(this->ready(i));
+        ASSERT(_items_sizes[i] != 0);
 
         //special case when the null buffer is possible
         if (_queues[i].empty()) return get_null_buff();
@@ -153,14 +154,17 @@ struct InputBufferQueues
 GRAS_FORCE_INLINE void InputBufferQueues::resize(const size_t size)
 {
     _bitset.resize(size);
-    _items_sizes.resize(size, 0);
     _enqueued_bytes.resize(size, 0);
-    _reserve_bytes.resize(size, 1);
-    _maximum_bytes.resize(size, MAX_AUX_BUFF_BYTES);
     _queues.resize(size, boost::circular_buffer<SBuffer>(1));
-    _preload_bytes.resize(size, 0);
     _aux_queues.resize(size);
 
+    if (size != 0) //keep config info when flushing
+    {
+        _items_sizes.resize(size, 0);
+        _preload_bytes.resize(size, 0);
+        _reserve_bytes.resize(size, 1);
+        _maximum_bytes.resize(size, MAX_AUX_BUFF_BYTES);
+    }
 }
 
 inline void InputBufferQueues::update_config(
