@@ -49,7 +49,7 @@ struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
      * Good for that factory function/shared ptr paradigm.
      */
     template <typename T>
-    Element(const boost::shared_ptr<T> &elem)
+    inline Element(const boost::shared_ptr<T> &elem)
     {
         *this = elem->shared_to_element();
     }
