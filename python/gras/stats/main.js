@@ -70,7 +70,7 @@ var gras_update_throughput_chart = function(history)
         hAxis: {title: "time (seconds)"}
     };
 
-    var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+    var chart = new google.visualization.LineChart($('#overall_charts').get(0));
     chart.draw(data, options);
 
 }
@@ -94,7 +94,7 @@ var gras_query_stats = function(history)
             }
             var onceHandle = window.setTimeout(function() {
               gras_query_stats(history);
-            }, 1000);
+            }, 500);
         }
     });
 }

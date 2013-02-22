@@ -56,6 +56,7 @@ INSTALL(
     FILES
     stats/main.html
     stats/main.js
+    stats/main.css
     DESTINATION ${GR_PYTHON_DIR}/gras/stats
     COMPONENT ${GRAS_COMP_PYTHON}
 )
