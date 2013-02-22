@@ -15,7 +15,7 @@ void BlockActor::handle_top_active(
 
     if (this->block_state != BLOCK_STATE_LIVE)
     {
-        this->block_ptr->start();
+        this->block_ptr->notify_active();
     }
     this->block_state = BLOCK_STATE_LIVE;
     this->active_token = message.token;

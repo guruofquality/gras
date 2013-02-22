@@ -189,14 +189,14 @@ void Block::propagate_tags(const size_t i, const TagIter &iter)
     }
 }
 
-bool Block::start(void)
+void Block::notify_active(void)
 {
-    return true;
+    //NOP
 }
 
-bool Block::stop(void)
+void Block::notify_inactive(void)
 {
-    return true;
+    //NOP
 }
 
 void Block::notify_topology(const size_t, const size_t)

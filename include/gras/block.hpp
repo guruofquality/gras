@@ -204,12 +204,6 @@ struct GRAS_API Block : Element
      * Work related routines and fail states
      ******************************************************************/
 
-    //! Called when the flow graph is started, can overload
-    virtual bool start(void);
-
-    //! Called when the flow graph is stopped, can overload
-    virtual bool stop(void);
-
     typedef WorkBufferArray<const void *> InputItems;
     typedef WorkBufferArray<void *> OutputItems;
 
@@ -306,6 +300,20 @@ struct GRAS_API Block : Element
      * \param buffer the buffer to send downstream
      */
     void post_output_buffer(const size_t which_output, const SBuffer &buffer);
+
+    /*!
+     * Overload notify_active to get called when block becomes active.
+     * This will be called when the TopBlock start/run API call executes.
+     * The default implementation of notify_active is a NOP.
+     */
+    virtual void notify_active(void);
+
+    /*!
+     * Overload notify_inactive to get called when block becomes inactive.
+     * This will be called when the TopBlock stop/run API call executes.
+     * The default implementation of notify_inactive is a NOP.
+     */
+    virtual void notify_inactive(void);
 
     /*!
      * Overload notify_topology to get called on topological changes.

@@ -9,7 +9,7 @@ void BlockActor::mark_done(void)
 {
     if (this->block_state == BLOCK_STATE_DONE) return; //can re-enter checking done first
 
-    this->block_ptr->stop();
+    this->block_ptr->notify_inactive();
 
     //flush partial output buffers to the downstream
     for (size_t i = 0; i < this->get_num_outputs(); i++)

@@ -8,8 +8,8 @@
 %feature("nodirector") gras::BlockPython::input_buffer_allocator;
 %feature("nodirector") gras::BlockPython::output_buffer_allocator;
 %feature("nodirector") gras::BlockPython::propagate_tags;
-%feature("nodirector") gras::BlockPython::start;
-%feature("nodirector") gras::BlockPython::stop;
+%feature("nodirector") gras::BlockPython::notify_active;
+%feature("nodirector") gras::BlockPython::notify_inactive;
 %feature("nodirector") gras::BlockPython::notify_topology;
 %feature("nodirector") gras::BlockPython::work;
 
@@ -101,21 +101,21 @@ struct BlockPython : Block
         //NOP
     }
 
-    bool start(void)
+    void notify_active(void)
     {
         PyGILPhondler phil;
-        return this->_Py_start();
+        return this->_Py_notify_active();
     }
 
-    virtual bool _Py_start(void) = 0;
+    virtual void _Py_notify_active(void) = 0;
 
-    bool stop(void)
+    void notify_inactive(void)
     {
         PyGILPhondler phil;
-        return this->_Py_stop();
+        return this->_Py_notify_inactive();
     }
 
-    virtual bool _Py_stop(void) = 0;
+    virtual void _Py_notify_inactive(void) = 0;
 
     void notify_topology(const size_t num_inputs, const size_t num_outputs)
     {
@@ -257,17 +257,17 @@ class Block(BlockPython):
 
     def notify_topology(self, *args): return
 
-    def _Py_start(self):
-        try: return self.start()
+    def _Py_notify_active(self):
+        try: return self.notify_active()
         except: traceback.print_exc(); raise
 
-    def start(self): return True
+    def notify_active(self): pass
 
-    def _Py_stop(self):
-        try: return self.stop()
+    def _Py_notify_inactive(self):
+        try: return self.notify_inactive()
         except: traceback.print_exc(); raise
 
-    def stop(self): return True
+    def notify_inactive(self): pass
 
     def _Py_propagate_tags(self, which_input, iter):
         try: return self.propagate_tags(which_input, iter)
