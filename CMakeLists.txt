@@ -105,6 +105,10 @@ add_subdirectory(tests)
 set(CMAKE_SOURCE_DIR ${GRAS_SOURCE_DIR}/gnuradio)
 set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/gnuradio)
 
+#Theron isnt affected by boost thread issues.
+#So we allow the gr black listed versions.
+OPTION(ENABLE_BAD_BOOST "Enable known bad versions of Boost" ON)
+
 set(CMAKE_PROJECT_NAME gnuradio) #for submodule vars
 
 add_subdirectory(gnuradio)
