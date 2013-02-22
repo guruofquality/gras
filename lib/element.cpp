@@ -35,16 +35,6 @@ ElementImpl::~ElementImpl(void)
     if (this->block) this->block_cleanup();
 }
 
-Element &Element::shared_to_element(void)
-{
-    try
-    {
-        this->weak_self = this->shared_from_this();
-    }
-    catch(...){}
-    return *this;
-}
-
 long Element::unique_id(void) const
 {
     return (*this)->unique_id;

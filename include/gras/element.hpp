@@ -55,7 +55,15 @@ struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
     }
 
     //! Convert a shared ptr of a derived class to an Element
-    Element &shared_to_element(void);
+    inline Element &shared_to_element(void)
+    {
+        try
+        {
+            this->weak_self = this->shared_from_this();
+        }
+        catch(...){}
+        return *this;
+    }
 
     //! for internal use only
     boost::weak_ptr<Element> weak_self;
