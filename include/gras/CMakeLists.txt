@@ -10,8 +10,6 @@ install(FILES
     gras.hpp
     hier_block.hpp
     hier_block.i
-    io_signature.hpp
-    io_signature.i
     sbuffer.hpp
     sbuffer.i
     tags.hpp

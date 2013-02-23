@@ -21,11 +21,6 @@ Element::Element(const std::string &name)
     (*this)->unique_id = ++unique_id_pool;
 
     if (GENESIS) std::cerr << "New element: " << to_string() << std::endl;
-
-    //default io signature to something
-    IOSignature sig; sig.push_back(1);
-    this->set_input_signature(sig);
-    this->set_output_signature(sig);
 }
 
 ElementImpl::~ElementImpl(void)
@@ -48,24 +43,4 @@ std::string Element::name(void) const
 std::string Element::to_string(void) const
 {
     return str(boost::format("%s(%d)") % this->name() % this->unique_id());
-}
-
-void Element::set_output_signature(const IOSignature &sig)
-{
-    (*this)->output_signature = sig;
-}
-
-void Element::set_input_signature(const IOSignature &sig)
-{
-    (*this)->input_signature = sig;
-}
-
-const IOSignature &Element::input_signature(void) const
-{
-    return (*this)->input_signature;
-}
-
-const IOSignature &Element::output_signature(void) const
-{
-    return (*this)->output_signature;
 }

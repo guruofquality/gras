@@ -186,7 +186,6 @@ struct BlockPython : Block
 import numpy
 import traceback
 from GRAS_Utils import pointer_to_ndarray
-from GRAS_IOSignature import IOSignature
 from PMC import *
 
 def sig_to_dtype_sig(sig):
@@ -205,11 +204,11 @@ class Block(BlockPython):
 
     def set_input_signature(self, sig):
         self.__in_sig = sig_to_dtype_sig(sig)
-        BlockPython.set_input_signature(self, IOSignature([s.itemsize for s in self.__in_sig]))
+        for i, n in enumerate(self.__in_sig): self.set_input_size(i, n.itemsize)
 
     def set_output_signature(self, sig):
         self.__out_sig = sig_to_dtype_sig(sig)
-        BlockPython.set_output_signature(self, IOSignature([s.itemsize for s in self.__out_sig]))
+        for i, n in enumerate(self.__out_sig): self.set_output_size(i, n.itemsize)
 
     def input_signature(self): return self.__in_sig
     def output_signature(self): return self.__out_sig

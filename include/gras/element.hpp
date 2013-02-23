@@ -4,7 +4,6 @@
 #define INCLUDED_GRAS_ELEMENT_HPP
 
 #include <gras/gras.hpp>
-#include <gras/io_signature.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
@@ -32,14 +31,6 @@ struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
 
     //! get a canonical name for this element
     std::string to_string(void) const;
-
-    void set_output_signature(const gras::IOSignature &sig);
-
-    void set_input_signature(const gras::IOSignature &sig);
-
-    const gras::IOSignature &input_signature(void) const;
-
-    const gras::IOSignature &output_signature(void) const;
 
     /*******************************************************************
      * Compatibility for dealing with shared ptrs of Elements

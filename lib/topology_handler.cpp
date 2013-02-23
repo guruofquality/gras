@@ -4,19 +4,6 @@
 
 using namespace gras;
 
-template <typename V, typename Sig>
-void fill_item_sizes_from_sig(V &v, const Sig &s, const size_t size)
-{
-    //default item size of 1 in case we cant set
-    v.resize(size, 1);
-
-    //empty signature? maybe it was a message port
-    if (s.empty()) return;
-
-    //fill v by copying signature (with back extend mode)
-    for (size_t i = 0; i < v.size(); i++) v[i] = s[i];
-}
-
 template <typename V, typename T>
 void resize_fill_grow(V &v, const size_t new_len, const T &fill)
 {
@@ -43,9 +30,9 @@ void BlockActor::handle_topology(
     //call notify_topology on block before committing settings
     this->block_ptr->notify_topology(num_inputs, num_outputs);
 
-    //fill the item sizes from the IO signatures
-    fill_item_sizes_from_sig(this->input_items_sizes, block_ptr->input_signature(), num_inputs);
-    fill_item_sizes_from_sig(this->output_items_sizes, block_ptr->output_signature(), num_outputs);
+    //fill the item sizes per port
+    resize_fill_back(this->input_items_sizes, num_inputs);
+    resize_fill_back(this->output_items_sizes, num_outputs);
 
     //resize and fill port properties
     resize_fill_back(this->input_configs, num_inputs);

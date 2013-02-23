@@ -26,8 +26,6 @@ struct ElementImpl
     //common element properties
     std::string name;
     long unique_id;
-    IOSignature input_signature;
-    IOSignature output_signature;
 
     //top block stuff
     SharedThreadGroup thread_group;

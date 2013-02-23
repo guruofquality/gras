@@ -104,17 +104,6 @@ struct HierBlockPython : HierBlock
     {
         //NOP
     }
-
-    HierBlockPython(
-        const std::string &name,
-        const IOSignature &input_signature,
-        const IOSignature &output_signature
-    ):
-        HierBlock(name)
-    {
-        this->set_input_signature(input_signature);
-        this->set_output_signature(output_signature);
-    }
 };
 
 }
@@ -151,8 +140,8 @@ def internal_connect__(fcn, obj, *args):
         fcn(obj, src, src_index, sink, sink_index)
 
 class TopBlock(TopBlockPython):
-    def __init__(self, *args, **kwargs):
-        TopBlockPython.__init__(self, *args, **kwargs)
+    def __init__(self, name="Top", *args, **kwargs):
+        TopBlockPython.__init__(self, name)
 
     def connect(self, *args):
         return internal_connect__(TopBlockPython.connect, self, *args)
@@ -161,8 +150,8 @@ class TopBlock(TopBlockPython):
         return internal_connect__(TopBlockPython.disconnect, self, *args)
 
 class HierBlock(HierBlockPython):
-    def __init__(self, *args, **kwargs):
-        HierBlockPython.__init__(self, *args, **kwargs)
+    def __init__(self, name="Hier", *args, **kwargs):
+        HierBlockPython.__init__(self, name)
 
         #backwards compatible silliness
         import weakref

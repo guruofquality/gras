@@ -38,6 +38,8 @@ Block::Block(const std::string &name):
     (*this)->block->block_state = BlockActor::BLOCK_STATE_INIT;
 
     //call block methods to init stuff
+    this->set_input_size(0, 1);
+    this->set_output_size(0, 1);
     this->set_input_config(0, InputPortConfig());
     this->set_output_config(0, OutputPortConfig());
     this->set_interruptible_work(false);
@@ -78,6 +80,26 @@ typename V::value_type vector_get(const V &v, const size_t index)
         return v.front();
     }
     return v[index];
+}
+
+size_t Block::get_input_size(const size_t which_input) const
+{
+    return vector_get((*this)->block->input_items_sizes, which_input);
+}
+
+void Block::set_input_size(const size_t which_input, const size_t bytes)
+{
+    vector_set((*this)->block->input_items_sizes, bytes, which_input);
+}
+
+size_t Block::get_output_size(const size_t which_output) const
+{
+    return vector_get((*this)->block->output_items_sizes, which_output);
+}
+
+void Block::set_output_size(const size_t which_output, const size_t bytes)
+{
+    vector_set((*this)->block->output_items_sizes, bytes, which_output);
 }
 
 InputPortConfig Block::get_input_config(const size_t which_input) const

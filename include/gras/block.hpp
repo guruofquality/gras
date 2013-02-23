@@ -109,6 +109,22 @@ struct GRAS_API Block : Element
     Block(const std::string &name);
 
     /*******************************************************************
+     * Item sizes for ports
+     ******************************************************************/
+
+    //! Get the input item size for this port in bytes
+    size_t get_input_size(const size_t which_input) const;
+
+    //! Set the input item size for this port in bytes
+    void set_input_size(const size_t which_input, const size_t bytes);
+
+    //! Get the output item size for this port in bytes
+    size_t get_output_size(const size_t which_output) const;
+
+    //! Set the output item size for this port in bytes
+    void set_output_size(const size_t which_output, const size_t bytes);
+
+    /*******************************************************************
      * Deal with input and output port configuration
      ******************************************************************/
 

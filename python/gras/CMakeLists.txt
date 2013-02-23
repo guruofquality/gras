@@ -23,7 +23,6 @@ GR_SWIG_MAKE(GRAS_Block GRAS_Block.i)
 GR_SWIG_MAKE(GRAS_HierBlock GRAS_HierBlock.i)
 GR_SWIG_MAKE(GRAS_ThreadPool GRAS_ThreadPool.i)
 GR_SWIG_MAKE(GRAS_SBuffer GRAS_SBuffer.i)
-GR_SWIG_MAKE(GRAS_IOSignature GRAS_IOSignature.i)
 GR_SWIG_INSTALL(
     TARGETS
     GRAS_Tags
@@ -31,7 +30,6 @@ GR_SWIG_INSTALL(
     GRAS_HierBlock
     GRAS_ThreadPool
     GRAS_SBuffer
-    GRAS_IOSignature
     DESTINATION ${GR_PYTHON_DIR}/gras
     COMPONENT ${GRAS_COMP_PYTHON}
 )
