@@ -111,6 +111,8 @@ OPTION(ENABLE_BAD_BOOST "Enable known bad versions of Boost" ON)
 
 set(CMAKE_PROJECT_NAME gnuradio) #for submodule vars
 
+set(GR_MOAR_LIBRARIES ${GRAS_LIBRARIES})
+
 add_subdirectory(gnuradio)
 
 ########################################################################
