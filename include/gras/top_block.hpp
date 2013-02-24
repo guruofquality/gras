@@ -81,7 +81,7 @@ struct GRAS_API TopBlock : HierBlock
      * Get block usage statistics in XML format.
      * An external app will visualize the data.
      */
-    std::string get_stats_xml(void);
+    virtual std::string get_stats_xml(void);
 };
 
 } //namespace gras

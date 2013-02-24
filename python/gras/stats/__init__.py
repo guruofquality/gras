@@ -29,8 +29,15 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         if not path: path = 'main.html'
         s.wfile.write(open(os.path.join(__path__, path)).read())
 
-def http_server(args, get_stats_xml):
-    get_stats_registry[0] = get_stats_xml
-    server_class = BaseHTTPServer.HTTPServer
-    httpd = server_class(args, MyHandler)
-    return httpd
+import select
+
+class http_server(object):
+    def __init__(self, args, get_stats_xml):
+        get_stats_registry[0] = get_stats_xml
+        server_class = BaseHTTPServer.HTTPServer
+        self._httpd = server_class(args, MyHandler)
+
+    def serve_forever(self):
+        while True:
+            try: self._httpd.serve_forever()
+            except select.error: pass

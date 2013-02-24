@@ -95,6 +95,12 @@ struct TopBlockPython : TopBlock
         PyTSPhondler phil;
         return TopBlock::wait(timeout);
     }
+
+    std::string get_stats_xml(void)
+    {
+        PyTSPhondler phil;
+        return TopBlock::get_stats_xml();
+    }
 };
 
 struct HierBlockPython : HierBlock
