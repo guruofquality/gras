@@ -60,7 +60,7 @@ namespace gras
 
 struct TopBlockPython : TopBlock
 {
-    TopBlockPython(const std::string &name = "Top"):
+    TopBlockPython(const std::string &name):
         TopBlock(name)
     {
         //NOP
@@ -99,7 +99,7 @@ struct TopBlockPython : TopBlock
 
 struct HierBlockPython : HierBlock
 {
-    HierBlockPython(const std::string &name = "Hier"):
+    HierBlockPython(const std::string &name):
         HierBlock(name)
     {
         //NOP
@@ -140,7 +140,7 @@ def internal_connect__(fcn, obj, *args):
         fcn(obj, src, src_index, sink, sink_index)
 
 class TopBlock(TopBlockPython):
-    def __init__(self, name="Top", *args, **kwargs):
+    def __init__(self, name="Top"):
         TopBlockPython.__init__(self, name)
 
     def connect(self, *args):
@@ -150,12 +150,8 @@ class TopBlock(TopBlockPython):
         return internal_connect__(TopBlockPython.disconnect, self, *args)
 
 class HierBlock(HierBlockPython):
-    def __init__(self, name="Hier", *args, **kwargs):
+    def __init__(self, name="Hier"):
         HierBlockPython.__init__(self, name)
-
-        #backwards compatible silliness
-        import weakref
-        self._hb = weakref.proxy(self)
 
     def connect(self, *args):
         return internal_connect__(HierBlockPython.connect, self, *args)
