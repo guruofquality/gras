@@ -19,6 +19,7 @@ Element::Element(const std::string &name)
     this->reset(new ElementImpl());
     (*this)->name = name;
     (*this)->unique_id = ++unique_id_pool;
+    (*this)->id = str(boost::format("%s(%d)") % this->name() % this->unique_id());
 
     if (GENESIS) std::cerr << "New element: " << to_string() << std::endl;
 }
@@ -42,5 +43,5 @@ std::string Element::name(void) const
 
 std::string Element::to_string(void) const
 {
-    return str(boost::format("%s(%d)") % this->name() % this->unique_id());
+    return (*this)->id;
 }

@@ -25,7 +25,7 @@ GRAS_FORCE_INLINE void BlockActor::trim_tags(const size_t i)
     //------------------------------------------------------------------
 
     std::vector<Tag> &tags_i = this->input_tags[i];
-    const size_t items_consumed_i = this->items_consumed[i];
+    const size_t items_consumed_i = this->stats.items_consumed[i];
     size_t last = 0;
     while (last < tags_i.size() and tags_i[last].offset < items_consumed_i)
     {
@@ -39,6 +39,7 @@ GRAS_FORCE_INLINE void BlockActor::trim_tags(const size_t i)
 
     //now its safe to perform the erasure
     tags_i.erase(tags_i.begin(), tags_i.begin()+last);
+    this->stats.items_consumed[i] += last;
 }
 
 } //namespace gras

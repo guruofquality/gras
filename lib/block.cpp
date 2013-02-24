@@ -164,16 +164,17 @@ void Block::produce(const size_t num_items)
 
 item_index_t Block::get_consumed(const size_t which_input)
 {
-    return (*this)->block->items_consumed[which_input];
+    return (*this)->block->stats.items_consumed[which_input];
 }
 
 item_index_t Block::get_produced(const size_t which_output)
 {
-    return (*this)->block->items_produced[which_output];
+    return (*this)->block->stats.items_produced[which_output];
 }
 
 void Block::post_output_tag(const size_t which_output, const Tag &tag)
 {
+    (*this)->block->stats.items_produced[which_output]++;
     (*this)->block->post_downstream(which_output, InputTagMessage(tag));
 }
 
@@ -194,6 +195,7 @@ PMCC Block::pop_input_msg(const size_t which_input)
     if (input_tags.empty()) return PMCC();
     PMCC p = input_tags.front().object;
     input_tags.erase(input_tags.begin());
+    (*this)->block->stats.items_consumed[which_input]++;
     return p;
 }
 

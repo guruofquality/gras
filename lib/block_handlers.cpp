@@ -16,6 +16,7 @@ void BlockActor::handle_top_active(
     if (this->block_state != BLOCK_STATE_LIVE)
     {
         this->block_ptr->notify_active();
+        this->stats.start_time = time_now();
     }
     this->block_state = BLOCK_STATE_LIVE;
     this->active_token = message.token;
@@ -127,4 +128,15 @@ void BlockActor::handle_self_kick(
 ){
     MESSAGE_TRACER();
     this->handle_task();
+}
+
+void BlockActor::handle_get_stats(
+    const GetStatsMessage &,
+    const Theron::Address from
+){
+    GetStatsMessage message;
+    message.block_id = this->block_ptr->to_string();
+    message.stats = this->stats;
+    message.stats_time = time_now();
+    this->Send(message, from); //ACK
 }

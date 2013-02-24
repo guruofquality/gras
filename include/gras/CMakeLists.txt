@@ -3,6 +3,7 @@
 ########################################################################
 install(FILES
 
+    chrono.hpp
     block.hpp
     block.i
     element.hpp

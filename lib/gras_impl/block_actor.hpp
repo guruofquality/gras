@@ -11,6 +11,7 @@
 #include <gras/thread_pool.hpp>
 #include <Apology/Worker.hpp>
 #include <gras_impl/token.hpp>
+#include <gras_impl/stats.hpp>
 #include <gras_impl/messages.hpp>
 #include <gras_impl/output_buffer_queues.hpp>
 #include <gras_impl/input_buffer_queues.hpp>
@@ -56,6 +57,7 @@ struct BlockActor : Apology::Worker
         this->RegisterHandler(this, &BlockActor::handle_output_update);
 
         this->RegisterHandler(this, &BlockActor::handle_self_kick);
+        this->RegisterHandler(this, &BlockActor::handle_get_stats);
     }
 
     //handlers
@@ -83,6 +85,7 @@ struct BlockActor : Apology::Worker
     void handle_output_update(const OutputUpdateMessage &, const Theron::Address);
 
     void handle_self_kick(const SelfKickMessage &, const Theron::Address);
+    void handle_get_stats(const GetStatsMessage &, const Theron::Address);
 
     //helpers
     void buffer_returner(const size_t index, SBuffer &buffer);
@@ -123,10 +126,6 @@ struct BlockActor : Apology::Worker
     std::vector<size_t> output_items_sizes;
     std::vector<InputPortConfig> input_configs;
     std::vector<OutputPortConfig> output_configs;
-
-    //keeps track of production
-    std::vector<item_index_t> items_consumed;
-    std::vector<item_index_t> items_produced;
 
     //work buffers for the new work interface
     Block::InputItems input_items;
@@ -171,9 +170,7 @@ struct BlockActor : Apology::Worker
 
     std::vector<std::vector<OutputHintMessage> > output_allocation_hints;
 
-    //status keepers
-    size_t handle_task_count;
-    size_t work_count;
+    BlockStats stats;
 };
 
 } //namespace gras

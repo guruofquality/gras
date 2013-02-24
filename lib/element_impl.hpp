@@ -26,6 +26,7 @@ struct ElementImpl
     //common element properties
     std::string name;
     long unique_id;
+    std::string id;
 
     //top block stuff
     SharedThreadGroup thread_group;
