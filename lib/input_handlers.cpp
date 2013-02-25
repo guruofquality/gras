@@ -77,8 +77,8 @@ void BlockActor::handle_input_update(const InputUpdateMessage &message, const Th
 
     //update buffer queue configuration
     if (i >= this->input_queues.size()) return;
-    const size_t preload_bytes = this->input_items_sizes[i]*this->input_configs[i].preload_items;
-    const size_t reserve_bytes = this->input_items_sizes[i]*this->input_configs[i].reserve_items;
-    const size_t maximum_bytes = this->input_items_sizes[i]*this->input_configs[i].maximum_items;
-    this->input_queues.update_config(i, this->input_items_sizes[i], preload_bytes, reserve_bytes, maximum_bytes);
+    const size_t preload_bytes = this->input_configs[i].item_size*this->input_configs[i].preload_items;
+    const size_t reserve_bytes = this->input_configs[i].item_size*this->input_configs[i].reserve_items;
+    const size_t maximum_bytes = this->input_configs[i].item_size*this->input_configs[i].maximum_items;
+    this->input_queues.update_config(i, this->input_configs[i].item_size, preload_bytes, reserve_bytes, maximum_bytes);
 }

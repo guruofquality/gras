@@ -204,11 +204,11 @@ class Block(BlockPython):
 
     def set_input_signature(self, sig):
         self.__in_sig = sig_to_dtype_sig(sig)
-        for i, n in enumerate(self.__in_sig): self.set_input_size(i, n.itemsize)
+        for i, n in enumerate(self.__in_sig): self.input_config(i).item_size = n.itemsize
 
     def set_output_signature(self, sig):
         self.__out_sig = sig_to_dtype_sig(sig)
-        for i, n in enumerate(self.__out_sig): self.set_output_size(i, n.itemsize)
+        for i, n in enumerate(self.__out_sig): self.output_config(i).item_size = n.itemsize
 
     def input_signature(self): return self.__in_sig
     def output_signature(self): return self.__out_sig
@@ -275,8 +275,8 @@ class Block(BlockPython):
     def propagate_tags(self, i, iter):
         for o in self.__out_indexes:
             for t in iter:
-                t.offset -= self.get_consumed(i)
                 t.offset += self.get_produced(o)
+                t.offset -= self.get_consumed(i)
                 self.post_output_tag(o, t)
 
 %}

@@ -122,8 +122,6 @@ struct BlockActor : Apology::Worker
     }
 
     //per port properties
-    std::vector<size_t> input_items_sizes;
-    std::vector<size_t> output_items_sizes;
     std::vector<InputPortConfig> input_configs;
     std::vector<OutputPortConfig> output_configs;
 

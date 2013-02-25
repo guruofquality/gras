@@ -30,10 +30,6 @@ void BlockActor::handle_topology(
     //call notify_topology on block before committing settings
     this->block_ptr->notify_topology(num_inputs, num_outputs);
 
-    //fill the item sizes per port
-    resize_fill_back(this->input_items_sizes, num_inputs);
-    resize_fill_back(this->output_items_sizes, num_outputs);
-
     //resize and fill port properties
     resize_fill_back(this->input_configs, num_inputs);
     resize_fill_back(this->output_configs, num_outputs);

@@ -9,6 +9,7 @@ using namespace gras;
 
 InputPortConfig::InputPortConfig(void)
 {
+    item_size = 1;
     reserve_items = 1;
     maximum_items = 0;
     inline_buffer = false;
@@ -17,6 +18,7 @@ InputPortConfig::InputPortConfig(void)
 
 OutputPortConfig::OutputPortConfig(void)
 {
+    item_size = 1;
     reserve_items = 1;
     maximum_items = 0;
 }
@@ -38,10 +40,8 @@ Block::Block(const std::string &name):
     (*this)->block->block_state = BlockActor::BLOCK_STATE_INIT;
 
     //call block methods to init stuff
-    this->set_input_size(0, 1);
-    this->set_output_size(0, 1);
-    this->set_input_config(0, InputPortConfig());
-    this->set_output_config(0, OutputPortConfig());
+    this->input_config(0) = InputPortConfig();
+    this->output_config(0) = OutputPortConfig();
     this->set_interruptible_work(false);
     this->set_buffer_affinity(-1);
 }
@@ -62,74 +62,62 @@ void ElementImpl::block_cleanup(void)
     this->thread_pool.reset(); //must be deleted after actor
 }
 
-template <typename V, typename T>
-void vector_set(V &v, const T &t, const size_t index)
-{
-    if (v.size() <= index)
-    {
-        v.resize(index+1, t);
-    }
-    v[index] = t;
-}
-
 template <typename V>
-typename V::value_type vector_get(const V &v, const size_t index)
+const typename V::value_type &vector_get_const(const V &v, const size_t index)
 {
     if (v.size() <= index)
     {
-        return v.front();
+        return v.back();
     }
     return v[index];
 }
 
-size_t Block::get_input_size(const size_t which_input) const
+template <typename V>
+typename V::value_type &vector_get_resize(V &v, const size_t index)
 {
-    return vector_get((*this)->block->input_items_sizes, which_input);
+    if (v.size() <= index)
+    {
+        if (v.empty()) v.resize(1);
+        v.resize(index+1, v.back());
+    }
+    return v[index];
 }
 
-void Block::set_input_size(const size_t which_input, const size_t bytes)
+InputPortConfig &Block::input_config(const size_t which_input)
 {
-    vector_set((*this)->block->input_items_sizes, bytes, which_input);
+    return vector_get_resize((*this)->block->input_configs, which_input);
 }
 
-size_t Block::get_output_size(const size_t which_output) const
+const InputPortConfig &Block::input_config(const size_t which_input) const
 {
-    return vector_get((*this)->block->output_items_sizes, which_output);
+    return vector_get_const((*this)->block->input_configs, which_input);
 }
 
-void Block::set_output_size(const size_t which_output, const size_t bytes)
+OutputPortConfig &Block::output_config(const size_t which_output)
 {
-    vector_set((*this)->block->output_items_sizes, bytes, which_output);
+    return vector_get_resize((*this)->block->output_configs, which_output);
 }
 
-InputPortConfig Block::get_input_config(const size_t which_input) const
+const OutputPortConfig &Block::output_config(const size_t which_output) const
 {
-    return vector_get((*this)->block->input_configs, which_input);
+    return vector_get_const((*this)->block->output_configs, which_output);
 }
 
-void Block::set_input_config(const size_t which_input, const InputPortConfig &config)
+void Block::commit_config(void)
 {
-    vector_set((*this)->block->input_configs, config, which_input);
+    for (size_t i = 0; i < (*this)->block->get_num_inputs(); i++)
     {
         InputUpdateMessage message;
-        message.index = which_input;
+        message.index = i;
         (*this)->block->Push(message, Theron::Address());
     }
-}
-
-OutputPortConfig Block::get_output_config(const size_t which_output) const
-{
-    return vector_get((*this)->block->output_configs, which_output);
-}
-
-void Block::set_output_config(const size_t which_output, const OutputPortConfig &config)
-{
-    vector_set((*this)->block->output_configs, config, which_output);
+    for (size_t i = 0; i < (*this)->block->get_num_outputs(); i++)
     {
         OutputUpdateMessage message;
-        message.index = which_output;
+        message.index = i;
         (*this)->block->Push(message, Theron::Address());
     }
+
 }
 
 void Block::consume(const size_t which_input, const size_t num_items)
@@ -195,7 +183,6 @@ PMCC Block::pop_input_msg(const size_t which_input)
     if (input_tags.empty()) return PMCC();
     PMCC p = input_tags.front().object;
     input_tags.erase(input_tags.begin());
-    (*this)->block->stats.items_consumed[which_input]++;
     return p;
 }
 

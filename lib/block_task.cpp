@@ -87,7 +87,7 @@ void BlockActor::output_fail(const size_t i)
     SBuffer &buff = this->output_queues.front(i);
 
     //check that the input is not already maxed
-    const size_t front_items = buff.length/this->output_items_sizes[i];
+    const size_t front_items = buff.length/this->output_configs[i].item_size;
     if (front_items >= this->output_configs[i].maximum_items)
     {
         throw std::runtime_error("output_fail called on maximum_items buffer");
@@ -133,7 +133,7 @@ void BlockActor::handle_task(void)
         ASSERT(this->input_queues.ready(i));
         const SBuffer &buff = this->input_queues.front(i);
         const void *mem = buff.get();
-        size_t items = buff.length/this->input_items_sizes[i];
+        size_t items = buff.length/this->input_configs[i].item_size;
 
         this->input_items[i].get() = mem;
         this->input_items[i].size() = items;
@@ -170,7 +170,7 @@ void BlockActor::handle_task(void)
         ASSERT(buff.length == 0); //assumes it was flushed last call
         void *mem = buff.get();
         const size_t bytes = buff.get_actual_length() - buff.offset;
-        size_t items = bytes/this->output_items_sizes[i];
+        size_t items = bytes/this->output_configs[i].item_size;
 
         this->output_items[i].get() = mem;
         this->output_items[i].size() = items;
@@ -230,7 +230,7 @@ void BlockActor::consume(const size_t i, const size_t items)
     std::cerr << name << " consume " << items << std::endl;
     #endif
     this->stats.items_consumed[i] += items;
-    const size_t bytes = items*this->input_items_sizes[i];
+    const size_t bytes = items*this->input_configs[i].item_size;
     this->input_queues.consume(i, bytes);
     this->trim_tags(i);
 }
@@ -242,14 +242,14 @@ void BlockActor::produce(const size_t i, const size_t items)
     #endif
     SBuffer &buff = this->output_queues.front(i);
     this->stats.items_produced[i] += items;
-    const size_t bytes = items*this->output_items_sizes[i];
+    const size_t bytes = items*this->output_configs[i].item_size;
     buff.length += bytes;
 }
 
 void BlockActor::produce_buffer(const size_t i, const SBuffer &buffer)
 {
     this->flush_output(i);
-    const size_t items = buffer.length/output_items_sizes[i];
+    const size_t items = buffer.length/output_configs[i].item_size;
     this->stats.items_produced[i] += items;
     InputBufferMessage buff_msg;
     buff_msg.buffer = buffer;

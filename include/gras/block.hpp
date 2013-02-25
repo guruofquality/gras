@@ -20,6 +20,9 @@ struct GRAS_API InputPortConfig
 {
     InputPortConfig(void);
 
+    //! The size of an item in bytes
+    size_t item_size;
+
     /*!
      * Set an input reserve requirement such that work is called
      * with an input buffer at least reserve items in size.
@@ -80,6 +83,9 @@ struct GRAS_API OutputPortConfig
 {
     OutputPortConfig(void);
 
+    //! The size of an item in bytes
+    size_t item_size;
+
     /*!
      * Set an output reserve requirement such that work is called
      * with an output buffer at least reserve items in size.
@@ -109,36 +115,27 @@ struct GRAS_API Block : Element
     Block(const std::string &name);
 
     /*******************************************************************
-     * Item sizes for ports
-     ******************************************************************/
-
-    //! Get the input item size for this port in bytes
-    size_t get_input_size(const size_t which_input) const;
-
-    //! Set the input item size for this port in bytes
-    void set_input_size(const size_t which_input, const size_t bytes);
-
-    //! Get the output item size for this port in bytes
-    size_t get_output_size(const size_t which_output) const;
-
-    //! Set the output item size for this port in bytes
-    void set_output_size(const size_t which_output, const size_t bytes);
-
-    /*******************************************************************
      * Deal with input and output port configuration
      ******************************************************************/
 
     //! Get the configuration rules of an input port
-    InputPortConfig get_input_config(const size_t which_input) const;
+    const InputPortConfig &input_config(const size_t which_input) const;
 
-    //! Set the configuration rules for an input port
-    void set_input_config(const size_t which_input, const InputPortConfig &config);
+    //! Get the configuration rules of an input port
+    InputPortConfig &input_config(const size_t which_input);
 
     //! Get the configuration rules of an output port
-    OutputPortConfig get_output_config(const size_t which_output) const;
+    const OutputPortConfig &output_config(const size_t which_output) const;
 
-    //! Set the configuration rules for an output port
-    void set_output_config(const size_t which_output, const OutputPortConfig &config);
+    //! Get the configuration rules of an output port
+    OutputPortConfig &output_config(const size_t which_output);
+
+    /*!
+     * Commit changes to the port configuration.
+     * Changes are commited automatically when the block becomes active.
+     * However, once active, changes may not effect until commit_config().
+     */
+    void commit_config(void);
 
     /*******************************************************************
      * Deal with data production and consumption

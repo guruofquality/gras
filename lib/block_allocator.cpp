@@ -62,9 +62,9 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
     {
         const size_t bytes = recommend_length(
             this->output_allocation_hints[i],
-            my_round_up_mult(AT_LEAST_BYTES, this->output_items_sizes[i]),
-            this->output_configs[i].reserve_items*this->output_items_sizes[i],
-            this->output_configs[i].maximum_items*this->output_items_sizes[i]
+            my_round_up_mult(AT_LEAST_BYTES, this->output_configs[i].item_size),
+            this->output_configs[i].reserve_items*this->output_configs[i].item_size,
+            this->output_configs[i].maximum_items*this->output_configs[i].item_size
         );
 
         SBufferDeleter deleter = boost::bind(&BlockActor::buffer_returner, this, i, _1);
