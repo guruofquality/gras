@@ -44,8 +44,18 @@ var gras_extract_throughput = function(point, id)
     return (total_items*tps)/(stats_time-start_time);
 }
 
+var gras_setup_individual_charts = function(point)
+{
+    var charts = $('#individual_charts').get(0);
+    $('block', point).each(function()
+    {
+        
+    });
+}
+
 var gras_update_throughput_chart = function(history)
 {
+    if (history.length == 1) return gras_setup_individual_charts(history[0]);
     if (history.length < 2) return;
 
     var ids = gras_extract_block_ids(history[0]);
