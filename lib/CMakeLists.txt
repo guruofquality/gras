@@ -21,9 +21,6 @@ include_directories(${THERON_INCLUDE_DIRS})
 link_directories(${THERON_LIBRARY_DIRS})
 add_definitions(${THERON_DEFINES})
 
-#put custom allocator first into the sources list to guarantee precedence
-list(APPEND GRAS_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/theron_allocator.cpp)
-
 list(APPEND GRAS_LIBRARIES ${THERON_LIBRARIES})
 list(APPEND GRAS_SOURCES ${THERON_SOURCES})
 
@@ -59,6 +56,7 @@ list(APPEND GRAS_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/top_block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/top_block_stats.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/register_messages.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/theron_allocator.cpp
 )
 
 ########################################################################
