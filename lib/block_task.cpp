@@ -244,6 +244,7 @@ void BlockActor::produce(const size_t i, const size_t items)
     this->stats.items_produced[i] += items;
     const size_t bytes = items*this->output_configs[i].item_size;
     buff.length += bytes;
+    this->produce_outputs[i] = true;
 }
 
 void BlockActor::produce_buffer(const size_t i, const SBuffer &buffer)
@@ -260,9 +261,13 @@ GRAS_FORCE_INLINE void BlockActor::flush_output(const size_t i)
 {
     if GRAS_UNLIKELY(this->output_queues.empty(i) or this->output_queues.front(i).length == 0) return;
     SBuffer &buff = this->output_queues.front(i);
-    InputBufferMessage buff_msg;
-    buff_msg.buffer = buff;
-    this->post_downstream(i, buff_msg);
+    if GRAS_LIKELY(this->produce_outputs[i])
+    {
+        this->produce_outputs[i] = false;
+        InputBufferMessage buff_msg;
+        buff_msg.buffer = buff;
+        this->post_downstream(i, buff_msg);
+    }
 
     //increment buffer for next use
     buff.offset += buff.length;

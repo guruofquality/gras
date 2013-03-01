@@ -140,6 +140,7 @@ struct BlockActor : Apology::Worker
     InputBufferQueues input_queues;
     OutputBufferQueues output_queues;
     BitSet inputs_available;
+    std::vector<bool> produce_outputs;
 
     //tag tracking
     std::vector<bool> input_tags_changed;

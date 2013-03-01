@@ -46,6 +46,7 @@ void BlockActor::handle_topology(
     this->input_queues.resize(num_inputs);
     this->output_queues.resize(num_outputs);
     this->inputs_available.resize(num_inputs);
+    this->produce_outputs.resize(num_outputs, false);
     if (num_inputs == 0) this->inputs_available.resize(1, true); //so its always "available"
 
     this->input_tokens.resize(num_inputs);
