@@ -273,7 +273,9 @@ GRAS_FORCE_INLINE void InputBufferQueues::push(const size_t i, const SBuffer &bu
     {
         SBuffer &b1 = _queues[i][j];
         SBuffer &b0 = _queues[i][j-1];
-        if (b1.last == b0.get(b0.length))
+        //can stitch when last is the end of the front pointer
+        //and the front also has a last (not accum buffer)
+        if (b1.last == b0.get(b0.length) and b0.last != 0)
         {
             const size_t bytes = b1.length;
             b0.length += bytes;
