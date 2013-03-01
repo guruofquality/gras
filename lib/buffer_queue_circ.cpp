@@ -85,6 +85,8 @@ SBuffer &BufferQueueCirc::front(void)
     ASSERT(front);
     front->config.memory = _write_ptr;
     front.last = _last_ptr;
+    ASSERT(front.offset == 0);
+    if (_last_ptr == _write_ptr) ASSERT(front.get() == front.last);
     return front;
 }
 
@@ -92,6 +94,7 @@ void BufferQueueCirc::pop(void)
 {
     ASSERT(not this->empty());
     SBuffer &front = _available_buffers.front();
+    ASSERT(front.length == 0);
     const size_t num_bytes = front.offset;
 
     //store number of bytes for buffer return
