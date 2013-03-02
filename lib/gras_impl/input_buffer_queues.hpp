@@ -20,6 +20,8 @@ namespace gras
 
 struct InputBufferQueues
 {
+    std::string name; //for debug
+
     enum {MAX_AUX_BUFF_BYTES=(1<<16)};
 
     static SBuffer make_null_buff(void)

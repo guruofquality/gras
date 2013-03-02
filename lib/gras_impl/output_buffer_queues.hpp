@@ -12,6 +12,7 @@ namespace gras
 
 struct OutputBufferQueues
 {
+    std::string name; //for debug
 
     void set_buffer_queue(const size_t i, BufferQueueSptr queue)
     {
