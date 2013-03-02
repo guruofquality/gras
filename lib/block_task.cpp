@@ -241,6 +241,7 @@ void BlockActor::produce(const size_t i, const size_t items)
     std::cerr << name << " produce " << items << std::endl;
     #endif
     SBuffer &buff = this->output_queues.front(i);
+    ASSERT((buff.length % output_configs[i].item_size) == 0);
     this->stats.items_produced[i] += items;
     const size_t bytes = items*this->output_configs[i].item_size;
     buff.length += bytes;
@@ -250,6 +251,7 @@ void BlockActor::produce(const size_t i, const size_t items)
 void BlockActor::produce_buffer(const size_t i, const SBuffer &buffer)
 {
     this->flush_output(i);
+    ASSERT((buffer.length % output_configs[i].item_size) == 0);
     const size_t items = buffer.length/output_configs[i].item_size;
     this->stats.items_produced[i] += items;
     InputBufferMessage buff_msg;

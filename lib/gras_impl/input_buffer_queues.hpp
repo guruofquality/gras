@@ -175,6 +175,7 @@ inline void InputBufferQueues::update_config(
     const size_t maximum_bytes
 )
 {
+    ASSERT(item_size != 0);
     _items_sizes[i] = item_size;
 
     //first allocate the aux buffer
@@ -293,6 +294,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t b
     if (bytes_consumed == 0) return;
 
     ASSERT(not _queues[i].empty());
+    ASSERT((bytes_consumed % _items_sizes[i]) == 0);
     SBuffer &front = _queues[i].front();
 
     //assert that we dont consume past the bounds of the buffer
