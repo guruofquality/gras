@@ -21,19 +21,26 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             s.end_headers()
             s.wfile.write(get_stats_registry[0]())
             return
-        s.send_response(200)
-        s.send_header("Content-type", "text/html")
-        s.end_headers()
         path = s.path
         if path.startswith('/'): path = path[1:]
         if not path: path = 'main.html'
-        s.wfile.write(open(os.path.join(__path__, path)).read())
+        target = os.path.join(__path__, path)
+        if os.path.exists(target):
+            s.send_response(200)
+            s.send_header("Content-type", "text/html")
+            s.end_headers()
+            s.wfile.write(open(target).read())
+        else:
+            s.send_response(404)
+            s.send_header("Content-type", "text/html")
+            s.end_headers()
+            s.wfile.write("<p>not found</p>")
 
 import select
 
 class http_server(object):
-    def __init__(self, args, get_stats_xml):
-        get_stats_registry[0] = get_stats_xml
+    def __init__(self, args, top_block):
+        get_stats_registry[0] = top_block.get_stats_xml
         server_class = BaseHTTPServer.HTTPServer
         self._httpd = server_class(args, MyHandler)
 
