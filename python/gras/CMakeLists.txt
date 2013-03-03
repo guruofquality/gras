@@ -1,4 +1,9 @@
 ########################################################################
+# add subdirs
+########################################################################
+add_subdirectory(stats)
+
+########################################################################
 # Include swig generation macros
 ########################################################################
 find_package(SWIG)
@@ -40,21 +45,5 @@ GR_SWIG_INSTALL(
 GR_PYTHON_INSTALL(
     FILES __init__.py GRAS_Utils.py
     DESTINATION ${GR_PYTHON_DIR}/gras
-    COMPONENT ${GRAS_COMP_PYTHON}
-)
-
-GR_PYTHON_INSTALL(
-    FILES
-    stats/__init__.py
-    DESTINATION ${GR_PYTHON_DIR}/gras/stats
-    COMPONENT ${GRAS_COMP_PYTHON}
-)
-
-INSTALL(
-    FILES
-    stats/main.html
-    stats/main.js
-    stats/main.css
-    DESTINATION ${GR_PYTHON_DIR}/gras/stats
     COMPONENT ${GRAS_COMP_PYTHON}
 )
