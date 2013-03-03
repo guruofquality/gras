@@ -54,10 +54,16 @@ struct InputBufferQueues
         ASSERT(_items_sizes[i] != 0);
 
         //special case when the null buffer is possible
-        if (_queues[i].empty()) return get_null_buff();
+        if GRAS_UNLIKELY(_queues[i].empty())
+        {
+            return get_null_buff();
+        }
 
         //there are enough enqueued bytes, but not in the front buffer
-        if (_queues[i].front().length < _reserve_bytes[i]) this->accumulate(i);
+        if GRAS_UNLIKELY(_queues[i].front().length < _reserve_bytes[i])
+        {
+            this->accumulate(i);
+        }
 
         ASSERT(_queues[i].front().length >= _reserve_bytes[i]);
 
@@ -259,13 +265,13 @@ GRAS_FORCE_INLINE void InputBufferQueues::accumulate(const size_t i)
 
 GRAS_FORCE_INLINE void InputBufferQueues::push(const size_t i, const SBuffer &buffer)
 {
-    if (_queues[i].full())
+    if GRAS_UNLIKELY(_queues[i].full())
     {
         _queues[i].set_capacity(_queues[i].size()*2);
     }
     ASSERT(not _queues[i].full());
 
-    if (buffer.length == 0) return;
+    if GRAS_UNLIKELY(buffer.length == 0) return;
     _queues[i].push_back(buffer);
     _enqueued_bytes[i] += buffer.length;
     __update(i);
@@ -293,7 +299,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::push(const size_t i, const SBuffer &bu
 
 GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t bytes_consumed)
 {
-    if (bytes_consumed == 0) return;
+    if GRAS_UNLIKELY(bytes_consumed == 0) return;
 
     ASSERT(not _queues[i].empty());
     ASSERT((bytes_consumed % _items_sizes[i]) == 0);
