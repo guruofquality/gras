@@ -22,7 +22,7 @@ struct GetStatsReceiver : Theron::Receiver
     std::vector<GetStatsMessage> messages;
 };
 
-std::string TopBlock::get_stats_xml(void)
+std::string TopBlock::get_stats(const std::string &)
 {
     GetStatsReceiver receiver;
     (*this)->executor->post_all(GetStatsMessage(), receiver);

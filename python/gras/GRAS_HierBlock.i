@@ -96,10 +96,10 @@ struct TopBlockPython : TopBlock
         return TopBlock::wait(timeout);
     }
 
-    std::string get_stats_xml(void)
+    std::string get_stats(const std::string &args)
     {
         PyTSPhondler phil;
-        return TopBlock::get_stats_xml();
+        return TopBlock::get_stats(args);
     }
 };
 

@@ -4,7 +4,7 @@ import BaseHTTPServer
 import os
 __path__ = os.path.abspath(os.path.dirname(__file__))
 
-get_stats_registry = [lambda: ""]
+server_registry = dict()
 
 class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
@@ -19,7 +19,7 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             s.send_response(200)
             s.send_header("Content-type", "text/xml")
             s.end_headers()
-            s.wfile.write(get_stats_registry[0]())
+            s.wfile.write(server_registry[s.server].get_stats(""))
             return
         path = s.path
         if path.startswith('/'): path = path[1:]
@@ -40,9 +40,9 @@ import select
 
 class http_server(object):
     def __init__(self, args, top_block):
-        get_stats_registry[0] = top_block.get_stats_xml
         server_class = BaseHTTPServer.HTTPServer
         self._httpd = server_class(args, MyHandler)
+        server_registry[self._httpd] = top_block
 
     def serve_forever(self):
         while True:

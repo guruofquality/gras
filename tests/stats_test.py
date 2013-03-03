@@ -22,7 +22,7 @@ class StatsTest(unittest.TestCase):
 
         self.assertEqual(vec_sink.get_vector(), (0, 9, 8, 7, 6))
 
-        print self.tb.get_stats_xml()
+        print self.tb.get_stats("")
 
 if __name__ == '__main__':
     unittest.main()
