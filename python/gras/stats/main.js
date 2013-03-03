@@ -49,7 +49,17 @@ var gras_setup_individual_charts = function(point)
     var charts = $('#individual_charts').get(0);
     $('block', point).each(function()
     {
-        
+        $('<input>').attr({
+            type: 'checkbox',
+            name: $(this).attr('id'),
+            value: '1',
+            checked: '1',
+            onclick: function()
+            {
+                
+            }
+        }).appendTo(charts);
+        $(charts).append($(this).attr('id') + '<br />');
     });
 }
 

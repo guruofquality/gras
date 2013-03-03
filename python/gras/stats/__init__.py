@@ -27,7 +27,9 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         target = os.path.join(__path__, path)
         if os.path.exists(target):
             s.send_response(200)
-            s.send_header("Content-type", "text/html")
+            if target.endswith('.js'): s.send_header("Content-type", "text/javascript")
+            elif target.endswith('.css'): s.send_header("Content-type", "text/css")
+            else: s.send_header("Content-type", "text")
             s.end_headers()
             s.wfile.write(open(target).read())
         else:
