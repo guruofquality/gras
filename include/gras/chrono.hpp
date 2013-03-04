@@ -19,6 +19,31 @@ namespace gras
 
     //! Get the number of ticks per second
     time_ticks_t time_tps(void);
+
+    /*!
+     * Timer Accumulate creates a scoped timer object,
+     * which adds the time elapsed into the accumulator.
+     * Typically, the time elapsed is the absolute
+     * destructor time - absolute constructor time.
+     * However, the user may call done() to accumulate
+     * the time elapsed before the destructor is called.
+     */
+    struct TimerAccumulate
+    {
+        //! Create a new timer object given the accumulator
+        TimerAccumulate(time_ticks_t &accum);
+
+        //! Destructor accumulates the elapsed time
+        ~TimerAccumulate(void);
+
+        //! Accumulate elapsed time before destructor
+        void done(void);
+
+        time_ticks_t &accum;
+        time_ticks_t start;
+        bool is_done;
+    };
+
 }
 
 //--------------------------------------------------------------------//
@@ -70,5 +95,27 @@ namespace gras
 } //namespace gras
 
 #endif
+
+namespace gras
+{
+    GRAS_FORCE_INLINE TimerAccumulate::TimerAccumulate(time_ticks_t &accum):
+        accum(accum),
+        start(time_now()),
+        is_done(false)
+    {
+        //NOP
+    }
+
+    GRAS_FORCE_INLINE TimerAccumulate::~TimerAccumulate(void)
+    {
+        if (not is_done) this->done();
+    }
+
+    GRAS_FORCE_INLINE void TimerAccumulate::done(void)
+    {
+        accum += (time_now() - start);
+        is_done = true;
+    }
+}
 
 #endif /*INCLUDED_GRAS_CHRONO_HPP*/

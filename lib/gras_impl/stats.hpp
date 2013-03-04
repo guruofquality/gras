@@ -41,23 +41,6 @@ struct BlockStats
     time_ticks_t total_time_output;
 };
 
-struct TimerAccumulate
-{
-    TimerAccumulate(time_ticks_t &accum):
-        accum(accum), t0(time_now()){}
-    ~TimerAccumulate(void)
-    {
-        if (t0) this->done();
-    }
-    void done(void)
-    {
-        accum += (time_now()-t0);
-        t0 = 0;
-    }
-    time_ticks_t &accum;
-    time_ticks_t t0;
-};
-
 } //namespace gras
 
 #endif /*INCLUDED_LIBGRAS_IMPL_STATS_HPP*/
