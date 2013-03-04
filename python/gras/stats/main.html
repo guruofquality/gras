@@ -23,7 +23,7 @@
         <table>
         <tr><th colspan="2">Overall chart config</th></tr>
         <tr>
-            <td colspan="2">Update rate: <input type="number" name="update_rate" min="1" max="10" size="4" /></td>
+            <td colspan="2">Updates/sec: <input type="number" name="update_rate" min="1" max="10" size="4" /></td>
         </tr>
         <tr>
             <td><label>Active?</label><input type="checkbox" name="active" checked="1" /></td>
@@ -38,7 +38,14 @@
         </table>
     </div>
     <div style="clear:both;"></div>
-    <div id="overall_charts" style="width:1000px;height:500px;"></div>
+    <div id="overall_charts">
+        <table>
+        <tr><th>Thoughput per block vs time</th></tr>
+        <tr>
+            <td></td>
+        </tr>
+        </table>
+    </div>
 </body>
 
 </html>

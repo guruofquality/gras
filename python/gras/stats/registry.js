@@ -1,13 +1,4 @@
 /***********************************************************************
- * Per block registry data structure
- **********************************************************************/
-var GrasBlockRegistry = function(id)
-{
-    this.id = id;
-    this.enabled = true;
-}
-
-/***********************************************************************
  * Stats registry data structure
  **********************************************************************/
 var GrasStatsRegistry = function()
@@ -15,6 +6,7 @@ var GrasStatsRegistry = function()
     this.ids = new Array();
     this.enables = new Array();
     this.history = new Array();
+    this.block_enables = new Array();
     this.overall_rate = 2.0;
     this.overall_active = true;
 }

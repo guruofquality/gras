@@ -4,14 +4,10 @@
 
 var gras_setup_overall_chart = function(registry)
 {
-    var chart = new google.visualization.LineChart($('#overall_charts').get(0));
-    var options = {
-        title: 'Throughput per block over time',
-        vAxis: {title: "rate (MIps)"},
-        hAxis: {title: "time (seconds)"}
-    };
+    var div = $('#overall_charts:first');
+    var td = $('td:last', div);
+    var chart = new google.visualization.LineChart(td.get(0));
     registry.overall_chart = chart;
-    registry.overall_chart_options = options;
 }
 
 var gras_setup_individual_charts = function(registry)
@@ -23,16 +19,17 @@ var gras_setup_individual_charts = function(registry)
     $.each(registry.getBlockIds(), function(index, id)
     {
         $(config).append('<label>' + id + '</label>');
-        $('<input>').attr({
+        var input = $('<input />').attr({
             type: 'checkbox',
-            name: id,
-            value: '1',
-            checked: '1',
-            onclick: function()
-            {
-                
-            }
-        }).appendTo(config);
+            name: id
+        });
+        registry.block_enables[id] = true;
+        input.attr('checked', registry.block_enables[id]);
+        input.change(function()
+        {
+            registry.block_enables[id] = input.is(':checked');
+        });
+        $(config).append(input);
         $(config).append('&nbsp;');
         count++;
         if (count == Math.round(registry.getBlockIds().length/2))
@@ -51,7 +48,12 @@ var gras_update_throughput_chart = function(registry)
     if (registry.history.length == 1) return gras_setup_individual_charts(registry);
     if (registry.history.length < 2) return;
 
-    var ids = registry.getBlockIds();
+    var ids = new Array();
+    $.each(registry.getBlockIds(), function(index, id)
+    {
+        if (registry.block_enables[id]) ids.push(id);
+    });
+
     var data_set = [['Throughput'].concat(ids)];
     for (var i = Math.max(registry.history.length-10, 1); i < registry.history.length; i++)
     {
@@ -65,6 +67,13 @@ var gras_update_throughput_chart = function(registry)
     }
 
     var chart_data = google.visualization.arrayToDataTable(data_set);
-    registry.overall_chart.draw(chart_data, registry.overall_chart_options);
+    var options = {
+        //title: 'Throughput per block over time',
+        vAxis: {title: "rate (MIps)"},
+        hAxis: {title: "time (seconds)"},
+        width:$('#page').width()*0.9,
+        height:'300'
+    };
+    registry.overall_chart.draw(chart_data, options);
 
 }
