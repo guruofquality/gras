@@ -5,9 +5,19 @@ padding:0px;
 
 body{
 font-family:Arial, Helvetica, sans-serif;
-font-size:10pt;
+font-size:9pt;
 color:black;
 background-color:white;
+}
+
+#overall_config
+{
+float:left;
+}
+
+#block_enables
+{
+float:left;
 }
 
 #page{
@@ -102,11 +112,11 @@ margin:10px 0px 0px 0px;
 }
 
 #page table{
-padding:10px;
+padding:5px;
 }
 
 #page th{
-padding:7px;
+padding:3px;
 border:1px solid #333333;
 text-align:center;
 color:inherit;
@@ -117,7 +127,7 @@ background-color:#ECECEC;
 }
 
 #page td{
-padding:5px;
+padding:3px;
 border:1px solid #333333;
 text-align:center;
 color:inherit;

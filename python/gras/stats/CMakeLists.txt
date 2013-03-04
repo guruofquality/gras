@@ -16,6 +16,7 @@ INSTALL(
     main.js
     registry.js
     utils.js
+    charts.js
     main.css
     DESTINATION ${GR_PYTHON_DIR}/gras/stats
     COMPONENT ${GRAS_COMP_PYTHON}
