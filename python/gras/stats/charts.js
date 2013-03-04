@@ -4,7 +4,7 @@
 
 var gras_setup_overall_chart = function(registry)
 {
-    var div = $('#overall_charts:first');
+    var div = $('#overall_chart:first');
     var td = $('td:last', div);
     var chart = new google.visualization.LineChart(td.get(0));
     registry.overall_chart = chart;
@@ -28,6 +28,7 @@ var gras_setup_individual_charts = function(registry)
         input.change(function()
         {
             registry.block_enables[id] = input.is(':checked');
+            gras_update_throughput_chart(registry);
         });
         $(config).append(input);
         $(config).append('&nbsp;');
@@ -45,7 +46,13 @@ var gras_setup_individual_charts = function(registry)
 
 var gras_update_throughput_chart = function(registry)
 {
-    if (registry.history.length == 1) return gras_setup_individual_charts(registry);
+    if (registry.history.length == 1)
+    {
+        var id = $('gras_stats:first', registry.history[0]).attr('id');
+        $('h1:first').append(' - ' + id);
+        gras_setup_individual_charts(registry);
+        return;
+    }
     if (registry.history.length < 2) return;
 
     var ids = new Array();
@@ -68,11 +75,10 @@ var gras_update_throughput_chart = function(registry)
 
     var chart_data = google.visualization.arrayToDataTable(data_set);
     var options = {
-        //title: 'Throughput per block over time',
-        vAxis: {title: "rate (MIps)"},
-        hAxis: {title: "time (seconds)"},
         width:$('#page').width()*0.9,
-        height:'300'
+        height:'300',
+        chartArea:{left:0,top:0,right:0,bottom:0,width:"100%",height:"85%"},
+        legend: {'position': 'bottom'}
     };
     registry.overall_chart.draw(chart_data, options);
 

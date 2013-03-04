@@ -59,5 +59,5 @@ std::string TopBlock::get_stats(const std::string &)
         }
         xml += str(boost::format("  <block id=\"%s\">\n%s</block>\n") % message.block_id % block_xml);
     }
-    return str(boost::format("<gras_stats>\n%s</gras_stats>") % xml);
+    return str(boost::format("<gras_stats id=\"%s\">\n%s</gras_stats>") % this->to_string() % xml);
 }
