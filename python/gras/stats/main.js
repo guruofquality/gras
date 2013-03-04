@@ -16,6 +16,7 @@ var gras_query_stats = function(registry)
                 {
                     registry.appendPoint(xml);
                     gras_update_throughput_chart(registry);
+                    gras_update_per_block_charts(registry);
                 }
 
                 var onceHandle = window.setTimeout(function()
@@ -59,8 +60,7 @@ var gras_stats_main = function()
     overall_show.change(function()
     {
         var chart = $('#overall_chart');
-        if (overall_show.is(':checked')) chart.slideDown("slow");
-        else chart.slideUp("slow");
+        gras_animate_show_hide(chart, overall_show.is(':checked'));
     });
 
     gras_setup_overall_chart(registry);

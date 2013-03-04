@@ -33,3 +33,15 @@ var gras_extract_throughput = function(point, id)
     var total_items = gras_extract_total_items(point, id);
     return (total_items*tps)/(stats_time-start_time);
 }
+
+var gras_extract_percent_times = function(point, id)
+{
+    var block_data = $('block[id="' + id + '"]', point);
+    return {
+        prep: parseInt($('total_time_prep', block_data).text()),
+        work: parseInt($('total_time_work', block_data).text()),
+        post: parseInt($('total_time_post', block_data).text()),
+        input: parseInt($('total_time_input', block_data).text()),
+        output: parseInt($('total_time_output', block_data).text()),
+    };
+}

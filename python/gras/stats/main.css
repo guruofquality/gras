@@ -10,8 +10,9 @@ color:black;
 background-color:white;
 }
 
-#overall_charts
+#per_block_charts table
 {
+float:left;
 }
 
 #overall_config

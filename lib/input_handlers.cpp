@@ -7,6 +7,7 @@ using namespace gras;
 
 void BlockActor::handle_input_tag(const InputTagMessage &message, const Theron::Address)
 {
+    TimerAccumulate ta(this->stats.total_time_input);
     MESSAGE_TRACER();
     const size_t index = message.index;
 
@@ -17,11 +18,13 @@ void BlockActor::handle_input_tag(const InputTagMessage &message, const Theron::
     //because tags are being used for message passing, or this is just the first tag in a stream.
     this->input_tags_changed[index] = this->input_tags_changed[index] or message.tag.offset != 0;
     this->inputs_available.set(index);
+    ta.done();
     this->handle_task();
 }
 
 void BlockActor::handle_input_buffer(const InputBufferMessage &message, const Theron::Address)
 {
+    TimerAccumulate ta(this->stats.total_time_input);
     MESSAGE_TRACER();
     const size_t index = message.index;
 
@@ -29,11 +32,13 @@ void BlockActor::handle_input_buffer(const InputBufferMessage &message, const Th
     if (this->block_state == BLOCK_STATE_DONE) return;
     this->input_queues.push(index, message.buffer);
     this->inputs_available.set(index);
+    ta.done();
     this->handle_task();
 }
 
 void BlockActor::handle_input_token(const InputTokenMessage &message, const Theron::Address)
 {
+    TimerAccumulate ta(this->stats.total_time_input);
     MESSAGE_TRACER();
     ASSERT(message.index < this->get_num_inputs());
 
@@ -43,6 +48,7 @@ void BlockActor::handle_input_token(const InputTokenMessage &message, const Ther
 
 void BlockActor::handle_input_check(const InputCheckMessage &message, const Theron::Address)
 {
+    TimerAccumulate ta(this->stats.total_time_input);
     MESSAGE_TRACER();
     const size_t index = message.index;
 
@@ -55,12 +61,14 @@ void BlockActor::handle_input_check(const InputCheckMessage &message, const Ther
     //or re-enter handle task so fail logic can mark done
     else
     {
+        ta.done();
         this->handle_task();
     }
 }
 
 void BlockActor::handle_input_alloc(const InputAllocMessage &message, const Theron::Address)
 {
+    TimerAccumulate ta(this->stats.total_time_input);
     MESSAGE_TRACER();
     const size_t index = message.index;
 
@@ -72,6 +80,7 @@ void BlockActor::handle_input_alloc(const InputAllocMessage &message, const Ther
 
 void BlockActor::handle_input_update(const InputUpdateMessage &message, const Theron::Address)
 {
+    TimerAccumulate ta(this->stats.total_time_input);
     MESSAGE_TRACER();
     const size_t i = message.index;
 

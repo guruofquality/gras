@@ -39,8 +39,11 @@ std::string TopBlock::get_stats(const std::string &)
         block_xml += str(boost::format("    <stop_time>%llu</stop_time>\n") % stats.stop_time);
         block_xml += str(boost::format("    <work_count>%llu</work_count>\n") % stats.work_count);
         block_xml += str(boost::format("    <time_last_work>%llu</time_last_work>\n") % stats.time_last_work);
+        block_xml += str(boost::format("    <total_time_prep>%llu</total_time_prep>\n") % stats.total_time_prep);
         block_xml += str(boost::format("    <total_time_work>%llu</total_time_work>\n") % stats.total_time_work);
-        block_xml += str(boost::format("    <total_time_work_other>%llu</total_time_work_other>\n") % stats.total_time_work_other);
+        block_xml += str(boost::format("    <total_time_post>%llu</total_time_post>\n") % stats.total_time_post);
+        block_xml += str(boost::format("    <total_time_input>%llu</total_time_input>\n") % stats.total_time_input);
+        block_xml += str(boost::format("    <total_time_output>%llu</total_time_output>\n") % stats.total_time_output);
         for (size_t i = 0; i < stats.items_consumed.size(); i++)
         {
             block_xml += str(boost::format("    <items_consumed>%llu</items_consumed>\n") % stats.items_consumed[i]);

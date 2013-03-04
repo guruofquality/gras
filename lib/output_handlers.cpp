@@ -8,6 +8,7 @@ using namespace gras;
 
 void BlockActor::handle_output_buffer(const OutputBufferMessage &message, const Theron::Address)
 {
+    TimerAccumulate ta(this->stats.total_time_output);
     MESSAGE_TRACER();
     const size_t index = message.index;
 
@@ -15,11 +16,13 @@ void BlockActor::handle_output_buffer(const OutputBufferMessage &message, const 
     //(all interested consumers have finished with it)
     if (this->block_state == BLOCK_STATE_DONE) return;
     this->output_queues.push(index, message.buffer);
+    ta.done();
     this->handle_task();
 }
 
 void BlockActor::handle_output_token(const OutputTokenMessage &message, const Theron::Address)
 {
+    TimerAccumulate ta(this->stats.total_time_output);
     MESSAGE_TRACER();
     ASSERT(message.index < this->get_num_outputs());
 
@@ -29,6 +32,7 @@ void BlockActor::handle_output_token(const OutputTokenMessage &message, const Th
 
 void BlockActor::handle_output_check(const OutputCheckMessage &message, const Theron::Address)
 {
+    TimerAccumulate ta(this->stats.total_time_output);
     MESSAGE_TRACER();
     const size_t index = message.index;
 
@@ -42,6 +46,7 @@ void BlockActor::handle_output_check(const OutputCheckMessage &message, const Th
 
 void BlockActor::handle_output_hint(const OutputHintMessage &message, const Theron::Address)
 {
+    TimerAccumulate ta(this->stats.total_time_output);
     MESSAGE_TRACER();
     const size_t index = message.index;
 
@@ -66,6 +71,7 @@ void BlockActor::handle_output_hint(const OutputHintMessage &message, const Ther
 
 void BlockActor::handle_output_alloc(const OutputAllocMessage &message, const Theron::Address)
 {
+    TimerAccumulate ta(this->stats.total_time_output);
     MESSAGE_TRACER();
     const size_t index = message.index;
 
@@ -75,6 +81,7 @@ void BlockActor::handle_output_alloc(const OutputAllocMessage &message, const Th
 
 void BlockActor::handle_output_update(const OutputUpdateMessage &message, const Theron::Address)
 {
+    TimerAccumulate ta(this->stats.total_time_output);
     MESSAGE_TRACER();
     const size_t i = message.index;
 

@@ -9,6 +9,7 @@ var GrasStatsRegistry = function()
     this.block_enables = new Array();
     this.overall_rate = 2.0;
     this.overall_active = true;
+    this.block_charts = new Array();
 }
 
 GrasStatsRegistry.prototype.appendPoint = function(point)

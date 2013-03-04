@@ -99,7 +99,8 @@ void BlockActor::output_fail(const size_t i)
 
 void BlockActor::handle_task(void)
 {
-    const time_ticks_t task_start = time_now();
+    TimerAccumulate ta_prep(this->stats.total_time_prep);
+
     //------------------------------------------------------------------
     //-- Decide if its possible to continue any processing:
     //-- Handle task may get called for incoming buffers,
@@ -181,16 +182,20 @@ void BlockActor::handle_task(void)
     //------------------------------------------------------------------
     //-- the work
     //------------------------------------------------------------------
-    const time_ticks_t work_start = time_now();
+    ta_prep.done();
+    this->stats.work_count++;
     if GRAS_UNLIKELY(this->interruptible_thread)
     {
+        TimerAccumulate ta_work(this->stats.total_time_work);
         this->interruptible_thread->call();
     }
     else
     {
+        TimerAccumulate ta_work(this->stats.total_time_work);
         this->task_work();
     }
-    const time_ticks_t work_stop = time_now();
+    this->stats.time_last_work = time_now();
+    TimerAccumulate ta_post(this->stats.total_time_post);
 
     //------------------------------------------------------------------
     //-- Flush output buffers downstream
@@ -214,14 +219,6 @@ void BlockActor::handle_task(void)
 
     //still have IO ready? kick off another task
     this->task_kicker();
-
-    //save stats
-    const time_ticks_t task_time = time_now() - task_start;
-    const time_ticks_t work_time = work_stop - work_start;
-    this->stats.work_count++;
-    this->stats.total_time_work += work_time;
-    this->stats.total_time_work_other += task_time - work_time;
-    this->stats.time_last_work = work_stop;
 }
 
 void BlockActor::consume(const size_t i, const size_t items)
