@@ -1,13 +1,6 @@
 /***********************************************************************
- * charts and visualization stuff
+ * Throughput chart
  **********************************************************************/
-
-var gras_animate_show_hide = function(elem, show)
-{
-    if (show) elem.slideDown("fast");
-    else elem.slideUp("fast");
-}
-
 var gras_setup_overall_chart = function(registry)
 {
     var div = $('#overall_chart:first');
@@ -16,6 +9,84 @@ var gras_setup_overall_chart = function(registry)
     registry.overall_chart = chart;
 }
 
+var gras_update_throughput_chart = function(registry)
+{
+    if (registry.history.length == 1)
+    {
+        var id = $('gras_stats:first', registry.history[0]).attr('id');
+        $('h1:first').append(' - ' + id);
+        gras_setup_individual_charts(registry);
+        return;
+    }
+    if (registry.history.length < 2) return;
+
+    var ids = new Array();
+    $.each(registry.getBlockIds(), function(index, id)
+    {
+        if (registry.block_enables[id]) ids.push(id);
+    });
+
+    var data_set = [['Throughput'].concat(ids)];
+    for (var i = Math.max(registry.history.length-10, 1); i < registry.history.length; i++)
+    {
+        var row = new Array();
+        row.push(i.toString());
+        for (var j = 0; j < ids.length; j++)
+        {
+            row.push(gras_extract_throughput_delta(registry.history[i-1], registry.history[i], ids[j])/1e6);
+        }
+        data_set.push(row);
+    }
+
+    var chart_data = google.visualization.arrayToDataTable(data_set);
+    var options = {
+        width:$('#page').width()*0.9,
+        height:'250',
+        chartArea:{left:0,top:0,right:0,bottom:0,width:"100%",height:"85%"},
+        legend: {'position': 'bottom'},
+    };
+    registry.overall_chart.draw(chart_data, options);
+}
+
+/***********************************************************************
+ * Overhead comparison chart
+ **********************************************************************/
+var gras_setup_overall_chart_pie = function(registry)
+{
+    var div = $('#overall_chart_pie:first');
+    var td = $('td:last', div);
+    var chart = new google.visualization.PieChart(td.get(0));
+    registry.overall_chart_pie = chart;
+}
+
+var gras_update_time_compare_chart = function(registry)
+{
+    var point = registry.history[registry.history.length-1];
+    var data_set = new Array();
+    data_set.push(['Task', 'Percent']);
+    $.each(registry.getBlockIds(), function(index, id)
+    {
+        if (registry.block_enables[id])
+        {
+            var percents = gras_extract_percent_times(point, id);
+            data_set.push([id, percents['total']]);
+        }
+    });
+
+    var data = google.visualization.arrayToDataTable(data_set)
+
+    var options = {
+        width:$('#page').width()/5,
+        chartArea:{left:5,top:0,right:5,bottom:0,width:"100%",height:"100%"},
+    };
+
+    var chart = registry.overall_chart_pie;
+    chart.draw(data, options);
+}
+
+/***********************************************************************
+ * Block handler breakdown chart
+ **********************************************************************/
 var gras_setup_per_block_enable_checkbox = function(elem, id, registry)
 {
     $(elem).append('<label>' + id + '</label>');
@@ -69,7 +140,6 @@ var gras_setup_individual_charts = function(registry)
             config = $('td:last', div);
         }
     });
-
 }
 
 var gras_update_per_block_chart = function(id, registry)
@@ -101,44 +171,4 @@ var gras_update_per_block_charts = function(registry)
     {
         gras_update_per_block_chart(id, registry);
     });
-}
-
-var gras_update_throughput_chart = function(registry)
-{
-    if (registry.history.length == 1)
-    {
-        var id = $('gras_stats:first', registry.history[0]).attr('id');
-        $('h1:first').append(' - ' + id);
-        gras_setup_individual_charts(registry);
-        return;
-    }
-    if (registry.history.length < 2) return;
-
-    var ids = new Array();
-    $.each(registry.getBlockIds(), function(index, id)
-    {
-        if (registry.block_enables[id]) ids.push(id);
-    });
-
-    var data_set = [['Throughput'].concat(ids)];
-    for (var i = Math.max(registry.history.length-10, 1); i < registry.history.length; i++)
-    {
-        var row = new Array();
-        row.push(i.toString());
-        for (var j = 0; j < ids.length; j++)
-        {
-            row.push(gras_extract_throughput_delta(registry.history[i-1], registry.history[i], ids[j])/1e6);
-        }
-        data_set.push(row);
-    }
-
-    var chart_data = google.visualization.arrayToDataTable(data_set);
-    var options = {
-        width:$('#page').width()*0.9,
-        height:'250',
-        chartArea:{left:0,top:0,right:0,bottom:0,width:"100%",height:"85%"},
-        legend: {'position': 'bottom'},
-    };
-    registry.overall_chart.draw(chart_data, options);
-
 }

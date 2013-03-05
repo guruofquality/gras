@@ -16,6 +16,7 @@ var gras_query_stats = function(registry)
                 {
                     registry.appendPoint(xml);
                     gras_update_throughput_chart(registry);
+                    gras_update_time_compare_chart(registry);
                     gras_update_per_block_charts(registry);
                 }
 
@@ -37,6 +38,7 @@ var gras_stats_main = function()
     var overall_config = $('#overall_config').get(0);
 
     gras_setup_overall_chart(registry);
+    gras_setup_overall_chart_pie(registry);
 
     //init overall config gui element for rate
     var overall_rate = $('input[name="rate"]', overall_config);
