@@ -23,17 +23,18 @@ var gras_setup_per_block_enable_checkbox = function(elem, id, registry)
         type: 'checkbox',
         name: id
     });
-    registry.block_enables[id] = true;
+    registry.block_enables[id] = false;
     input.attr('checked', registry.block_enables[id]);
     input.change(function()
     {
         registry.block_enables[id] = input.is(':checked');
-        gras_update_throughput_chart(registry);
+        //gras_update_throughput_chart(registry);
         var div = $('#per_block_charts');
         gras_animate_show_hide($('table[name="' + id + '"]', div), registry.block_enables[id]);
     });
     $(elem).append(input);
     $(elem).append('&nbsp;');
+    input.change();
 }
 
 var gras_setup_per_block_charts = function(id, registry)
@@ -48,7 +49,6 @@ var gras_setup_per_block_charts = function(id, registry)
     var td = $('td:last', table);
     var chart = new google.visualization.PieChart(td.get(0));
     registry.block_charts[id] = chart;
-
 }
 
 var gras_setup_individual_charts = function(registry)
@@ -59,8 +59,8 @@ var gras_setup_individual_charts = function(registry)
     var count = 0;
     $.each(registry.getBlockIds(), function(index, id)
     {
-        gras_setup_per_block_enable_checkbox(config, id, registry);
         gras_setup_per_block_charts(id, registry);
+        gras_setup_per_block_enable_checkbox(config, id, registry);
         count++;
         if (count == Math.round(registry.getBlockIds().length/2))
         {

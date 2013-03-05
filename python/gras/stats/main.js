@@ -19,10 +19,10 @@ var gras_query_stats = function(registry)
                     gras_update_per_block_charts(registry);
                 }
 
-                var onceHandle = window.setTimeout(function()
+                registry.timeout_handle = window.setTimeout(function()
                 {
-                  gras_query_stats(registry);
-                }, (1.0/registry.overall_rate));
+                    gras_query_stats(registry);
+                }, Math.round(1000/registry.overall_rate));
             }
         }
     });
@@ -35,6 +35,8 @@ var gras_stats_main = function()
 {
     var registry = new GrasStatsRegistry();
     var overall_config = $('#overall_config').get(0);
+
+    gras_setup_overall_chart(registry);
 
     //init overall config gui element for rate
     var overall_rate = $('input[name="rate"]', overall_config);
@@ -52,17 +54,18 @@ var gras_stats_main = function()
     {
         registry.overall_active = overall_active.is(':checked');
         if (registry.overall_active) gras_query_stats(registry);
+        else window.clearInterval(registry.timeout_handle);
     });
 
     //init overall config gui element for showing
     var overall_show = $('input[name="show"]', overall_config);
-    overall_show.attr('checked', true);
+    overall_show.attr('checked', false);
     overall_show.change(function()
     {
         var chart = $('#overall_chart');
         gras_animate_show_hide(chart, overall_show.is(':checked'));
     });
+    overall_show.change();
 
-    gras_setup_overall_chart(registry);
     gras_query_stats(registry);
 }
