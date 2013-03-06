@@ -37,10 +37,10 @@ struct GRAS_API TopBlock : HierBlock
     TopBlock(const std::string &name);
 
     //! Get the global block config settings
-    GlobalBlockConfig get_global_config(void) const;
+    const GlobalBlockConfig &global_config(void) const;
 
-    //! Set the global block config settings
-    void set_global_config(const GlobalBlockConfig &config);
+    //! Get the global block config settings
+    GlobalBlockConfig &global_config(void);
 
     /*!
      * Commit changes to the overall flow graph.

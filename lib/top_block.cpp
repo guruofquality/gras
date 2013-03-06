@@ -42,14 +42,14 @@ void ElementImpl::top_block_cleanup(void)
         << std::flush;
 }
 
-GlobalBlockConfig TopBlock::get_global_config(void) const
+const GlobalBlockConfig &TopBlock::global_config(void) const
 {
     return (*this)->top_config;
 }
 
-void TopBlock::set_global_config(const GlobalBlockConfig &config)
+GlobalBlockConfig &TopBlock::global_config(void)
 {
-    (*this)->top_config = config;
+    return (*this)->top_config;
 }
 
 void TopBlock::commit(void)
