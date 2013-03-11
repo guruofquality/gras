@@ -52,6 +52,10 @@ std::string TopBlock::get_stats(const std::string &)
         {
             block_xml += str(boost::format("    <tags_consumed>%llu</tags_consumed>\n") % stats.tags_consumed[i]);
         }
+        for (size_t i = 0; i < stats.msgs_consumed.size(); i++)
+        {
+            block_xml += str(boost::format("    <msgs_consumed>%llu</msgs_consumed>\n") % stats.msgs_consumed[i]);
+        }
         for (size_t i = 0; i < stats.items_produced.size(); i++)
         {
             block_xml += str(boost::format("    <items_produced>%llu</items_produced>\n") % stats.items_produced[i]);
@@ -59,6 +63,10 @@ std::string TopBlock::get_stats(const std::string &)
         for (size_t i = 0; i < stats.tags_produced.size(); i++)
         {
             block_xml += str(boost::format("    <tags_produced>%llu</tags_produced>\n") % stats.tags_produced[i]);
+        }
+        for (size_t i = 0; i < stats.msgs_produced.size(); i++)
+        {
+            block_xml += str(boost::format("    <msgs_produced>%llu</msgs_produced>\n") % stats.msgs_produced[i]);
         }
         xml += str(boost::format("  <block id=\"%s\">\n%s</block>\n") % message.block_id % block_xml);
     }

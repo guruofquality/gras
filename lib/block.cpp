@@ -162,7 +162,7 @@ item_index_t Block::get_produced(const size_t which_output)
 
 void Block::post_output_tag(const size_t which_output, const Tag &tag)
 {
-    (*this)->block->stats.items_produced[which_output]++;
+    (*this)->block->stats.tags_produced[which_output]++;
     (*this)->block->post_downstream(which_output, InputTagMessage(tag));
 }
 
@@ -174,15 +174,17 @@ TagIter Block::get_input_tags(const size_t which_input)
 
 void Block::post_output_msg(const size_t which_output, const PMCC &msg)
 {
-    this->post_output_tag(which_output, Tag(0, msg));
+    (*this)->block->stats.msgs_produced[which_output]++;
+    (*this)->block->post_downstream(which_output, InputMsgMessage(msg));
 }
 
 PMCC Block::pop_input_msg(const size_t which_input)
 {
-    std::vector<Tag> &input_tags = (*this)->block->input_tags[which_input];
-    if (input_tags.empty()) return PMCC();
-    PMCC p = input_tags.front().object;
-    input_tags.erase(input_tags.begin());
+    std::vector<PMCC> &input_msgs = (*this)->block->input_msgs[which_input];
+    if (input_msgs.empty()) return PMCC();
+    PMCC p = input_msgs.front();
+    input_msgs.erase(input_msgs.begin());
+    (*this)->block->stats.msgs_consumed[which_input]++;
     return p;
 }
 

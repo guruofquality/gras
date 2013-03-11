@@ -39,7 +39,7 @@ GRAS_FORCE_INLINE void BlockActor::trim_tags(const size_t i)
 
     //now its safe to perform the erasure
     tags_i.erase(tags_i.begin(), tags_i.begin()+last);
-    this->stats.items_consumed[i] += last;
+    this->stats.tags_consumed[i] += last;
 }
 
 } //namespace gras

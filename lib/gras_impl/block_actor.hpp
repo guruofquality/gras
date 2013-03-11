@@ -43,6 +43,7 @@ struct BlockActor : Apology::Worker
         this->RegisterHandler(this, &BlockActor::handle_top_thread_group);
 
         this->RegisterHandler(this, &BlockActor::handle_input_tag);
+        this->RegisterHandler(this, &BlockActor::handle_input_msg);
         this->RegisterHandler(this, &BlockActor::handle_input_buffer);
         this->RegisterHandler(this, &BlockActor::handle_input_token);
         this->RegisterHandler(this, &BlockActor::handle_input_check);
@@ -71,6 +72,7 @@ struct BlockActor : Apology::Worker
     void handle_top_thread_group(const SharedThreadGroup &, const Theron::Address);
 
     void handle_input_tag(const InputTagMessage &, const Theron::Address);
+    void handle_input_msg(const InputMsgMessage &, const Theron::Address);
     void handle_input_buffer(const InputBufferMessage &, const Theron::Address);
     void handle_input_token(const InputTokenMessage &, const Theron::Address);
     void handle_input_check(const InputCheckMessage &, const Theron::Address);
@@ -145,6 +147,7 @@ struct BlockActor : Apology::Worker
     //tag tracking
     std::vector<bool> input_tags_changed;
     std::vector<std::vector<Tag> > input_tags;
+    std::vector<std::vector<PMCC> > input_msgs;
 
     //interruptible thread stuff
     bool interruptible_work;

@@ -50,6 +50,13 @@ struct InputTagMessage
     Tag tag;
 };
 
+struct InputMsgMessage
+{
+    InputMsgMessage(const PMCC &msg):msg(msg){}
+    size_t index;
+    PMCC msg;
+};
+
 struct InputBufferMessage
 {
     size_t index;
@@ -151,6 +158,7 @@ THERON_DECLARE_REGISTERED_MESSAGE(gras::GlobalBlockConfig);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::SharedThreadGroup);
 
 THERON_DECLARE_REGISTERED_MESSAGE(gras::InputTagMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::InputMsgMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::InputBufferMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::InputTokenMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::InputCheckMessage);

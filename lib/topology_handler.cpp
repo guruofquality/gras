@@ -37,8 +37,10 @@ void BlockActor::handle_topology(
     //resize the bytes consumed/produced
     resize_fill_grow(this->stats.items_consumed, num_inputs, 0);
     resize_fill_grow(this->stats.tags_consumed, num_inputs, 0);
+    resize_fill_grow(this->stats.msgs_consumed, num_inputs, 0);
     resize_fill_grow(this->stats.items_produced, num_outputs, 0);
     resize_fill_grow(this->stats.tags_produced, num_outputs, 0);
+    resize_fill_grow(this->stats.msgs_produced, num_outputs, 0);
 
     //resize all work buffers to match current connections
     this->input_items.resize(num_inputs);
@@ -62,6 +64,7 @@ void BlockActor::handle_topology(
     //resize tags vector to match sizes
     this->input_tags_changed.resize(num_inputs);
     this->input_tags.resize(num_inputs);
+    this->input_msgs.resize(num_inputs);
 
     //a block looses all connections, allow it to free
     if (num_inputs == 0 and num_outputs == 0)

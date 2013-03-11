@@ -29,8 +29,10 @@ struct BlockStats
 
     std::vector<item_index_t> items_consumed;
     std::vector<item_index_t> tags_consumed;
+    std::vector<item_index_t> msgs_consumed;
     std::vector<item_index_t> items_produced;
     std::vector<item_index_t> tags_produced;
+    std::vector<item_index_t> msgs_produced;
 
     item_index_t work_count;
     time_ticks_t time_last_work;
