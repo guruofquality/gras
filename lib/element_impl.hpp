@@ -10,6 +10,7 @@
 #include <gras/block.hpp>
 #include <gras_impl/token.hpp>
 #include <gras_impl/interruptible_thread.hpp>
+#include <boost/foreach.hpp>
 
 namespace gras
 {
@@ -31,7 +32,6 @@ struct ElementImpl
     //top block stuff
     SharedThreadGroup thread_group;
     Token token;
-    Token active_token;
     GlobalBlockConfig top_config;
 
     //things may be in this element
@@ -45,6 +45,14 @@ struct ElementImpl
         return topology.get();
     }
 
+    //call this before sending a high prio message to all workers
+    void pre_post_all_set_prio(void)
+    {
+        BOOST_FOREACH(Apology::Worker *worker, this->executor->get_workers())
+        {
+            dynamic_cast<BlockActor *>(worker)->prio_count.Increment();
+        }
+    }
 
 };
 

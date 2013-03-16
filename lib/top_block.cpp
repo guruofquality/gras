@@ -32,6 +32,7 @@ TopBlock::TopBlock(const std::string &name):
 
 void ElementImpl::top_block_cleanup(void)
 {
+    this->pre_post_all_set_prio();
     this->executor->post_all(TopInertMessage());
     this->topology->clear_all();
     this->executor->commit();
@@ -77,22 +78,17 @@ void TopBlock::start(void)
     }
     {
         TopActiveMessage message;
-        message.token = Token::make();
-        (*this)->active_token = message.token;
         (*this)->executor->post_all(message);
     }
 }
 
 void TopBlock::stop(void)
 {
-    //reset only reference to active token
-    //workers about to call work see expired
-    (*this)->active_token.reset();
-
     //interrupt these "special" threads
     (*this)->thread_group->interrupt_all();
 
     //message all blocks to mark done
+    (*this)->pre_post_all_set_prio();
     (*this)->executor->post_all(TopInertMessage());
 }
 

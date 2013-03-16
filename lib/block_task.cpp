@@ -108,16 +108,6 @@ void BlockActor::handle_task(void)
     //------------------------------------------------------------------
     if GRAS_UNLIKELY(not this->is_work_allowed()) return;
 
-    //------------------------------------------------------------------
-    //-- Asynchronous notification through atomic variable
-    //-- that the executor has instructed workers to stop.
-    //------------------------------------------------------------------
-    if GRAS_UNLIKELY(active_token.expired())
-    {
-        this->mark_done();
-        return;
-    }
-
     const size_t num_inputs = this->get_num_inputs();
     const size_t num_outputs = this->get_num_outputs();
 

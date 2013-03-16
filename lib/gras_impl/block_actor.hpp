@@ -16,6 +16,7 @@
 #include <gras_impl/output_buffer_queues.hpp>
 #include <gras_impl/input_buffer_queues.hpp>
 #include <gras_impl/interruptible_thread.hpp>
+#include <Theron/Detail/Threading/Atomic.h>
 #include <vector>
 #include <set>
 
@@ -29,6 +30,9 @@ struct BlockActor : Apology::Worker
     Block *block_ptr;
     std::string name; //for debug
     ThreadPool thread_pool;
+
+    //! Priority count to hack in high-prio worker queue
+    Theron::Detail::Atomic::UInt32 prio_count;
 
     //do it here so we can match w/ the handler declarations
     void register_handlers(void)
@@ -115,7 +119,10 @@ struct BlockActor : Apology::Worker
 
     GRAS_FORCE_INLINE bool is_work_allowed(void)
     {
+        //high prio when the count is positive and there are enqueued messages (avoids race)
+        const bool has_high_prio_msg = this->prio_count.Load() and this->GetNumQueuedMessages();
         return (
+            not has_high_prio_msg and
             this->block_state == BLOCK_STATE_LIVE and
             this->input_queues.all_ready() and
             this->inputs_available.any() and
@@ -167,7 +174,6 @@ struct BlockActor : Apology::Worker
         BLOCK_STATE_LIVE,
         BLOCK_STATE_DONE,
     } block_state;
-    WeakToken active_token;
     long buffer_affinity;
 
     std::vector<std::vector<OutputHintMessage> > output_allocation_hints;

@@ -24,8 +24,18 @@ struct GetStatsReceiver : Theron::Receiver
 
 std::string TopBlock::get_stats(const std::string &)
 {
+    //get stats with custom receiver and set high prio
     GetStatsReceiver receiver;
-    (*this)->executor->post_all(GetStatsMessage(), receiver);
+    size_t outstandingCount(0);
+    BOOST_FOREACH(Apology::Worker *worker, (*this)->executor->get_workers())
+    {
+        dynamic_cast<BlockActor *>(worker)->prio_count.Increment();
+        worker->Push(GetStatsMessage(), receiver.GetAddress());
+        outstandingCount++;
+    }
+    while (outstandingCount) outstandingCount -= receiver.Wait(outstandingCount);
+
+    //now format the xml result
     std::string xml;
     xml += str(boost::format("  <now>%llu</now>\n") % time_now());
     xml += str(boost::format("  <tps>%llu</tps>\n") % time_tps());
