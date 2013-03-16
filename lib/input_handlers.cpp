@@ -40,6 +40,7 @@ void BlockActor::handle_input_buffer(const InputBufferMessage &message, const Th
     if (this->block_state == BLOCK_STATE_DONE) return;
     this->input_queues.push(index, message.buffer);
     this->inputs_available.set(index);
+
     ta.done();
     this->handle_task();
 }

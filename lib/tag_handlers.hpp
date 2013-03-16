@@ -42,6 +42,16 @@ GRAS_FORCE_INLINE void BlockActor::trim_tags(const size_t i)
     this->stats.tags_consumed[i] += last;
 }
 
+GRAS_FORCE_INLINE void BlockActor::trim_msgs(const size_t i)
+{
+    const size_t num_read = this->num_input_msgs_read[i];
+    if GRAS_UNLIKELY(num_read > 0)
+    {
+        std::vector<PMCC> &input_msgs = this->input_msgs[i];
+        input_msgs.erase(input_msgs.begin(), input_msgs.begin()+num_read);
+    }
+}
+
 } //namespace gras
 
 #endif /*INCLUDED_LIBGRAS_TAG_HANDLERS_HPP*/

@@ -101,6 +101,7 @@ struct BlockActor : Apology::Worker
     void output_fail(const size_t index);
     void sort_tags(const size_t index);
     void trim_tags(const size_t index);
+    void trim_msgs(const size_t index);
     void produce(const size_t index, const size_t items);
     void consume(const size_t index, const size_t items);
     void produce_buffer(const size_t index, const SBuffer &buffer);
@@ -154,6 +155,7 @@ struct BlockActor : Apology::Worker
     //tag tracking
     std::vector<bool> input_tags_changed;
     std::vector<std::vector<Tag> > input_tags;
+    std::vector<size_t> num_input_msgs_read;
     std::vector<std::vector<PMCC> > input_msgs;
 
     //interruptible thread stuff

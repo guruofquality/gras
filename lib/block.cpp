@@ -181,9 +181,9 @@ void Block::post_output_msg(const size_t which_output, const PMCC &msg)
 PMCC Block::pop_input_msg(const size_t which_input)
 {
     std::vector<PMCC> &input_msgs = (*this)->block->input_msgs[which_input];
-    if (input_msgs.empty()) return PMCC();
-    PMCC p = input_msgs.front();
-    input_msgs.erase(input_msgs.begin());
+    size_t &num_read = (*this)->block->num_input_msgs_read[which_input];
+    if (num_read >= input_msgs.size()) return PMCC();
+    PMCC p = input_msgs[num_read++];
     (*this)->block->stats.msgs_consumed[which_input]++;
     return p;
 }

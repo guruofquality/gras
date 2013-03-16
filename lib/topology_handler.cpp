@@ -64,6 +64,7 @@ void BlockActor::handle_topology(
     //resize tags vector to match sizes
     this->input_tags_changed.resize(num_inputs);
     this->input_tags.resize(num_inputs);
+    this->num_input_msgs_read.resize(num_inputs);
     this->input_msgs.resize(num_inputs);
 
     //a block looses all connections, allow it to free
