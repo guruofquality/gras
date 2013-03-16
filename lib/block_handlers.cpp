@@ -142,4 +142,7 @@ void BlockActor::handle_get_stats(
     message.stats = this->stats;
     message.stats_time = time_now();
     this->Send(message, from); //ACK
+
+    //high prio message may have deferred handle task
+    this->handle_task();
 }
