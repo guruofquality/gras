@@ -202,7 +202,7 @@ void BlockActor::handle_task(void)
     //since nothing else is coming in, its safe to mark done
     for (size_t i = 0; i < num_inputs; i++)
     {
-        const bool nothing = this->input_queues.empty(i) and this->input_tags[i].empty();
+        const bool nothing = this->input_queues.empty(i) and this->input_msgs[i].empty();
         this->inputs_available.set(i, not nothing);
         if GRAS_UNLIKELY(this->is_input_done(i)) this->mark_done();
     }
