@@ -50,7 +50,7 @@ struct ElementImpl
     {
         BOOST_FOREACH(Apology::Worker *worker, this->executor->get_workers())
         {
-            dynamic_cast<BlockActor *>(worker)->prio_count.Increment();
+            dynamic_cast<BlockActor *>(worker)->highPrioPreNotify();
         }
     }
 

@@ -32,7 +32,22 @@ struct BlockActor : Apology::Worker
     ThreadPool thread_pool;
 
     //! Priority count to hack in high-prio worker queue
-    Theron::Detail::Atomic::UInt32 prio_count;
+    Theron::Detail::Atomic::UInt32 prioCount;
+    GRAS_FORCE_INLINE void highPrioPreNotify(void)
+    {
+        this->prioCount.Increment();
+    }
+    GRAS_FORCE_INLINE void highPrioAck(void)
+    {
+        ASSERT(this->prioCount.Load() != 0);
+        this->prioCount.Decrement();
+        this->handle_task();
+    }
+    GRAS_FORCE_INLINE bool hasHighPrioMsg(void)
+    {
+        //high prio when the count is positive and there are enqueued messages (avoids race)
+        return this->prioCount.Load() and this->GetNumQueuedMessages();
+    }
 
     //do it here so we can match w/ the handler declarations
     void register_handlers(void)
@@ -120,10 +135,8 @@ struct BlockActor : Apology::Worker
 
     GRAS_FORCE_INLINE bool is_work_allowed(void)
     {
-        //high prio when the count is positive and there are enqueued messages (avoids race)
-        const bool has_high_prio_msg = this->prio_count.Load() and this->GetNumQueuedMessages();
         return (
-            not has_high_prio_msg and
+            not this->hasHighPrioMsg() and
             this->block_state == BLOCK_STATE_LIVE and
             this->input_queues.all_ready() and
             this->inputs_available.any() and

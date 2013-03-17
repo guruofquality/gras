@@ -29,7 +29,7 @@ std::string TopBlock::get_stats(const std::string &)
     size_t outstandingCount(0);
     BOOST_FOREACH(Apology::Worker *worker, (*this)->executor->get_workers())
     {
-        dynamic_cast<BlockActor *>(worker)->prio_count.Increment();
+        dynamic_cast<BlockActor *>(worker)->highPrioPreNotify();
         worker->Push(GetStatsMessage(), receiver.GetAddress());
         outstandingCount++;
     }

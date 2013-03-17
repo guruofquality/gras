@@ -31,11 +31,11 @@ void BlockActor::handle_top_inert(
 ){
     MESSAGE_TRACER();
 
-    ASSERT(this->prio_count.Load() != 0);
-    this->prio_count.Decrement();
     this->mark_done();
 
     this->Send(0, from); //ACK
+
+    this->highPrioAck();
 }
 
 void BlockActor::handle_top_token(
@@ -136,13 +136,12 @@ void BlockActor::handle_get_stats(
     const Theron::Address from
 ){
     MESSAGE_TRACER();
-    this->prio_count.Decrement();
+
     GetStatsMessage message;
     message.block_id = this->block_ptr->to_string();
     message.stats = this->stats;
     message.stats_time = time_now();
     this->Send(message, from); //ACK
 
-    //high prio message may have deferred handle task
-    this->handle_task();
+    this->highPrioAck();
 }
