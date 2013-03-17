@@ -45,6 +45,7 @@ list(APPEND GRAS_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer_queue_pool.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tags.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/block_props.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_actor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_task.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_allocator.cpp

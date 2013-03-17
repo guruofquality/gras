@@ -9,6 +9,7 @@
 #include <gras/tags.hpp>
 #include <gras/work_buffer.hpp>
 #include <gras/buffer_queue.hpp>
+#include <gras/detail/property.hpp>
 #include <vector>
 #include <string>
 
@@ -105,7 +106,7 @@ struct GRAS_API OutputPortConfig
     size_t maximum_items;
 };
 
-struct GRAS_API Block : Element
+struct GRAS_API Block : Element, PropertyInterface
 {
 
     //! Contruct an empty/null block
@@ -212,6 +213,71 @@ struct GRAS_API Block : Element
      * \return the message on the front of the queue
      */
     PMCC pop_input_msg(const size_t which_input);
+
+    /*******************************************************************
+     * The property interface:
+     * Provides polymorphic, thread-safe access to block properties.
+     ******************************************************************/
+
+    /*!
+     * Register property get and set methods into the property interface.
+     * Call register_property() from the contructor of the block.
+     *
+     * Note: It is safe for the user to register a NULL function if the user
+     * wishes to not register a getter or setter for a particular property.
+     *
+     * Example register usage:
+     * this->register_property("foo", &MyBlock::get_foo, &MyBlock::set_foo);
+     *
+     * Example method declarations:
+     * int get_foo(void);
+     * void set_foo(const int &new_foo);
+     *
+     * \param key the string to identify this property
+     * \param get the class method to get the property
+     * \param set the class method to set the property
+     */
+    template <typename ClassType, typename ValueType>
+    void register_property(
+        const std::string &key,
+        ValueType(ClassType::*get)(void),
+        void(ClassType::*set)(const ValueType &)
+    );
+
+    /*!
+     * Set the value of a registered property.
+     *
+     * This call is synchronous and will not return until
+     * the block has actually called the registered set operation.
+     *
+     * Note: the user must be careful to only use a value
+     * that is of the exact type associated with this property.
+     * Otherwise, set_property with throw a type error.
+     *
+     * Example with template argument to be type explicit:
+     * my_block->set_property<size_t>("foo", 42);
+     *
+     * \param key the string to identify this property
+     * \param value the new value to set to this property
+     */
+    template <typename ValueType>
+    void set_property(const std::string &key, const ValueType &value);
+
+    /*!
+     * Get the value of a registered property.
+     *
+     * Note: the user must specify the correct value type
+     * that is of the exact type associated with this property.
+     * Otherwise, get_property with throw a type error.
+     *
+     * Example with template argument to be type explicit:
+     * const size_t foo = my_block->get_property<size_t>("foo");
+     *
+     * \param key the string to identify this property
+     * \return the value of this property
+     */
+    template <typename ValueType>
+    ValueType get_property(const std::string &key);
 
     /*******************************************************************
      * Work related routines and fail states
@@ -395,5 +461,7 @@ struct GRAS_API Block : Element
 };
 
 } //namespace gras
+
+#include <gras/detail/block.hpp>
 
 #endif /*INCLUDED_GRAS_BLOCK_HPP*/
