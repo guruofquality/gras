@@ -197,7 +197,6 @@ struct BlockActor : Apology::Worker
     std::vector<std::vector<OutputHintMessage> > output_allocation_hints;
 
     //property stuff
-    PMCC prop_access_dispatcher(const std::string &key, const PMCC &value, const bool set);
     std::map<std::string, PropertyRegistrySptr> prop_registry;
 
     BlockStats stats;
