@@ -21,8 +21,9 @@ struct GRAS_API PropertyRegistry
 typedef boost::shared_ptr<PropertyRegistry> PropertyRegistrySptr;
 
 template <typename ClassType, typename ValueType>
-struct PropertyRegistryImpl : PropertyRegistry
+class PropertyRegistryImpl : public PropertyRegistry
 {
+public:
     PropertyRegistryImpl(
         ClassType *my_class,
         ValueType(ClassType::*getter)(void),
@@ -36,14 +37,15 @@ struct PropertyRegistryImpl : PropertyRegistry
 
     void set(const PMCC &value)
     {
-        return _setter(_my_class, value.as<ValueType>());
+        (_my_class->*_setter)(value.as<ValueType>());
     }
 
     PMCC get(void)
     {
-        return PMC_M(_getter(_my_class));
+        return PMC_M((_my_class->*_getter)());
     }
 
+private:
     ClassType *_my_class;
     ValueType(ClassType::*_getter)(void);
     void(ClassType::*_setter)(const ValueType &);

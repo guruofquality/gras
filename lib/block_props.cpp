@@ -8,18 +8,20 @@ using namespace gras;
 PropertyRegistry::PropertyRegistry(void){}
 PropertyRegistry::~PropertyRegistry(void){}
 
+/***********************************************************************
+ * The actual thread-safe implementation of property handling
+ **********************************************************************/
 void BlockActor::handle_prop_access(
     const PropAccessMessage &message,
     const Theron::Address from
 )
 {
-    ASSERT(this->prio_count.Load() != 0);
-    this->prio_count.Decrement();
-
+    //setup reply
     PropAccessMessage reply;
     reply.set = not message.set;
     reply.key = message.key;
 
+    //try to call the property bound method
     PropertyRegistrySptr pr = prop_registry[message.key];
     if (not pr) reply.error = "no property registered for key: " + message.key;
     else try
@@ -36,14 +38,14 @@ void BlockActor::handle_prop_access(
         reply.error = "unknown error";
     }
 
+    //send the reply
     this->Send(reply, from); //ACK
+    this->highPrioAck();
 }
 
-void Block::_register_property(const std::string &key, PropertyRegistrySptr pr)
-{
-    (*this)->block->prop_registry[key] = pr;
-}
-
+/***********************************************************************
+ * A special receiver to handle the property access result
+ **********************************************************************/
 struct PropAccessReceiver : Theron::Receiver
 {
     PropAccessReceiver(void)
@@ -59,6 +61,9 @@ struct PropAccessReceiver : Theron::Receiver
     PropAccessMessage message;
 };
 
+/***********************************************************************
+ * Handle the get and set calls from the user's call-stack
+ **********************************************************************/
 PMCC BlockActor::prop_access_dispatcher(const std::string &key, const PMCC &value, const bool set)
 {
     PropAccessReceiver receiver;
@@ -67,13 +72,18 @@ PMCC BlockActor::prop_access_dispatcher(const std::string &key, const PMCC &valu
     message.key = key;
     message.value = value;
     this->Push(message, receiver.GetAddress());
-    this->prio_count.Increment();
+    this->highPrioPreNotify();
     receiver.Wait();
     if (not receiver.message.error.empty())
     {
         throw std::runtime_error(receiver.message.error);
     }
     return receiver.message.value;
+}
+
+void Block::_register_property(const std::string &key, PropertyRegistrySptr pr)
+{
+    (*this)->block->prop_registry[key] = pr;
 }
 
 void Block::_set_property(const std::string &key, const PMCC &value)

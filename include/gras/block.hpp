@@ -106,8 +106,9 @@ struct GRAS_API OutputPortConfig
     size_t maximum_items;
 };
 
-struct GRAS_API Block : Element
+class GRAS_API Block : public Element
 {
+public:
 
     //! Contruct an empty/null block
     Block(void);
@@ -254,30 +255,43 @@ struct GRAS_API Block : Element
      * that is of the exact type associated with this property.
      * Otherwise, set_property with throw a type error.
      *
-     * Example with template argument to be type explicit:
-     * my_block->set_property<size_t>("foo", 42);
+     * Examples with explicit argument types:
+     * my_block->set<size_t>("foo", 42);
+     * my_block->set("foo", size_t(42));
      *
      * \param key the string to identify this property
      * \param value the new value to set to this property
      */
     template <typename ValueType>
-    void set_property(const std::string &key, const ValueType &value);
+    void set(const std::string &key, const ValueType &value);
 
     /*!
-     * Get the value of a registered property.
+     * Get the value of a registered property with reference semantics.
      *
-     * Note: the user must specify the correct value type
+     * Note: the user must be careful to only use a value
      * that is of the exact type associated with this property.
      * Otherwise, get_property with throw a type error.
      *
-     * Example with template argument to be type explicit:
-     * const size_t foo = my_block->get_property<size_t>("foo");
+     * Example getting property with reference semantics:
+     * size_t foo; my_block->get("foo", foo);
+     *
+     * \param key the string to identify this property
+     * \param value a reference to set to the result
+     */
+    template <typename ValueType>
+    void get(const std::string &key, ValueType &value);
+
+    /*!
+     * Get the value of a registered property with return semantics.
+     *
+     * Example getting property with return value semantics:
+     * const size_t foo = my_block->get<size_t>("foo");
      *
      * \param key the string to identify this property
      * \return the value of this property
      */
     template <typename ValueType>
-    ValueType get_property(const std::string &key);
+    ValueType get(const std::string &key);
 
     /*******************************************************************
      * Work related routines and fail states
@@ -429,9 +443,6 @@ struct GRAS_API Block : Element
      * This method is called by the scheduler to allocate output buffers.
      * The user may overload this method to create a custom allocator.
      *
-     * Example use case:
-     * //TODO code example
-     *
      * \param which_output the output port index number
      * \param config holds token and recommended length
      * \return a shared ptr to a new buffer queue object
@@ -461,6 +472,7 @@ struct GRAS_API Block : Element
     /*******************************************************************
      * private implementation guts for template support
      ******************************************************************/
+private:
     void _register_property(const std::string &, PropertyRegistrySptr);
     void _set_property(const std::string &, const PMCC &);
     PMCC _get_property(const std::string &);
