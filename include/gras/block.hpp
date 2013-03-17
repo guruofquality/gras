@@ -106,7 +106,7 @@ struct GRAS_API OutputPortConfig
     size_t maximum_items;
 };
 
-struct GRAS_API Block : Element, PropertyInterface
+struct GRAS_API Block : Element
 {
 
     //! Contruct an empty/null block
@@ -457,6 +457,13 @@ struct GRAS_API Block : Element, PropertyInterface
         const size_t which_input,
         const SBufferConfig &config
     );
+
+    /*******************************************************************
+     * private implementation guts for template support
+     ******************************************************************/
+    void _register_property(const std::string &, PropertyRegistrySptr);
+    void _set_property(const std::string &, const PMCC &);
+    PMCC _get_property(const std::string &);
 
 };
 

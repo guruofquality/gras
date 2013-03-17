@@ -131,6 +131,14 @@ struct OutputUpdateMessage
 //-- do not ack
 //----------------------------------------------------------------------
 
+struct PropAccessMessage
+{
+    bool set;
+    std::string key;
+    PMCC value;
+    std::string error;
+};
+
 struct SelfKickMessage
 {
     //empty
@@ -172,6 +180,7 @@ THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputHintMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputAllocMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputUpdateMessage);
 
+THERON_DECLARE_REGISTERED_MESSAGE(gras::PropAccessMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::SelfKickMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::GetStatsMessage);
 

@@ -3,18 +3,22 @@
 #ifndef INCLUDED_GRAS_DETAIL_PROPERTY_HPP
 #define INCLUDED_GRAS_DETAIL_PROPERTY_HPP
 
+#include <gras/gras.hpp>
 #include <PMC/PMC.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace gras
 {
 
-struct PropertyRegistry
+struct GRAS_API PropertyRegistry
 {
-    PropertyRegistry(void){}
-    ~PropertyRegistry(void){}
+    PropertyRegistry(void);
+    virtual ~PropertyRegistry(void);
     virtual void set(const PMCC &) = 0;
     virtual PMCC get(void) = 0;
 };
+
+typedef boost::shared_ptr<PropertyRegistry> PropertyRegistrySptr;
 
 template <typename ClassType, typename ValueType>
 struct PropertyRegistryImpl : PropertyRegistry
@@ -28,7 +32,7 @@ struct PropertyRegistryImpl : PropertyRegistry
         _getter(getter),
         _setter(setter)
     {}
-    ~PropertyRegistryImpl(void){}
+    virtual ~PropertyRegistryImpl(void){}
 
     void set(const PMCC &value)
     {
@@ -43,19 +47,6 @@ struct PropertyRegistryImpl : PropertyRegistry
     ClassType *_my_class;
     ValueType(ClassType::*_getter)(void);
     void(ClassType::*_setter)(const ValueType &);
-};
-
-struct PropertyInterface
-{
-    virtual void property_interface_register(
-        const std::string &key,
-        boost::shared_ptr<PropertyRegistry> pr
-    ) = 0;
-
-    virtual void property_interface_set(const std::string &key, const PMCC &value) = 0;
-
-    virtual PMCC property_interface_get(const std::string &key) = 0;
-
 };
 
 } //namespace gras

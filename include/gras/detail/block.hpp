@@ -13,21 +13,21 @@ GRAS_FORCE_INLINE void Block::register_property(
     void(ClassType::*set)(const ValueType &)
 )
 {
-    boost::shared_ptr<PropertyRegistry> pr;
+    PropertyRegistrySptr pr;
     pr.reset(new PropertyRegistryImpl<ClassType, ValueType>(this, get, set));
-    this->property_interface_register(key, pr);
+    this->_register_property(key, pr);
 }
 
 template <typename ValueType>
 GRAS_FORCE_INLINE void Block::set_property(const std::string &key, const ValueType &value)
 {
-    return this->property_interface_set(key, PMC_M(value));
+    return this->_set_property(key, PMC_M(value));
 }
 
 template <typename ValueType>
 GRAS_FORCE_INLINE ValueType Block::get_property(const std::string &key)
 {
-    return this->property_interface_get(key).as<ValueType>();
+    return this->_get_property(key).as<ValueType>();
 }
 
 } //namespace gras

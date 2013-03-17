@@ -19,6 +19,7 @@
 #include <Theron/Detail/Threading/Atomic.h>
 #include <vector>
 #include <set>
+#include <map>
 
 namespace gras
 {
@@ -61,6 +62,7 @@ struct BlockActor : Apology::Worker
         this->RegisterHandler(this, &BlockActor::handle_output_alloc);
         this->RegisterHandler(this, &BlockActor::handle_output_update);
 
+        this->RegisterHandler(this, &BlockActor::handle_prop_access);
         this->RegisterHandler(this, &BlockActor::handle_self_kick);
         this->RegisterHandler(this, &BlockActor::handle_get_stats);
     }
@@ -90,6 +92,7 @@ struct BlockActor : Apology::Worker
     void handle_output_alloc(const OutputAllocMessage &, const Theron::Address);
     void handle_output_update(const OutputUpdateMessage &, const Theron::Address);
 
+    void handle_prop_access(const PropAccessMessage &, const Theron::Address);
     void handle_self_kick(const SelfKickMessage &, const Theron::Address);
     void handle_get_stats(const GetStatsMessage &, const Theron::Address);
 
@@ -179,6 +182,10 @@ struct BlockActor : Apology::Worker
     long buffer_affinity;
 
     std::vector<std::vector<OutputHintMessage> > output_allocation_hints;
+
+    //property stuff
+    PMCC prop_access_dispatcher(const std::string &key, const PMCC &value, const bool set);
+    std::map<std::string, PropertyRegistrySptr> prop_registry;
 
     BlockStats stats;
 };
