@@ -12,6 +12,7 @@
 %feature("nodirector") gras::BlockPython::notify_inactive;
 %feature("nodirector") gras::BlockPython::notify_topology;
 %feature("nodirector") gras::BlockPython::work;
+%feature("nodirector") gras::BlockPython::_handle_prop_access;
 
 ////////////////////////////////////////////////////////////////////////
 // http://www.swig.org/Doc2.0/Library.html#Library_stl_exceptions
@@ -43,27 +44,6 @@
 }
 
 ////////////////////////////////////////////////////////////////////////
-// Simple class to deal with smart locking/unlocking of python GIL
-////////////////////////////////////////////////////////////////////////
-%{
-
-struct PyGILPhondler
-{
-    PyGILPhondler(void):
-        s(PyGILState_Ensure())
-    {
-        //NOP
-    }
-    ~PyGILPhondler(void)
-    {
-        PyGILState_Release(s);
-    }
-    PyGILState_STATE s;
-};
-
-%}
-
-////////////////////////////////////////////////////////////////////////
 // SWIG up the representation for IO work arrays
 ////////////////////////////////////////////////////////////////////////
 %include <std_vector.i>
@@ -83,6 +63,7 @@ struct PyGILPhondler
 ////////////////////////////////////////////////////////////////////////
 // Make a special block with safe overloads
 ////////////////////////////////////////////////////////////////////////
+%include "GRAS_Utils.i"
 %inline %{
 
 namespace gras
@@ -172,6 +153,26 @@ struct BlockPython : Block
     }
 
     virtual void _Py_propagate_tags(const size_t which_input, const TagIter &iter) = 0;
+
+    void _set_property(const std::string &key, const PMCC &value)
+    {
+        PyTSPhondler phil;
+        return Block::_set_property(key, value);
+    }
+
+    PMCC _get_property(const std::string &key)
+    {
+        PyTSPhondler phil;
+        return Block::_get_property(key);
+    }
+
+    PMCC _handle_prop_access(const std::string &key, const PMCC &value, const bool set)
+    {
+        PyGILPhondler phil;
+        return this->_Py_handle_prop_access(key, value, set);
+    }
+
+    virtual PMCC _Py_handle_prop_access(const std::string &key, const PMCC &value, const bool set) = 0;
 };
 
 }
@@ -201,6 +202,7 @@ class Block(BlockPython):
         self.set_input_signature(in_sig)
         self.set_output_signature(out_sig)
         blocks_ref_container.append(self)
+        self.__prop_registry = dict();
 
     def set_input_signature(self, sig):
         self.__in_sig = sig_to_dtype_sig(sig)
@@ -279,4 +281,19 @@ class Block(BlockPython):
                 t.offset -= self.get_consumed(i)
                 self.post_output_tag(o, t)
 
+    def _Py_handle_prop_access(self, key, value, set):
+        (getter, setter) = self.__prop_registry[key]
+        if set:
+            setter(value())
+            return PMCC()
+        return PMC_M(getter())
+
+    def register_property(self, key, getter, setter):
+        self.__prop_registry[key] = (getter, setter)
+
+    def set(self, key, value):
+        self._set_property(key, PMC_M(value))
+
+    def get(self, key):
+        return self._get_property(key)()
 %}

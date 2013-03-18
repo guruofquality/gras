@@ -17,27 +17,6 @@
     }
 }
 
-////////////////////////////////////////////////////////////////////////
-// Simple class to deal with smart save/restore of python thread state
-////////////////////////////////////////////////////////////////////////
-%{
-
-struct PyTSPhondler
-{
-    PyTSPhondler(void):
-        s(PyEval_SaveThread())
-    {
-        //NOP
-    }
-    ~PyTSPhondler(void)
-    {
-        PyEval_RestoreThread(s);
-    }
-    PyThreadState *s;
-};
-
-%}
-
 %{
 #include <gras/hier_block.hpp>
 #include <gras/top_block.hpp>
@@ -52,7 +31,7 @@ struct PyTSPhondler
 ////////////////////////////////////////////////////////////////////////
 // Make a special top block with python safe unlocking wait
 ////////////////////////////////////////////////////////////////////////
-
+%include "GRAS_Utils.i"
 %inline %{
 
 namespace gras

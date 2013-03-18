@@ -106,10 +106,8 @@ struct GRAS_API OutputPortConfig
     size_t maximum_items;
 };
 
-class GRAS_API Block : public Element
+struct GRAS_API Block : Element
 {
-public:
-
     //! Contruct an empty/null block
     Block(void);
 
@@ -470,13 +468,12 @@ public:
     );
 
     /*******************************************************************
-     * private implementation guts for template support
+     * private implementation guts for overloads and template support
      ******************************************************************/
-private:
+    virtual PMCC _handle_prop_access(const std::string &, const PMCC &, const bool);
     void _register_property(const std::string &, PropertyRegistrySptr);
-    void _set_property(const std::string &, const PMCC &);
-    PMCC _get_property(const std::string &);
-
+    virtual void _set_property(const std::string &, const PMCC &);
+    virtual PMCC _get_property(const std::string &);
 };
 
 } //namespace gras

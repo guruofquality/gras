@@ -21,13 +21,10 @@ void BlockActor::handle_prop_access(
     reply.set = not message.set;
     reply.key = message.key;
 
-    //try to call the property bound method
-    PropertyRegistrySptr pr = prop_registry[message.key];
-    if (not pr) reply.error = "no property registered for key: " + message.key;
-    else try
+    //call into the handler overload to do the property access
+    try
     {
-        if (message.set) pr->set(message.value);
-        else reply.value = pr->get();
+        reply.value = block_ptr->_handle_prop_access(message.key, message.value, message.set);
     }
     catch (const std::exception &e)
     {
@@ -41,6 +38,18 @@ void BlockActor::handle_prop_access(
     //send the reply
     this->Send(reply, from); //ACK
     this->highPrioAck();
+}
+
+PMCC Block::_handle_prop_access(const std::string &key, const PMCC &value, const bool set)
+{
+    PropertyRegistrySptr pr = (*this)->block->prop_registry[key];
+    if (not pr) throw std::invalid_argument("no property registered for key: " + key);
+    if (set)
+    {
+        pr->set(value);
+        return PMCC();
+    }
+    return pr->get();
 }
 
 /***********************************************************************
