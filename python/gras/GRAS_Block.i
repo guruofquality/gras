@@ -290,10 +290,4 @@ class Block(BlockPython):
 
     def register_property(self, key, getter, setter):
         self.__prop_registry[key] = (getter, setter)
-
-    def set(self, key, value):
-        self._set_property(key, PMC_M(value))
-
-    def get(self, key):
-        return self._get_property(key)()
 %}

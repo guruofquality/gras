@@ -15,4 +15,19 @@
 %include <gras/buffer_queue.hpp>
 %include <gras/block.hpp>
 
+////////////////////////////////////////////////////////////////////////
+// Create pythonic gateway to get and set
+////////////////////////////////////////////////////////////////////////
+%extend gras::Block
+{
+    %insert("python")
+    %{
+        def set(self, key, value):
+            self._set_property(key, PMC_M(value))
+
+        def get(self, key):
+            return self._get_property(key)()
+    %}
+}
+
 #endif /*INCLUDED_GRAS_BLOCK_I*/
