@@ -16,6 +16,8 @@ class MyBlock(gras.Block):
         return self.foo
 
     def set_foo(self, new_foo):
+        print "new_foo", new_foo
+        new_foo + 0 #throws if its not a number
         self.foo = new_foo
 
 class BlockPropsTest(unittest.TestCase):
@@ -36,18 +38,14 @@ class BlockPropsTest(unittest.TestCase):
         #property does not exist
         threw = False
         try: my_block.get("bar")
-        except Exception as ex:
-            print ex
-            threw = True
-        self.assertFalse(threw)
+        except: threw = True
+        self.assertTrue(threw)
 
         #wrong type for property
         threw = False
-        try: my_block.set("foo", float(42))
-        except Exception as ex:
-            print ex
-            threw = True
-        self.assertFalse(threw)
+        try: my_block.set("foo", None)
+        except: threw = True
+        self.assertTrue(threw)
 
 if __name__ == '__main__':
     unittest.main()
