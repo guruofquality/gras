@@ -3,6 +3,11 @@
 #ifndef INCLUDED_GRAS_SBUFFER_HPP
 #define INCLUDED_GRAS_SBUFFER_HPP
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning (disable:4251)  // needs to have dll interface
+#endif //_MSC_VER
+
 #include <gras/gras.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
@@ -135,5 +140,9 @@ struct GRAS_API SBuffer : boost::intrusive_ptr<SBufferImpl>
 } //namespace gras
 
 #include <gras/detail/sbuffer.hpp>
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif //_MSC_VER
 
 #endif /*INCLUDED_GRAS_SBUFFER_HPP*/

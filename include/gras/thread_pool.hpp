@@ -3,6 +3,11 @@
 #ifndef INCLUDED_GRAS_THREAD_POOL_HPP
 #define INCLUDED_GRAS_THREAD_POOL_HPP
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning (disable:4251)  // needs to have dll interface
+#endif //_MSC_VER
+
 #include <gras/gras.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
@@ -74,5 +79,9 @@ struct GRAS_API ThreadPool : boost::shared_ptr<Theron::Framework>
 };
 
 } //namespace gras
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif //_MSC_VER
 
 #endif /*INCLUDED_GRAS_THREAD_POOL_HPP*/
