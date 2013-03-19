@@ -141,8 +141,8 @@ struct BlockActor : Apology::Worker
         return (
             not this->hasHighPrioMsg() and
             this->block_state == BLOCK_STATE_LIVE and
-            this->input_queues.all_ready() and
             this->inputs_available.any() and
+            this->input_queues.all_ready() and
             this->output_queues.all_ready()
         );
     }
@@ -165,10 +165,10 @@ struct BlockActor : Apology::Worker
     //buffer queues and ready conditions
     InputBufferQueues input_queues;
     OutputBufferQueues output_queues;
-    BitSet inputs_available;
     std::vector<bool> produce_outputs;
+    BitSet inputs_available;
 
-    //tag tracking
+    //tag and msg tracking
     std::vector<bool> input_tags_changed;
     std::vector<std::vector<Tag> > input_tags;
     std::vector<size_t> num_input_msgs_read;

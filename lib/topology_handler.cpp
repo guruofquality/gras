@@ -47,14 +47,15 @@ void BlockActor::handle_topology(
     this->output_items.resize(num_outputs);
     this->input_queues.resize(num_inputs);
     this->output_queues.resize(num_outputs);
-    this->inputs_available.resize(num_inputs);
     this->produce_outputs.resize(num_outputs, false);
+    this->inputs_available.resize(num_inputs);
     if (num_inputs == 0) this->inputs_available.resize(1, true); //so its always "available"
 
     //copy the name into the queues for debug purposes
     this->input_queues.name = this->name;
     this->output_queues.name = this->name;
 
+    //resize the token trackers
     this->input_tokens.resize(num_inputs);
     this->output_tokens.resize(num_outputs);
     this->inputs_done.resize(num_inputs);

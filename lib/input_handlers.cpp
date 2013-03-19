@@ -22,7 +22,19 @@ void BlockActor::handle_input_msg(const InputMsgMessage &message, const Theron::
     MESSAGE_TRACER();
     const size_t index = message.index;
 
+    //got an input message? remove the item reserve
+    //This is for user convenience so msg ports
+    //dont need any special configuration to work.
+    if (this->input_configs[index].reserve_items)
+    {
+        this->input_configs[index].reserve_items = 0;
+        InputUpdateMessage message;
+        message.index = index;
+        this->handle_input_update(message, Theron::Address());
+    }
+
     //handle incoming async message, push into the msg storage
+    if (this->block_state == BLOCK_STATE_DONE) return;
     this->input_msgs[index].push_back(message.msg);
     this->inputs_available.set(index);
 
