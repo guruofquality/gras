@@ -11,7 +11,7 @@ namespace gras
  */
 
 template <typename ClassType, typename ValueType>
-GRAS_FORCE_INLINE void Block::register_property(
+inline void Block::register_property(
     const std::string &key,
     ValueType(ClassType::*get)(void),
     void(ClassType::*set)(const ValueType &)
@@ -23,19 +23,19 @@ GRAS_FORCE_INLINE void Block::register_property(
 }
 
 template <typename ValueType>
-GRAS_FORCE_INLINE void Block::set(const std::string &key, const ValueType &value)
+inline void Block::set(const std::string &key, const ValueType &value)
 {
     this->_set_property(key, PMC_M(value));
 }
 
 template <typename ValueType>
-GRAS_FORCE_INLINE void Block::get(const std::string &key, ValueType &value)
+inline void Block::get(const std::string &key, ValueType &value)
 {
     value = this->_get_property(key).as<ValueType>();
 }
 
 template <typename ValueType>
-GRAS_FORCE_INLINE ValueType Block::get(const std::string &key)
+inline ValueType Block::get(const std::string &key)
 {
     return this->_get_property(key).as<ValueType>();
 }
