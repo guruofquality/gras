@@ -43,79 +43,8 @@ namespace gras
         time_ticks_t start;
         bool is_done;
     };
-
 }
 
-//--------------------------------------------------------------------//
-//------------------ implementation details below --------------------//
-//--------------------------------------------------------------------//
-
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
-
-#include <windows.h>
-
-namespace gras
-{
-
-    GRAS_FORCE_INLINE time_ticks_t time_now(void)
-    {
-        LARGE_INTEGER counts;
-        QueryPerformanceCounter(&counts);
-        return counts.QuadPart;
-    }
-
-    GRAS_FORCE_INLINE time_ticks_t time_tps(void)
-    {
-        LARGE_INTEGER freq;
-        QueryPerformanceFrequency(&freq);
-        return freq.QuadPart;
-    }
-
-} //namespace gras
-
-#else
-
-#include <ctime>
-
-namespace gras
-{
-
-    GRAS_FORCE_INLINE time_ticks_t time_now(void)
-    {
-        struct timespec ts;
-        clock_gettime(CLOCK_MONOTONIC, &ts);
-        return ts.tv_sec*1000000000UL + ts.tv_nsec;
-    }
-
-    GRAS_FORCE_INLINE time_ticks_t time_tps(void)
-    {
-        return 1000000000UL;
-    }
-
-} //namespace gras
-
-#endif
-
-namespace gras
-{
-    GRAS_FORCE_INLINE TimerAccumulate::TimerAccumulate(time_ticks_t &accum):
-        accum(accum),
-        start(time_now()),
-        is_done(false)
-    {
-        //NOP
-    }
-
-    GRAS_FORCE_INLINE TimerAccumulate::~TimerAccumulate(void)
-    {
-        if (not is_done) this->done();
-    }
-
-    GRAS_FORCE_INLINE void TimerAccumulate::done(void)
-    {
-        accum += (time_now() - start);
-        is_done = true;
-    }
-}
+#include <gras/detail/chrono.hpp>
 
 #endif /*INCLUDED_GRAS_CHRONO_HPP*/
