@@ -9,7 +9,6 @@
 #include <gras/tags.hpp>
 #include <gras/work_buffer.hpp>
 #include <gras/buffer_queue.hpp>
-#include <gras/detail/property.hpp>
 #include <vector>
 #include <string>
 
@@ -471,7 +470,7 @@ struct GRAS_API Block : Element
      * private implementation guts for overloads and template support
      ******************************************************************/
     virtual PMCC _handle_prop_access(const std::string &, const PMCC &, const bool);
-    void _register_property(const std::string &, PropertyRegistrySptr);
+    void _register_property(const std::string &, PMCC);
     virtual void _set_property(const std::string &, const PMCC &);
     virtual PMCC _get_property(const std::string &);
 };

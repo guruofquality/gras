@@ -91,9 +91,9 @@ static PMCC prop_access_dispatcher(ActorType &actor, const std::string &key, con
     return receiver.message.value;
 }
 
-void Block::_register_property(const std::string &key, PropertyRegistrySptr pr)
+void Block::_register_property(const std::string &key, PMCC pr)
 {
-    (*this)->block->prop_registry[key] = pr;
+    (*this)->block->prop_registry[key] = pr.as<PropertyRegistrySptr>();
 }
 
 void Block::_set_property(const std::string &key, const PMCC &value)

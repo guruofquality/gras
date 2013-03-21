@@ -8,7 +8,6 @@
 %}
 
 %include <gras/element.i>
-%include <gras/detail/property.hpp>
 %import <gras/tags.i>
 %include <gras/tag_iter.i>
 %import <gras/sbuffer.i>
