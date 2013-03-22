@@ -44,15 +44,6 @@ struct GRAS_API HierBlock : Element
      */
     virtual void commit(void);
 
-    /*******************************************************************
-     * property tree interface
-     ******************************************************************/
-
-    /*!
-     * Register a subelement's properties into this element.
-     */
-    void register_subelement(const std::string &node, const Element &subelem);
-
 };
 
 } //namespace gras

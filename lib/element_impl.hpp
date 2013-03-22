@@ -35,9 +35,9 @@ struct ElementImpl
     Token token;
     GlobalBlockConfig top_config;
 
-    //hier block stuff
-    Element _parent;
-    std::map<std::string, Element> _subelems;
+    //element tree stuff
+    Element parent;
+    std::map<std::string, Element> children;
 
     //things may be in this element
     boost::shared_ptr<Apology::Topology> topology;

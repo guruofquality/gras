@@ -4,6 +4,8 @@
 #include <gras/element.hpp>
 #include <boost/format.hpp>
 #include <boost/detail/atomic_count.hpp>
+#include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
 
 static boost::detail::atomic_count unique_id_pool(0);
 
@@ -44,4 +46,59 @@ std::string Element::name(void) const
 std::string Element::to_string(void) const
 {
     return (*this)->id;
+}
+
+void Element::adopt_element(const std::string &name, const Element &child)
+{
+    if (child->parent) throw std::invalid_argument(str(boost::format(
+        "Could not register child %s into %s.\n"
+        "The child %s already has parent %s.\n"
+    )
+        % child.to_string()
+        % this->to_string()
+        % child.to_string()
+        % child->parent.to_string()
+    ));
+    //TODO check name not already taken
+    child->parent = *this;
+    (*this)->children[name] = child;
+}
+
+Block *Element::lookup_block(const std::string &path)
+{
+    //split the paths into nodes
+    std::vector<std::string> nodes;
+    boost::split(nodes, path, boost::is_any_of("/"));
+
+    //iterate through the path to find the element
+    boost::shared_ptr<ElementImpl> elem = *this;
+    size_t i = 0;
+    BOOST_FOREACH(const std::string &node, nodes)
+    {
+        i++;
+        if (node == "" and i == 1) //find root
+        {
+            while (elem->parent) elem = elem->parent;
+            continue;
+        }
+        if (node == ".") //this dir
+        {
+            continue;
+        }
+        if (node == "..") //up a dir
+        {
+            if (not elem->parent) throw std::invalid_argument(
+                "Element tree lookup fail - null parent: " + path
+            );
+            elem = elem->parent;
+            continue;
+        }
+        if (elem->children.count(node) == 0) throw std::invalid_argument(
+            "Element tree lookup fail - no such path: " + path
+        );
+        elem = elem->children[node];
+    }
+
+    //return block ptr as result
+    return elem->block->block_ptr;
 }

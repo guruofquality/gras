@@ -47,19 +47,40 @@ class BlockPropsTest(unittest.TestCase):
         except: threw = True
         self.assertTrue(threw)
 
-    def test_property_tree_paths(self):
+    def test_element_tree_paths(self):
         my_block = MyBlock()
         tb = gras.TopBlock()
         hb = gras.HierBlock()
 
-        tb.register_subelement("my_hier", hb)
-        hb.register_subelement("my_block", my_block)
+        tb.adopt_element("my_hier", hb)
+        hb.adopt_element("my_block", my_block)
 
         my_block.set("foo", 42)
-
         self.assertEqual(my_block.get("foo"), 42)
-        self.assertEqual(my_block.get("./../my_block/foo"), 42)
-        self.assertEqual(my_block.get("/my_hier/my_block/foo"), 42)
+
+        my_block0 = tb.lookup_block('/my_hier/my_block')
+        self.assertEqual(my_block0.get("foo"), 42)
+
+        my_block1 = hb.lookup_block('my_block')
+        self.assertEqual(my_block1.get("foo"), 42)
+
+        my_block2 = hb.lookup_block('./../my_hier/my_block')
+        self.assertEqual(my_block2.get("foo"), 42)
+
+        threw = False
+        try: hb.lookup_block('../../my_hier/my_block')
+        except: threw = True
+        self.assertTrue(threw)
+
+        threw = False
+        try: hb.lookup_block('../../my_hier/my_block0')
+        except: threw = True
+        self.assertTrue(threw)
+
+        threw = False
+        try: hb.lookup_block('../../my_hier/my_block/test')
+        except: threw = True
+        self.assertTrue(threw)
 
 if __name__ == '__main__':
     unittest.main()

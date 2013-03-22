@@ -19,6 +19,8 @@ struct ElementImpl;
 
 typedef boost::shared_ptr<ElementImpl> ElementBase;
 
+struct Block;
+
 struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
 {
 
@@ -40,6 +42,35 @@ struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
 
     //! get a canonical name for this element
     std::string to_string(void) const;
+
+    /*******************************************************************
+     * element tree interface
+     ******************************************************************/
+
+    /*!
+     * Adopt an element as a child under the given name.
+     *
+     * This API allows the user to structure a hierarchy of elements.
+     * This element will become the parent of the child element.
+     *
+     * \param name the name of the child node
+     * \param child an element to be adopted
+     */
+    void adopt_element(const std::string &name, const Element &child);
+
+    /*!
+     * Lookup a block in the element tree hierarchy.
+     *
+     * Paths are unix style, absolte and relatives paths are possible.
+     * This call throws an invalid argument when bad paths are given.
+     *
+     * Example path: /my_hier_block/my_block0
+     * Example path: ../my_block1
+     *
+     * \param path a path to a block (leaf) in the tree
+     * \return a pointer to the block
+     */
+    Block *lookup_block(const std::string &path);
 
     /*******************************************************************
      * Compatibility for dealing with shared ptrs of Elements
