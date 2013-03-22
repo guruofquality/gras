@@ -2,6 +2,8 @@
 
 #include "element_impl.hpp"
 #include <gras/block.hpp>
+#include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
 
 using namespace gras;
 
@@ -74,8 +76,45 @@ struct PropAccessReceiver : Theron::Receiver
  * Handle the get and set calls from the user's call-stack
  **********************************************************************/
 template <typename ActorType>
-static PMCC prop_access_dispatcher(ActorType &actor, const std::string &key, const PMCC &value, const bool set)
+static PMCC prop_access_dispatcher(ActorType &actor, const std::string &path, const PMCC &value, const bool set)
 {
+    //split the paths into nodes
+    std::vector<std::string> nodes;
+    boost::split(nodes, path, boost::is_any_of("/"));
+
+    //iterate through the path to find the element
+    std::string key;
+    Element elem = *(actor->block_ptr);
+    size_t i = 0;
+    BOOST_FOREACH(const std::string &node, nodes)
+    {
+        i++;
+        if (node == "" and i == 1) //find root
+        {
+            while (elem->_parent) elem = elem->_parent;
+        }
+        if (node == ".") //this dir
+        {
+            continue;
+        }
+        if (node == "..") //up a dir
+        {
+            if (not elem->_parent) throw std::runtime_error(
+                "Property tree lookup fail - null parent: " + path
+            );
+            elem = elem->_parent;
+            continue;
+        }
+        if (i == nodes.size() or elem->block) //leaf
+        {
+            key = node;
+            if (i != nodes.size() or not elem->block) throw std::runtime_error(
+                "Property tree lookup fail - beyond leaf" + path
+            );
+        }
+    }
+
+    //now send a message to the actor to perform the action
     PropAccessReceiver receiver;
     PropAccessMessage message;
     message.set = set;

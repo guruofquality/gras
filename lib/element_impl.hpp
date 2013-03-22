@@ -11,6 +11,7 @@
 #include <gras_impl/token.hpp>
 #include <gras_impl/interruptible_thread.hpp>
 #include <boost/foreach.hpp>
+#include <map>
 
 namespace gras
 {
@@ -33,6 +34,10 @@ struct ElementImpl
     SharedThreadGroup thread_group;
     Token token;
     GlobalBlockConfig top_config;
+
+    //hier block stuff
+    Element _parent;
+    std::map<std::string, Element> _subelems;
 
     //things may be in this element
     boost::shared_ptr<Apology::Topology> topology;

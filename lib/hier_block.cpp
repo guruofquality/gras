@@ -2,6 +2,8 @@
 
 #include "element_impl.hpp"
 #include <gras/hier_block.hpp>
+#include <boost/format.hpp>
+#include <exception>
 
 using namespace gras;
 
@@ -73,4 +75,18 @@ void HierBlock::disconnect_all(void)
 void HierBlock::commit(void)
 {
     (*this)->topology->commit();
+}
+
+void HierBlock::register_subelement(const std::string &node, const Element &subelem)
+{
+    if (subelem->_parent) throw std::runtime_error(str(boost::format(
+        "Could not register subelement %s into %s.\n"
+        "The subelement %s already has parent %s.\n"
+    )
+        % subelem.to_string()
+        % this->to_string()
+        % subelem.to_string()
+        % subelem->_parent.to_string()
+    ));
+    (*this)->_subelems[node] = subelem;
 }
