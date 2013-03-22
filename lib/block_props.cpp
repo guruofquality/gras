@@ -92,6 +92,7 @@ static PMCC prop_access_dispatcher(ActorType &actor, const std::string &path, co
         if (node == "" and i == 1) //find root
         {
             while (elem->_parent) elem = elem->_parent;
+            continue;
         }
         if (node == ".") //this dir
         {
@@ -109,9 +110,14 @@ static PMCC prop_access_dispatcher(ActorType &actor, const std::string &path, co
         {
             key = node;
             if (i != nodes.size() or not elem->block) throw std::runtime_error(
-                "Property tree lookup fail - beyond leaf" + path
+                "Property tree lookup fail - beyond leaf: " + path
             );
+            continue;
         }
+        if (elem->_subelems.count(node) == 0) throw std::runtime_error(
+            "Property tree lookup fail - no such path: " + path
+        );
+        elem = elem->_subelems[node];
     }
 
     //now send a message to the actor to perform the action

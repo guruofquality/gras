@@ -88,5 +88,6 @@ void HierBlock::register_subelement(const std::string &node, const Element &sube
         % subelem.to_string()
         % subelem->_parent.to_string()
     ));
+    subelem->_parent = *this;
     (*this)->_subelems[node] = subelem;
 }

@@ -47,5 +47,19 @@ class BlockPropsTest(unittest.TestCase):
         except: threw = True
         self.assertTrue(threw)
 
+    def test_property_tree_paths(self):
+        my_block = MyBlock()
+        tb = gras.TopBlock()
+        hb = gras.HierBlock()
+
+        tb.register_subelement("my_hier", hb)
+        hb.register_subelement("my_block", my_block)
+
+        my_block.set("foo", 42)
+
+        self.assertEqual(my_block.get("foo"), 42)
+        self.assertEqual(my_block.get("./../my_block/foo"), 42)
+        self.assertEqual(my_block.get("/my_hier/my_block/foo"), 42)
+
 if __name__ == '__main__':
     unittest.main()
