@@ -71,7 +71,7 @@ void Element::adopt_element(const std::string &name, const Element &child)
     (*this)->children[name] = child;
 }
 
-Block *Element::lookup_block(const std::string &path)
+Block *Element::locate_block(const std::string &path)
 {
     //split the paths into nodes
     std::vector<std::string> nodes;

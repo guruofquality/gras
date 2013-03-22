@@ -58,27 +58,27 @@ class BlockPropsTest(unittest.TestCase):
         my_block.set("foo", 42)
         self.assertEqual(my_block.get("foo"), 42)
 
-        my_block0 = tb.lookup_block('/my_hier/my_block')
+        my_block0 = tb.locate_block('/my_hier/my_block')
         self.assertEqual(my_block0.get("foo"), 42)
 
-        my_block1 = hb.lookup_block('my_block')
+        my_block1 = hb.locate_block('my_block')
         self.assertEqual(my_block1.get("foo"), 42)
 
-        my_block2 = hb.lookup_block('./../my_hier/my_block')
+        my_block2 = hb.locate_block('./../my_hier/my_block')
         self.assertEqual(my_block2.get("foo"), 42)
 
         threw = False
-        try: hb.lookup_block('../../my_hier/my_block')
+        try: hb.locate_block('../../my_hier/my_block')
         except: threw = True
         self.assertTrue(threw)
 
         threw = False
-        try: hb.lookup_block('../../my_hier/my_block0')
+        try: hb.locate_block('../../my_hier/my_block0')
         except: threw = True
         self.assertTrue(threw)
 
         threw = False
-        try: hb.lookup_block('../../my_hier/my_block/test')
+        try: hb.locate_block('../../my_hier/my_block/test')
         except: threw = True
         self.assertTrue(threw)
 

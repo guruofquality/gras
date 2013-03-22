@@ -59,7 +59,7 @@ struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
     void adopt_element(const std::string &name, const Element &child);
 
     /*!
-     * Lookup a block in the element tree hierarchy.
+     * Locate a block in the element tree hierarchy.
      *
      * Paths are unix style, absolte and relatives paths are possible.
      * This call throws an invalid argument when bad paths are given.
@@ -70,7 +70,7 @@ struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
      * \param path a path to a block (leaf) in the tree
      * \return a pointer to the block
      */
-    Block *lookup_block(const std::string &path);
+    Block *locate_block(const std::string &path);
 
     /*******************************************************************
      * Compatibility for dealing with shared ptrs of Elements
