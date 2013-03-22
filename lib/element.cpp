@@ -59,7 +59,14 @@ void Element::adopt_element(const std::string &name, const Element &child)
         % child.to_string()
         % child->parent.to_string()
     ));
-    //TODO check name not already taken
+
+    if ((*this)->children.count(name)) throw std::invalid_argument(str(boost::format(
+        "A child of name %s already registered to element %s"
+    )
+        % child.to_string()
+        % this->to_string()
+    ));
+
     child->parent = *this;
     (*this)->children[name] = child;
 }
