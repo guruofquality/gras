@@ -28,6 +28,10 @@ struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
     //! Creates a new element given the name
     Element(const std::string &name);
 
+    /*******************************************************************
+     * identification interface
+     ******************************************************************/
+
     //! An integer ID that is unique across the process
     long unique_id(void) const;
 
@@ -45,21 +49,10 @@ struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
      * Good for that factory function/shared ptr paradigm.
      */
     template <typename T>
-    inline Element(const boost::shared_ptr<T> &elem)
-    {
-        *this = elem->shared_to_element();
-    }
+    inline Element(const boost::shared_ptr<T> &elem);
 
     //! Convert a shared ptr of a derived class to an Element
-    inline Element &shared_to_element(void)
-    {
-        try
-        {
-            this->weak_self = this->shared_from_this();
-        }
-        catch(...){}
-        return *this;
-    }
+    inline Element &shared_to_element(void);
 
     //! for internal use only
     boost::weak_ptr<Element> weak_self;
@@ -67,6 +60,8 @@ struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
 };
 
 } //namespace gras
+
+#include <gras/detail/element.hpp>
 
 #ifdef _MSC_VER
 #pragma warning(pop)

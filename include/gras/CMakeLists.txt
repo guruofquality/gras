@@ -30,6 +30,7 @@ install(FILES
 
     detail/block.hpp
     detail/chrono.hpp
+    detail/element.hpp
     detail/sbuffer.hpp
     detail/work_buffer.hpp
 
