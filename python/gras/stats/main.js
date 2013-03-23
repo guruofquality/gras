@@ -48,7 +48,7 @@ var gras_stats_main = function()
     gras_chart_factory_init();
 
     //init overall config gui element for rate
-    var overall_rate = $('input[name="rate"]', overall_config);
+    var overall_rate = $('#chart_update_rate');
     overall_rate.val(registry.overall_rate);
     overall_rate.change(function()
     {
@@ -57,7 +57,7 @@ var gras_stats_main = function()
 
     //init overall config gui element for activity
     registry.overall_active = true;
-    var overall_active = $('input[name="active"]', overall_config);
+    var overall_active = $('#chart_active_state');
     overall_active.attr('checked', registry.overall_active);
     overall_active.change(function()
     {
