@@ -5,6 +5,7 @@
     <meta http-equiv="Content-Style-Type" content="text/css" />
     <title>GRAS Status Monitor</title>
     <link rel="stylesheet" type="text/css" href="/main.css" />
+    <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
@@ -12,6 +13,9 @@
     <script type="text/javascript" src="/utils.js"></script>
     <script type="text/javascript" src="/charts.js"></script>
     <script type="text/javascript" src="/chart_factory.js"></script>
+    <script type="text/javascript" src="/chart_overhead_compare.js"></script>
+    <script type="text/javascript" src="/chart_overall_throughput.js"></script>
+    <script type="text/javascript" src="/chart_handler_breakdown.js"></script>
     <script type="text/javascript" src="/main.js"></script>
     <script type="text/javascript">
         google.load('visualization', '1.0', {'packages':['corechart']});
@@ -29,13 +33,7 @@
             </tr>
             <tr>
                 <td class="chart_designer_blocks"></td>
-                <td>
-                    <select>
-                        <option value="overhead_compare">Overhead Compare</option>
-                        <option value="overall_throughput">Overall Throughput</option>
-                        <option value="handler_breakdown">Handler Breakdown</option>
-                    </select> 
-                </td>
+                <td><select id="chart_type_selector" /></td>
                 <td>Updates/sec: <input type="number" name="rate" min="1" max="10" size="4" /></td>
             </tr>
             <tr>
@@ -81,6 +79,8 @@
         </table>
     </div>
     <div id="per_block_charts">
+    </div>
+    <div style="display:none" id="div-dialog-warning">
     </div>
 </body>
 

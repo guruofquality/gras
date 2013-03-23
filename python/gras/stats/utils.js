@@ -58,3 +58,19 @@ var gras_animate_show_hide = function(elem, show)
     if (show) elem.slideDown("fast");
     else elem.slideUp("fast");
 }
+
+var gras_error_dialog = function(error_title, error_text)
+{
+    $("#div-dialog-warning").text(error_text);
+    $("#div-dialog-warning").dialog({
+        title: error_title,
+        resizable: false,
+        height: 160,
+        modal: true,
+        buttons: {
+            "Ok" : function () {
+                $(this).dialog("close");
+            }
+        }
+    }).parent().addClass("ui-state-error");
+}

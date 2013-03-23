@@ -24,5 +24,43 @@ var gras_chart_factory_setup = function(registry)
  **********************************************************************/
 var gras_chart_factory_dispatcher = function()
 {
-    alert('foo');
+    //step 1) get a list of the selected blocks
+    var selected_blocks = new Array();
+    $.each($('.chart_designer_blocks > :input'), function(index, input)
+    {
+        var input = $(input);
+        if (input.is(':checked'))
+        {
+            selected_blocks.append(input.attr('name'));
+        }
+    });
+
+    //step 2) get the type of chart to create
+    var chart_type = $('#chart_type_selector').val();
+
+    //step 3) input validations
+}
+
+/***********************************************************************
+ * chart factory init
+ **********************************************************************/
+var gras_chart_registry = new Array();
+var gras_chart_factory_init = function()
+{
+    //install callback for chart factory
+    $('#chart_factory_button').click(gras_chart_factory_dispatcher);
+
+    //list of all known chart types
+    var chart_options = [
+        {key:'overhead_compare', name:'Overhead Compare', factory:GrasChartOverheadCompare},
+        {key:'overall_throughput', name:'Overall Throughput', factory:GrasChartOverallThroughput},
+        {key:'handler_breakdown', name:'Handler Breakdown', factory:GrasChartHandlerBreakdown},
+    ];
+
+    //init the chart selection input
+    $.each(chart_options, function(index, options)
+    {
+        gras_chart_registry[options['key']] = options['factory'];
+        $('#chart_type_selector').append('<option value=' + options['key'] + '>' + options['name'] + '</option>');
+    });
 }

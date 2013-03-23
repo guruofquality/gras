@@ -41,8 +41,7 @@ var gras_stats_main = function()
     gras_setup_overall_chart(registry);
     gras_setup_overall_chart_pie(registry);
 
-    //install callback for chart factory
-    $('#chart_factory_button').click(gras_chart_factory_dispatcher);
+    gras_chart_factory_init();
 
     //init overall config gui element for rate
     var overall_rate = $('input[name="rate"]', overall_config);
