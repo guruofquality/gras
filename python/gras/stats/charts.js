@@ -13,8 +13,6 @@ var gras_update_throughput_chart = function(registry)
 {
     if (registry.history.length == 1)
     {
-        var id = $('gras_stats:first', registry.history[0]).attr('id');
-        $('h1:first').append(' - ' + id);
         gras_setup_individual_charts(registry);
         return;
     }

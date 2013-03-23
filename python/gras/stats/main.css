@@ -10,6 +10,19 @@ color:black;
 background-color:white;
 }
 
+.chart_designer_blocks label
+{
+float:left;
+text-decoration:underline;
+}
+
+.chart_designer_blocks input
+{
+float:left;
+margin-right:7px;
+margin-left:3px;
+}
+
 #overall_chart_pie table
 {
 float:left;
