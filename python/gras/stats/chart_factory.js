@@ -1,7 +1,7 @@
 /***********************************************************************
  * One time setup
  **********************************************************************/
-var gras_chart_factory_setup = function(registry)
+function gras_chart_factory_setup(registry)
 {
     if (registry.history.length != 1) return;
     var id = $('gras_stats:first', registry.history[0]).attr('id');
@@ -20,9 +20,15 @@ var gras_chart_factory_setup = function(registry)
 }
 
 /***********************************************************************
+ * chart factory registry (filled in init)
+ **********************************************************************/
+var gras_chart_factory_registry = new Array();
+var gras_chart_active_registry = new Array();
+
+/***********************************************************************
  * chart factory dispatcher
  **********************************************************************/
-var gras_chart_factory_dispatcher = function()
+function gras_chart_factory_dispatcher()
 {
     //step 1) get a list of the selected blocks
     var selected_blocks = new Array();
@@ -31,21 +37,46 @@ var gras_chart_factory_dispatcher = function()
         var input = $(input);
         if (input.is(':checked'))
         {
-            selected_blocks.append(input.attr('name'));
+            selected_blocks.push(input.attr('name'));
         }
     });
 
     //step 2) get the type of chart to create
     var chart_type = $('#chart_type_selector').val();
 
-    //step 3) input validations
+    //step 3) create the chart given options
+
+    //create containers
+    var chart_box = $('<table />').attr({class:'chart_container'});
+    var tr = $('<tr />');
+    var td = $('<td />');
+    tr.append(td);
+
+    //call into the factory
+    var chart = new gras_chart_factory_registry[chart_type]({
+        block_ids:selected_blocks,
+        panel:td.get(0),
+    });
+
+    //setup the title
+    var tr_title = $('<tr />');
+    var th_title = $('<th />');
+    tr_title.append(th_title);
+    th_title.text(chart.title);
+
+    //register the chart
+    gras_chart_active_registry.push(chart);
+    $('#charts_panel').append(chart_box);
+
+    //finish gui building
+    chart_box.append(tr_title);
+    chart_box.append(tr);
 }
 
 /***********************************************************************
  * chart factory init
  **********************************************************************/
-var gras_chart_registry = new Array();
-var gras_chart_factory_init = function()
+function gras_chart_factory_init()
 {
     //install callback for chart factory
     $('#chart_factory_button').click(gras_chart_factory_dispatcher);
@@ -60,7 +91,9 @@ var gras_chart_factory_init = function()
     //init the chart selection input
     $.each(chart_options, function(index, options)
     {
-        gras_chart_registry[options['key']] = options['factory'];
-        $('#chart_type_selector').append('<option value=' + options['key'] + '>' + options['name'] + '</option>');
+        gras_chart_factory_registry[options.key] = options.factory;
+        var option = $('<option />').attr({value: options.key});
+        option.text(options.name);
+        $('#chart_type_selector').append(option);
     });
 }

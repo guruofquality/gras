@@ -19,6 +19,10 @@ var gras_query_stats = function(registry)
                     gras_update_throughput_chart(registry);
                     gras_update_time_compare_chart(registry);
                     gras_update_per_block_charts(registry);
+                    $.each(gras_chart_active_registry, function(index, chart)
+                    {
+                        chart.update(registry.history);
+                    });
                 }
 
                 registry.timeout_handle = window.setTimeout(function()

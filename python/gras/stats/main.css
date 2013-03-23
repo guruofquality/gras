@@ -23,6 +23,11 @@ margin-right:7px;
 margin-left:3px;
 }
 
+.chart_container
+{
+float:left;
+}
+
 #overall_chart_pie table
 {
 float:left;

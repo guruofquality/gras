@@ -13,7 +13,7 @@ ThreadPoolConfig::ThreadPoolConfig(void)
     thread_count = std::max(size_t(2), thread_count);
     node_mask = 0;
     processor_mask = 0xffffffff;
-    yield_strategy = "STRONG";
+    yield_strategy = "POLITE";
 }
 
 /***********************************************************************
