@@ -11,7 +11,6 @@
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script type="text/javascript" src="/registry.js"></script>
     <script type="text/javascript" src="/utils.js"></script>
-    <script type="text/javascript" src="/charts.js"></script>
     <script type="text/javascript" src="/chart_factory.js"></script>
     <script type="text/javascript" src="/chart_overhead_compare.js"></script>
     <script type="text/javascript" src="/chart_overall_throughput.js"></script>
@@ -44,43 +43,6 @@
         </table>
     </div>
     <div id="charts_panel"></div>
-    <div id="overall_config">
-        <table>
-        <tr><th colspan="2">Throughput options</th></tr>
-        <tr>
-            <td colspan="2">Updates/sec: <input type="number" name="rate" min="1" max="10" size="4" /></td>
-        </tr>
-        <tr>
-            <td><label>Active?</label><input type="checkbox" name="active" /></td>
-            <td><label>Show?</label><input type="checkbox" name="show" /></td>
-        </tr>
-        </table>
-    </div>
-    <div id="block_enables">
-        <table>
-        <tr><th>Block enables</th></tr>
-        <tr><td></td></tr>
-        </table>
-    </div>
-    <div style="clear:both;"></div>
-    <div id="overall_chart">
-        <table>
-        <tr><th>Thoughput (MIps) per block vs time (seconds)</th></tr>
-        <tr>
-            <td></td>
-        </tr>
-        </table>
-    </div>
-    <div id="overall_chart_pie">
-        <table>
-        <tr><th>Overhead compare</th></tr>
-        <tr>
-            <td></td>
-        </tr>
-        </table>
-    </div>
-    <div id="per_block_charts">
-    </div>
     <div style="display:none" id="div-dialog-warning">
     </div>
 </body>

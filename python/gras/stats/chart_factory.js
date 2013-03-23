@@ -76,7 +76,7 @@ function gras_chart_factory_dispatcher()
 /***********************************************************************
  * chart factory init
  **********************************************************************/
-function gras_chart_factory_init()
+function gras_chart_factory_init(registry)
 {
     //install callback for chart factory
     $('#chart_factory_button').click(gras_chart_factory_dispatcher);
@@ -95,5 +95,24 @@ function gras_chart_factory_init()
         var option = $('<option />').attr({value: options.key});
         option.text(options.name);
         $('#chart_type_selector').append(option);
+    });
+
+    //init overall config gui element for rate
+    var overall_rate = $('#chart_update_rate');
+    overall_rate.val(registry.overall_rate);
+    overall_rate.change(function()
+    {
+        registry.overall_rate = overall_rate.val();
+    });
+
+    //init overall config gui element for activity
+    registry.overall_active = true;
+    var overall_active = $('#chart_active_state');
+    overall_active.attr('checked', registry.overall_active);
+    overall_active.change(function()
+    {
+        registry.overall_active = overall_active.is(':checked');
+        if (registry.overall_active) gras_query_stats(registry);
+        else window.clearInterval(registry.timeout_handle);
     });
 }

@@ -16,7 +16,6 @@ INSTALL(
     main.js
     registry.js
     utils.js
-    charts.js
     chart_factory.js
     chart_overhead_compare.js
     chart_overall_throughput.js
