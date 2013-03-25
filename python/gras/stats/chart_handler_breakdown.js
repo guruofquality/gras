@@ -1,7 +1,7 @@
 function GrasChartHandlerBreakdown(args)
 {
     //input checking
-    if (args.block_ids.length != 1) gras_error_dialog(
+    if (args.block_ids.length != 1) throw gras_error_dialog(
         "GrasChartHandlerBreakdown",
         "Error making handler breakdown chart.\n"+
         "Specify only one block for this chart."
@@ -16,9 +16,8 @@ function GrasChartHandlerBreakdown(args)
     this.title = "Handler Breakdown - " + this.block_id;
 }
 
-GrasChartHandlerBreakdown.prototype.update = function(history)
+GrasChartHandlerBreakdown.prototype.update = function(point)
 {
-    var point = history[history.length-1];
     var percents = gras_extract_percent_times(point, this.block_id);
     var data = google.visualization.arrayToDataTable([
           ['Task', 'Percent'],

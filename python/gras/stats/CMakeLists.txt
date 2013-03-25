@@ -14,7 +14,6 @@ INSTALL(
     FILES
     main.html
     main.js
-    registry.js
     utils.js
     chart_factory.js
     chart_overhead_compare.js

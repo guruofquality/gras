@@ -4,30 +4,34 @@ function GrasChartOverallThroughput(args)
     this.ids = args.block_ids;
 
     //input checking
-    if (this.ids.length <= 1) gras_error_dialog(
+    if (this.ids.length == 0) throw gras_error_dialog(
         "GrasChartOverallThroughput",
         "Error making overall thoughput chart.\n"+
-        "Specify at least 2 blocks for this chart."
+        "Specify at least 1 block for this chart."
     );
 
     //make new chart
     this.chart = new google.visualization.LineChart(args.panel);
 
     this.title = "Overall Throughput vs Time";
+    this.history = new Array();
 }
 
-GrasChartOverallThroughput.prototype.update = function(history)
+GrasChartOverallThroughput.prototype.update = function(point)
 {
-    if (history.length < 2) return;
+    this.history.push(point);
+    if (this.history.length == 1) this.p0 = point;
+    if (this.history.length < 2) return;
+    if (this.history.length > 10) this.history.splice(0, 1);
 
     var data_set = [['Throughput'].concat(this.ids)];
-    for (var i = Math.max(history.length-10, 1); i < history.length; i++)
+    for (var i = 1; i < this.history.length; i++)
     {
         var row = new Array();
-        row.push(i.toString());
+        row.push(gras_extract_stat_time_delta(this.p0, this.history[i]).toFixed(2).toString());
         for (var j = 0; j < this.ids.length; j++)
         {
-            row.push(gras_extract_throughput_delta(history[i-1], history[i], this.ids[j])/1e6);
+            row.push(gras_extract_throughput_delta(this.history[i-1], this.history[i], this.ids[j])/1e6);
         }
         data_set.push(row);
     }

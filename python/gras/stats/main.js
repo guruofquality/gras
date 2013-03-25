@@ -1,4 +1,18 @@
 /***********************************************************************
+ * Stats registry data structure
+ **********************************************************************/
+var GrasStatsRegistry = function()
+{
+    this.init = false;
+    this.ids = new Array();
+    this.enables = new Array();
+    this.block_enables = new Array();
+    this.overall_rate = 2.0;
+    this.overall_active = true;
+    this.block_charts = new Array();
+}
+
+/***********************************************************************
  * Query stats
  **********************************************************************/
 var gras_query_stats = function(registry)
@@ -14,11 +28,14 @@ var gras_query_stats = function(registry)
             {
                 if ($(xml, "gras_stats") !== undefined)
                 {
-                    registry.appendPoint(xml);
-                    gras_chart_factory_setup(registry);
+                    if (!registry.init)
+                    {
+                        gras_chart_factory_setup(xml);
+                        registry.init = true;
+                    }
                     $.each(gras_chart_active_registry, function(index, chart)
                     {
-                        chart.update(registry.history);
+                        chart.update(xml);
                     });
                 }
 

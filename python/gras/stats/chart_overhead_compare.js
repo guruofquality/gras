@@ -4,7 +4,7 @@ function GrasChartOverheadCompare(args)
     this.ids = args.block_ids;
 
     //input checking
-    if (this.ids.length <= 1) gras_error_dialog(
+    if (this.ids.length <= 1) throw gras_error_dialog(
         "GrasChartOverheadCompare",
         "Error making overhead compare chart.\n"+
         "Specify at least 2 blocks for this chart."
@@ -16,9 +16,8 @@ function GrasChartOverheadCompare(args)
     this.title = "Overhead Comparison";
 }
 
-GrasChartOverheadCompare.prototype.update = function(history)
+GrasChartOverheadCompare.prototype.update = function(point)
 {
-    var point = history[history.length-1];
     var data_set = new Array();
     data_set.push(['Task', 'Percent']);
     $.each(this.ids, function(index, id)

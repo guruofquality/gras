@@ -1,13 +1,13 @@
 /***********************************************************************
  * One time setup
  **********************************************************************/
-function gras_chart_factory_setup(registry)
+function gras_chart_factory_setup(point)
 {
-    if (registry.history.length != 1) return;
-    var id = $('gras_stats:first', registry.history[0]).attr('id');
+    var id = $('gras_stats:first', point).attr('id');
     $('#top_name').append(' - ' + id);
-    $.each(registry.getBlockIds(), function(index, id)
+    $('block', point).each(function(index, block)
     {
+        var id = $(block).attr('id');
         var div = $('.chart_designer_blocks').get(index%2);
         $(div).append('<label>' + id + '</label>');
         var input = $('<input />').attr({
@@ -53,10 +53,17 @@ function gras_chart_factory_dispatcher()
     tr.append(td);
 
     //call into the factory
-    var chart = new gras_chart_factory_registry[chart_type]({
-        block_ids:selected_blocks,
-        panel:td.get(0),
-    });
+    try
+    {
+        var chart = new gras_chart_factory_registry[chart_type]({
+            block_ids:selected_blocks,
+            panel:td.get(0),
+        });
+    }
+    catch(err)
+    {
+        return;
+    }
 
     //setup the title
     var tr_title = $('<tr />');
