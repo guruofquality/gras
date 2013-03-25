@@ -4,12 +4,10 @@
 var GrasStatsRegistry = function()
 {
     this.init = false;
-    this.ids = new Array();
-    this.enables = new Array();
-    this.block_enables = new Array();
     this.overall_rate = 2.0;
     this.overall_active = true;
-    this.active_charts = new Array();
+    this.block_ids = new Array();
+    this.top_id = 'top';
 }
 
 /***********************************************************************
@@ -30,12 +28,13 @@ var gras_query_stats = function(registry)
                 {
                     if (!registry.init)
                     {
-                        gras_chart_factory_setup(xml);
+                        gras_chart_factory_setup(registry, xml);
+                        try{gras_chart_load(registry);}catch(e){}
                         registry.init = true;
                     }
-                    $.each(registry.active_charts, function(index, chart)
+                    $.each(registry.active_charts, function(index, chart_info)
                     {
-                        chart.update(xml);
+                        chart_info.chart.update(xml);
                     });
                 }
 

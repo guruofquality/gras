@@ -1,13 +1,27 @@
 /***********************************************************************
+ * Chart registry for now chart types
+ **********************************************************************/
+var gras_chart_get_registry = function()
+{
+    return [
+        {key:'overhead_compare', name:'Overhead Compare', factory:GrasChartOverheadCompare},
+        {key:'overall_throughput', name:'Overall Throughput', factory:GrasChartOverallThroughput},
+        {key:'handler_breakdown', name:'Handler Breakdown', factory:GrasChartHandlerBreakdown},
+    ];
+}
+
+/***********************************************************************
  * One time setup
  **********************************************************************/
-function gras_chart_factory_setup(point)
+function gras_chart_factory_setup(registry, point)
 {
     var id = $('gras_stats:first', point).attr('id');
+    registry.top_id = id;
     $('#top_name').append(' - ' + id);
     $('block', point).each(function(index, block)
     {
         var id = $(block).attr('id');
+        registry.block_ids.push(id);
         var container = $('#chart_designer_blocks');
         var div = $('<div />');
         $(div).append('<label>' + id + '</label>');
@@ -22,9 +36,9 @@ function gras_chart_factory_setup(point)
 }
 
 /***********************************************************************
- * chart factory dispatcher
+ * chart factory input handler
  **********************************************************************/
-function gras_chart_factory_dispatcher(registry)
+function gras_chart_factory_handle_input(registry)
 {
     //get a list of the selected blocks
     var selected_blocks = new Array();
@@ -40,6 +54,55 @@ function gras_chart_factory_dispatcher(registry)
     //get the type of chart to create
     var chart_type = $('#chart_type_selector').val();
 
+    //create args for the factory make
+    var args = {
+        block_ids:selected_blocks,
+        chart_type:chart_type,
+    };
+
+    //call into the factory with args
+    gras_chart_factory_make(registry, args);
+}
+
+/***********************************************************************
+ * save/load to/from local storage
+ **********************************************************************/
+function gras_chart_save(registry)
+{
+    if (typeof(Storage) === "undefined") return;
+    var all_args = new Array();
+    $.each(registry.active_charts, function(index, info)
+    {
+        all_args.push(info.args);
+    });
+    localStorage.setItem(registry.top_id, JSON.stringify(all_args));
+}
+
+function gras_chart_load(registry)
+{
+    if (typeof(Storage) === "undefined") return;
+    var chart_args = JSON.parse(localStorage.getItem(registry.top_id));
+    if (!chart_args) return;
+    $.each(chart_args, function(args_i, args)
+    {
+        //check that the blocks saved in the args actually exist
+        var do_make = true;
+        $.each(args.block_ids, function(block_id_i, block_id)
+        {
+            if ($.inArray(block_id, registry.block_ids) < 0)
+            {
+                do_make = false;
+            }
+        });
+        if (do_make) gras_chart_factory_make(registry, args);
+    });
+}
+
+/***********************************************************************
+ * chart factory make routine
+ **********************************************************************/
+function gras_chart_factory_make(registry, args)
+{
     //create containers
     var chart_box = $('<table />').attr({class:'chart_container'});
     var tr = $('<tr />');
@@ -47,12 +110,10 @@ function gras_chart_factory_dispatcher(registry)
     tr.append(td);
 
     //call into the factory
+    args.panel = td.get(0);
     try
     {
-        var chart = new registry.chart_factories[chart_type]({
-            block_ids:selected_blocks,
-            panel:td.get(0),
-        });
+        var chart = new registry.chart_factories[args.chart_type](args);
     }
     catch(err)
     {
@@ -66,7 +127,8 @@ function gras_chart_factory_dispatcher(registry)
     th_title.text(chart.title);
 
     //register the chart
-    registry.active_charts.push(chart);
+    var chart_info = {chart:chart,args:args};
+    registry.active_charts.push(chart_info);
     $('#charts_panel').append(chart_box);
 
     //close button
@@ -78,10 +140,12 @@ function gras_chart_factory_dispatcher(registry)
     th_title.append(close_div);
     $(close_href).click(function()
     {
-        var index = $.inArray(chart, registry.active_charts);
+        var index = $.inArray(chart_info, registry.active_charts);
         registry.active_charts.splice(index, 1);
         chart_box.remove();
+        gras_chart_save(registry);
     });
+    gras_chart_save(registry);
 
     //finish gui building
     chart_box.append(tr_title);
@@ -93,22 +157,18 @@ function gras_chart_factory_dispatcher(registry)
  **********************************************************************/
 function gras_chart_factory_init(registry)
 {
+    //init registry containers
+    registry.active_charts = new Array();
+    registry.chart_factories = new Array();
+
     //install callback for chart factory
     $('#chart_factory_button').click(function()
     {
-        gras_chart_factory_dispatcher(registry);
+        gras_chart_factory_handle_input(registry);
     });
 
-    //list of all known chart types
-    var chart_options = [
-        {key:'overhead_compare', name:'Overhead Compare', factory:GrasChartOverheadCompare},
-        {key:'overall_throughput', name:'Overall Throughput', factory:GrasChartOverallThroughput},
-        {key:'handler_breakdown', name:'Handler Breakdown', factory:GrasChartHandlerBreakdown},
-    ];
-
     //init the chart selection input
-    registry.chart_factories = new Array();
-    $.each(chart_options, function(index, options)
+    $.each(gras_chart_get_registry(), function(index, options)
     {
         registry.chart_factories[options.key] = options.factory;
         var option = $('<option />').attr({value: options.key});
