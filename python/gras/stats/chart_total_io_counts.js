@@ -11,7 +11,7 @@ function GrasChartTotalIoCounts(args)
     this.block_id = args.block_ids[0];
     this.div = $('<div />').attr({class:'chart_total_io_counts'});
     $(args.panel).append(this.div);
-    this.title = "IO Totals - " + this.block_id;
+    this.title = "I/O Totals - " + this.block_id;
 }
 
 GrasChartTotalIoCounts.prototype.update = function(point)

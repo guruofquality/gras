@@ -13,6 +13,8 @@ var GrasStatsRegistry = function()
     this.overall_active = true;
     this.block_ids = new Array();
     this.top_id = 'top';
+    this.online = true;
+    this.offline_count = 0;
 }
 
 /***********************************************************************
@@ -27,6 +29,8 @@ var gras_query_stats = function(registry)
         dataType: "xml",
         success: function(xml)
         {
+            registry.online = true;
+            gras_chart_factory_online(registry);
             if (registry.overall_active)
             {
                 if ($(xml, "gras_stats") !== undefined)
@@ -51,6 +55,8 @@ var gras_query_stats = function(registry)
         },
         error: function()
         {
+            registry.online = false;
+            gras_chart_factory_online(registry);
             registry.timeout_handle = window.setTimeout(function()
             {
                 gras_query_stats(registry);

@@ -7,7 +7,7 @@ var gras_chart_get_registry = function()
         {key:'overhead_compare', name:'Overhead Compare', factory:GrasChartOverheadCompare},
         {key:'overall_throughput', name:'Overall Throughput', factory:GrasChartOverallThroughput},
         {key:'handler_breakdown', name:'Handler Breakdown', factory:GrasChartHandlerBreakdown},
-        {key:'total_io_counts', name:'Total IO Counts', factory:GrasChartTotalIoCounts},
+        {key:'total_io_counts', name:'I/O port Totals', factory:GrasChartTotalIoCounts},
     ];
 }
 
@@ -151,6 +151,17 @@ function gras_chart_factory_make(registry, args)
     //finish gui building
     chart_box.append(tr_title);
     chart_box.append(tr);
+}
+
+/***********************************************************************
+ * chart factory handle online/offline
+ **********************************************************************/
+function gras_chart_factory_online(registry)
+{
+    if (!registry.online) registry.offline_count++;
+    if (registry.online) $('#page').css('background-color', '#EEEEFF');
+    else if (registry.offline_count%2 == 0) $('#page').css('background-color', '#FF4848');
+    else if (registry.offline_count%2 == 1) $('#page').css('background-color', '#EEEEFF');
 }
 
 /***********************************************************************
