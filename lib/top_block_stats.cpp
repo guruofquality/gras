@@ -45,6 +45,7 @@ std::string TopBlock::get_stats(const std::string &)
         std::string block_xml;
         block_xml += str(boost::format("    <tps>%llu</tps>\n") % time_tps());
         block_xml += str(boost::format("    <stats_time>%llu</stats_time>\n") % message.stats_time);
+        block_xml += str(boost::format("    <init_time>%llu</init_time>\n") % stats.init_time);
         block_xml += str(boost::format("    <start_time>%llu</start_time>\n") % stats.start_time);
         block_xml += str(boost::format("    <stop_time>%llu</stop_time>\n") % stats.stop_time);
         block_xml += str(boost::format("    <work_count>%llu</work_count>\n") % stats.work_count);

@@ -13,6 +13,7 @@ struct BlockStats
 {
     BlockStats(void)
     {
+        init_time = time_now();
         start_time = 0;
         stop_time = 0;
         work_count = 0;
@@ -24,6 +25,7 @@ struct BlockStats
         total_time_output = 0;
     }
 
+    time_ticks_t init_time;
     time_ticks_t start_time;
     time_ticks_t stop_time;
 

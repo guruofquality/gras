@@ -34,6 +34,14 @@ var gras_extract_throughput = function(point, id)
     return (total_items*tps)/(stats_time-start_time);
 }
 
+var gras_extract_stat_time_delta = function(p0, p1)
+{
+    var t0 = parseInt($('now', p0).text());
+    var t1 = parseInt($('now', p1).text());
+    var tps = parseInt($('tps', p0).first().text());
+    return (t1-t0)/(tps);
+}
+
 var gras_extract_percent_times = function(point, id)
 {
     var block_data = $('block[id="' + id + '"]', point);
@@ -57,4 +65,20 @@ var gras_animate_show_hide = function(elem, show)
 {
     if (show) elem.slideDown("fast");
     else elem.slideUp("fast");
+}
+
+var gras_error_dialog = function(error_title, error_text)
+{
+    $("#div-dialog-warning").text(error_text);
+    $("#div-dialog-warning").dialog({
+        title: error_title,
+        resizable: false,
+        height: 160,
+        modal: true,
+        buttons: {
+            "Ok" : function () {
+                $(this).dialog("close");
+            }
+        }
+    }).parent().addClass("ui-state-error");
 }

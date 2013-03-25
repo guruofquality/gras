@@ -5,11 +5,16 @@
     <meta http-equiv="Content-Style-Type" content="text/css" />
     <title>GRAS Status Monitor</title>
     <link rel="stylesheet" type="text/css" href="/main.css" />
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-    <script type="text/javascript" src="/registry.js"></script>
     <script type="text/javascript" src="/utils.js"></script>
-    <script type="text/javascript" src="/charts.js"></script>
+    <script type="text/javascript" src="/chart_factory.js"></script>
+    <script type="text/javascript" src="/chart_overhead_compare.js"></script>
+    <script type="text/javascript" src="/chart_overall_throughput.js"></script>
+    <script type="text/javascript" src="/chart_handler_breakdown.js"></script>
+    <script type="text/javascript" src="/chart_total_io_counts.js"></script>
     <script type="text/javascript" src="/main.js"></script>
     <script type="text/javascript">
         google.load('visualization', '1.0', {'packages':['corechart']});
@@ -18,43 +23,26 @@
 </head>
 
 <body id='page'>
-    <h1>GRAS Status Monitor</h1>
-    <div id="overall_config">
+    <div id="chart_designer">
         <table>
-        <tr><th colspan="2">Throughput options</th></tr>
-        <tr>
-            <td colspan="2">Updates/sec: <input type="number" name="rate" min="1" max="10" size="4" /></td>
-        </tr>
-        <tr>
-            <td><label>Active?</label><input type="checkbox" name="active" /></td>
-            <td><label>Show?</label><input type="checkbox" name="show" /></td>
-        </tr>
+            <tr>
+                <th id="top_name">Blocks Available</th>
+                <th>Chart Types</th>
+                <th>Global Options</th>
+            </tr>
+            <tr>
+                <td id="chart_designer_blocks" rowspan='2'></td>
+                <td><select id="chart_type_selector" /></td>
+                <td><label>Updates/sec:</label><input id="chart_update_rate" type="number" name="rate" min="1" max="10" size="4" /></td>
+            </tr>
+            <tr>
+                <td><input type="submit" value="Create New Chart" id="chart_factory_button" /></td>
+                <td><label>Active?</label><input id="chart_active_state" type="checkbox" name="active" /></td>
+            </tr>
         </table>
     </div>
-    <div id="block_enables">
-        <table>
-        <tr><th>Block enables</th></tr>
-        <tr><td></td></tr>
-        </table>
-    </div>
-    <div style="clear:both;"></div>
-    <div id="overall_chart">
-        <table>
-        <tr><th>Thoughput (MIps) per block vs time (seconds)</th></tr>
-        <tr>
-            <td></td>
-        </tr>
-        </table>
-    </div>
-    <div id="overall_chart_pie">
-        <table>
-        <tr><th>Overhead compare</th></tr>
-        <tr>
-            <td></td>
-        </tr>
-        </table>
-    </div>
-    <div id="per_block_charts">
+    <div id="charts_panel"></div>
+    <div style="display:none" id="div-dialog-warning">
     </div>
 </body>
 

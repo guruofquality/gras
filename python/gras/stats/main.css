@@ -10,22 +10,37 @@ color:black;
 background-color:white;
 }
 
-#overall_chart_pie table
+.chart_designer_block_close
+{
+float:right;
+}
+
+#chart_designer_blocks div
 {
 float:left;
 }
 
-#per_block_charts table
+#chart_designer_blocks label
 {
-float:left;
+text-decoration:underline;
 }
 
-#overall_config
+#chart_designer_blocks input
 {
-float:left;
+margin-right:10px;
+margin-left:2px;
 }
 
-#block_enables
+.chart_total_io_counts li
+{
+list-style-type:none;
+text-align: left;
+padding: 0px;
+margin: 0px;
+font-size:90%;
+}
+
+.chart_container
 {
 float:left;
 }
@@ -33,7 +48,7 @@ float:left;
 #page{
 padding:10px;
 color:inherit;
-/*background-color:#F0FFF0;*/
+background-color:inherit;
 }
 
 #page h1{
