@@ -29,7 +29,7 @@ GrasChartOverheadCompare.prototype.update = function(point)
     var data = google.visualization.arrayToDataTable(data_set)
 
     var options = {
-        width:$('#page').width()/5,
+        width:GRAS_CHARTS_STD_WIDTH,
         chartArea:{left:5,top:0,right:5,bottom:0,width:"100%",height:"100%"},
     };
 

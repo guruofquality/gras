@@ -27,8 +27,17 @@ text-decoration:underline;
 
 #chart_designer_blocks input
 {
-margin-right:7px;
-margin-left:3px;
+margin-right:10px;
+margin-left:2px;
+}
+
+.chart_total_io_counts li
+{
+list-style-type:none;
+text-align: left;
+padding: 0px;
+margin: 0px;
+font-size:90%;
 }
 
 .chart_container
@@ -39,7 +48,7 @@ float:left;
 #page{
 padding:10px;
 color:inherit;
-/*background-color:#F0FFF0;*/
+background-color:inherit;
 }
 
 #page h1{

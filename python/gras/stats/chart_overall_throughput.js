@@ -38,7 +38,7 @@ GrasChartOverallThroughput.prototype.update = function(point)
 
     var chart_data = google.visualization.arrayToDataTable(data_set);
     var options = {
-        width:$('#page').width()*0.4,
+        width:GRAS_CHARTS_STD_WIDTH*2,
         chartArea:{left:0,top:0,right:0,bottom:0,width:"100%",height:"85%"},
         legend: {'position': 'bottom'},
     };

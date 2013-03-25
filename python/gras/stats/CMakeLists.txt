@@ -19,6 +19,7 @@ INSTALL(
     chart_overhead_compare.js
     chart_overall_throughput.js
     chart_handler_breakdown.js
+    chart_total_io_counts.js
     main.css
     DESTINATION ${GR_PYTHON_DIR}/gras/stats
     COMPONENT ${GRAS_COMP_PYTHON}

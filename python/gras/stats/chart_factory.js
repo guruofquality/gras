@@ -7,6 +7,7 @@ var gras_chart_get_registry = function()
         {key:'overhead_compare', name:'Overhead Compare', factory:GrasChartOverheadCompare},
         {key:'overall_throughput', name:'Overall Throughput', factory:GrasChartOverallThroughput},
         {key:'handler_breakdown', name:'Handler Breakdown', factory:GrasChartHandlerBreakdown},
+        {key:'total_io_counts', name:'Total IO Counts', factory:GrasChartTotalIoCounts},
     ];
 }
 
