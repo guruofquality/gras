@@ -10,6 +10,11 @@ color:black;
 background-color:white;
 }
 
+.chart_designer_block_close
+{
+float:right;
+}
+
 .chart_designer_blocks label
 {
 float:left;
@@ -24,26 +29,6 @@ margin-left:3px;
 }
 
 .chart_container
-{
-float:left;
-}
-
-#overall_chart_pie table
-{
-float:left;
-}
-
-#per_block_charts table
-{
-float:left;
-}
-
-#overall_config
-{
-float:left;
-}
-
-#block_enables
 {
 float:left;
 }

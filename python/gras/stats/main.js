@@ -44,7 +44,14 @@ var gras_query_stats = function(registry)
                     gras_query_stats(registry);
                 }, Math.round(1000/registry.overall_rate));
             }
-        }
+        },
+        error: function()
+        {
+            registry.timeout_handle = window.setTimeout(function()
+            {
+                gras_query_stats(registry);
+            }, 1000);
+        },
     });
 }
 

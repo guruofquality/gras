@@ -30,7 +30,7 @@ var gras_chart_active_registry = new Array();
  **********************************************************************/
 function gras_chart_factory_dispatcher()
 {
-    //step 1) get a list of the selected blocks
+    //get a list of the selected blocks
     var selected_blocks = new Array();
     $.each($('.chart_designer_blocks > :input'), function(index, input)
     {
@@ -41,10 +41,8 @@ function gras_chart_factory_dispatcher()
         }
     });
 
-    //step 2) get the type of chart to create
+    //get the type of chart to create
     var chart_type = $('#chart_type_selector').val();
-
-    //step 3) create the chart given options
 
     //create containers
     var chart_box = $('<table />').attr({class:'chart_container'});
@@ -74,6 +72,20 @@ function gras_chart_factory_dispatcher()
     //register the chart
     gras_chart_active_registry.push(chart);
     $('#charts_panel').append(chart_box);
+
+    //close button
+    var close_div = $('<div/>').attr({class:'chart_designer_block_close'});
+    var close_href = $('<a />').attr({href:'#', class:"ui-dialog-titlebar-close ui-corner-all", role:"button"});
+    var close_span = $('<span />').attr({class:"ui-icon ui-icon-closethick"}).text('close');
+    close_div.append(close_href);
+    close_href.append(close_span);
+    th_title.append(close_div);
+    $(close_href).click(function()
+    {
+        var index = $.inArray(chart, gras_chart_active_registry);
+        gras_chart_active_registry.splice(index, 1);
+        chart_box.remove();
+    });
 
     //finish gui building
     chart_box.append(tr_title);
