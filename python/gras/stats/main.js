@@ -9,7 +9,7 @@ var GrasStatsRegistry = function()
     this.block_enables = new Array();
     this.overall_rate = 2.0;
     this.overall_active = true;
-    this.block_charts = new Array();
+    this.active_charts = new Array();
 }
 
 /***********************************************************************
@@ -33,7 +33,7 @@ var gras_query_stats = function(registry)
                         gras_chart_factory_setup(xml);
                         registry.init = true;
                     }
-                    $.each(gras_chart_active_registry, function(index, chart)
+                    $.each(registry.active_charts, function(index, chart)
                     {
                         chart.update(xml);
                     });

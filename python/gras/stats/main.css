@@ -15,15 +15,18 @@ background-color:white;
 float:right;
 }
 
-.chart_designer_blocks label
+#chart_designer_blocks div
 {
 float:left;
+}
+
+#chart_designer_blocks label
+{
 text-decoration:underline;
 }
 
-.chart_designer_blocks input
+#chart_designer_blocks input
 {
-float:left;
 margin-right:7px;
 margin-left:3px;
 }

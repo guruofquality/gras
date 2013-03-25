@@ -8,7 +8,8 @@ function gras_chart_factory_setup(point)
     $('block', point).each(function(index, block)
     {
         var id = $(block).attr('id');
-        var div = $('.chart_designer_blocks').get(index%2);
+        var container = $('#chart_designer_blocks');
+        var div = $('<div />');
         $(div).append('<label>' + id + '</label>');
         var input = $('<input />').attr({
             type: 'checkbox',
@@ -16,23 +17,18 @@ function gras_chart_factory_setup(point)
         });
         input.attr('checked', false);
         $(div).append(input);
+        $(container).append(div);
     });
 }
 
 /***********************************************************************
- * chart factory registry (filled in init)
- **********************************************************************/
-var gras_chart_factory_registry = new Array();
-var gras_chart_active_registry = new Array();
-
-/***********************************************************************
  * chart factory dispatcher
  **********************************************************************/
-function gras_chart_factory_dispatcher()
+function gras_chart_factory_dispatcher(registry)
 {
     //get a list of the selected blocks
     var selected_blocks = new Array();
-    $.each($('.chart_designer_blocks > :input'), function(index, input)
+    $.each($('#chart_designer_blocks input'), function(index, input)
     {
         var input = $(input);
         if (input.is(':checked'))
@@ -53,7 +49,7 @@ function gras_chart_factory_dispatcher()
     //call into the factory
     try
     {
-        var chart = new gras_chart_factory_registry[chart_type]({
+        var chart = new registry.chart_factories[chart_type]({
             block_ids:selected_blocks,
             panel:td.get(0),
         });
@@ -70,7 +66,7 @@ function gras_chart_factory_dispatcher()
     th_title.text(chart.title);
 
     //register the chart
-    gras_chart_active_registry.push(chart);
+    registry.active_charts.push(chart);
     $('#charts_panel').append(chart_box);
 
     //close button
@@ -82,8 +78,8 @@ function gras_chart_factory_dispatcher()
     th_title.append(close_div);
     $(close_href).click(function()
     {
-        var index = $.inArray(chart, gras_chart_active_registry);
-        gras_chart_active_registry.splice(index, 1);
+        var index = $.inArray(chart, registry.active_charts);
+        registry.active_charts.splice(index, 1);
         chart_box.remove();
     });
 
@@ -98,7 +94,10 @@ function gras_chart_factory_dispatcher()
 function gras_chart_factory_init(registry)
 {
     //install callback for chart factory
-    $('#chart_factory_button').click(gras_chart_factory_dispatcher);
+    $('#chart_factory_button').click(function()
+    {
+        gras_chart_factory_dispatcher(registry);
+    });
 
     //list of all known chart types
     var chart_options = [
@@ -108,9 +107,10 @@ function gras_chart_factory_init(registry)
     ];
 
     //init the chart selection input
+    registry.chart_factories = new Array();
     $.each(chart_options, function(index, options)
     {
-        gras_chart_factory_registry[options.key] = options.factory;
+        registry.chart_factories[options.key] = options.factory;
         var option = $('<option />').attr({value: options.key});
         option.text(options.name);
         $('#chart_type_selector').append(option);
