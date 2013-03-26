@@ -3,7 +3,9 @@
 #include "element_impl.hpp"
 #include <gras/top_block.hpp>
 #include <boost/foreach.hpp>
-#include <boost/format.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+#include <sstream>
 
 using namespace gras;
 
@@ -35,51 +37,48 @@ std::string TopBlock::query(const std::string &)
     }
     while (outstandingCount) outstandingCount -= receiver.Wait(outstandingCount);
 
-    //now format the xml result
-    std::string xml;
-    xml += str(boost::format("  <now>%llu</now>\n") % time_now());
-    xml += str(boost::format("  <tps>%llu</tps>\n") % time_tps());
+    //create root level node
+    boost::property_tree::ptree root;
+    root.put("now", time_now());
+    root.put("tps", time_tps());
+
+    //iterate through blocks
     BOOST_FOREACH(const GetStatsMessage &message, receiver.messages)
     {
         const BlockStats &stats = message.stats;
-        std::string block_xml;
-        block_xml += str(boost::format("    <tps>%llu</tps>\n") % time_tps());
-        block_xml += str(boost::format("    <stats_time>%llu</stats_time>\n") % message.stats_time);
-        block_xml += str(boost::format("    <init_time>%llu</init_time>\n") % stats.init_time);
-        block_xml += str(boost::format("    <start_time>%llu</start_time>\n") % stats.start_time);
-        block_xml += str(boost::format("    <stop_time>%llu</stop_time>\n") % stats.stop_time);
-        block_xml += str(boost::format("    <work_count>%llu</work_count>\n") % stats.work_count);
-        block_xml += str(boost::format("    <time_last_work>%llu</time_last_work>\n") % stats.time_last_work);
-        block_xml += str(boost::format("    <total_time_prep>%llu</total_time_prep>\n") % stats.total_time_prep);
-        block_xml += str(boost::format("    <total_time_work>%llu</total_time_work>\n") % stats.total_time_work);
-        block_xml += str(boost::format("    <total_time_post>%llu</total_time_post>\n") % stats.total_time_post);
-        block_xml += str(boost::format("    <total_time_input>%llu</total_time_input>\n") % stats.total_time_input);
-        block_xml += str(boost::format("    <total_time_output>%llu</total_time_output>\n") % stats.total_time_output);
-        for (size_t i = 0; i < stats.items_consumed.size(); i++)
-        {
-            block_xml += str(boost::format("    <items_consumed>%llu</items_consumed>\n") % stats.items_consumed[i]);
+        boost::property_tree::ptree block;
+        block.put("<xmlattr>.id", message.block_id);
+        block.put("id", message.block_id);
+        block.put("tps", time_tps());
+        block.put("stats_time", message.stats_time);
+        block.put("init_time", stats.init_time);
+        block.put("start_time", stats.start_time);
+        block.put("stop_time", stats.stop_time);
+        block.put("work_count", stats.work_count);
+        block.put("time_last_work", stats.time_last_work);
+        block.put("total_time_prep", stats.total_time_prep);
+        block.put("total_time_work", stats.total_time_work);
+        block.put("total_time_post", stats.total_time_post);
+        block.put("total_time_input", stats.total_time_input);
+        block.put("total_time_output", stats.total_time_output);
+        #define my_block_ptree_append(l) \
+        for (size_t i = 0; i < stats.l.size(); i++) { \
+            boost::property_tree::ptree t; t.put_value(stats.l[i]); \
+            block.push_back(std::make_pair(#l, t)); \
         }
-        for (size_t i = 0; i < stats.tags_consumed.size(); i++)
-        {
-            block_xml += str(boost::format("    <tags_consumed>%llu</tags_consumed>\n") % stats.tags_consumed[i]);
-        }
-        for (size_t i = 0; i < stats.msgs_consumed.size(); i++)
-        {
-            block_xml += str(boost::format("    <msgs_consumed>%llu</msgs_consumed>\n") % stats.msgs_consumed[i]);
-        }
-        for (size_t i = 0; i < stats.items_produced.size(); i++)
-        {
-            block_xml += str(boost::format("    <items_produced>%llu</items_produced>\n") % stats.items_produced[i]);
-        }
-        for (size_t i = 0; i < stats.tags_produced.size(); i++)
-        {
-            block_xml += str(boost::format("    <tags_produced>%llu</tags_produced>\n") % stats.tags_produced[i]);
-        }
-        for (size_t i = 0; i < stats.msgs_produced.size(); i++)
-        {
-            block_xml += str(boost::format("    <msgs_produced>%llu</msgs_produced>\n") % stats.msgs_produced[i]);
-        }
-        xml += str(boost::format("  <block id=\"%s\">\n%s</block>\n") % message.block_id % block_xml);
+        my_block_ptree_append(items_consumed);
+        my_block_ptree_append(tags_consumed);
+        my_block_ptree_append(msgs_consumed);
+        my_block_ptree_append(items_produced);
+        my_block_ptree_append(tags_produced);
+        my_block_ptree_append(msgs_produced);
+        root.push_back(std::make_pair("block", block));
     }
-    return str(boost::format("<gras_stats id=\"%s\">\n%s</gras_stats>") % this->to_string() % xml);
+
+    //create top tag and write xml
+    boost::property_tree::ptree top;
+    top.put_child("gras_stats", root);
+    std::stringstream ss;
+    write_xml(ss, top);
+    return ss.str();
 }
