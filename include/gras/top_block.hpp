@@ -78,11 +78,12 @@ struct GRAS_API TopBlock : HierBlock
     virtual bool wait(const double timeout);
 
     /*!
-     * Get block usage statistics in some format.
-     * Args are used to set the query parameters.
+     * Query the flow graph for information.
      * An external app will visualize the data.
+     * \param args the input query args
+     * \return formatted result of the query
      */
-    virtual std::string get_stats(const std::string &args);
+    virtual std::string query(const std::string &args);
 };
 
 } //namespace gras

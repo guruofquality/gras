@@ -6,7 +6,7 @@ include(GrPython)
 GR_PYTHON_INSTALL(
     FILES
     __init__.py
-    DESTINATION ${GR_PYTHON_DIR}/gras/stats
+    DESTINATION ${GR_PYTHON_DIR}/gras/query
     COMPONENT ${GRAS_COMP_PYTHON}
 )
 
@@ -21,6 +21,6 @@ INSTALL(
     chart_handler_breakdown.js
     chart_total_io_counts.js
     main.css
-    DESTINATION ${GR_PYTHON_DIR}/gras/stats
+    DESTINATION ${GR_PYTHON_DIR}/gras/query
     COMPONENT ${GRAS_COMP_PYTHON}
 )

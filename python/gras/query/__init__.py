@@ -15,11 +15,11 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def do_GET(s):
         """Respond to a GET request."""
-        if s.path.endswith('stats.xml'):
+        if s.path.endswith('.xml'):
             s.send_response(200)
             s.send_header("Content-type", "text/xml")
             s.end_headers()
-            s.wfile.write(server_registry[s.server].get_stats(""))
+            s.wfile.write(server_registry[s.server]['top_block'].query(s.path))
             return
         path = s.path
         if path.startswith('/'): path = path[1:]
@@ -41,10 +41,10 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 import select
 
 class http_server(object):
-    def __init__(self, args, top_block):
+    def __init__(self, args, **kwargs):
         server_class = BaseHTTPServer.HTTPServer
         self._httpd = server_class(args, MyHandler)
-        server_registry[self._httpd] = top_block
+        server_registry[self._httpd] = kwargs
 
     def serve_forever(self):
         while True:

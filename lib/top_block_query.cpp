@@ -22,7 +22,7 @@ struct GetStatsReceiver : Theron::Receiver
     std::vector<GetStatsMessage> messages;
 };
 
-std::string TopBlock::get_stats(const std::string &)
+std::string TopBlock::query(const std::string &)
 {
     //get stats with custom receiver and set high prio
     GetStatsReceiver receiver;

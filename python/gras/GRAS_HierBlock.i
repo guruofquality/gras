@@ -75,10 +75,10 @@ struct TopBlockPython : TopBlock
         return TopBlock::wait(timeout);
     }
 
-    std::string get_stats(const std::string &args)
+    std::string query(const std::string &args)
     {
         PyTSPhondler phil;
-        return TopBlock::get_stats(args);
+        return TopBlock::query(args);
     }
 };
 
