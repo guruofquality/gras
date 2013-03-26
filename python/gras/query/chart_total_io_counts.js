@@ -16,15 +16,15 @@ function GrasChartTotalIoCounts(args)
 
 GrasChartTotalIoCounts.prototype.update = function(point)
 {
-    var block_data = $('block[id="' + this.block_id + '"]', point);
+    var block_data = point.blocks[this.block_id];
     var ul = $('<ul />');
     $('ul', this.div).remove(); //clear old lists
     this.div.append(ul);
 
     {
-        var init_time = parseInt($('init_time', block_data).text());
-        var stats_time = parseInt($('stats_time', block_data).text());
-        var tps = parseInt($('tps', block_data).text());
+        var init_time = parseInt(block_data.init_time);
+        var stats_time = parseInt(block_data.stats_time);
+        var tps = parseInt(block_data.tps);
         var duration = (stats_time - init_time)/tps;
         var li = $('<li />');
         var strong = $('<strong />').text('Elapsed' + ': ');
@@ -48,9 +48,8 @@ GrasChartTotalIoCounts.prototype.update = function(point)
         var dir = contents[0];
         var units = contents[1];
         var key = contents[2];
-        $(key, block_data).each(function(index, elem)
+        $.each(block_data[key], function(index, count)
         {
-            var count = parseInt($(elem).text());
             var li = $('<li />');
             var strong = $('<strong />').text(dir + index.toString() + ': ');
             var span = $('<span />').text(count.toString() + ' ' + units);

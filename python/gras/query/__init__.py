@@ -15,11 +15,12 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def do_GET(s):
         """Respond to a GET request."""
-        if s.path.endswith('.xml'):
+        args = server_registry[s.server]
+        if s.path.endswith('.json'):
             s.send_response(200)
-            s.send_header("Content-type", "text/xml")
+            s.send_header("Content-type", "application/json")
             s.end_headers()
-            s.wfile.write(server_registry[s.server]['top_block'].query(s.path))
+            s.wfile.write(args['top_block'].query(s.path))
             return
         path = s.path
         if path.startswith('/'): path = path[1:]

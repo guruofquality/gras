@@ -25,27 +25,24 @@ var gras_query_stats = function(registry)
     $.ajax({
         type: "GET",
         async: true,
-        url: "/stats.xml",
-        dataType: "xml",
-        success: function(xml)
+        url: "/stats.json",
+        dataType: "json",
+        success: function(response)
         {
             registry.online = true;
             gras_chart_factory_online(registry);
             if (registry.overall_active)
             {
-                if ($(xml, "gras_stats") !== undefined)
+                if (!registry.init)
                 {
-                    if (!registry.init)
-                    {
-                        gras_chart_factory_setup(registry, xml);
-                        try{gras_chart_load(registry);}catch(e){}
-                        registry.init = true;
-                    }
-                    $.each(registry.active_charts, function(index, chart_info)
-                    {
-                        chart_info.chart.update(xml);
-                    });
+                    gras_chart_factory_setup(registry, response);
+                    try{gras_chart_load(registry);}catch(e){}
+                    registry.init = true;
                 }
+                $.each(registry.active_charts, function(index, chart_info)
+                {
+                    chart_info.chart.update(response);
+                });
 
                 registry.timeout_handle = window.setTimeout(function()
                 {

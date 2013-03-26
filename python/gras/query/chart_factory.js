@@ -16,12 +16,11 @@ var gras_chart_get_registry = function()
  **********************************************************************/
 function gras_chart_factory_setup(registry, point)
 {
-    var id = $('gras_stats:first', point).attr('id');
+    var id = point.id;
     registry.top_id = id;
     $('#top_name').append(' - ' + id);
-    $('block', point).each(function(index, block)
+    $.each(point.blocks, function(id, block)
     {
-        var id = $(block).attr('id');
         registry.block_ids.push(id);
         var container = $('#chart_designer_blocks');
         var div = $('<div />');
