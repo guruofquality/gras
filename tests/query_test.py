@@ -5,7 +5,7 @@ import gras
 import numpy
 from demo_blocks import *
 
-class StatsTest(unittest.TestCase):
+class QueryTest(unittest.TestCase):
 
     def setUp(self):
         self.tb = gras.TopBlock()
@@ -22,7 +22,7 @@ class StatsTest(unittest.TestCase):
 
         self.assertEqual(vec_sink.get_vector(), (0, 9, 8, 7, 6))
 
-        print self.tb.get_stats("")
+        print self.tb.query("")
 
 if __name__ == '__main__':
     unittest.main()

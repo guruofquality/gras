@@ -43,5 +43,5 @@ GR_ADD_TEST(block_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/block_te
 GR_ADD_TEST(hier_block_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/hier_block_test.py)
 GR_ADD_TEST(thread_pool_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/thread_pool_test.py)
 GR_ADD_TEST(sbuffer_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/sbuffer_test.py)
-GR_ADD_TEST(stats_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/stats_test.py)
+GR_ADD_TEST(query_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/query_test.py)
 GR_ADD_TEST(block_props_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/block_props_test.py)
