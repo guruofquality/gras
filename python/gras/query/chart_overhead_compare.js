@@ -14,6 +14,7 @@ function GrasChartOverheadCompare(args)
     this.chart = new google.visualization.PieChart(args.panel);
 
     this.title = "Overhead Comparison";
+    this.default_width = GRAS_CHARTS_STD_WIDTH;
 }
 
 GrasChartOverheadCompare.prototype.update = function(point)
@@ -29,7 +30,6 @@ GrasChartOverheadCompare.prototype.update = function(point)
     var data = google.visualization.arrayToDataTable(data_set)
 
     var options = {
-        width:GRAS_CHARTS_STD_WIDTH,
         chartArea:{left:5,top:0,right:5,bottom:0,width:"100%",height:"100%"},
     };
 

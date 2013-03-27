@@ -32,10 +32,7 @@ var gras_query_stats = function(registry)
             gras_chart_factory_online(registry);
             if (registry.overall_active)
             {
-                $.each(registry.active_charts, function(index, chart_info)
-                {
-                    chart_info.chart.update(response);
-                });
+                gras_chart_factory_update(registry, response);
 
                 registry.timeout_handle = window.setTimeout(function()
                 {

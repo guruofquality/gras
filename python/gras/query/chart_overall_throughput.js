@@ -15,6 +15,7 @@ function GrasChartOverallThroughput(args)
 
     this.title = "Overall Throughput vs Time in MIps";
     this.history = new Array();
+    this.default_width = 2*GRAS_CHARTS_STD_WIDTH;
 }
 
 GrasChartOverallThroughput.prototype.update = function(point)
@@ -38,7 +39,6 @@ GrasChartOverallThroughput.prototype.update = function(point)
 
     var chart_data = google.visualization.arrayToDataTable(data_set);
     var options = {
-        width:GRAS_CHARTS_STD_WIDTH*2,
         legend: {'position': 'bottom'},
     };
     this.chart.draw(chart_data, options);

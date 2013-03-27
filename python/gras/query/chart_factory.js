@@ -12,6 +12,17 @@ var gras_chart_get_registry = function()
 }
 
 /***********************************************************************
+ * update after new query event
+ **********************************************************************/
+function gras_chart_factory_update(registry, point)
+{
+    $.each(registry.active_charts, function(index, chart_info)
+    {
+        chart_info.chart.update(point);
+    });
+}
+
+/***********************************************************************
  * One time setup
  **********************************************************************/
 function gras_chart_factory_setup(registry, point)
@@ -131,7 +142,7 @@ function gras_chart_factory_make(registry, args)
     th_title.text(chart.title);
 
     //register the chart
-    var chart_info = {chart:chart,args:args};
+    var chart_info = {chart:chart,args:args,panel:chart_box};
     registry.active_charts.push(chart_info);
     $('#charts_panel').append(chart_box);
 
@@ -154,6 +165,28 @@ function gras_chart_factory_make(registry, args)
     //finish gui building
     chart_box.append(tr_title);
     chart_box.append(tr);
+
+    //implement draggable and resizable from jquery ui
+    var handle_stop = function(event, ui)
+    {
+        args['width'] = chart_box.width();
+        args['height'] = chart_box.height();
+        args['position'] = chart_box.offset()
+        gras_chart_save(registry);
+    };
+
+    if ('default_width' in chart) chart_box.width(chart.default_width);
+    chart_box.resizable({stop: handle_stop, create: function(event, ui)
+    {
+        if ('width' in args) chart_box.width(args.width);
+        if ('height' in args) chart_box.height(args.height);
+    }});
+
+    chart_box.css('position', 'absolute');
+    chart_box.draggable({stop: handle_stop, create: function(event, ui)
+    {
+        if ('position' in args) chart_box.offset(args.position);
+    }});
 }
 
 /***********************************************************************
