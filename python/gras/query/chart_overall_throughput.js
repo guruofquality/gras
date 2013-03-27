@@ -13,7 +13,7 @@ function GrasChartOverallThroughput(args)
     //make new chart
     this.chart = new google.visualization.LineChart(args.panel);
 
-    this.title = "Overall Throughput vs Time";
+    this.title = "Overall Throughput vs Time in MIps";
     this.history = new Array();
 }
 
@@ -39,7 +39,6 @@ GrasChartOverallThroughput.prototype.update = function(point)
     var chart_data = google.visualization.arrayToDataTable(data_set);
     var options = {
         width:GRAS_CHARTS_STD_WIDTH*2,
-        chartArea:{left:0,top:0,right:0,bottom:0,width:"100%",height:"85%"},
         legend: {'position': 'bottom'},
     };
     this.chart.draw(chart_data, options);

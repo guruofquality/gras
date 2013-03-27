@@ -1,6 +1,6 @@
 import time
 import BaseHTTPServer
-
+import json
 import os
 __path__ = os.path.abspath(os.path.dirname(__file__))
 
@@ -16,15 +16,21 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_GET(s):
         """Respond to a GET request."""
         args = server_registry[s.server]
-        if s.path.endswith('.json'):
-            s.send_response(200)
-            s.send_header("Content-type", "application/json")
-            s.end_headers()
-            s.wfile.write(args['top_block'].query(s.path))
-            return
         path = s.path
         if path.startswith('/'): path = path[1:]
         if not path: path = 'main.html'
+        if path.endswith('.json'):
+            s.send_response(200)
+            s.send_header("Content-type", "application/json")
+            s.end_headers()
+            if path == 'args.json':
+                arg_strs = dict((str(k), str(v)) for k, v in args.iteritems())
+                s.wfile.write(json.dumps(arg_strs))
+            elif path == 'stats.json':
+                s.wfile.write(args['top_block'].query(s.path))
+            else:
+                s.wfile.write(json.dumps({}))
+            return
         target = os.path.join(__path__, path)
         if os.path.exists(target):
             s.send_response(200)

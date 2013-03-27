@@ -8,7 +8,6 @@ var GRAS_CHARTS_STD_WIDTH = 250;
  **********************************************************************/
 var GrasStatsRegistry = function()
 {
-    this.init = false;
     this.overall_rate = 2.0;
     this.overall_active = true;
     this.block_ids = new Array();
@@ -33,12 +32,6 @@ var gras_query_stats = function(registry)
             gras_chart_factory_online(registry);
             if (registry.overall_active)
             {
-                if (!registry.init)
-                {
-                    gras_chart_factory_setup(registry, response);
-                    try{gras_chart_load(registry);}catch(e){}
-                    registry.init = true;
-                }
                 $.each(registry.active_charts, function(index, chart_info)
                 {
                     chart_info.chart.update(response);
@@ -67,7 +60,23 @@ var gras_query_stats = function(registry)
  **********************************************************************/
 var gras_stats_main = function()
 {
+    //create a new registry - storage for gui state
     var registry = new GrasStatsRegistry();
-    gras_chart_factory_init(registry);
+
+    //query various server args
+    $.getJSON('/args.json', function(data)
+    {
+        registry.top_id = data.name;
+        $('#top_name').append(' - ' + registry.top_id);
+        document.title += ' - ' + registry.top_id;
+    });
+
+    //query the stats for initial setup
+    $.getJSON('/stats.json', function(data)
+    {
+        gras_chart_factory_setup(registry, data);
+    });
+
+    //start the query loop in the background
     gras_query_stats(registry);
 }

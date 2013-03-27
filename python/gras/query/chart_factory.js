@@ -16,9 +16,10 @@ var gras_chart_get_registry = function()
  **********************************************************************/
 function gras_chart_factory_setup(registry, point)
 {
-    var id = point.id;
-    registry.top_id = id;
-    $('#top_name').append(' - ' + id);
+    //gui init for factory controls
+    gras_chart_factory_init(registry);
+
+    //block registry and checkboxes init
     $.each(point.blocks, function(id, block)
     {
         registry.block_ids.push(id);
@@ -33,6 +34,9 @@ function gras_chart_factory_setup(registry, point)
         $(div).append(input);
         $(container).append(div);
     });
+
+    //try to load last settings
+    try{gras_chart_load(registry);}catch(e){}
 }
 
 /***********************************************************************
@@ -188,7 +192,10 @@ function gras_chart_factory_init(registry)
     });
 
     //init overall config gui element for rate
-    var overall_rate = $('#chart_update_rate');
+    var overall_rate = $('#chart_update_rate').attr({size:3});
+    overall_rate.spinner({
+        min: 1, max: 10, stop: function(event, ui){$(this).change();}
+    });
     overall_rate.val(registry.overall_rate);
     overall_rate.change(function()
     {
