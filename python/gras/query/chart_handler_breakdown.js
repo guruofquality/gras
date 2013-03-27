@@ -32,6 +32,8 @@ GrasChartHandlerBreakdown.prototype.update = function(point)
     var options = {
         chartArea:{left:5,top:0,right:5,bottom:0,width:"100%",height:"100%"},
     };
+    if (this.gc_resize) options.width = 50;
+    if (this.gc_resize) options.height = 50;
 
     this.chart.draw(data, options);
 };

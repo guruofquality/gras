@@ -18,6 +18,7 @@ function gras_chart_factory_update(registry, point)
 {
     $.each(registry.active_charts, function(index, chart_info)
     {
+        chart_info.point = point; //store last data point
         chart_info.chart.update(point);
     });
 }
@@ -171,7 +172,9 @@ function gras_chart_factory_make(registry, args)
     {
         args['width'] = chart_box.width();
         args['height'] = chart_box.height();
-        args['position'] = chart_box.offset()
+        args['position'] = chart_box.offset();
+        chart.gc_resize = false;
+        chart.update(chart_info.point);
         gras_chart_save(registry);
     };
 
@@ -180,6 +183,11 @@ function gras_chart_factory_make(registry, args)
     {
         if ('width' in args) chart_box.width(args.width);
         if ('height' in args) chart_box.height(args.height);
+    },
+    start: function(event, ui)
+    {
+        chart.gc_resize = true;
+        chart.update(chart_info.point);
     }});
 
     chart_box.css('position', 'absolute');

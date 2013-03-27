@@ -41,5 +41,7 @@ GrasChartOverallThroughput.prototype.update = function(point)
     var options = {
         legend: {'position': 'bottom'},
     };
+    if (this.gc_resize) options.width = 50;
+    if (this.gc_resize) options.height = 50;
     this.chart.draw(chart_data, options);
 };
