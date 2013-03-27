@@ -12,6 +12,7 @@ void BlockActor::handle_input_tag(const InputTagMessage &message, const Theron::
     const size_t index = message.index;
 
     //handle incoming stream tag, push into the tag storage
+    if (this->block_state == BLOCK_STATE_DONE) return;
     this->input_tags[index].push_back(message.tag);
     this->input_tags_changed[index] = true;
 }

@@ -36,6 +36,13 @@ void BlockActor::mark_done(void)
     this->input_queues.flush_all();
     this->output_queues.flush_all();
 
+    //release all tags and msgs
+    for (size_t i = 0; i < this->get_num_inputs(); i++)
+    {
+        this->input_msgs[i].clear();
+        this->input_tags[i].clear();
+    }
+
     //tell the upstream and downstram to re-check their tokens
     //this is how the other blocks know who is interested,
     //and can decide based on interest to set done or not
