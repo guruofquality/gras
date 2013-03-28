@@ -69,7 +69,7 @@ var gras_stats_main = function()
     });
 
     //query the stats for initial setup
-    $.getJSON('/stats.json', function(data)
+    $.getJSON('/blocks.json', function(data)
     {
         gras_chart_factory_setup(registry, data);
     });

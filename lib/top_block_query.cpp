@@ -5,6 +5,7 @@
 #include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 #include <boost/regex.hpp>
 #include <sstream>
 
@@ -36,12 +37,26 @@ static std::string my_write_json(const boost::property_tree::ptree &pt)
     return rv;
 }
 
-std::string TopBlock::query(const std::string &)
+static std::string query_blocks(ElementImpl *self)
+{
+    boost::property_tree::ptree root;
+    boost::property_tree::ptree e;
+    BOOST_FOREACH(Apology::Worker *worker, self->executor->get_workers())
+    {
+        boost::property_tree::ptree t;
+        t.put_value(dynamic_cast<BlockActor *>(worker)->block_ptr->to_string());
+        e.push_back(std::make_pair("", t));
+    }
+    root.push_back(std::make_pair("blocks", e));
+    return my_write_json(root);
+}
+
+static std::string query_stats(ElementImpl *self)
 {
     //get stats with custom receiver and set high prio
     GetStatsReceiver receiver;
     size_t outstandingCount(0);
-    BOOST_FOREACH(Apology::Worker *worker, (*this)->executor->get_workers())
+    BOOST_FOREACH(Apology::Worker *worker, self->executor->get_workers())
     {
         dynamic_cast<BlockActor *>(worker)->highPrioPreNotify();
         worker->Push(GetStatsMessage(), receiver.GetAddress());
@@ -51,7 +66,6 @@ std::string TopBlock::query(const std::string &)
 
     //create root level node
     boost::property_tree::ptree root;
-    root.put("id", this->to_string());
     root.put("now", time_now());
     root.put("tps", time_tps());
 
@@ -92,4 +106,20 @@ std::string TopBlock::query(const std::string &)
     root.push_back(std::make_pair("blocks", blocks));
 
     return my_write_json(root);
+}
+
+std::string TopBlock::query(const std::string &args)
+{
+    //why the fuck does no OS ever patch boost when there is a bug
+    //https://svn.boost.org/trac/boost/ticket/6785
+    //serialize the path args into xml -- but I just wanted json
+    std::stringstream query_args_ss(args);
+    boost::property_tree::ptree query_args_pt;
+    boost::property_tree::xml_parser::read_xml(query_args_ss, query_args_pt);
+
+    //dispatch based on path arg
+    std::string path = query_args_pt.get<std::string>("args.path");
+    if (path == "/blocks.json") return query_blocks(this->get());
+    if (path == "/stats.json") return query_stats(this->get());
+    return "";
 }

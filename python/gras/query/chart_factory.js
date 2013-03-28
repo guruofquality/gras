@@ -16,9 +16,9 @@ var gras_chart_get_registry = function()
  **********************************************************************/
 function gras_chart_factory_update(registry, point)
 {
+    registry.point = point; //store last data point
     $.each(registry.active_charts, function(index, chart_info)
     {
-        chart_info.point = point; //store last data point
         chart_info.chart.update(point);
     });
 }
@@ -26,13 +26,13 @@ function gras_chart_factory_update(registry, point)
 /***********************************************************************
  * One time setup
  **********************************************************************/
-function gras_chart_factory_setup(registry, point)
+function gras_chart_factory_setup(registry, data)
 {
     //gui init for factory controls
     gras_chart_factory_init(registry);
 
     //block registry and checkboxes init
-    $.each(point.blocks, function(id, block)
+    $.each(data.blocks, function(index, id)
     {
         registry.block_ids.push(id);
         var container = $('#chart_designer_blocks');
@@ -174,7 +174,7 @@ function gras_chart_factory_make(registry, args)
         args['height'] = chart_box.height();
         args['position'] = chart_box.offset();
         chart.gc_resize = false;
-        chart.update(chart_info.point);
+        chart.update(registry.point);
         gras_chart_save(registry);
     };
 
@@ -187,7 +187,7 @@ function gras_chart_factory_make(registry, args)
     start: function(event, ui)
     {
         chart.gc_resize = true;
-        chart.update(chart_info.point);
+        chart.update(registry.point);
     }});
 
     chart_box.css('position', 'absolute');
