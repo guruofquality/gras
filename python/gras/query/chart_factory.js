@@ -194,7 +194,13 @@ function gras_chart_factory_make(registry, args)
     chart_box.draggable({stop: handle_stop, create: function(event, ui)
     {
         if ('position' in args) chart_box.offset(args.position);
-    }});
+    }, cursor: "move"});
+
+    //set the cursor on the title bar so its obvious
+    tr_title.hover(
+        function(){$(this).css('cursor','move');},
+        function(){$(this).css('cursor','auto');}
+    );
 }
 
 /***********************************************************************
