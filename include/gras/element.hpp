@@ -23,12 +23,13 @@ struct Block;
 
 struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
 {
-
     //! Create an empty element
     Element(void);
 
     //! Creates a new element given the name
     Element(const std::string &name);
+
+    /*virtual*/ ~Element(void);
 
     /*******************************************************************
      * identification interface

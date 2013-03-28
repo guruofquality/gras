@@ -26,6 +26,11 @@ Element::Element(const std::string &name)
     if (GENESIS) std::cerr << "New element: " << to_string() << std::endl;
 }
 
+Element::~Element(void)
+{
+    //NOP
+}
+
 ElementImpl::~ElementImpl(void)
 {
     if (this->executor) this->top_block_cleanup();

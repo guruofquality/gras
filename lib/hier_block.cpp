@@ -18,6 +18,11 @@ HierBlock::HierBlock(const std::string &name):
     (*this)->topology = boost::shared_ptr<Apology::Topology>(new Apology::Topology());
 }
 
+HierBlock::~HierBlock(void)
+{
+    //NOP
+}
+
 void ElementImpl::hier_block_cleanup(void)
 {
     this->topology->clear_all();

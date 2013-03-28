@@ -14,6 +14,8 @@ struct GRAS_API HierBlock : Element
 
     HierBlock(const std::string &name);
 
+    virtual ~HierBlock(void);
+
     /*******************************************************************
      * connection flow interface
      ******************************************************************/

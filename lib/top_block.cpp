@@ -30,6 +30,11 @@ TopBlock::TopBlock(const std::string &name):
         << std::flush;
 }
 
+TopBlock::~TopBlock(void)
+{
+    //NOP
+}
+
 void ElementImpl::top_block_cleanup(void)
 {
     this->pre_post_all_set_prio();

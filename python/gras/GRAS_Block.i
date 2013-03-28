@@ -79,7 +79,8 @@ struct BlockPython : Block
 
     virtual ~BlockPython(void)
     {
-        //NOP
+        PyTSPhondler phil;
+        this->reset();
     }
 
     void notify_active(void)

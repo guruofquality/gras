@@ -113,6 +113,8 @@ struct GRAS_API Block : Element
     //! Create a new block given the name
     Block(const std::string &name);
 
+    virtual ~Block(void);
+
     /*******************************************************************
      * Deal with input and output port configuration
      ******************************************************************/

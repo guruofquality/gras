@@ -46,6 +46,11 @@ Block::Block(const std::string &name):
     this->set_buffer_affinity(-1);
 }
 
+Block::~Block(void)
+{
+    //NOP
+}
+
 void ElementImpl::block_cleanup(void)
 {
     //wait for actor to chew through enqueued messages
