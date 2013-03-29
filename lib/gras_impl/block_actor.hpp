@@ -132,8 +132,7 @@ struct BlockActor : Apology::Worker
 
     GRAS_FORCE_INLINE bool is_input_done(const size_t i)
     {
-        const bool available = this->input_queues.ready(i) and not this->input_queues.empty(i);
-        return this->inputs_done[i] and not available;
+        return this->inputs_done[i] and not this->inputs_available[i];
     }
 
     GRAS_FORCE_INLINE bool is_work_allowed(void)
