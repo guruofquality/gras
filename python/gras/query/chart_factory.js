@@ -16,7 +16,6 @@ var gras_chart_get_registry = function()
  **********************************************************************/
 function gras_chart_factory_active_blocks(registry)
 {
-    if (!('active_charts' in registry)) return "";
     var block_ids = new Array();
     $.each(registry.active_charts, function(index, chart_info)
     {
@@ -35,34 +34,6 @@ function gras_chart_factory_update(registry, point)
     {
         chart_info.chart.update(point);
     });
-}
-
-/***********************************************************************
- * One time setup
- **********************************************************************/
-function gras_chart_factory_setup(registry, data)
-{
-    //gui init for factory controls
-    gras_chart_factory_init(registry);
-
-    //block registry and checkboxes init
-    $.each(data.blocks, function(index, id)
-    {
-        registry.block_ids.push(id);
-        var container = $('#chart_designer_blocks');
-        var div = $('<div />');
-        $(div).append('<label>' + id + '</label>');
-        var input = $('<input />').attr({
-            type: 'checkbox',
-            name: id
-        });
-        input.attr('checked', false);
-        $(div).append(input);
-        $(container).append(div);
-    });
-
-    //try to load last settings
-    try{gras_chart_load(registry);}catch(e){}
 }
 
 /***********************************************************************
@@ -218,20 +189,9 @@ function gras_chart_factory_make(registry, args)
 }
 
 /***********************************************************************
- * chart factory handle online/offline
- **********************************************************************/
-function gras_chart_factory_online(registry)
-{
-    if (!registry.online) registry.offline_count++;
-    if (registry.online) $('#page').css('background-color', '#EEEEFF');
-    else if (registry.offline_count%2 == 0) $('#page').css('background-color', '#FF4848');
-    else if (registry.offline_count%2 == 1) $('#page').css('background-color', '#EEEEFF');
-}
-
-/***********************************************************************
  * chart factory init
  **********************************************************************/
-function gras_chart_factory_init(registry)
+function gras_chart_factory_init(registry, done_cb)
 {
     //init registry containers
     registry.active_charts = new Array();
@@ -272,5 +232,30 @@ function gras_chart_factory_init(registry)
         registry.overall_active = overall_active.is(':checked');
         if (registry.overall_active) gras_query_stats(registry);
         else window.clearInterval(registry.timeout_handle);
+    });
+
+    //block registry and checkboxes init
+    $.getJSON('/blocks.json', function(data)
+    {
+        $.each(data.blocks, function(index, id)
+        {
+            registry.block_ids.push(id);
+            var container = $('#chart_designer_blocks');
+            var div = $('<div />');
+            $(div).append('<label>' + id + '</label>');
+            var input = $('<input />').attr({
+                type: 'checkbox',
+                name: id
+            });
+            input.attr('checked', false);
+            $(div).append(input);
+            $(container).append(div);
+        });
+
+        //try to load last settings
+        try{gras_chart_load(registry);}catch(e){}
+
+        //done callback because getJSON was async
+        done_cb(registry);
     });
 }

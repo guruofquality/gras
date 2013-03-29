@@ -17,6 +17,17 @@ var GrasStatsRegistry = function()
 }
 
 /***********************************************************************
+ * Server offline animation
+ **********************************************************************/
+function gras_handle_offline(registry)
+{
+    if (!registry.online) registry.offline_count++;
+    if (registry.online) $('#page').css('background-color', '#EEEEFF');
+    else if (registry.offline_count%2 == 0) $('#page').css('background-color', '#FF4848');
+    else if (registry.offline_count%2 == 1) $('#page').css('background-color', '#EEEEFF');
+}
+
+/***********************************************************************
  * Query stats
  **********************************************************************/
 var gras_query_stats = function(registry)
@@ -31,7 +42,7 @@ var gras_query_stats = function(registry)
         success: function(response)
         {
             registry.online = true;
-            gras_chart_factory_online(registry);
+            gras_handle_offline(registry);
             if (registry.overall_active)
             {
                 gras_chart_factory_update(registry, response);
@@ -45,7 +56,7 @@ var gras_query_stats = function(registry)
         error: function()
         {
             registry.online = false;
-            gras_chart_factory_online(registry);
+            gras_handle_offline(registry);
             registry.timeout_handle = window.setTimeout(function()
             {
                 gras_query_stats(registry);
@@ -70,12 +81,6 @@ var gras_stats_main = function()
         document.title += ' - ' + registry.top_id;
     });
 
-    //query the stats for initial setup
-    $.getJSON('/blocks.json', function(data)
-    {
-        gras_chart_factory_setup(registry, data);
-    });
-
-    //start the query loop in the background
-    gras_query_stats(registry);
+    //initialize the charts factory
+    gras_chart_factory_init(registry, gras_query_stats);
 }
