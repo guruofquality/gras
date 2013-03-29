@@ -4,6 +4,7 @@ import unittest
 import gras
 import numpy
 from demo_blocks import *
+import json
 
 class QueryTest(unittest.TestCase):
 
@@ -22,7 +23,13 @@ class QueryTest(unittest.TestCase):
 
         self.assertEqual(vec_sink.get_vector(), (0, 9, 8, 7, 6))
 
-        print self.tb.query("")
+        blocks_json = self.tb.query("<args><path>/blocks.json</path></args>")
+        print blocks_json
+        json.loads(blocks_json)
+
+        stats_json = self.tb.query("<args><path>/stats.json</path></args>")
+        print stats_json
+        json.loads(stats_json)
 
 if __name__ == '__main__':
     unittest.main()
