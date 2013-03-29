@@ -45,7 +45,7 @@ struct TopBlockPython : TopBlock
         //NOP
     }
 
-    ~TopBlockPython(void)
+    virtual ~TopBlockPython(void)
     {
         PyTSPhondler phil;
         this->reset();
@@ -88,6 +88,12 @@ struct HierBlockPython : HierBlock
         HierBlock(name)
     {
         //NOP
+    }
+
+    virtual ~HierBlockPython(void)
+    {
+        PyTSPhondler phil;
+        this->reset();
     }
 };
 

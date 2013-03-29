@@ -117,9 +117,13 @@ struct InputBufferQueues
 
     GRAS_FORCE_INLINE void flush_all(void)
     {
-        const size_t old_size = this->size();
-        this->resize(0);
-        this->resize(old_size);
+        //clear all data in queues and update vars to reflect
+        for (size_t i = 0; i < this->size(); i++)
+        {
+            _queues[i] = boost::circular_buffer<SBuffer>(1);
+            _enqueued_bytes[i] = 0;
+            this->__update(i);
+        }
     }
 
     GRAS_FORCE_INLINE bool ready(const size_t i) const
@@ -164,14 +168,10 @@ GRAS_FORCE_INLINE void InputBufferQueues::resize(const size_t size)
     _enqueued_bytes.resize(size, 0);
     _queues.resize(size, boost::circular_buffer<SBuffer>(1));
     _aux_queues.resize(size);
-
-    if (size != 0) //keep config info when flushing
-    {
-        _items_sizes.resize(size, 0);
-        _preload_bytes.resize(size, 0);
-        _reserve_bytes.resize(size, 1);
-        _maximum_bytes.resize(size, MAX_AUX_BUFF_BYTES);
-    }
+    _items_sizes.resize(size, 0);
+    _preload_bytes.resize(size, 0);
+    _reserve_bytes.resize(size, 1);
+    _maximum_bytes.resize(size, MAX_AUX_BUFF_BYTES);
 }
 
 inline void InputBufferQueues::update_config(

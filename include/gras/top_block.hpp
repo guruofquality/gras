@@ -36,6 +36,8 @@ struct GRAS_API TopBlock : HierBlock
 
     TopBlock(const std::string &name);
 
+    virtual ~TopBlock(void);
+
     //! Get the global block config settings
     const GlobalBlockConfig &global_config(void) const;
 
