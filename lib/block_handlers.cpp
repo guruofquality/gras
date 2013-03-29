@@ -137,11 +137,25 @@ void BlockActor::handle_get_stats(
 ){
     MESSAGE_TRACER();
 
+    //instantaneous states we update here,
+    //and not interleaved with the rest of the code
+    const size_t num_inputs = this->get_num_inputs();
+    this->stats.items_enqueued.resize(num_inputs);
+    this->stats.tags_enqueued.resize(num_inputs);
+    this->stats.msgs_enqueued.resize(num_inputs);
+    for (size_t i = 0; i < num_inputs; i++)
+    {
+        this->stats.items_enqueued[i] = this->input_queues.get_items_enqueued(i);
+        this->stats.tags_enqueued[i] = this->input_tags[i].size();
+        this->stats.msgs_enqueued[i] = this->input_msgs[i].size();
+    }
+
+    //create the message reply object
     GetStatsMessage message;
     message.block_id = this->block_ptr->to_string();
     message.stats = this->stats;
     message.stats_time = time_now();
-    this->Send(message, from); //ACK
 
+    this->Send(message, from); //ACK
     this->highPrioAck();
 }

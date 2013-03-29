@@ -105,12 +105,6 @@ struct InputBufferQueues
 
     void push(const size_t i, const SBuffer &buffer);
 
-    GRAS_FORCE_INLINE void flush(const size_t i)
-    {
-        _queues[i].clear();
-        _bitset.reset(i);
-    }
-
     GRAS_FORCE_INLINE void fail(const size_t i)
     {
         _bitset.reset(i);
@@ -146,6 +140,11 @@ struct InputBufferQueues
     GRAS_FORCE_INLINE void __update(const size_t i)
     {
         _bitset.set(i, _enqueued_bytes[i] >= _reserve_bytes[i]);
+    }
+
+    GRAS_FORCE_INLINE size_t get_items_enqueued(const size_t i)
+    {
+        return _enqueued_bytes[i]/_items_sizes[i];
     }
 
     BitSet _bitset;

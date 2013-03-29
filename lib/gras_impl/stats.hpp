@@ -29,12 +29,18 @@ struct BlockStats
     time_ticks_t start_time;
     time_ticks_t stop_time;
 
+    //overall tracking of ports
     std::vector<item_index_t> items_consumed;
     std::vector<item_index_t> tags_consumed;
     std::vector<item_index_t> msgs_consumed;
     std::vector<item_index_t> items_produced;
     std::vector<item_index_t> tags_produced;
     std::vector<item_index_t> msgs_produced;
+
+    //instantaneous port status
+    std::vector<size_t> items_enqueued;
+    std::vector<size_t> msgs_enqueued;
+    std::vector<size_t> tags_enqueued;
 
     item_index_t work_count;
     time_ticks_t time_last_work;

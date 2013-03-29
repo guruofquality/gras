@@ -97,6 +97,9 @@ static std::string query_stats(ElementImpl *self, const boost::property_tree::pt
             } \
             block.push_back(std::make_pair(#l, e)); \
         }
+        my_block_ptree_append(items_enqueued);
+        my_block_ptree_append(tags_enqueued);
+        my_block_ptree_append(msgs_enqueued);
         my_block_ptree_append(items_consumed);
         my_block_ptree_append(tags_consumed);
         my_block_ptree_append(msgs_consumed);
