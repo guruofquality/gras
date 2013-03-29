@@ -26,6 +26,8 @@ var gras_query_stats = function(registry)
         async: true,
         url: "/stats.json",
         dataType: "json",
+        traditional: true, //needed to parse data
+        data: {block:gras_chart_factory_active_blocks(registry)},
         success: function(response)
         {
             registry.online = true;

@@ -12,6 +12,20 @@ var gras_chart_get_registry = function()
 }
 
 /***********************************************************************
+ * get blocks that need active querying
+ **********************************************************************/
+function gras_chart_factory_active_blocks(registry)
+{
+    if (!('active_charts' in registry)) return "";
+    var block_ids = new Array();
+    $.each(registry.active_charts, function(index, chart_info)
+    {
+        $.merge(block_ids, chart_info.args.block_ids);
+    });
+    return $.unique(block_ids);
+}
+
+/***********************************************************************
  * update after new query event
  **********************************************************************/
 function gras_chart_factory_update(registry, point)

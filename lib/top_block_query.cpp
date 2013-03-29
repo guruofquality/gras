@@ -7,6 +7,7 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/regex.hpp>
+#include <algorithm>
 #include <sstream>
 
 using namespace gras;
@@ -37,7 +38,7 @@ static std::string my_write_json(const boost::property_tree::ptree &pt)
     return rv;
 }
 
-static std::string query_blocks(ElementImpl *self)
+static std::string query_blocks(ElementImpl *self, const boost::property_tree::ptree &)
 {
     boost::property_tree::ptree root;
     boost::property_tree::ptree e;
@@ -51,13 +52,14 @@ static std::string query_blocks(ElementImpl *self)
     return my_write_json(root);
 }
 
-static std::string query_stats(ElementImpl *self)
+static std::string query_stats(ElementImpl *self, const boost::property_tree::ptree &)
 {
     //get stats with custom receiver and set high prio
     GetStatsReceiver receiver;
     size_t outstandingCount(0);
     BOOST_FOREACH(Apology::Worker *worker, self->executor->get_workers())
     {
+        //send a message to the block's actor to query stats
         dynamic_cast<BlockActor *>(worker)->highPrioPreNotify();
         worker->Push(GetStatsMessage(), receiver.GetAddress());
         outstandingCount++;
@@ -119,7 +121,7 @@ std::string TopBlock::query(const std::string &args)
 
     //dispatch based on path arg
     std::string path = query_args_pt.get<std::string>("args.path");
-    if (path == "/blocks.json") return query_blocks(this->get());
-    if (path == "/stats.json") return query_stats(this->get());
+    if (path == "/blocks.json") return query_blocks(this->get(), query_args_pt);
+    if (path == "/stats.json") return query_stats(this->get(), query_args_pt);
     return "";
 }
