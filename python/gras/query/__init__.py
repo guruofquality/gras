@@ -10,6 +10,9 @@ server_registry = dict()
 
 class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
+    #hide log messages to stdout by default
+    def log_message(self, format, *args): pass
+
     def do_HEAD(s):
         s.send_response(200)
         s.send_header("Content-type", "text/html")
