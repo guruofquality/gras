@@ -227,42 +227,45 @@ function gras_chart_factory_init(registry)
         $('#chart_type_selector').append(option);
     });
 
+    //init chart overall gui controls
+    var overall_rate = $('#chart_update_rate').attr({size:3});
+    overall_rate.spinner({
+        min: 1, max: 10, step: 0.5, stop: function(event, ui){$(this).change();}
+    });
+    var overall_active = $('#chart_active_state');
+    overall_active.button();
+
     //callback for overall gui events
     function handle_gui_event()
     {
         registry.overall_active = overall_active.is(':checked');
-        if (registry.overall_active) gras_query_stats(registry);
-        else window.clearInterval(registry.timeout_handle);
         registry.overall_rate = overall_rate.val();
         gras_chart_save(registry);
     }
-
-    //init chart overall gui controls
-    var overall_rate = $('#chart_update_rate').attr({size:3});
-    overall_rate.spinner({
-        min: 1, max: 10, stop: function(event, ui){$(this).change();}
-    });
     overall_rate.change(handle_gui_event);
-    var overall_active = $('#chart_active_state');
     overall_active.change(handle_gui_event);
 
     //block registry and checkboxes init
     $.getJSON('/blocks.json', function(data)
     {
+        var container = $('#chart_designer_blocks');
         $.each(data.blocks, function(index, id)
         {
             registry.block_ids.push(id);
-            var container = $('#chart_designer_blocks');
+            var cb_id = "chart_designer_blocks " + id;
             var div = $('<div />');
-            $(div).append('<label>' + id + '</label>');
+            var label = $('<label />').text(id).attr({'for':cb_id});
             var input = $('<input />').attr({
                 type: 'checkbox',
-                name: id
+                name: id,
+                id: cb_id,
             });
             input.attr('checked', false);
-            $(div).append(input);
-            $(container).append(div);
+            div.append(input);
+            div.append(label);
+            container.append(div);
         });
+        //container.buttonset();
 
         //try to load last settings
         try{gras_chart_load(registry);}catch(e){}
@@ -271,5 +274,6 @@ function gras_chart_factory_init(registry)
         overall_rate.val(registry.overall_rate);
         overall_active.attr('checked', registry.overall_active);
         handle_gui_event();
+        gras_query_stats(registry);
     });
 }

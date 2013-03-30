@@ -3,7 +3,7 @@
  **********************************************************************/
 var GrasStatsRegistry = function()
 {
-    this.overall_rate = 2.0;
+    this.overall_rate = 3.0;
     this.overall_active = true;
     this.block_ids = new Array();
     this.top_id = 'top';
@@ -38,21 +38,19 @@ var gras_query_stats = function(registry)
         {
             registry.online = true;
             gras_handle_offline(registry);
-            if (registry.overall_active)
-            {
-                gras_chart_factory_update(registry, response);
+            if (registry.overall_active) gras_chart_factory_update(registry, response);
 
-                registry.timeout_handle = window.setTimeout(function()
-                {
-                    gras_query_stats(registry);
-                }, Math.round(1000/registry.overall_rate));
-            }
+            var timeout = registry.overall_active? Math.round(1000/registry.overall_rate) : 1000;
+            window.setTimeout(function()
+            {
+                gras_query_stats(registry);
+            }, timeout);
         },
         error: function()
         {
             registry.online = false;
             gras_handle_offline(registry);
-            registry.timeout_handle = window.setTimeout(function()
+            window.setTimeout(function()
             {
                 gras_query_stats(registry);
             }, 1000);
