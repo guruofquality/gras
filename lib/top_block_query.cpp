@@ -52,13 +52,28 @@ static std::string query_blocks(ElementImpl *self, const boost::property_tree::p
     return my_write_json(root);
 }
 
-static std::string query_stats(ElementImpl *self, const boost::property_tree::ptree &)
+static std::string query_stats(ElementImpl *self, const boost::property_tree::ptree &query)
 {
+
+    //parse list of block ids needed in this query
+    std::vector<std::string> block_ids;
+    BOOST_FOREACH(const boost::property_tree::ptree::value_type &v, query.get_child("args"))
+    {
+        if (v.first.data() == std::string("block"))
+        {
+            block_ids.push_back(v.second.get<std::string>(""));
+        }
+    }
+
     //get stats with custom receiver and set high prio
     GetStatsReceiver receiver;
     size_t outstandingCount(0);
     BOOST_FOREACH(Apology::Worker *worker, self->executor->get_workers())
     {
+        //filter workers not needed in query
+        const std::string id = dynamic_cast<BlockActor *>(worker)->block_ptr->to_string();
+        if (std::find(block_ids.begin(), block_ids.end(), id) == block_ids.end()) continue;
+
         //send a message to the block's actor to query stats
         dynamic_cast<BlockActor *>(worker)->highPrioPreNotify();
         worker->Push(GetStatsMessage(), receiver.GetAddress());
