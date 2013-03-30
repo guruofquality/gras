@@ -77,5 +77,5 @@ var gras_stats_main = function()
     });
 
     //initialize the charts factory
-    gras_chart_factory_init(registry, gras_query_stats);
+    gras_chart_factory_init(registry);
 }

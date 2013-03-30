@@ -81,15 +81,25 @@ function gras_chart_save(registry)
     {
         all_args.push(info.args);
     });
-    localStorage.setItem(registry.top_id, JSON.stringify(all_args));
+    localStorage.setItem(registry.top_id, JSON.stringify({
+        chart_args: all_args,
+        overall_rate: registry.overall_rate,
+        overall_active: registry.overall_active,
+    }));
 }
 
 function gras_chart_load(registry)
 {
     if (typeof(Storage) === "undefined") return;
-    var chart_args = JSON.parse(localStorage.getItem(registry.top_id));
-    if (!chart_args) return;
-    $.each(chart_args, function(args_i, args)
+    var storage = JSON.parse(localStorage.getItem(registry.top_id));
+    if (!storage) return;
+
+    //restore misc settings in storage
+    registry.overall_rate = storage.overall_rate;
+    registry.overall_active = storage.overall_active;
+
+    //rebuild all charts from args
+    $.each(storage.chart_args, function(args_i, args)
     {
         //check that the blocks saved in the args actually exist
         var do_make = true;
@@ -196,7 +206,7 @@ function gras_chart_factory_make(registry, args)
 /***********************************************************************
  * chart factory init
  **********************************************************************/
-function gras_chart_factory_init(registry, done_cb)
+function gras_chart_factory_init(registry)
 {
     //init registry containers
     registry.active_charts = new Array();
@@ -217,27 +227,24 @@ function gras_chart_factory_init(registry, done_cb)
         $('#chart_type_selector').append(option);
     });
 
-    //init overall config gui element for rate
-    var overall_rate = $('#chart_update_rate').attr({size:3});
-    overall_rate.spinner({
-        min: 1, max: 10, stop: function(event, ui){$(this).change();}
-    });
-    overall_rate.val(registry.overall_rate);
-    overall_rate.change(function()
-    {
-        registry.overall_rate = overall_rate.val();
-    });
-
-    //init overall config gui element for activity
-    registry.overall_active = true;
-    var overall_active = $('#chart_active_state');
-    overall_active.attr('checked', registry.overall_active);
-    overall_active.change(function()
+    //callback for overall gui events
+    function handle_gui_event()
     {
         registry.overall_active = overall_active.is(':checked');
         if (registry.overall_active) gras_query_stats(registry);
         else window.clearInterval(registry.timeout_handle);
+        registry.overall_rate = overall_rate.val();
+        gras_chart_save(registry);
+    }
+
+    //init chart overall gui controls
+    var overall_rate = $('#chart_update_rate').attr({size:3});
+    overall_rate.spinner({
+        min: 1, max: 10, stop: function(event, ui){$(this).change();}
     });
+    overall_rate.change(handle_gui_event);
+    var overall_active = $('#chart_active_state');
+    overall_active.change(handle_gui_event);
 
     //block registry and checkboxes init
     $.getJSON('/blocks.json', function(data)
@@ -260,7 +267,9 @@ function gras_chart_factory_init(registry, done_cb)
         //try to load last settings
         try{gras_chart_load(registry);}catch(e){}
 
-        //done callback because getJSON was async
-        done_cb(registry);
+        //init gui elements after settings restore
+        overall_rate.val(registry.overall_rate);
+        overall_active.attr('checked', registry.overall_active);
+        handle_gui_event();
     });
 }
