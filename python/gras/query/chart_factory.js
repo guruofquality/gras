@@ -198,9 +198,10 @@ function gras_chart_factory_make(registry, args)
 
     //set the cursor on the title bar so its obvious
     tr_title.hover(
-        function(){$(this).css('cursor','move');},
-        function(){$(this).css('cursor','auto');}
+        function(){$(this).css('cursor','move'); close_div.show();},
+        function(){$(this).css('cursor','auto'); close_div.hide();}
     );
+    close_div.hide();
 }
 
 /***********************************************************************
