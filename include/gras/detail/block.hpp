@@ -58,8 +58,9 @@ inline void Block::register_property(
     void(ClassType::*set)(const ValueType &)
 )
 {
+    ClassType *obj = dynamic_cast<ClassType *>(this);
     PropertyRegistrySptr pr;
-    pr.reset(new PropertyRegistryImpl<ClassType, ValueType>((ClassType *)this, get, set));
+    pr.reset(new PropertyRegistryImpl<ClassType, ValueType>(obj, get, set));
     this->_register_property(key, PMC_M(pr));
 }
 
