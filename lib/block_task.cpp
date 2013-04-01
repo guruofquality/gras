@@ -211,9 +211,7 @@ void BlockActor::handle_task(void)
         this->trim_msgs(i);
 
         //update the inputs available bit field
-        const bool has_input_bufs = not this->input_queues.empty(i);
-        const bool has_input_msgs = not this->input_msgs[i].empty();
-        this->inputs_available.set(i, has_input_bufs or has_input_msgs);
+        this->update_input_avail(i);
 
         //missing at least one upstream provider?
         //since nothing else is coming in, its safe to mark done

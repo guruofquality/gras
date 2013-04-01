@@ -37,7 +37,7 @@ void BlockActor::handle_input_msg(const InputMsgMessage &message, const Theron::
     //handle incoming async message, push into the msg storage
     if (this->block_state == BLOCK_STATE_DONE) return;
     this->input_msgs[index].push_back(message.msg);
-    this->inputs_available.set(index);
+    this->update_input_avail(index);
 
     ta.done();
     this->handle_task();
@@ -52,7 +52,7 @@ void BlockActor::handle_input_buffer(const InputBufferMessage &message, const Th
     //handle incoming stream buffer, push into the queue
     if (this->block_state == BLOCK_STATE_DONE) return;
     this->input_queues.push(index, message.buffer);
-    this->inputs_available.set(index);
+    this->update_input_avail(index);
 
     ta.done();
     this->handle_task();
@@ -76,16 +76,13 @@ void BlockActor::handle_input_check(const InputCheckMessage &message, const Ther
 
     //an upstream block declared itself done, recheck the token
     this->inputs_done.set(index, this->input_tokens[index].unique());
-    if (this->is_input_done(index)) //missing an upstream provider
-    {
-        this->mark_done();
-    }
-    //or re-enter handle task so fail logic can mark done
-    else
-    {
-        ta.done();
-        this->handle_task();
-    }
+
+    //upstream done, give it one more attempt at task handling
+    ta.done();
+    this->handle_task();
+
+    //now recheck the status, mark block done if the input is done
+    if (this->is_input_done(index)) this->mark_done();
 }
 
 void BlockActor::handle_input_alloc(const InputAllocMessage &message, const Theron::Address)

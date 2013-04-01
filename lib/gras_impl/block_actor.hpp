@@ -130,6 +130,13 @@ struct BlockActor : Apology::Worker
         if (this->is_work_allowed()) this->Send(SelfKickMessage(), this->GetAddress());
     }
 
+    GRAS_FORCE_INLINE void update_input_avail(const size_t i)
+    {
+        const bool has_input_bufs = not this->input_queues.empty(i) and this->input_queues.ready(i);
+        const bool has_input_msgs = not this->input_msgs[i].empty();
+        this->inputs_available.set(i, has_input_bufs or has_input_msgs);
+    }
+
     GRAS_FORCE_INLINE bool is_input_done(const size_t i)
     {
         return this->inputs_done[i] and not this->inputs_available[i];
