@@ -7,7 +7,7 @@
 #include <gras/hier_block.hpp>
 %}
 
-%include <gras/element.i>
+%import <gras/element.i>
 %include <gras/hier_block.hpp>
 
 #endif /*INCLUDED_GRAS_HIER_BLOCK_I*/

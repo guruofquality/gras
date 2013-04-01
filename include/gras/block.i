@@ -7,7 +7,7 @@
 #include <gras/block.hpp>
 %}
 
-%include <gras/element.i>
+%import <gras/element.i>
 %import <gras/tags.i>
 %include <gras/tag_iter.i>
 %import <gras/sbuffer.i>
