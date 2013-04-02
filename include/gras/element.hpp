@@ -31,6 +31,12 @@ struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
 
     /*virtual*/ ~Element(void);
 
+    /*!
+     * Check if another element is the same as this one.
+     * \return true if the rhs is the same as *this.
+     */
+    bool equals(const Element &rhs);
+
     /*******************************************************************
      * identification interface
      ******************************************************************/

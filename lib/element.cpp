@@ -38,6 +38,11 @@ ElementImpl::~ElementImpl(void)
     if (this->block) this->block_cleanup();
 }
 
+bool Element::equals(const Element &rhs)
+{
+    return this->get() == rhs.get();
+}
+
 long Element::unique_id(void) const
 {
     return (*this)->unique_id;

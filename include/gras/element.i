@@ -34,22 +34,13 @@
 ////////////////////////////////////////////////////////////////////////
 // Operator overloads for Element
 ////////////////////////////////////////////////////////////////////////
-%{
-
-inline bool gras_element_equal(const gras::Element &lhs, const gras::Element &rhs)
-{
-    return lhs.get() == rhs.get();
-}
-
-%}
-
 %extend gras::Element
 {
     %insert("python")
     %{
         def __eq__(self, rhs):
             if not isinstance(rhs, Element): return False
-            return gras_element_equal(self, rhs)
+            return self.equals(rhs)
 
         def __str__(self):
             return self.to_string()
