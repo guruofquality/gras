@@ -21,6 +21,20 @@ typedef boost::shared_ptr<ElementImpl> ElementBase;
 
 struct Block;
 
+/*!
+ * Weak Element interface class:
+ * Allows internals to get a reference to the container holding an element.
+ * This container could be a shared_ptr or perhaps a Python object.
+ */
+struct WeakElement
+{
+    //! Lock creates a shared pointer holding a container reference
+    virtual boost::shared_ptr<void> lock(void) = 0;
+};
+
+/*!
+ * Element is a base class for all topological elements.
+ */
 struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
 {
     //! Create an empty element
@@ -87,13 +101,13 @@ struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
      * Good for that factory function/shared ptr paradigm.
      */
     template <typename T>
-    inline Element(const boost::shared_ptr<T> &elem);
+    Element(const boost::shared_ptr<T> &elem);
 
     //! Convert a shared ptr of a derived class to an Element
-    inline Element &shared_to_element(void);
+    Element &shared_to_element(void);
 
     //! for internal use only
-    boost::weak_ptr<Element> weak_self;
+    boost::shared_ptr<WeakElement> weak_self;
 
 };
 
