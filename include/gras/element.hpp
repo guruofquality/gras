@@ -19,13 +19,22 @@ struct ElementImpl;
 
 typedef boost::shared_ptr<ElementImpl> ElementBase;
 
+struct Block;
+
+/*!
+ * Weak Element interface class:
+ * Allows internals to get a reference to the container holding an element.
+ * This container could be a shared_ptr or perhaps a Python object.
+ */
 struct WeakElement
 {
+    //! Lock creates a shared pointer holding a container reference
     virtual boost::shared_ptr<void> lock(void) = 0;
 };
 
-struct Block;
-
+/*!
+ * Element is a base class for all topological elements.
+ */
 struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
 {
     //! Create an empty element

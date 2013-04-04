@@ -122,11 +122,10 @@ struct BlockPython : Block
         this->reset();
     }
 
-    void _Py_set_ref(PyObject *o)
-     {
-         std::cout << o->ob_refcnt <<std::endl;
-         this->weak_self.reset(new WeakElementPyObject(o));
-     }
+    void _Py_init_weak_ref__(PyObject *o)
+    {
+        this->weak_self.reset(new WeakElementPyObject(o));
+    }
 
     void notify_active(void)
     {
@@ -242,10 +241,10 @@ def sig_to_dtype_sig(sig):
 class Block(BlockPython):
     def __init__(self, name='Block', in_sig=None, out_sig=None):
         BlockPython.__init__(self, name)
+        self._Py_init_weak_ref__(self)
         self.set_input_signature(in_sig)
         self.set_output_signature(out_sig)
-        self.__prop_registry = dict();
-        self._Py_set_ref(self)
+        self.__prop_registry = dict()
 
     def set_input_signature(self, sig):
         self.__in_sig = sig_to_dtype_sig(sig)
