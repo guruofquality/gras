@@ -19,6 +19,11 @@ struct ElementImpl;
 
 typedef boost::shared_ptr<ElementImpl> ElementBase;
 
+struct WeakElement
+{
+    virtual boost::shared_ptr<void> lock(void) = 0;
+};
+
 struct Block;
 
 struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
@@ -87,13 +92,13 @@ struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
      * Good for that factory function/shared ptr paradigm.
      */
     template <typename T>
-    inline Element(const boost::shared_ptr<T> &elem);
+    Element(const boost::shared_ptr<T> &elem);
 
     //! Convert a shared ptr of a derived class to an Element
-    inline Element &shared_to_element(void);
+    Element &shared_to_element(void);
 
     //! for internal use only
-    boost::weak_ptr<Element> weak_self;
+    boost::shared_ptr<WeakElement> weak_self;
 
 };
 
