@@ -56,49 +56,12 @@
 %{
 #include <gras/block.hpp>
 #include <iostream>
-#include <boost/make_shared.hpp>
 %}
 
 %include <gras/element.i>
 %include <gras/block.i>
 
 %include "GRAS_Utils.i"
-
-////////////////////////////////////////////////////////////////////////
-// Create a reference holder for python objects
-////////////////////////////////////////////////////////////////////////
-%inline %{
-
-struct PyObjectRefHolder
-{
-    PyObjectRefHolder(PyObject *o):
-        o(o)
-    {
-        Py_INCREF(o);
-    }
-    ~PyObjectRefHolder(void)
-    {
-        PyGILPhondler phil;
-        Py_DECREF(o);
-    }
-    PyObject *o;
-};
-
-struct WeakElementPyObject : gras::WeakElement
-{
-    WeakElementPyObject(PyObject *o):
-        o(o)
-    {
-        //NOP
-    }
-    boost::shared_ptr<void> lock(void)
-    {
-        return boost::make_shared<PyObjectRefHolder>(o);
-    }
-    PyObject *o;
-};
-
-%}
 
 ////////////////////////////////////////////////////////////////////////
 // Make a special block with safe overloads
@@ -120,11 +83,6 @@ struct BlockPython : Block
     {
         PyTSPhondler phil;
         this->reset();
-    }
-
-    void _Py_init_weak_ref__(PyObject *o)
-    {
-        this->weak_self.reset(new WeakElementPyObject(o));
     }
 
     void notify_active(void)
@@ -241,7 +199,6 @@ def sig_to_dtype_sig(sig):
 class Block(BlockPython):
     def __init__(self, name='Block', in_sig=None, out_sig=None):
         BlockPython.__init__(self, name)
-        self._Py_init_weak_ref__(self)
         self.set_input_signature(in_sig)
         self.set_output_signature(out_sig)
         self.__prop_registry = dict()

@@ -41,3 +41,25 @@ struct PyTSPhondler
 };
 
 %}
+
+////////////////////////////////////////////////////////////////////////
+// Create a reference holder for python objects
+////////////////////////////////////////////////////////////////////////
+%inline %{
+
+struct PyObjectRefHolder
+{
+    PyObjectRefHolder(PyObject *o):
+        o(o)
+    {
+        Py_INCREF(o);
+    }
+    ~PyObjectRefHolder(void)
+    {
+        PyGILPhondler phil;
+        Py_DECREF(o);
+    }
+    PyObject *o;
+};
+
+%}

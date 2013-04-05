@@ -42,7 +42,7 @@ static Apology::Wax get_ref(const Element &elem)
 {
     if (elem.weak_self)
     {
-        boost::shared_ptr<void> shared_self = elem.weak_self->lock();
+        boost::shared_ptr<const void> shared_self = elem.weak_self->lock();
         if (shared_self) return shared_self;
     }
     return elem;
@@ -54,7 +54,6 @@ void HierBlock::connect(
     const Element &sink,
     const size_t sink_index
 ){
-    //TODO, this is the perfect place to validate IO sigs
     const Apology::Flow flow(
         Apology::Port(src->get_elem(), src_index, get_ref(src)),
         Apology::Port(sink->get_elem(), sink_index, get_ref(sink))

@@ -20,6 +20,7 @@
 %{
 #include <gras/hier_block.hpp>
 #include <gras/top_block.hpp>
+#include <boost/make_shared.hpp>
 %}
 
 ////////////////////////////////////////////////////////////////////////
@@ -29,10 +30,37 @@
 %include <gras/hier_block.i>
 %include <gras/top_block.hpp>
 
+%include "GRAS_Utils.i"
+
+////////////////////////////////////////////////////////////////////////
+// weak element overload for python
+////////////////////////////////////////////////////////////////////////
+%inline %{
+
+struct WeakElementPyObject : gras::WeakElement
+{
+    WeakElementPyObject(PyObject *o):
+        o(o)
+    {
+        //NOP
+    }
+    boost::shared_ptr<const void> lock(void)
+    {
+        return boost::make_shared<PyObjectRefHolder>(o);
+    }
+    PyObject *o;
+};
+
+inline void set_weak_py_self(gras::Element &elem, PyObject *o)
+{
+    elem.weak_self.reset(new WeakElementPyObject(o));
+}
+
+%}
+
 ////////////////////////////////////////////////////////////////////////
 // Make a special top block with python safe unlocking wait
 ////////////////////////////////////////////////////////////////////////
-%include "GRAS_Utils.i"
 %inline %{
 
 namespace gras
@@ -109,13 +137,16 @@ struct HierBlockPython : HierBlock
 
 def to_element(obj):
     if isinstance(obj, Element): return obj
-    try: return obj.shared_to_element()
+    try:
+        elem = obj.to_element()
+        set_weak_py_self(elem, obj)
+        return elem
     except: raise Exception('cant coerce obj %s to element'%(obj))
 
 def internal_connect__(fcn, obj, *args):
 
     if len(args) == 1:
-        elem = (args[0])
+        elem = to_element(args[0])
         fcn(obj, elem)
         return
 

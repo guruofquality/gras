@@ -10,7 +10,6 @@
 
 #include <gras/gras.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
 
 namespace gras
 {
@@ -29,13 +28,13 @@ struct Block;
 struct WeakElement
 {
     //! Lock creates a shared pointer holding a container reference
-    virtual boost::shared_ptr<void> lock(void) = 0;
+    virtual boost::shared_ptr<const void> lock(void) = 0;
 };
 
 /*!
  * Element is a base class for all topological elements.
  */
-struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
+struct GRAS_API Element : ElementBase
 {
     //! Create an empty element
     Element(void);
@@ -43,7 +42,20 @@ struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
     //! Creates a new element given the name
     Element(const std::string &name);
 
+    /*!
+     * Create an element from a shared pointer to an element.
+     * Good for that factory function/shared ptr paradigm.
+     */
+    template <typename T>
+    Element(const boost::shared_ptr<T> &elem);
+
     /*virtual*/ ~Element(void);
+
+    //! Convert this object to the element base class
+    const Element &to_element(void) const;
+
+    //! Convert this object to the element base class
+    Element &to_element(void);
 
     /*!
      * Check if another element is the same as this one.
@@ -94,19 +106,13 @@ struct GRAS_API Element : ElementBase, boost::enable_shared_from_this<Element>
     Block *locate_block(const std::string &path);
 
     /*******************************************************************
-     * Compatibility for dealing with shared ptrs of Elements
+     * API for dealing with parent containers - for internal use
      ******************************************************************/
+
     /*!
-     * Create an element from a shared pointer to an element.
-     * Good for that factory function/shared ptr paradigm.
+     * Allows internals to get a reference to the container holding an element.
+     * This container could be a shared_ptr or perhaps a Python object.
      */
-    template <typename T>
-    Element(const boost::shared_ptr<T> &elem);
-
-    //! Convert a shared ptr of a derived class to an Element
-    Element &shared_to_element(void);
-
-    //! for internal use only
     boost::shared_ptr<WeakElement> weak_self;
 
 };

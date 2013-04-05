@@ -31,30 +31,13 @@ Element::~Element(void)
     //NOP
 }
 
-//! Weak element overload for the case of shared_ptr container
-struct WeakElementSharedPtr : WeakElement
+const Element &Element::to_element(void) const
 {
-    WeakElementSharedPtr(boost::weak_ptr<Element> weak_self)
-    {
-        _weak_self = weak_self;
-    }
-    boost::shared_ptr<void> lock(void)
-    {
-        return _weak_self.lock();
-    }
-    boost::weak_ptr<Element> _weak_self;
-};
+    return *this;
+}
 
-Element &Element::shared_to_element(void)
+Element &Element::to_element(void)
 {
-    try
-    {
-        if (not this->weak_self)
-        {
-            this->weak_self.reset(new WeakElementSharedPtr(this->shared_from_this()));
-        }
-    }
-    catch(...){}
     return *this;
 }
 
