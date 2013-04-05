@@ -49,7 +49,7 @@ struct GRAS_API Element : ElementBase
     template <typename T>
     Element(const boost::shared_ptr<T> &elem);
 
-    /*virtual*/ ~Element(void);
+    virtual ~Element(void);
 
     //! Convert this object to the element base class
     const Element &to_element(void) const;
