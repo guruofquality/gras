@@ -37,6 +37,12 @@ struct BufferQueuePool : BufferQueue
 
     void push(const SBuffer &buff)
     {
+        //is it my buffer? otherwise dont keep it
+        if (buff->config.token.lock() != _token) return;
+
+        //should never get a buffer from a circ queue
+        ASSERT(buff.get_user_index() == size_t(~0));
+
         _queue.push_back(buff);
     }
 
