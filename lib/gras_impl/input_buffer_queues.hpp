@@ -151,6 +151,12 @@ struct InputBufferQueues
         return _enqueued_bytes[i]/_items_sizes[i];
     }
 
+    GRAS_FORCE_INLINE void update_has_msg(const size_t i, const bool has)
+    {
+        if (has) _bitset.set(i);
+        else __update(i);
+    }
+
     BitSet _bitset;
     std::vector<size_t> _items_sizes;
     std::vector<size_t> _enqueued_bytes;

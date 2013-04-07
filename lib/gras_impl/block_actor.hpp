@@ -135,6 +135,7 @@ struct BlockActor : Apology::Worker
         const bool has_input_bufs = not this->input_queues.empty(i) and this->input_queues.ready(i);
         const bool has_input_msgs = not this->input_msgs[i].empty();
         this->inputs_available.set(i, has_input_bufs or has_input_msgs);
+        this->input_queues.update_has_msg(i, has_input_msgs);
     }
 
     GRAS_FORCE_INLINE bool is_input_done(const size_t i)
