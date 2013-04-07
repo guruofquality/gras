@@ -11,7 +11,8 @@ struct MyBlock : gras::Block
         gras::Block("MyBlock")
     {
         foo = 0;
-        this->register_property("foo", &MyBlock::get_foo, &MyBlock::set_foo);
+        this->register_getter("foo", &MyBlock::get_foo);
+        this->register_setter("foo", &MyBlock::set_foo);
     }
 
     //dummy work

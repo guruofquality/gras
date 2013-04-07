@@ -203,7 +203,8 @@ struct BlockActor : Apology::Worker
     std::vector<std::vector<OutputHintMessage> > output_allocation_hints;
 
     //property stuff
-    std::map<std::string, PropertyRegistrySptr> prop_registry;
+    std::map<std::string, PropertyRegistrySptr> getter_registry;
+    std::map<std::string, PropertyRegistrySptr> setter_registry;
 
     BlockStats stats;
 };

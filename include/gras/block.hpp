@@ -220,27 +220,40 @@ struct GRAS_API Block : Element
      ******************************************************************/
 
     /*!
-     * Register property get and set methods into the property interface.
-     * Call register_property() from the contructor of the block.
-     *
-     * Note: It is safe for the user to register a NULL function if the user
-     * wishes to not register a getter or setter for a particular property.
+     * Register property getter method into the property interface.
+     * Call register_getter() from the contructor of the block.
      *
      * Example register usage:
-     * this->register_property("foo", &MyBlock::get_foo, &MyBlock::set_foo);
+     * this->register_getter("foo", &MyBlock::get_foo);
      *
-     * Example method declarations:
+     * Example method declaration:
      * int get_foo(void);
-     * void set_foo(const int &new_foo);
      *
      * \param key the string to identify this property
      * \param get the class method to get the property
+     */
+    template <typename ClassType, typename ValueType>
+    void register_getter(
+        const std::string &key,
+        ValueType(ClassType::*get)(void)
+    );
+
+    /*!
+     * Register property setter method into the property interface.
+     * Call register_setter() from the contructor of the block.
+     *
+     * Example register usage:
+     * this->register_setter("foo", &MyBlock::set_foo);
+     *
+     * Example method declaration:
+     * void set_foo(const int &new_foo);
+     *
+     * \param key the string to identify this property
      * \param set the class method to set the property
      */
     template <typename ClassType, typename ValueType>
-    void register_property(
+    void register_setter(
         const std::string &key,
-        ValueType(ClassType::*get)(void),
         void(ClassType::*set)(const ValueType &)
     );
 
@@ -472,7 +485,8 @@ struct GRAS_API Block : Element
      * private implementation guts for overloads and template support
      ******************************************************************/
     virtual PMCC _handle_prop_access(const std::string &, const PMCC &, const bool);
-    void _register_property(const std::string &, PMCC);
+    void _register_getter(const std::string &, PMCC);
+    void _register_setter(const std::string &, PMCC);
     virtual void _set_property(const std::string &, const PMCC &);
     virtual PMCC _get_property(const std::string &);
 };

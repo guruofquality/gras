@@ -52,16 +52,27 @@ private:
  */
 
 template <typename ClassType, typename ValueType>
-inline void Block::register_property(
+inline void Block::register_getter(
     const std::string &key,
-    ValueType(ClassType::*get)(void),
+    ValueType(ClassType::*get)(void)
+)
+{
+    ClassType *obj = dynamic_cast<ClassType *>(this);
+    PropertyRegistrySptr pr;
+    pr.reset(new PropertyRegistryImpl<ClassType, ValueType>(obj, get, NULL));
+    this->_register_getter(key, PMC_M(pr));
+}
+
+template <typename ClassType, typename ValueType>
+inline void Block::register_setter(
+    const std::string &key,
     void(ClassType::*set)(const ValueType &)
 )
 {
     ClassType *obj = dynamic_cast<ClassType *>(this);
     PropertyRegistrySptr pr;
-    pr.reset(new PropertyRegistryImpl<ClassType, ValueType>(obj, get, set));
-    this->_register_property(key, PMC_M(pr));
+    pr.reset(new PropertyRegistryImpl<ClassType, ValueType>(obj, NULL, set));
+    this->_register_setter(key, PMC_M(pr));
 }
 
 template <typename ValueType>

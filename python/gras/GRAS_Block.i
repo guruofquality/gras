@@ -201,7 +201,8 @@ class Block(BlockPython):
         BlockPython.__init__(self, name)
         self.set_input_signature(in_sig)
         self.set_output_signature(out_sig)
-        self.__prop_registry = dict()
+        self.__getter_registry = dict()
+        self.__setter_registry = dict()
 
     def set_input_signature(self, sig):
         self.__in_sig = sig_to_dtype_sig(sig)
@@ -281,12 +282,17 @@ class Block(BlockPython):
                 self.post_output_tag(o, t)
 
     def _Py_handle_prop_access(self, key, value, set):
-        (getter, setter) = self.__prop_registry[key]
         if set:
+            setter = self.__setter_registry[key]
             setter(value())
             return PMCC()
-        return PMC_M(getter())
+        else:
+            getter = self.__getter_registry[key]
+            return PMC_M(getter())
 
-    def register_property(self, key, getter, setter):
-        self.__prop_registry[key] = (getter, setter)
+    def register_getter(self, key, getter):
+        self.__getter_registry[key] = getter
+
+    def register_setter(self, key, setter):
+        self.__setter_registry[key] = setter
 %}

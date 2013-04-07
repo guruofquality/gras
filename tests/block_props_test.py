@@ -8,7 +8,8 @@ class MyBlock(gras.Block):
     def __init__(self):
         gras.Block.__init__(self, "MyBlock")
         self.foo = 0
-        self.register_property("foo", self.get_foo, self.set_foo)
+        self.register_getter("foo", self.get_foo)
+        self.register_setter("foo", self.set_foo)
 
     def work(self, *args): pass
 
