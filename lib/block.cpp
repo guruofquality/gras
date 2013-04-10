@@ -32,6 +32,7 @@ Block::Block(const std::string &name):
     Element(name)
 {
     (*this)->block.reset(new BlockActor());
+    (*this)->block->prio_token = Token::make();
     (*this)->thread_pool = (*this)->block->thread_pool; //ref copy of pool
     (*this)->block->name = name; //for debug purposes
 

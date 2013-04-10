@@ -51,12 +51,20 @@ struct ElementImpl
         return topology.get();
     }
 
-    //call this before sending a high prio message to all workers
-    void pre_post_all_set_prio(void)
+    template <typename MessageType>
+    void bcast_prio_msg(const MessageType &msg)
     {
+        Theron::Receiver receiver;
         BOOST_FOREACH(Apology::Worker *worker, this->executor->get_workers())
         {
-            dynamic_cast<BlockActor *>(worker)->highPrioPreNotify();
+            MessageType message = msg;
+            message.prio_token = dynamic_cast<BlockActor *>(worker)->prio_token;
+            worker->Push(message, receiver.GetAddress());
+        }
+        size_t outstandingCount(this->executor->get_workers().size());
+        while (outstandingCount != 0)
+        {
+            outstandingCount -= receiver.Wait(outstandingCount);
         }
     }
 

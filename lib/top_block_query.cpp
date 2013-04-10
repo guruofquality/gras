@@ -75,8 +75,9 @@ static std::string query_stats(ElementImpl *self, const boost::property_tree::pt
         if (std::find(block_ids.begin(), block_ids.end(), id) == block_ids.end()) continue;
 
         //send a message to the block's actor to query stats
-        dynamic_cast<BlockActor *>(worker)->highPrioPreNotify();
-        worker->Push(GetStatsMessage(), receiver.GetAddress());
+        GetStatsMessage message;
+        message.prio_token = dynamic_cast<BlockActor *>(worker)->prio_token;
+        worker->Push(message, receiver.GetAddress());
         outstandingCount++;
     }
     while (outstandingCount) outstandingCount -= receiver.Wait(outstandingCount);

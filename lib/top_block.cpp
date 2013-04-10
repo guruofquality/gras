@@ -37,8 +37,7 @@ TopBlock::~TopBlock(void)
 
 void ElementImpl::top_block_cleanup(void)
 {
-    this->pre_post_all_set_prio();
-    this->executor->post_all(TopInertMessage());
+    this->bcast_prio_msg(TopInertMessage());
     this->topology->clear_all();
     this->executor->commit();
     if (ARMAGEDDON) std::cerr
@@ -93,8 +92,7 @@ void TopBlock::stop(void)
     (*this)->thread_group->interrupt_all();
 
     //message all blocks to mark done
-    (*this)->pre_post_all_set_prio();
-    (*this)->executor->post_all(TopInertMessage());
+    (*this)->bcast_prio_msg(TopInertMessage());
 }
 
 void TopBlock::run(void)

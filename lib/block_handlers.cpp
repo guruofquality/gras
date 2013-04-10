@@ -34,8 +34,6 @@ void BlockActor::handle_top_inert(
     this->mark_done();
 
     this->Send(0, from); //ACK
-
-    this->highPrioAck();
 }
 
 void BlockActor::handle_top_token(
@@ -157,5 +155,8 @@ void BlockActor::handle_get_stats(
     message.stats_time = time_now();
 
     this->Send(message, from); //ACK
-    this->highPrioAck();
+
+    //work could have been skipped by a high prio msg
+    //forcefully kick the task to recheck in a new call
+    this->Send(SelfKickMessage(), this->GetAddress());
 }

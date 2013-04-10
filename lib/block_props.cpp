@@ -37,7 +37,10 @@ void BlockActor::handle_prop_access(
 
     //send the reply
     this->Send(reply, from); //ACK
-    this->highPrioAck();
+
+    //work could have been skipped by a high prio msg
+    //forcefully kick the task to recheck in a new call
+    this->Send(SelfKickMessage(), this->GetAddress());
 }
 
 PMCC Block::_handle_prop_access(const std::string &key, const PMCC &value, const bool set)
@@ -81,11 +84,11 @@ static PMCC prop_access_dispatcher(ActorType &actor, const std::string &key, con
 {
     PropAccessReceiver receiver;
     PropAccessMessage message;
+    message.prio_token = actor->prio_token;
     message.set = set;
     message.key = key;
     message.value = value;
     actor->Push(message, receiver.GetAddress());
-    actor->highPrioPreNotify();
     receiver.Wait();
     if (not receiver.message.error.empty())
     {

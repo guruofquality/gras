@@ -30,7 +30,7 @@ struct TopActiveMessage
 
 struct TopInertMessage
 {
-    //empty
+    Token prio_token;
 };
 
 struct TopTokenMessage
@@ -133,6 +133,7 @@ struct OutputUpdateMessage
 
 struct PropAccessMessage
 {
+    Token prio_token;
     bool set;
     std::string key;
     PMCC value;
@@ -146,6 +147,7 @@ struct SelfKickMessage
 
 struct GetStatsMessage
 {
+    Token prio_token;
     std::string block_id;
     BlockStats stats;
     time_ticks_t stats_time;
