@@ -9,9 +9,9 @@ namespace gras
 {
 
     //! Weak element overload for the case of shared_ptr container
-    struct WeakElementSharedPtr : WeakElement
+    struct WeakContainerSharedPtr : WeakContainer
     {
-        WeakElementSharedPtr(boost::weak_ptr<const void> weak_self)
+        WeakContainerSharedPtr(boost::weak_ptr<const void> weak_self)
         {
             _weak_self = weak_self;
         }
@@ -25,12 +25,8 @@ namespace gras
     template <typename T>
     inline Element::Element(const boost::shared_ptr<T> &elem)
     {
-        //the container is a shared pointer, so save the reference,
-        //unless the reference was already set to something
-        if (not elem->weak_self)
-        {
-            elem->weak_self.reset(new WeakElementSharedPtr(elem));
-        }
+        //the container is a shared pointer, so save the reference
+        elem->set_container(new WeakContainerSharedPtr(elem));
 
         //initialize this new Element from the argument passed
         *this = *elem;

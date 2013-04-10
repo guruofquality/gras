@@ -29,6 +29,7 @@ struct ElementImpl
     std::string name;
     long unique_id;
     std::string id;
+    boost::shared_ptr<WeakContainer> weak_self;
 
     //top block stuff
     SharedThreadGroup thread_group;

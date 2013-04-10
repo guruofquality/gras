@@ -9,32 +9,16 @@
 #endif //_MSC_VER
 
 #include <gras/gras.hpp>
+#include <gras/weak_container.hpp>
 #include <boost/shared_ptr.hpp>
 
 namespace gras
 {
 
-struct ElementImpl;
-
-typedef boost::shared_ptr<ElementImpl> ElementBase;
-
-struct Block;
-
-/*!
- * Weak Element interface class:
- * Allows internals to get a reference to the container holding an element.
- * This container could be a shared_ptr or perhaps a Python object.
- */
-struct WeakElement
-{
-    //! Lock creates a shared pointer holding a container reference
-    virtual boost::shared_ptr<const void> lock(void) = 0;
-};
-
 /*!
  * Element is a base class for all topological elements.
  */
-struct GRAS_API Element : ElementBase
+struct GRAS_API Element : boost::shared_ptr<ElementImpl>
 {
     //! Create an empty element
     Element(void);
@@ -56,6 +40,15 @@ struct GRAS_API Element : ElementBase
 
     //! Convert this object to the element base class
     Element &to_element(void);
+
+    /*!
+     * Set a reference wrapper for the parent container to this element.
+     * Allows internals to get a reference to the container holding an element.
+     * The actual container could be a shared_ptr or perhaps a Python object.
+     * Note: the container parameter is assumed to be allocated with new.
+     * The element object will be responsible for deleting container.
+     */
+    void set_container(WeakContainer *container);
 
     /*!
      * Check if another element is the same as this one.
@@ -104,16 +97,6 @@ struct GRAS_API Element : ElementBase
      * \return a pointer to the block
      */
     Block *locate_block(const std::string &path);
-
-    /*******************************************************************
-     * API for dealing with parent containers - for internal use
-     ******************************************************************/
-
-    /*!
-     * Allows internals to get a reference to the container holding an element.
-     * This container could be a shared_ptr or perhaps a Python object.
-     */
-    boost::shared_ptr<WeakElement> weak_self;
 
 };
 

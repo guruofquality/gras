@@ -70,6 +70,12 @@ namespace gras
 {
     //! Typedef for absolute item indexes
     typedef unsigned long long item_index_t;
+
+    //! Forward declare for element base class
+    struct ElementImpl;
+
+    //! Forward declare for block class
+    struct Block;
 }
 
 #endif /*INCLUDED_GRAS_GRAS_HPP*/

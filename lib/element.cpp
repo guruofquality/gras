@@ -48,6 +48,11 @@ ElementImpl::~ElementImpl(void)
     if (this->block) this->block_cleanup();
 }
 
+void Element::set_container(WeakContainer *container)
+{
+    (*this)->weak_self.reset(container);
+}
+
 bool Element::equals(const Element &rhs)
 {
     return this->get() == rhs.get();

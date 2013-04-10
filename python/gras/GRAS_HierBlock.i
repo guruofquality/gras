@@ -35,11 +35,11 @@
 ////////////////////////////////////////////////////////////////////////
 // weak element overload for python
 ////////////////////////////////////////////////////////////////////////
-%inline %{
+%{
 
-struct WeakElementPyObject : gras::WeakElement
+struct WeakContainerPyObject : gras::WeakContainer
 {
-    WeakElementPyObject(PyObject *o):
+    WeakContainerPyObject(PyObject *o):
         o(o)
     {
         //NOP
@@ -53,10 +53,12 @@ struct WeakElementPyObject : gras::WeakElement
 
 inline void set_weak_py_self(gras::Element &elem, PyObject *o)
 {
-    elem.weak_self.reset(new WeakElementPyObject(o));
+    elem.set_container(new WeakContainerPyObject(o));
 }
 
 %}
+
+void set_weak_py_self(gras::Element &elem, PyObject *o);
 
 ////////////////////////////////////////////////////////////////////////
 // Make a special top block with python safe unlocking wait

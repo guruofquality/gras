@@ -40,9 +40,10 @@ void HierBlock::disconnect(const Element &elem)
 
 static Apology::Wax get_ref(const Element &elem)
 {
-    if (elem.weak_self)
+    boost::shared_ptr<WeakContainer> weak_self = elem->weak_self;
+    if (weak_self)
     {
-        boost::shared_ptr<const void> shared_self = elem.weak_self->lock();
+        boost::shared_ptr<const void> shared_self = weak_self->lock();
         if (shared_self) return shared_self;
     }
     return elem;
