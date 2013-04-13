@@ -28,5 +28,7 @@ if __name__ == '__main__':
 
     tb.connect(mult03, head, sink)
 
+    import time
+    s = time.time()
     tb.run()
-    tb.wait()
+    print '#/#/',time.time() - s
