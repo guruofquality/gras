@@ -73,5 +73,8 @@ if __name__ == '__main__':
     parser.add_option("", "--which", dest="which", type="string", default='')
     (options, args) = parser.parse_args()
     tb = filter_test(num=options.num, which=options.which)
+    import time
+    s = time.time()
     tb.run()
+    print '#/#/',time.time() - s
 

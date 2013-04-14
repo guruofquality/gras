@@ -70,5 +70,8 @@ if __name__ == '__main__':
 		help="Set num [default=%default]")
 	(options, args) = parser.parse_args()
 	tb = many_rate_changing(num=options.num)
+	import time
+	s = time.time()
 	tb.run()
+	print '#/#/',time.time() - s
 

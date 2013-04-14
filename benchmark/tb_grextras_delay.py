@@ -23,5 +23,7 @@ if __name__ == '__main__':
     tb.connect(src0, (delay_block, 0))
     tb.connect(delay_block, head, sink)
 
+    import time
+    s = time.time()
     tb.run()
-    tb.wait()
+    print '#/#/',time.time() - s

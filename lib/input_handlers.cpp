@@ -12,7 +12,7 @@ void BlockActor::handle_input_tag(const InputTagMessage &message, const Theron::
     const size_t index = message.index;
 
     //handle incoming stream tag, push into the tag storage
-    if (this->block_state == BLOCK_STATE_DONE) return;
+    if GRAS_UNLIKELY(this->block_state == BLOCK_STATE_DONE) return;
     this->input_tags[index].push_back(message.tag);
     this->input_tags_changed[index] = true;
 }
@@ -24,7 +24,7 @@ void BlockActor::handle_input_msg(const InputMsgMessage &message, const Theron::
     const size_t index = message.index;
 
     //handle incoming async message, push into the msg storage
-    if (this->block_state == BLOCK_STATE_DONE) return;
+    if GRAS_UNLIKELY(this->block_state == BLOCK_STATE_DONE) return;
     this->input_msgs[index].push_back(message.msg);
     this->update_input_avail(index);
 
@@ -39,7 +39,7 @@ void BlockActor::handle_input_buffer(const InputBufferMessage &message, const Th
     const size_t index = message.index;
 
     //handle incoming stream buffer, push into the queue
-    if (this->block_state == BLOCK_STATE_DONE) return;
+    if GRAS_UNLIKELY(this->block_state == BLOCK_STATE_DONE) return;
     this->input_queues.push(index, message.buffer);
     this->update_input_avail(index);
 

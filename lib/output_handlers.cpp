@@ -14,7 +14,7 @@ void BlockActor::handle_output_buffer(const OutputBufferMessage &message, const 
 
     //a buffer has returned from the downstream
     //(all interested consumers have finished with it)
-    if (this->block_state == BLOCK_STATE_DONE) return;
+    if GRAS_UNLIKELY(this->block_state == BLOCK_STATE_DONE) return;
     this->output_queues.push(index, message.buffer);
 
     ta.done();

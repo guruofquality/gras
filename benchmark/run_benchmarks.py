@@ -22,10 +22,14 @@ __path__ = os.path.dirname(__file__)
 def time_a_single_one(args, env):
     print env
     t0 = time.time()
-    p = subprocess.Popen(args=args, env=env)
+    p = subprocess.Popen(args=args, env=env, stdout=subprocess.PIPE)
     p.wait()
     t1 = time.time()
-    return t1-t0
+    for line in p.stdout.read().splitlines():
+        if line.startswith('#/#/'):
+            return float(line[4:].strip())
+    raise Exception, 'no time result found!'
+    #return t1-t0
 
 def do_a_benchmark(bm):
     title = bm['wat']
@@ -51,6 +55,7 @@ def do_a_benchmark(bm):
         run_results = list()
         for num_runs in range(NUM_RUNS_PER_TEST):
             t = time_a_single_one(args=args, env=env)
+            print 'execution time: ', t, 'secs'
             run_results.append(bm['to_result'](t))
         result_means.append(numpy.average(run_results))
         result_stddevs.append(numpy.std(run_results))
