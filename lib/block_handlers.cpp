@@ -126,7 +126,7 @@ void BlockActor::handle_self_kick(
     const Theron::Address
 ){
     MESSAGE_TRACER();
-    this->handle_task();
+    this->task_main();
 }
 
 void BlockActor::handle_get_stats(

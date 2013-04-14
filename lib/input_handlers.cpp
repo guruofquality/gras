@@ -29,7 +29,7 @@ void BlockActor::handle_input_msg(const InputMsgMessage &message, const Theron::
     this->update_input_avail(index);
 
     ta.done();
-    this->handle_task();
+    this->task_main();
 }
 
 void BlockActor::handle_input_buffer(const InputBufferMessage &message, const Theron::Address)
@@ -44,7 +44,7 @@ void BlockActor::handle_input_buffer(const InputBufferMessage &message, const Th
     this->update_input_avail(index);
 
     ta.done();
-    this->handle_task();
+    this->task_main();
 }
 
 void BlockActor::handle_input_token(const InputTokenMessage &message, const Theron::Address)
@@ -68,7 +68,7 @@ void BlockActor::handle_input_check(const InputCheckMessage &message, const Ther
 
     //upstream done, give it one more attempt at task handling
     ta.done();
-    this->handle_task();
+    this->task_main();
 
     //now recheck the status, mark block done if the input is done
     if (this->is_input_done(index)) this->mark_done();

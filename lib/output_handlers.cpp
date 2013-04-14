@@ -18,7 +18,7 @@ void BlockActor::handle_output_buffer(const OutputBufferMessage &message, const 
     this->output_queues.push(index, message.buffer);
 
     ta.done();
-    this->handle_task();
+    this->task_main();
 }
 
 void BlockActor::handle_output_token(const OutputTokenMessage &message, const Theron::Address)
