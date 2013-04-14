@@ -4,6 +4,7 @@
 #include <gras_impl/block_actor.hpp>
 #include <boost/thread/thread.hpp>
 #include <Theron/Framework.h>
+#include <stdexcept>
 
 using namespace gras;
 
@@ -14,6 +15,10 @@ ThreadPoolConfig::ThreadPoolConfig(void)
     node_mask = 0;
     processor_mask = 0xffffffff;
     yield_strategy = "STRONG";
+
+    //environment variable override
+    const char * gras_yield = getenv("GRAS_YIELD");
+    if (gras_yield != NULL) yield_strategy = gras_yield;
 }
 
 /***********************************************************************
@@ -38,10 +43,12 @@ ThreadPool::ThreadPool(const ThreadPoolConfig &config)
         config.processor_mask
     );
 
-    //if (config.yield_strategy == "BLOCKING") params.mYieldStrategy = Theron::YIELD_STRATEGY_BLOCKING;
-    if (config.yield_strategy == "POLITE") params.mYieldStrategy = Theron::YIELD_STRATEGY_POLITE;
-    if (config.yield_strategy == "STRONG") params.mYieldStrategy = Theron::YIELD_STRATEGY_STRONG;
-    if (config.yield_strategy == "AGGRESSIVE") params.mYieldStrategy = Theron::YIELD_STRATEGY_AGGRESSIVE;
+    if (config.yield_strategy.empty()) params.mYieldStrategy = Theron::YIELD_STRATEGY_STRONG;
+    //else if (config.yield_strategy == "BLOCKING") params.mYieldStrategy = Theron::YIELD_STRATEGY_BLOCKING;
+    else if (config.yield_strategy == "POLITE") params.mYieldStrategy = Theron::YIELD_STRATEGY_POLITE;
+    else if (config.yield_strategy == "STRONG") params.mYieldStrategy = Theron::YIELD_STRATEGY_STRONG;
+    else if (config.yield_strategy == "AGGRESSIVE") params.mYieldStrategy = Theron::YIELD_STRATEGY_AGGRESSIVE;
+    else throw std::runtime_error("gras::ThreadPoolConfig yield_strategy unknown: " + config.yield_strategy);
 
     this->reset(new Theron::Framework(Theron::Framework::Parameters(params)));
 }
