@@ -15,13 +15,8 @@ import numpy
 
 class many_rate_changing(gr.top_block):
 
-	def __init__(self, num=1e7):
+	def __init__(self):
 		gr.top_block.__init__(self, "Many Rate Changing")
-
-		##################################################
-		# Parameters
-		##################################################
-		self.num = num
 
 		##################################################
 		# Variables
@@ -35,7 +30,6 @@ class many_rate_changing(gr.top_block):
 		self.gr_unpacked_to_packed_xx_0 = gr.unpacked_to_packed_bb(2, gr.GR_LSB_FIRST)
 		self.gr_packed_to_unpacked_xx_0 = gr.packed_to_unpacked_bb(2, gr.GR_MSB_FIRST)
 		self.gr_null_sink_0_2 = gr.null_sink(gr.sizeof_char*1)
-		self.gr_head_0 = gr.head(gr.sizeof_char*1, int(num))
 		self.blocks_keep_m_in_n_0 = blocks.keep_m_in_n(gr.sizeof_float, 3, 20, 0)
 		self.blocks_float_to_char_0 = blocks.float_to_char(1, 1)
 		self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
@@ -48,8 +42,7 @@ class many_rate_changing(gr.top_block):
 		self.connect((self.blocks_float_to_char_0, 0), (self.gr_packed_to_unpacked_xx_0, 0))
 		self.connect((self.gr_unpacked_to_packed_xx_0, 0), (self.blocks_char_to_float_0, 0))
 		self.connect((self.random_source_x_0, 0), (self.gr_unpacked_to_packed_xx_0, 0))
-		self.connect((self.gr_packed_to_unpacked_xx_0, 0), (self.gr_head_0, 0))
-		self.connect((self.gr_head_0, 0), (self.gr_null_sink_0_2, 0))
+		self.connect((self.gr_packed_to_unpacked_xx_0, 0), (self.gr_null_sink_0_2, 0))
 
 
 	def get_num(self):
@@ -66,12 +59,15 @@ class many_rate_changing(gr.top_block):
 
 if __name__ == '__main__':
 	parser = OptionParser(option_class=eng_option, usage="%prog: [options]")
-	parser.add_option("", "--num", dest="num", type="eng_float", default=eng_notation.num_to_str(1e7),
+	parser.add_option("", "--dur", dest="dur", type="eng_float", default=eng_notation.num_to_str(1.0),
 		help="Set num [default=%default]")
 	(options, args) = parser.parse_args()
-	tb = many_rate_changing(num=options.num)
+	tb = many_rate_changing()
 	import time
-	s = time.time()
-	tb.run()
-	print '#/#/',time.time() - s
+	tb.start()
+	time.sleep(options.dur)
+	print '##RESULT##', tb.gr_null_sink_0_2.nitems_read(0)/options.dur
+	import sys; sys.stdout.flush()
+	tb.stop()
+	tb.wait()
 

@@ -5,7 +5,7 @@ import sys
 
 if __name__ == '__main__':
 
-    num = long(float(sys.argv[1]))
+    duration = float(sys.argv[1])
 
     tb = gr.top_block()
     src0 = gr.null_source(8)
@@ -16,7 +16,6 @@ if __name__ == '__main__':
     addr23 = grblocks.add_cc()
     mult03 = grblocks.multiply_cc()
     sink = gr.null_sink(8)
-    head = gr.head(8, num)
 
     tb.connect(src0, (addr01, 0))
     tb.connect(src1, (addr01, 1))
@@ -26,9 +25,12 @@ if __name__ == '__main__':
     tb.connect(addr01, (mult03, 0))
     tb.connect(addr23, (mult03, 1))
 
-    tb.connect(mult03, head, sink)
+    tb.connect(mult03, sink)
 
     import time
-    s = time.time()
-    tb.run()
-    print '#/#/',time.time() - s
+    tb.start()
+    time.sleep(duration)
+    print '##RESULT##', sink.nitems_read(0)/duration
+    import sys; sys.stdout.flush()
+    tb.stop()
+    tb.wait()

@@ -17,18 +17,32 @@ from bm_registry import BENCHMARKS
 
 NUM_RUNS_PER_TEST = 5
 
+BAD_BOOST_KILL_DURATION = 5.0 #seconds
+
 __path__ = os.path.dirname(__file__)
 
-def time_a_single_one(args, env):
+import threading
+
+#because boost interrupts are broken in half the versions of boost
+#this stupidity makes stock gnuradio apps exit with bad boost
+def kill_after_timeout(p):
+    time.sleep(BAD_BOOST_KILL_DURATION)
+    try: p.kill()
+    except: pass
+
+def run_a_single_one(args, env):
     print env
-    t0 = time.time()
     p = subprocess.Popen(args=args, env=env, stdout=subprocess.PIPE)
+    t = threading.Thread(target=kill_after_timeout, args = (p,))
+    t.daemon = True
+    t.start()
     p.wait()
-    t1 = time.time()
-    for line in p.stdout.read().splitlines():
-        if line.startswith('#/#/'):
-            return float(line[4:].strip())
-    raise Exception, 'no time result found!'
+    out = p.stdout.read()
+    #print out
+    for line in out.splitlines():
+        if line.startswith('##RESULT##'):
+            return float(line[len('##RESULT##'):].strip())
+    raise Exception, 'no result found!'
     #return t1-t0
 
 def do_a_benchmark(bm):
@@ -54,9 +68,9 @@ def do_a_benchmark(bm):
             env.update(run['envextra'])
         run_results = list()
         for num_runs in range(NUM_RUNS_PER_TEST):
-            t = time_a_single_one(args=args, env=env)
-            print 'execution time: ', t, 'secs'
-            run_results.append(bm['to_result'](t))
+            res = run_a_single_one(args=args, env=env)
+            print 'Result:', res
+            run_results.append(res)
         result_means.append(numpy.average(run_results))
         result_stddevs.append(numpy.std(run_results))
 

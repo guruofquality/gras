@@ -15,13 +15,8 @@ from optparse import OptionParser
 
 class filter_test(gr.top_block):
 
-    def __init__(self, num=1e7, which=''):
+    def __init__(self, which=''):
         gr.top_block.__init__(self, "Filter Test")
-
-        ##################################################
-        # Parameters
-        ##################################################
-        self.num = num
 
         ##################################################
         # Variables
@@ -33,7 +28,6 @@ class filter_test(gr.top_block):
         ##################################################
         self.gr_null_source_0 = gr.null_source(gr.sizeof_gr_complex*1)
         self.gr_null_sink_0 = gr.null_sink(gr.sizeof_gr_complex*1)
-        self.gr_head_0 = gr.head(gr.sizeof_gr_complex*1, int(num))
         self.blks2_rational_resampler_xxx_0 = blks2.rational_resampler_ccc(
             interpolation=3,
             decimation=7,
@@ -49,8 +43,7 @@ class filter_test(gr.top_block):
         # Connections
         ##################################################
         self.connect((self.filter, 0), (self.gr_null_sink_0, 0))
-        self.connect((self.gr_null_source_0, 0), (self.gr_head_0, 0))
-        self.connect((self.gr_head_0, 0), (self.filter, 0))
+        self.connect((self.gr_null_source_0, 0), (self.filter, 0))
 
 # QT sink close method reimplementation
 
@@ -68,13 +61,16 @@ class filter_test(gr.top_block):
 
 if __name__ == '__main__':
     parser = OptionParser(option_class=eng_option, usage="%prog: [options]")
-    parser.add_option("", "--num", dest="num", type="eng_float", default=eng_notation.num_to_str(1e7),
+    parser.add_option("", "--dur", dest="dur", type="eng_float", default=eng_notation.num_to_str(1.0),
         help="Set num [default=%default]")
     parser.add_option("", "--which", dest="which", type="string", default='')
     (options, args) = parser.parse_args()
-    tb = filter_test(num=options.num, which=options.which)
+    tb = filter_test(which=options.which)
     import time
-    s = time.time()
-    tb.run()
-    print '#/#/',time.time() - s
+    tb.start()
+    time.sleep(options.dur)
+    print '##RESULT##', tb.gr_null_sink_0.nitems_read(0)/options.dur
+    import sys; sys.stdout.flush()
+    tb.stop()
+    tb.wait()
 
