@@ -2,7 +2,8 @@
 
 #include "element_impl.hpp"
 #include <gras/block.hpp>
-#include <boost/thread/thread.hpp> //yield
+#include <boost/thread/thread.hpp> //sleep
+#include <iostream>
 
 using namespace gras;
 
@@ -51,14 +52,56 @@ Block::~Block(void)
     //NOP
 }
 
+enum block_cleanup_state_type
+{
+    BLOCK_CLEANUP_WAIT,
+    BLOCK_CLEANUP_WARN,
+    BLOCK_CLEANUP_DAMN,
+    BLOCK_CLEANUP_DOTS,
+};
+
+static void wait_block_cleanup(ElementImpl &self)
+{
+    const boost::system_time start = boost::get_system_time();
+    block_cleanup_state_type state = BLOCK_CLEANUP_WAIT;
+    while (self.block->GetNumQueuedMessages())
+    {
+        boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+        switch (state)
+        {
+        case BLOCK_CLEANUP_WAIT:
+            if (boost::get_system_time() > start + boost::posix_time::seconds(1))
+            {
+                std::cerr << self.id << ", waiting for you to finish." << std::endl;
+                state = BLOCK_CLEANUP_WARN;
+            }
+            break;
+
+        case BLOCK_CLEANUP_WARN:
+            if (boost::get_system_time() > start + boost::posix_time::seconds(2))
+            {
+                std::cerr << self.id << ", give up the thread context!" << std::endl;
+                state = BLOCK_CLEANUP_DAMN;
+            }
+            break;
+
+        case BLOCK_CLEANUP_DAMN:
+            if (boost::get_system_time() > start + boost::posix_time::seconds(3))
+            {
+                std::cerr << self.id << " FAIL; application will now hang..." << std::endl;
+                state = BLOCK_CLEANUP_DOTS;
+            }
+            break;
+
+        case BLOCK_CLEANUP_DOTS: break;
+        }
+    }
+}
+
 void ElementImpl::block_cleanup(void)
 {
     //wait for actor to chew through enqueued messages
-    while (this->block->GetNumQueuedMessages())
-    {
-        //TODO timeout if this does not stop
-        boost::this_thread::yield();
-    }
+    wait_block_cleanup(*this);
 
     //delete the actor
     this->block.reset();
