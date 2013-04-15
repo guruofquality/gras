@@ -121,7 +121,7 @@ void BufferQueueCirc::pop(void)
 void BufferQueueCirc::push(const SBuffer &buff)
 {
     //is it my buffer? otherwise dont keep it
-    if (buff->config.token.lock() != _token) return;
+    if GRAS_UNLIKELY(buff->config.token.lock() != _token) return;
 
     ASSERT(buff.get_user_index() < _returned_buffers.size());
     _returned_buffers[buff.get_user_index()] = buff;
