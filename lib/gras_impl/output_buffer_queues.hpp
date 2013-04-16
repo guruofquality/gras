@@ -35,7 +35,7 @@ struct OutputBufferQueues
 
     GRAS_FORCE_INLINE void push(const size_t i, const SBuffer &buff)
     {
-        if GRAS_UNLIKELY(not _queues[i]) return; //block is likely done, throw out buffer
+        if (not _queues[i]) return; //block is likely done, throw out buffer
         _queues[i]->push(buff);
         _update(i);
     }
@@ -88,7 +88,7 @@ struct OutputBufferQueues
 
     GRAS_FORCE_INLINE void _update(const size_t i)
     {
-        if GRAS_UNLIKELY(not _queues[i] or _queues[i]->empty())
+        if (not _queues[i] or _queues[i]->empty())
         {
             _bitset.reset(i);
             return;
