@@ -50,9 +50,19 @@ public:
     //! Get a reference to the max items
     size_t &max(void);
 
+    //! Get a vector of just the work pointers
+    const std::vector<PtrType> &vec(void) const;
+
+    //! Get a reference to the work pointers
+    std::vector<PtrType> &vec(void);
+
+    //! Resize the work buffer array
+    void resize(const size_t size);
+
 private:
     size_t _min;
     size_t _max;
+    std::vector<PtrType> _vec;
 };
 
 } //namespace gras

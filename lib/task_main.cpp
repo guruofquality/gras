@@ -35,6 +35,7 @@ void BlockActor::task_main(void)
         const void *mem = buff.get();
         size_t items = buff.length/this->input_configs[i].item_size;
 
+        this->input_items.vec()[i] = mem;
         this->input_items[i].get() = mem;
         this->input_items[i].size() = items;
         this->input_items.min() = std::min(this->input_items.min(), items);
@@ -72,6 +73,7 @@ void BlockActor::task_main(void)
         const size_t bytes = buff.get_actual_length() - buff.offset;
         size_t items = bytes/this->output_configs[i].item_size;
 
+        this->output_items.vec()[i] = mem;
         this->output_items[i].get() = mem;
         this->output_items[i].size() = items;
         this->output_items.min() = std::min(this->output_items.min(), items);

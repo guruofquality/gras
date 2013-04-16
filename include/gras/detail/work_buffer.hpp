@@ -60,6 +60,25 @@ inline size_t &WorkBufferArray<PtrType>::max(void)
     return _max;
 }
 
+template <typename PtrType>
+inline const std::vector<PtrType> &WorkBufferArray<PtrType>::vec(void) const
+{
+    return _vec;
+}
+
+template <typename PtrType>
+inline std::vector<PtrType> &WorkBufferArray<PtrType>::vec(void)
+{
+    return _vec;
+}
+
+template <typename PtrType>
+inline void WorkBufferArray<PtrType>::resize(const size_t size)
+{
+    _vec.resize(size);
+    std::vector<WorkBuffer<PtrType> >::resize(size);
+}
+
 } //namespace gras
 
 #endif /*INCLUDED_GRAS_DETAIL_WORK_BUFFER_HPP*/
