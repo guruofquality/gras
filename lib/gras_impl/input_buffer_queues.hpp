@@ -282,6 +282,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::push(const size_t i, const SBuffer &bu
     __update(i);
 
     #ifdef GRAS_ENABLE_BUFFER_STITCHING
+    if (_queues[i].size() <= 1) return;
     //stitch:
     for (size_t j = _queues[i].size()-1; j > 0; j--)
     {
@@ -297,6 +298,15 @@ GRAS_FORCE_INLINE void InputBufferQueues::push(const size_t i, const SBuffer &bu
             b1.length = 0;
             b1.last = b0.get(b0.length);
         }
+    }
+
+    //back got fully stitched and it was the same buffer -> pop it
+    SBuffer &b1 = _queues[i].back();
+    SBuffer &b0 = _queues[i][_queues[i].size()-2];
+    if (b1 == b0 and b1.length == 0)
+    {
+        b1.reset();
+        _queues[i].pop_back();
     }
     #endif //GRAS_ENABLE_BUFFER_STITCHING
 

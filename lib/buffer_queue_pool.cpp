@@ -31,8 +31,21 @@ struct BufferQueuePool : BufferQueue
     void pop(void)
     {
         ASSERT(not _queue.empty());
-        _queue.front().reset(); //dont hold ref
-        _queue.pop_front();
+        SBuffer &buff = _queue.front();
+
+        //This little half consumed metric lets us keep using
+        //the same buffer if its only been partially consumed.
+        //Input buffer stitching will rejoin contiguous memory.
+        if (buff.offset > buff.get_actual_length()/2)
+        {
+            buff.reset(); //dont hold ref
+            _queue.pop_front();
+        }
+        else
+        {
+            //enables buffer stitching on pool buffers
+            buff.last = buff.get();
+        }
     }
 
     void push(const SBuffer &buff)
