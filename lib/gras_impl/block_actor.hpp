@@ -94,7 +94,6 @@ struct BlockActor : Apology::Worker
     void handle_get_stats(const GetStatsMessage &, const Theron::Address);
 
     //helpers
-    void buffer_returner(const size_t index, SBuffer &buffer);
     void mark_done(void);
     void task_main(void);
     void input_fail(const size_t index);

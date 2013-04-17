@@ -11,7 +11,7 @@ const size_t AT_LEAST_BYTES = 32*(1024); //kiB per buffer
 const size_t AHH_TOO_MANY_BYTES = 32*(1024*1024); //MiB enough for me
 const size_t THIS_MANY_BUFFERS = 8; //pool size
 
-void BlockActor::buffer_returner(const size_t index, SBuffer &buffer)
+static void buffer_returner(ThreadPool tp, Theron::Address addr, const size_t index, SBuffer &buffer)
 {
     //reset offset and length
     buffer.offset = 0;
@@ -20,7 +20,7 @@ void BlockActor::buffer_returner(const size_t index, SBuffer &buffer)
     OutputBufferMessage message;
     message.index = index;
     message.buffer = buffer;
-    this->Push(message, Theron::Address());
+    tp->Send(message, Theron::Address::Null(), addr);
 }
 
 static size_t recommend_length(
@@ -67,7 +67,7 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
             this->output_configs[i].maximum_items*this->output_configs[i].item_size
         );
 
-        SBufferDeleter deleter = boost::bind(&BlockActor::buffer_returner, this, i, _1);
+        SBufferDeleter deleter = boost::bind(&buffer_returner, this->thread_pool, this->GetAddress(), i, _1);
         SBufferToken token = SBufferToken(new SBufferDeleter(deleter));
 
         SBufferConfig config;
