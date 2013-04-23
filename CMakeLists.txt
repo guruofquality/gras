@@ -174,6 +174,8 @@ set(GNURADIO_CORE_FOUND ${ENABLE_GR_CORE})
 set(GNURADIO_CORE_LIBRARIES gnuradio-core)
 if(ENABLE_GR_CORE)
     list(APPEND GR_TEST_PYTHON_DIRS
+        ${GRAS_SOURCE_DIR}/gnuradio/gruel/src/python
+        ${GRAS_BINARY_DIR}/gnuradio/gruel/src/swig
         ${GRAS_SOURCE_DIR}/gnuradio/gnuradio-core/src/python
         ${GRAS_BINARY_DIR}/gnuradio/gnuradio-core/src/lib/swig
     )
