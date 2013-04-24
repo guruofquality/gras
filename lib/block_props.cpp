@@ -88,7 +88,7 @@ static PMCC prop_access_dispatcher(ActorType &actor, const std::string &key, con
     message.set = set;
     message.key = key;
     message.value = value;
-    actor->Push(message, receiver.GetAddress());
+    actor->GetFramework().Send(message, receiver.GetAddress(), actor->GetAddress());
     receiver.Wait();
     if (not receiver.message.error.empty())
     {

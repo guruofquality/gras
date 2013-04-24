@@ -59,7 +59,7 @@ struct ElementImpl
         {
             MessageType message = msg;
             message.prio_token = dynamic_cast<BlockActor *>(worker)->prio_token;
-            worker->Push(message, receiver.GetAddress());
+            worker->GetFramework().Send(message, receiver.GetAddress(), worker->GetAddress());
         }
         size_t outstandingCount(this->executor->get_workers().size());
         while (outstandingCount != 0)

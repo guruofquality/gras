@@ -153,17 +153,18 @@ const OutputPortConfig &Block::output_config(const size_t which_output) const
 
 void Block::commit_config(void)
 {
+    Theron::Actor &actor = *((*this)->block);
     for (size_t i = 0; i < (*this)->block->get_num_inputs(); i++)
     {
         InputUpdateMessage message;
         message.index = i;
-        (*this)->block->Push(message, Theron::Address());
+        actor.GetFramework().Send(message, Theron::Address::Null(), actor.GetAddress());
     }
     for (size_t i = 0; i < (*this)->block->get_num_outputs(); i++)
     {
         OutputUpdateMessage message;
         message.index = i;
-        (*this)->block->Push(message, Theron::Address());
+        actor.GetFramework().Send(message, Theron::Address::Null(), actor.GetAddress());
     }
 
 }
