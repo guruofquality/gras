@@ -20,15 +20,27 @@ GR_ENV = {
     'PYTHONPATH': os.path.join(INSTALL_PREFIX, 'gr/lib/python2.7/dist-packages:%s'%os.getenv('PYTHONPATH')),
 }
 
-BENCHMARK_MANY_11_BLOCKS = tokwargs(
-    wat='Benchmark the schedulers with many 1:1 ratio blocks',
+BENCHMARK_LINEAR_CHAIN = tokwargs(
+    wat='Benchmark the schedulers with linear chain topology',
     moar='''\
-- Compare simultaneous 1:1 ratio blocks in each scheduler.
+- Topology is a linear chain of one input/one output blocks.
 - GRAS will use only the buffer pool allocator,
 and every work will fully consume available buffers.''',
     tests = [
-        tokwargs(wat='GRAS',     args=['tb_many_1_to_1_blocks.py', DURATION], env=GRAS_ENV, expand=True),
-        tokwargs(wat='GRSS',     args=['tb_many_1_to_1_blocks.py', DURATION], env=GR_ENV),
+        tokwargs(wat='GRAS',     args=['tb_linear_chain.py', DURATION], env=GRAS_ENV, expand=True),
+        tokwargs(wat='GRSS',     args=['tb_linear_chain.py', DURATION], env=GR_ENV),
+    ],
+)
+
+BENCHMARK_COMBINER_ARRAY = tokwargs(
+    wat='Benchmark the schedulers with combiner array topology',
+    moar='''\
+- Topology is a tower of two input math blocks.
+- GRAS will use only the buffer pool allocator,
+and every work will fully consume available buffers.''',
+    tests = [
+        tokwargs(wat='GRAS',     args=['tb_combiner_array.py', DURATION], env=GRAS_ENV, expand=True),
+        tokwargs(wat='GRSS',     args=['tb_combiner_array.py', DURATION], env=GR_ENV),
     ],
 )
 
@@ -107,7 +119,8 @@ BENCHMARK_DELAY_BLOCKS = tokwargs(
 )
 
 BENCHMARKS = (
-    BENCHMARK_MANY_11_BLOCKS,
+    BENCHMARK_LINEAR_CHAIN,
+    BENCHMARK_COMBINER_ARRAY,
     BENCHMARK_MANY_RATE_BLOCKS,
     BENCHMARK_DFIR_BLOCK,
     BENCHMARK_RESAMP_BLOCK,
