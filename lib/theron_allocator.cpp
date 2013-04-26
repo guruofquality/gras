@@ -29,9 +29,15 @@ static struct ExitPrinter
         {
             VAR(unwanted_malloc_count);
         }
+        VAR(((Theron::DefaultAllocator *)(Theron::AllocatorManager::Instance().GetAllocator()))->GetBytesAllocated());
+        VAR(((Theron::DefaultAllocator *)(Theron::AllocatorManager::Instance().GetAllocator()))->GetPeakBytesAllocated());
+        VAR(((Theron::DefaultAllocator *)(Theron::AllocatorManager::Instance().GetAllocator()))->GetAllocationCount());
     }
 } exit_printer;
 
+
+
+/*
 static struct WorkerAllocator : Theron::IAllocator
 {
     WorkerAllocator(void)
@@ -98,3 +104,4 @@ static struct WorkerAllocator : Theron::IAllocator
     Theron::Detail::SpinLock mSpinLock;
 
 } my_alloc;
+*/

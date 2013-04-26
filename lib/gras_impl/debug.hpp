@@ -45,7 +45,7 @@ extern void *operator new(std::size_t n) throw (std::bad_alloc);
 //-- various debug prints
 //----------------------------------------------------------------------
 #define HERE() std::cerr << __FILE__ << ":" << __LINE__ << std::endl << std::flush;
-#define VAR(x) std::cerr << #x << " = " << (x) << std::endl << std::flush;
+#define VAR(x) std::cout << #x << " = " << (x) << std::endl << std::flush;
 
 #ifdef MESSAGE_TRACING
 #define MESSAGE_TRACER() std::cerr << block_ptr->to_string() << " in " << BOOST_CURRENT_FUNCTION << std::endl << std::flush;

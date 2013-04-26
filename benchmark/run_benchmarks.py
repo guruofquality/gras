@@ -38,7 +38,7 @@ def run_a_single_one(args, env):
     t.start()
     p.wait()
     out = p.stdout.read()
-    #print out
+    print out
     for line in out.splitlines():
         if line.startswith('##RESULT##'):
             return float(line[len('##RESULT##'):].strip())
