@@ -49,12 +49,7 @@ void BlockActor::task_main(void)
             output_inline_index < num_outputs and
             buff.get_affinity() == this->buffer_affinity
         ){
-            //copy buffer reference but push with zero length, same offset
-            SBuffer new_obuff = buff;
-            new_obuff.length = 0;
-            this->output_queues.consume(output_inline_index);
-            this->output_queues.push(output_inline_index, new_obuff); //you got inlined!
-            output_inline_index++; //done do this output port again
+            this->output_queues.set_inline(output_inline_index++, buff);
         }
         //*/
     }
