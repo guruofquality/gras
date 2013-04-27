@@ -104,7 +104,6 @@ struct BlockActor : Apology::Worker
     void produce(const size_t index, const size_t items);
     void consume(const size_t index, const size_t items);
     void produce_buffer(const size_t index, const SBuffer &buffer);
-    void flush_output(const size_t index);
     void task_kicker(void);
     void update_input_avail(const size_t index);
     bool is_input_done(const size_t index);
@@ -167,26 +166,6 @@ struct BlockActor : Apology::Worker
 };
 
 //-------------- common functions from this BlockActor class ---------//
-
-GRAS_FORCE_INLINE void BlockActor::flush_output(const size_t i)
-{
-    if GRAS_UNLIKELY(this->output_queues.empty(i) or this->output_queues.front(i).length == 0) return;
-    SBuffer &buff = this->output_queues.front(i);
-    if GRAS_LIKELY(this->produce_outputs[i])
-    {
-        this->produce_outputs[i] = false;
-        InputBufferMessage buff_msg;
-        buff_msg.buffer = buff;
-        this->post_downstream(i, buff_msg);
-    }
-
-    //increment buffer for next use
-    buff.offset += buff.length;
-    buff.length = 0;
-
-    //release whatever has been used of the output buffer
-    this->output_queues.pop(i);
-}
 
 GRAS_FORCE_INLINE void BlockActor::task_kicker(void)
 {

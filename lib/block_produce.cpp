@@ -60,7 +60,7 @@ GRAS_FORCE_INLINE void BlockActor::produce(const size_t i, const size_t items)
 
 GRAS_FORCE_INLINE void BlockActor::produce_buffer(const size_t i, const SBuffer &buffer)
 {
-    this->flush_output(i);
+    this->output_queues.consume(i);
     ASSERT((buffer.length % output_configs[i].item_size) == 0);
     const size_t items = buffer.length/output_configs[i].item_size;
     this->stats.items_produced[i] += items;

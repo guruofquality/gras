@@ -53,6 +53,19 @@ struct OutputBufferQueues
         return _queues[i]->front();
     }
 
+    GRAS_FORCE_INLINE void consume(const size_t i)
+    {
+        ASSERT(not this->empty(i));
+        SBuffer &buff = this->front(i);
+        if GRAS_UNLIKELY(buff.length == 0) return;
+
+        //increment buffer for next use
+        buff.offset += buff.length;
+        buff.length = 0;
+
+        this->pop(i);
+    }
+
     GRAS_FORCE_INLINE void pop(const size_t i)
     {
         ASSERT(_queues[i]);
