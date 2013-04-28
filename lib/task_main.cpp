@@ -49,12 +49,7 @@ void BlockActor::task_main(void)
             output_inline_index < num_outputs and
             buff.get_affinity() == this->buffer_affinity
         ){
-            //copy buffer reference but push with zero length, same offset
-            SBuffer new_obuff = buff;
-            new_obuff.length = 0;
-            this->flush_output(output_inline_index);
-            this->output_queues.push(output_inline_index, new_obuff); //you got inlined!
-            output_inline_index++; //done do this output port again
+            this->output_queues.set_inline(output_inline_index++, buff);
         }
         //*/
     }
@@ -103,7 +98,19 @@ void BlockActor::task_main(void)
     //------------------------------------------------------------------
     for (size_t i = 0; i < num_outputs; i++)
     {
-        this->flush_output(i);
+        //buffer may be popped by one of the special buffer api hooks
+        if GRAS_UNLIKELY(this->output_queues.empty(i)) continue;
+
+        //grab a copy of the front buffer then consume from the queue
+        InputBufferMessage buff_msg;
+        buff_msg.buffer = this->output_queues.front(i);
+        this->output_queues.consume(i);
+
+        //Post a buffer message downstream only if the produce flag was marked.
+        //So this explicitly after consuming the output queues so pop is called.
+        //This is because pop may have special hooks in it to prepare the buffer.
+        if GRAS_LIKELY(this->produce_outputs[i]) this->post_downstream(i, buff_msg);
+        this->produce_outputs[i] = false;
     }
 
     //------------------------------------------------------------------
