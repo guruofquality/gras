@@ -51,8 +51,8 @@ BENCHMARK_MANY_RATE_BLOCKS = tokwargs(
 - GRAS will use only the buffer pool allocator,
 and every work will fully consume available buffers.''',
     tests = [
-        tokwargs(wat='GRAS',     args=['tb_many_rate_changes.py', '--dur', DURATION], env=GRAS_ENV, expand=True),
-        tokwargs(wat='GRSS',     args=['tb_many_rate_changes.py', '--dur', DURATION], env=GR_ENV),
+        tokwargs(wat='GRAS',     args=['tb_many_rate_changes.py', '--dur', '1'], env=GRAS_ENV),
+        tokwargs(wat='GRAS',     args=['tb_many_rate_changes.py', '--dur', '10'], env=GRAS_ENV),
     ],
 )
 
@@ -119,12 +119,5 @@ BENCHMARK_DELAY_BLOCKS = tokwargs(
 )
 
 BENCHMARKS = (
-    BENCHMARK_LINEAR_CHAIN,
-    BENCHMARK_COMBINER_ARRAY,
     BENCHMARK_MANY_RATE_BLOCKS,
-    BENCHMARK_DFIR_BLOCK,
-    BENCHMARK_RESAMP_BLOCK,
-    BENCHMARK_ADD_OPS,
-    BENCHMARK_MULT_OPS,
-    BENCHMARK_DELAY_BLOCKS,
 )

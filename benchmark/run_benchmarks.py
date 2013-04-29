@@ -15,9 +15,9 @@ cpu_count = multiprocessing.cpu_count()
 
 from bm_registry import BENCHMARKS
 
-NUM_RUNS_PER_TEST = 3
+NUM_RUNS_PER_TEST = 1
 
-BAD_BOOST_KILL_DURATION = 5.0 #seconds
+BAD_BOOST_KILL_DURATION = 20 #seconds
 
 __path__ = os.path.dirname(__file__)
 
