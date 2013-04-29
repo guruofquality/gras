@@ -62,7 +62,7 @@ list(APPEND GRAS_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/top_block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/top_block_query.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/register_messages.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/theron_allocator.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/theron_allocator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/weak_container.cpp
 )
 

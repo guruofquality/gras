@@ -129,6 +129,8 @@ struct BlockActor : Apology::Worker
     OutputBufferQueues output_queues;
     std::vector<bool> produce_outputs;
     BitSet inputs_available;
+    std::vector<time_ticks_t> time_input_not_ready;
+    std::vector<time_ticks_t> time_output_not_ready;
 
     //tag and msg tracking
     std::vector<bool> input_tags_changed;

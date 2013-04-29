@@ -37,6 +37,10 @@ struct BlockStats
     std::vector<item_index_t> tags_produced;
     std::vector<item_index_t> msgs_produced;
 
+    //port starvation tracking
+    std::vector<time_ticks_t> inputs_idle;
+    std::vector<time_ticks_t> outputs_idle;
+
     //instantaneous port status
     std::vector<size_t> items_enqueued;
     std::vector<size_t> msgs_enqueued;
