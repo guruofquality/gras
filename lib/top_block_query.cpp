@@ -7,6 +7,7 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/regex.hpp>
+#include <Theron/DefaultAllocator.h>
 #include <algorithm>
 #include <sstream>
 
@@ -86,6 +87,15 @@ static std::string query_stats(ElementImpl *self, const boost::property_tree::pt
     boost::property_tree::ptree root;
     root.put("now", time_now());
     root.put("tps", time_tps());
+
+    //allocator debugs
+    Theron::DefaultAllocator *allocator = dynamic_cast<Theron::DefaultAllocator *>(Theron::AllocatorManager::Instance().GetAllocator());
+    if (allocator)
+    {
+        root.put("bytes_allocated", allocator->GetBytesAllocated());
+        root.put("peak_bytes_allocated", allocator->GetPeakBytesAllocated());
+        root.put("allocation_count", allocator->GetAllocationCount());
+    }
 
     //iterate through blocks
     boost::property_tree::ptree blocks;
