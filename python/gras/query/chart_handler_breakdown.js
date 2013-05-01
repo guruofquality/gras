@@ -1,4 +1,4 @@
-function GrasChartHandlerBreakdown(args)
+function GrasChartHandlerBreakdown(args, panel)
 {
     //input checking
     if (args.block_ids.length != 1) throw gras_error_dialog(
@@ -11,7 +11,7 @@ function GrasChartHandlerBreakdown(args)
     this.block_id = args.block_ids[0];
 
     //make new chart
-    this.chart = new google.visualization.PieChart(args.panel);
+    this.chart = new google.visualization.PieChart(panel);
 
     this.title = "Handler Breakdown - " + this.block_id;
     this.default_width = GRAS_CHARTS_STD_WIDTH;

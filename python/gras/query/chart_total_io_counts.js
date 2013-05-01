@@ -1,4 +1,4 @@
-function GrasChartTotalIoCounts(args)
+function GrasChartTotalIoCounts(args, panel)
 {
     //input checking
     if (args.block_ids.length != 1) throw gras_error_dialog(
@@ -10,7 +10,7 @@ function GrasChartTotalIoCounts(args)
     //settings
     this.block_id = args.block_ids[0];
     this.div = $('<div />').attr({class:'chart_total_io_counts'});
-    $(args.panel).append(this.div);
+    $(panel).append(this.div);
     this.title = "I/O Totals - " + this.block_id;
 }
 
