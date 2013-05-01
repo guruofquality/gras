@@ -1,4 +1,4 @@
-function GrasChartOverheadCompare(args)
+function GrasChartOverheadCompare(args, panel)
 {
     //save enables
     this.ids = args.block_ids;
@@ -11,7 +11,7 @@ function GrasChartOverheadCompare(args)
     );
 
     //make new chart
-    this.chart = new google.visualization.PieChart(args.panel);
+    this.chart = new google.visualization.PieChart(panel);
 
     this.title = "Overhead Comparison";
     this.default_width = GRAS_CHARTS_STD_WIDTH;

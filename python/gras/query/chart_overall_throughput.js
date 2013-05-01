@@ -1,4 +1,4 @@
-function GrasChartOverallThroughput(args)
+function GrasChartOverallThroughput(args, panel)
 {
     //save enables
     this.ids = args.block_ids;
@@ -11,7 +11,7 @@ function GrasChartOverallThroughput(args)
     );
 
     //make new chart
-    this.chart = new google.visualization.LineChart(args.panel);
+    this.chart = new google.visualization.LineChart(panel);
 
     this.title = "Overall Throughput vs Time in MIps";
     this.history = new Array();

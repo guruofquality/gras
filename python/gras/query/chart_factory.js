@@ -126,10 +126,9 @@ function gras_chart_factory_make(registry, args)
     tr.append(td);
 
     //call into the factory
-    args.panel = td.get(0);
     try
     {
-        var chart = new registry.chart_factories[args.chart_type](args);
+        var chart = new registry.chart_factories[args.chart_type](args, td.get(0));
     }
     catch(err)
     {
