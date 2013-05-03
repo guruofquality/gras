@@ -21,9 +21,6 @@ struct SBufferImpl
     SBufferConfig config;
 };
 
-
-extern GRAS_API void sbuffer_handle_deref(SBufferImpl *impl);
-
 GRAS_FORCE_INLINE void intrusive_ptr_add_ref(SBufferImpl *impl)
 {
     ++impl->count;
@@ -31,9 +28,26 @@ GRAS_FORCE_INLINE void intrusive_ptr_add_ref(SBufferImpl *impl)
 
 GRAS_FORCE_INLINE void intrusive_ptr_release(SBufferImpl *impl)
 {
-    if (--impl->count == 0)
+    if GRAS_LIKELY(--impl->count) return;
+
+    //call the deleter if possible
+    boost::shared_ptr<SBufferDeleter> token_deleter = impl->config.token.lock();
+    if GRAS_LIKELY(token_deleter)
     {
-        sbuffer_handle_deref(impl);
+        SBuffer buff;
+        buff.reset(impl);
+        (*token_deleter)(buff);
+    }
+    else if (impl->config.deleter)
+    {
+        SBuffer buff;
+        buff.reset(impl);
+        impl->config.deleter(buff);
+        impl->config.deleter = SBufferDeleter(); //reset deleter, so we dont double delete
+    }
+    else
+    {
+        delete impl; //its really dead now
     }
 }
 
