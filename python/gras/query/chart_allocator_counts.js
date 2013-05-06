@@ -35,12 +35,18 @@ GrasChartAllocatorCounts.prototype.update = function(point)
         ['Malloc\'d', 'times', 'allocation_count'],
     ];
 
+    var entries = 0;
     $.each(stuff, function(contents_i, contents)
     {
         var dir = contents[0];
         var units = contents[1];
         var key = contents[2];
         var count = (key in point)? point[key] : 0;
-        if (count > 0) make_entry(dir, count.toString() + ' ' + units);
+        if (count > 0)
+        {
+            make_entry(dir, count.toString() + ' ' + units);
+            entries++;
+        }
     });
+    if (entries == 0) make_entry("Counts", "none");
 }
