@@ -42,8 +42,6 @@ Block::Block(const std::string &name):
     (*this)->block->block_state = BlockActor::BLOCK_STATE_INIT;
 
     //call block methods to init stuff
-    this->input_config(0) = InputPortConfig();
-    this->output_config(0) = OutputPortConfig();
     this->set_interruptible_work(false);
     this->set_buffer_affinity(-1);
 }
