@@ -35,7 +35,7 @@ void BlockActor::input_fail(const size_t i)
     //check that the input is not already maxed
     if (this->input_queues.is_front_maximal(i))
     {
-        throw std::runtime_error("input_fail called on maximum_items buffer");
+        throw std::runtime_error("input_fail called on maximum_items buffer in " + name);
     }
 
     //mark fail: not ready until a new buffer appears
@@ -50,7 +50,7 @@ void BlockActor::output_fail(const size_t i)
     const size_t front_items = buff.length/this->output_configs[i].item_size;
     if (front_items >= this->output_configs[i].maximum_items)
     {
-        throw std::runtime_error("output_fail called on maximum_items buffer");
+        throw std::runtime_error("output_fail called on maximum_items buffer in " + name);
     }
 
     //mark fail: not ready until a new buffer appears

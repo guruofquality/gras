@@ -7,7 +7,7 @@ include(GrTest)
 ########################################################################
 # unit test suite
 ########################################################################
-find_package(Boost COMPONENTS unit_test_framework)
+find_package(Boost COMPONENTS unit_test_framework serialization)
 
 if (NOT Boost_FOUND)
     return()
@@ -15,6 +15,7 @@ endif()
 
 set(test_sources
     block_props_test.cpp
+    serialize_tags_test.cpp
 )
 
 include_directories(${GRAS_INCLUDE_DIRS})

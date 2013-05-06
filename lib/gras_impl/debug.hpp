@@ -63,7 +63,7 @@ extern void *operator new(std::size_t n) throw (std::bad_alloc);
     throw std::runtime_error(std::string("ASSERT FAIL ") + #x); \
 }}
 #else
-#define ASSERT(x)
+#define ASSERT(x) {}
 #endif
 
 #endif /*INCLUDED_LIBGRAS_IMPL_DEBUG_HPP*/

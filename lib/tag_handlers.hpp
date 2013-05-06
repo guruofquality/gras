@@ -25,7 +25,7 @@ GRAS_FORCE_INLINE void BlockActor::trim_tags(const size_t i)
     //------------------------------------------------------------------
 
     std::vector<Tag> &tags_i = this->input_tags[i];
-    const size_t items_consumed_i = this->stats.items_consumed[i];
+    const item_index_t items_consumed_i = this->stats.items_consumed[i];
     size_t last = 0;
     while (last < tags_i.size() and tags_i[last].offset < items_consumed_i)
     {

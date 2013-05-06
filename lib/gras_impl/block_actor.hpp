@@ -184,7 +184,9 @@ GRAS_FORCE_INLINE void BlockActor::update_input_avail(const size_t i)
 
 GRAS_FORCE_INLINE bool BlockActor::is_input_done(const size_t i)
 {
-    return this->inputs_done[i] and not this->inputs_available[i];
+    const bool force_done = this->input_configs[i].force_done;
+    if GRAS_LIKELY(force_done) return this->inputs_done[i] and not this->inputs_available[i];
+    return this->inputs_done.all() and this->inputs_available.none();
 }
 
 GRAS_FORCE_INLINE bool BlockActor::is_work_allowed(void)
