@@ -50,6 +50,7 @@ GrasChartTotalIoCounts.prototype.update = function(point)
         ['Output', 'items', 'items_produced'],
         ['Output', 'tags', 'tags_produced'],
         ['Output', 'msgs', 'msgs_produced'],
+        ['Copied', 'bytes', 'bytes_copied'],
     ];
 
     $.each(stuff, function(contents_i, contents)
