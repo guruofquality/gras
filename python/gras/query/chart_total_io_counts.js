@@ -65,4 +65,7 @@ GrasChartTotalIoCounts.prototype.update = function(point)
             }
         });
     });
+
+    var actor_depth = block_data.actor_queue_depth;
+    if (actor_depth > 1) make_entry('Actor depth', actor_depth.toString() + ' msgs');
 }

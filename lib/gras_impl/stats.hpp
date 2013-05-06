@@ -42,6 +42,7 @@ struct BlockStats
     std::vector<time_ticks_t> outputs_idle;
 
     //instantaneous port status
+    size_t actor_queue_depth;
     std::vector<size_t> items_enqueued;
     std::vector<size_t> msgs_enqueued;
     std::vector<size_t> tags_enqueued;

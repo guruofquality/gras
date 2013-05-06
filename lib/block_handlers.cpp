@@ -147,6 +147,7 @@ void BlockActor::handle_get_stats(
         this->stats.tags_enqueued[i] = this->input_tags[i].size();
         this->stats.msgs_enqueued[i] = this->input_msgs[i].size();
     }
+    this->stats.actor_queue_depth = this->GetNumQueuedMessages();
 
     //create the message reply object
     GetStatsMessage message;

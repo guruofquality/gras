@@ -115,6 +115,7 @@ static std::string query_stats(ElementImpl *self, const boost::property_tree::pt
         block.put("total_time_post", stats.total_time_post);
         block.put("total_time_input", stats.total_time_input);
         block.put("total_time_output", stats.total_time_output);
+        block.put("actor_queue_depth", stats.actor_queue_depth);
         #define my_block_ptree_append(l) { \
             boost::property_tree::ptree e; \
             for (size_t i = 0; i < stats.l.size(); i++) { \
