@@ -9,7 +9,7 @@ using namespace gras;
 
 const size_t AT_LEAST_BYTES = 32*(1024); //kiB per buffer
 const size_t AHH_TOO_MANY_BYTES = 32*(1024*1024); //MiB enough for me
-const size_t THIS_MANY_BUFFERS = 2; //pool size
+const size_t THIS_MANY_BUFFERS = 8; //pool size
 
 static void buffer_returner(ThreadPool tp, Theron::Address addr, const size_t index, SBuffer &buffer)
 {
