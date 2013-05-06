@@ -165,6 +165,7 @@ struct InputBufferQueues
     std::vector<boost::circular_buffer<SBuffer> > _queues;
     std::vector<size_t> _preload_bytes;
     std::vector<boost::shared_ptr<SimpleBufferQueue> > _aux_queues;
+    std::vector<item_index_t> bytes_copied;
 };
 
 
@@ -178,6 +179,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::resize(const size_t size)
     _preload_bytes.resize(size, 0);
     _reserve_bytes.resize(size, 1);
     _maximum_bytes.resize(size, MAX_AUX_BUFF_BYTES);
+    bytes_copied.resize(size);
 }
 
 inline void InputBufferQueues::update_config(
@@ -254,6 +256,7 @@ GRAS_FORCE_INLINE void InputBufferQueues::accumulate(const size_t i)
         SBuffer &front = _queues[i].front();
         const size_t bytes = std::min(front.length, free_bytes);
         std::memcpy(accum_buff.get(accum_buff.length), front.get(), bytes);
+        bytes_copied[i] += bytes;
         //std::cerr << "memcpy " << bytes << std::endl;
         accum_buff.length += bytes;
         free_bytes -= bytes;

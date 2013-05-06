@@ -14,7 +14,7 @@ ThreadPoolConfig::ThreadPoolConfig(void)
     thread_count = std::max(size_t(2), thread_count);
     node_mask = 0;
     processor_mask = 0xffffffff;
-    yield_strategy = "STRONG";
+    yield_strategy = "BLOCKING";
 
     //environment variable override
     const char * gras_yield = getenv("GRAS_YIELD");
@@ -44,7 +44,7 @@ ThreadPool::ThreadPool(const ThreadPoolConfig &config)
     );
 
     if (config.yield_strategy.empty()) params.mYieldStrategy = Theron::YIELD_STRATEGY_STRONG;
-    //else if (config.yield_strategy == "BLOCKING") params.mYieldStrategy = Theron::YIELD_STRATEGY_BLOCKING;
+    else if (config.yield_strategy == "BLOCKING") params.mYieldStrategy = Theron::YIELD_STRATEGY_BLOCKING;
     else if (config.yield_strategy == "POLITE") params.mYieldStrategy = Theron::YIELD_STRATEGY_POLITE;
     else if (config.yield_strategy == "STRONG") params.mYieldStrategy = Theron::YIELD_STRATEGY_STRONG;
     else if (config.yield_strategy == "AGGRESSIVE") params.mYieldStrategy = Theron::YIELD_STRATEGY_AGGRESSIVE;

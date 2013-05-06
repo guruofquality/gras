@@ -30,15 +30,13 @@ class many_rate_changing(gr.top_block):
 		self.gr_unpacked_to_packed_xx_0 = gr.unpacked_to_packed_bb(2, gr.GR_LSB_FIRST)
 		self.gr_packed_to_unpacked_xx_0 = gr.packed_to_unpacked_bb(2, gr.GR_MSB_FIRST)
 		self.gr_null_sink_0_2 = gr.null_sink(gr.sizeof_char*1)
-		self.blocks_keep_m_in_n_0 = blocks.keep_m_in_n(gr.sizeof_float, 3, 20, 0)
 		self.blocks_float_to_char_0 = blocks.float_to_char(1, 1)
 		self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
 
 		##################################################
 		# Connections
 		##################################################
-		self.connect((self.blocks_char_to_float_0, 0), (self.blocks_keep_m_in_n_0, 0))
-		self.connect((self.blocks_keep_m_in_n_0, 0), (self.blocks_float_to_char_0, 0))
+		self.connect((self.blocks_char_to_float_0, 0), (self.blocks_float_to_char_0, 0))
 		self.connect((self.blocks_float_to_char_0, 0), (self.gr_packed_to_unpacked_xx_0, 0))
 		self.connect((self.gr_unpacked_to_packed_xx_0, 0), (self.blocks_char_to_float_0, 0))
 		self.connect((self.random_source_x_0, 0), (self.gr_unpacked_to_packed_xx_0, 0))

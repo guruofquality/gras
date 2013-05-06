@@ -24,6 +24,8 @@ add_definitions(${THERON_DEFINES})
 list(APPEND GRAS_LIBRARIES ${THERON_LIBRARIES})
 list(APPEND GRAS_SOURCES ${THERON_SOURCES})
 
+add_definitions(-DTHERON_ENABLE_DEFAULTALLOCATOR_CHECKS=1)
+
 ########################################################################
 # Setup Apology Deps
 ########################################################################
@@ -62,7 +64,6 @@ list(APPEND GRAS_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/top_block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/top_block_query.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/register_messages.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/theron_allocator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/weak_container.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/serialize_types.cpp
 )

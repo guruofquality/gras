@@ -47,10 +47,11 @@ struct GRAS_API ThreadPoolConfig
 
     /*!
      * Yield strategy employed by the worker threads in the framework.
+     * BLOCKING,            ///< Threads block on condition variables.
      * POLITE,              ///< Threads go to sleep when not in use.
      * STRONG,              ///< Threads yield to other threads but don't go to sleep.
      * AGGRESSIVE           ///< Threads never yield to other threads.
-     * Default is STRONG.
+     * Default is BLOCKING.
      */
     std::string yield_strategy;
 };

@@ -7,6 +7,7 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/regex.hpp>
+#include <Theron/DefaultAllocator.h>
 #include <algorithm>
 #include <sstream>
 
@@ -87,6 +88,15 @@ static std::string query_stats(ElementImpl *self, const boost::property_tree::pt
     root.put("now", time_now());
     root.put("tps", time_tps());
 
+    //allocator debugs
+    Theron::DefaultAllocator *allocator = dynamic_cast<Theron::DefaultAllocator *>(Theron::AllocatorManager::Instance().GetAllocator());
+    if (allocator)
+    {
+        root.put("bytes_allocated", allocator->GetBytesAllocated());
+        root.put("peak_bytes_allocated", allocator->GetPeakBytesAllocated());
+        root.put("allocation_count", allocator->GetAllocationCount());
+    }
+
     //iterate through blocks
     boost::property_tree::ptree blocks;
     BOOST_FOREACH(const GetStatsMessage &message, receiver.messages)
@@ -105,6 +115,7 @@ static std::string query_stats(ElementImpl *self, const boost::property_tree::pt
         block.put("total_time_post", stats.total_time_post);
         block.put("total_time_input", stats.total_time_input);
         block.put("total_time_output", stats.total_time_output);
+        block.put("actor_queue_depth", stats.actor_queue_depth);
         #define my_block_ptree_append(l) { \
             boost::property_tree::ptree e; \
             for (size_t i = 0; i < stats.l.size(); i++) { \
@@ -122,6 +133,7 @@ static std::string query_stats(ElementImpl *self, const boost::property_tree::pt
         my_block_ptree_append(items_produced);
         my_block_ptree_append(tags_produced);
         my_block_ptree_append(msgs_produced);
+        my_block_ptree_append(bytes_copied);
         blocks.push_back(std::make_pair(message.block_id, block));
     }
     root.push_back(std::make_pair("blocks", blocks));

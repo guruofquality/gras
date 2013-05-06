@@ -15,7 +15,7 @@ cpu_count = multiprocessing.cpu_count()
 
 from bm_registry import BENCHMARKS
 
-NUM_RUNS_PER_TEST = 5
+NUM_RUNS_PER_TEST = 3
 
 BAD_BOOST_KILL_DURATION = 5.0 #seconds
 
@@ -45,6 +45,25 @@ def run_a_single_one(args, env):
     raise Exception, 'no result found!'
     #return t1-t0
 
+def expand_tests(bm):
+    for run in bm['tests']:
+        if run.has_key('expand') and run['expand']:
+            import copy
+            new_run = copy.deepcopy(run)
+            new_run['wat'] += '\n(Block)'
+            new_run['env']['GRAS_YIELD'] = 'BLOCKING'
+            yield new_run
+            new_run = copy.deepcopy(run)
+            new_run['wat'] += '\n(Spin)'
+            new_run['env']['GRAS_YIELD'] = 'STRONG'
+            yield new_run
+            new_run = copy.deepcopy(run)
+            new_run['wat'] += '\n(TPB)'
+            new_run['env']['GRAS_YIELD'] = 'BLOCKING'
+            new_run['env']['GRAS_TPP'] = '1'
+            yield new_run
+        else: yield run
+
 def do_a_benchmark(bm):
     title = bm['wat']
     print '#'*(len(title)+25)
@@ -53,7 +72,7 @@ def do_a_benchmark(bm):
     result_means = list()
     result_stddevs = list()
     test_names = list()
-    for run in bm['tests']:
+    for run in expand_tests(bm):
         test_name = run['wat']
         print '-'*(len(test_name)+25)
         print '-- running test:', test_name.replace('\n', ' ')
