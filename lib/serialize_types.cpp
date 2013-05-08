@@ -13,30 +13,40 @@ namespace boost { namespace serialization {
 template<class Archive>
 void save(Archive & ar, const gras::SBuffer & b, unsigned int version)
 {
+    //save null
     bool null = not b;
     ar & null;
     if (null) return;
 
-    //TODO lazyness string
-    std::string s((const char *)b.get(), b.length);
-    ar & s;
+    //save length
+    size_t length = b.length;
+    ar & length;
+
+    //save bytes
+    const char *ptr = reinterpret_cast<const char *>(b.get(0));
+    for (size_t i = 0; i < length; i++) ar & (ptr[i]);
 }
 template<class Archive>
 void load(Archive & ar, gras::SBuffer & b, unsigned int version)
 {
+    //load null
     bool null = false;
     ar & null;
     if (null) b.reset();
     if (null) return;
 
-    //TODO lazyness string
-    std::string s;
-    ar & s;
+    //load length
+    size_t length = 0;
+    ar & length;
+
+    //alloc sbuffer
     gras::SBufferConfig config;
-    config.length = s.length();
+    config.length = length;
     b = gras::SBuffer(config);
-    b.length = s.length();
-    std::memcpy(b.get(), s.c_str(), b.length);
+
+    //load bytes
+    char *ptr = reinterpret_cast<char *>(b.get(0));
+    for (size_t i = 0; i < length; i++) ar & (ptr[i]);
 }
 }}
 
