@@ -7,6 +7,11 @@
 #include <gras/tags.hpp>
 %}
 
+////////////////////////////////////////////////////////////////////////
+// remove base class warning -- boost::less_than_comparable<Tag>
+////////////////////////////////////////////////////////////////////////
+#pragma SWIG nowarn=401
+
 %include <gras/gras.hpp>
 %include <gras/tags.hpp>
 %import <gras/sbuffer.i>

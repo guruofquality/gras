@@ -3,6 +3,7 @@
 ########################################################################
 install(FILES
 
+    exception.i
     chrono.hpp
     block.hpp
     block.i

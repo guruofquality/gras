@@ -9,6 +9,8 @@
 ////////////////////////////////////////////////////////////////////////
 #pragma SWIG nowarn=401
 
+%include <gras/exception.i>
+
 %include <std_string.i>
 
 %include <gras/gras.hpp>

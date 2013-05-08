@@ -1,8 +1,8 @@
 // Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
-%include <gras/sbuffer.i>
-
 %include <PMC/Registry.i>
+
+%include <gras/sbuffer.i>
 
 DECL_PMC_SWIG_TYPE(gras::SBuffer, swig_sbuffer)
 

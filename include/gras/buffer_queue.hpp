@@ -17,6 +17,8 @@ typedef boost::shared_ptr<BufferQueue> BufferQueueSptr;
 //! Buffer Queue is an interface enabling us to create custom buffer allocators.
 struct BufferQueue
 {
+    //! virtual destructor
+    virtual ~BufferQueue(void){}
 
     /*!
      * Create a buffer queue object using the pool allocator.
