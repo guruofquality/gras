@@ -44,6 +44,21 @@ class BlockTest(unittest.TestCase):
         self.tb.run()
         self.assertEqual(sink.get_vector(), (1, 5j, 9, 13j, 17))
 
+    def test_add_f32_feedback(self):
+        """
+        Feedback adder output to input1 of the adder.
+        Preload input1 of the adder to set the delay.
+        """
+        src0 = VectorSource(numpy.float32, [1, 3, 5, 7, 9])
+        adder = Add2X(numpy.float32)
+        adder.input_config(1).preload_items = 1 #make this a feedback delay of 1
+        sink = VectorSink(numpy.float32)
+        self.tb.connect((src0, 0), (adder, 0))
+        self.tb.connect((adder, 0), (adder, 1))
+        self.tb.connect(adder, sink)
+        self.tb.run()
+        self.assertEqual(sink.get_vector(), (1, 4, 9, 16, 25))
+
     def test_tag_source_sink(self):
         values = (0, 'hello', 4.2, True, None, [2, 3, 4], (9, 8, 7), 1j, {2:'d'})
         src = TagSource(values)
