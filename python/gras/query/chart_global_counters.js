@@ -1,19 +1,19 @@
-function GrasChartAllocatorCounts(args, panel)
+function GrasChartGlobalCounts(args, panel)
 {
     //input checking
     if (args.block_ids.length != 0) throw gras_error_dialog(
-        "GrasChartAllocatorCounts",
-        "Error making allocator counts chart.\n"+
+        "GrasChartGlobalCounts",
+        "Error making global counts chart.\n"+
         "Do not specify any blocks for this chart."
     );
 
     //settings
-    this.div = $('<div />').attr({class:'chart_total_io_counts'});
+    this.div = $('<div />').attr({class:'chart_total_counts'});
     $(panel).append(this.div);
-    this.title = "Theron allocator counts"
+    this.title = "Global Counters"
 }
 
-GrasChartAllocatorCounts.prototype.update = function(point)
+GrasChartGlobalCounts.prototype.update = function(point)
 {
     var ul = $('<ul />');
     $('ul', this.div).remove(); //clear old lists
@@ -30,9 +30,15 @@ GrasChartAllocatorCounts.prototype.update = function(point)
     }
 
     var stuff = [
-        ['Allocated', 'bytes', 'bytes_allocated'],
-        ['Peak size', 'bytes', 'peak_bytes_allocated'],
-        ['Malloc\'d', 'times', 'allocation_count'],
+        ['Allocated', 'bytes', 'default_allocator_bytes_allocated'],
+        ['Peak size', 'bytes', 'default_allocator_peak_bytes_allocated'],
+        ['Num mallocs', '', 'default_allocator_allocation_count'],
+
+        ['Total msgs', '', 'framework_counter_messages_processed'],
+        ['Thread yields', '', 'framework_counter_yields'],
+        ['Local pushes', '', 'framework_counter_local_pushes'],
+        ['Shared pushes', '', 'framework_counter_shared_pushes'],
+        ['Msg queue max', '', 'framework_counter_mailbox_queue_max'],
     ];
 
     var entries = 0;

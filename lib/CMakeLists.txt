@@ -25,6 +25,7 @@ list(APPEND GRAS_LIBRARIES ${THERON_LIBRARIES})
 list(APPEND GRAS_SOURCES ${THERON_SOURCES})
 
 add_definitions(-DTHERON_ENABLE_DEFAULTALLOCATOR_CHECKS=1)
+add_definitions(-DTHERON_ENABLE_COUNTERS=1)
 
 ########################################################################
 # Setup Apology Deps

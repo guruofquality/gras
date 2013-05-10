@@ -1,22 +1,23 @@
-function GrasChartTotalIoCounts(args, panel)
+function GrasChartPortCounts(args, panel)
 {
     //input checking
     if (args.block_ids.length != 1) throw gras_error_dialog(
-        "GrasChartTotalIoCounts",
-        "Error making total IO counts chart.\n"+
+        "GrasChartPortCounts",
+        "Error making total port counts chart.\n"+
         "Specify only one block for this chart."
     );
 
     //settings
     this.block_id = args.block_ids[0];
-    this.div = $('<div />').attr({class:'chart_total_io_counts'});
+    this.div = $('<div />').attr({class:'chart_total_counts'});
     $(panel).append(this.div);
-    this.title = "I/O Totals - " + this.block_id;
+    this.title = "Port Counters - " + this.block_id;
 }
 
-GrasChartTotalIoCounts.prototype.update = function(point)
+GrasChartPortCounts.prototype.update = function(point)
 {
     var block_data = point.blocks[this.block_id];
+    if (!block_data) return;
     var ul = $('<ul />');
     $('ul', this.div).remove(); //clear old lists
     this.div.append(ul);
@@ -68,5 +69,8 @@ GrasChartTotalIoCounts.prototype.update = function(point)
     });
 
     var actor_depth = block_data.actor_queue_depth;
-    if (actor_depth > 1) make_entry('Actor depth', actor_depth.toString() + ' msgs');
+    if (actor_depth > 10) //only show if its large
+    {
+        make_entry('Actor depth', actor_depth.toString() + ' msgs');
+    }
 }

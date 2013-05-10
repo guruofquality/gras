@@ -12,8 +12,8 @@ var gras_chart_get_registry = function()
         {key:'overhead_compare', name:'Overhead Compare', factory:GrasChartOverheadCompare},
         {key:'overall_throughput', name:'Overall Throughput', factory:GrasChartOverallThroughput},
         {key:'handler_breakdown', name:'Handler Breakdown', factory:GrasChartHandlerBreakdown},
-        {key:'total_io_counts', name:'I/O port Totals', factory:GrasChartTotalIoCounts},
-        {key:'allocator_counts', name:'Allocator Counts', factory:GrasChartAllocatorCounts},
+        {key:'port_counters', name:'Port Counters', factory:GrasChartPortCounts},
+        {key:'global_counters', name:'Global Counters', factory:GrasChartGlobalCounts},
     ];
 }
 

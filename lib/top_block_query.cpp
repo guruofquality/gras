@@ -13,6 +13,8 @@
 
 using namespace gras;
 
+ThreadPool get_active_thread_pool(void);
+
 struct GetStatsReceiver : Theron::Receiver
 {
     GetStatsReceiver(void)
@@ -92,9 +94,19 @@ static std::string query_stats(ElementImpl *self, const boost::property_tree::pt
     Theron::DefaultAllocator *allocator = dynamic_cast<Theron::DefaultAllocator *>(Theron::AllocatorManager::Instance().GetAllocator());
     if (allocator)
     {
-        root.put("bytes_allocated", allocator->GetBytesAllocated());
-        root.put("peak_bytes_allocated", allocator->GetPeakBytesAllocated());
-        root.put("allocation_count", allocator->GetAllocationCount());
+        root.put("default_allocator_bytes_allocated", allocator->GetBytesAllocated());
+        root.put("default_allocator_peak_bytes_allocated", allocator->GetPeakBytesAllocated());
+        root.put("default_allocator_allocation_count", allocator->GetAllocationCount());
+    }
+
+    ThreadPool tp = get_active_thread_pool();
+    if (tp)
+    {
+        root.put("framework_counter_messages_processed", tp->GetCounterValue(Theron::COUNTER_MESSAGES_PROCESSED));
+        root.put("framework_counter_yields", tp->GetCounterValue(Theron::COUNTER_YIELDS));
+        root.put("framework_counter_local_pushes", tp->GetCounterValue(Theron::COUNTER_LOCAL_PUSHES));
+        root.put("framework_counter_shared_pushes", tp->GetCounterValue(Theron::COUNTER_SHARED_PUSHES));
+        root.put("framework_counter_mailbox_queue_max", tp->GetCounterValue(Theron::COUNTER_MAILBOX_QUEUE_MAX));
     }
 
     //iterate through blocks

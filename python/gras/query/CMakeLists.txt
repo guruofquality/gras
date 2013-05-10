@@ -19,8 +19,8 @@ INSTALL(
     chart_overhead_compare.js
     chart_overall_throughput.js
     chart_handler_breakdown.js
-    chart_total_io_counts.js
-    chart_allocator_counts.js
+    chart_port_counters.js
+    chart_global_counters.js
     main.css
     DESTINATION ${GR_PYTHON_DIR}/gras/query
     COMPONENT ${GRAS_COMP_PYTHON}

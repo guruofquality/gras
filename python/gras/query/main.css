@@ -37,12 +37,12 @@ width:100%;
 height:100%;
 }
 
-.chart_total_io_counts li
+.chart_total_counts li
 {
 list-style-type:none;
 text-align: left;
 padding: 0px;
-margin: 0px;
+margin-left: -30px;
 font-size:90%;
 }
 

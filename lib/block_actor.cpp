@@ -65,7 +65,7 @@ void ThreadPool::set_active(void)
 
 static ThreadPool active_thread_pool;
 
-static ThreadPool get_active_thread_pool(void)
+ThreadPool get_active_thread_pool(void)
 {
     if (not weak_framework.lock())
     {
