@@ -54,6 +54,12 @@ struct GRAS_API ThreadPoolConfig
      * Default is BLOCKING.
      */
     std::string yield_strategy;
+
+    /*!
+     * Relative scheduling priority of the worker threads (range -1.0f to 1.0f, 0.0f is "normal").
+     * Default is 0.0f
+     */
+    float thread_priority;
 };
 
 /*!
