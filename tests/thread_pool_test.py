@@ -19,5 +19,9 @@ class ThreadPoolTest(unittest.TestCase):
         tp = gras.ThreadPool(c)
         tp.set_active()
 
+    def test_thread_priority(self):
+        #here we assume prio 0.0 (default) can always be set
+        self.assertTrue(gras.ThreadPool.test_thread_priority(0.0))
+
 if __name__ == '__main__':
     unittest.main()

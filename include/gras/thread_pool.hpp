@@ -83,6 +83,17 @@ struct GRAS_API ThreadPool : boost::shared_ptr<Theron::Framework>
      * thread pool that the block's work routine will run in.
      */
     void set_active(void);
+
+    /*!
+     * Test that a particular thread priority setting is possible.
+     *
+     * Highly OS dependent! Some OS require special permissions,
+     * or security settings to use real time priority setting.
+     *
+     * \param thread_priority range -1.0f to 1.0f, 0.0f is "normal"
+     * \return true if the priority change is possible
+     */
+    static bool test_thread_priority(const float thread_priority);
 };
 
 } //namespace gras

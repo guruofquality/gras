@@ -1,10 +1,12 @@
 // Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
 #include <gras/thread_pool.hpp>
-#include <boost/thread/thread.hpp>
+#include <boost/thread.hpp> //mutex, thread, hardware_concurrency
 #include <Theron/EndPoint.h>
 #include <Theron/Framework.h>
+#include <Theron/Detail/Threading/Utils.h> //prio test
 #include <stdexcept>
+#include <iostream>
 
 using namespace gras;
 
@@ -54,4 +56,37 @@ ThreadPool::ThreadPool(const ThreadPoolConfig &config)
     params.mThreadPriority = config.thread_priority;
 
     this->reset(new Theron::Framework(Theron::Framework::Parameters(params)));
+}
+
+static void test_thread_priority_thread(
+    const float thread_priority,
+    bool &result, bool &called,
+    boost::mutex &mutex
+)
+{
+    std::cout << "Created thread to test priority " << thread_priority << std::endl;
+    result = Theron::Detail::Utils::SetThreadRelativePriority(thread_priority);
+    called = true;
+    mutex.unlock();
+}
+
+bool ThreadPool::test_thread_priority(const float thread_priority)
+{
+    boost::mutex mutex;
+    boost::thread_group thread_group;
+    bool result = false;
+    bool called = false;
+    mutex.lock();
+    thread_group.create_thread(boost::bind(
+        &test_thread_priority_thread,
+        thread_priority,
+        boost::ref(result),
+        boost::ref(called),
+        boost::ref(mutex)
+    ));
+    mutex.lock();
+    mutex.unlock();
+    thread_group.join_all();
+    if (not called) throw std::runtime_error("test_thread_priority_thread never executed");
+    return result;
 }
