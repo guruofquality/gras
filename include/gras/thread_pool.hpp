@@ -52,6 +52,7 @@ struct GRAS_API ThreadPoolConfig
      * STRONG,              ///< Threads yield to other threads but don't go to sleep.
      * AGGRESSIVE           ///< Threads never yield to other threads.
      * Default is BLOCKING.
+     * The default can be overridden with the GRAS_YIELD environment variable.
      */
     std::string yield_strategy;
 
