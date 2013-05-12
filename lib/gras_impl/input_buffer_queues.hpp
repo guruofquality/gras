@@ -40,6 +40,10 @@ struct InputBufferQueues
         return null;
     }
 
+    InputBufferQueues(void):
+        _init_time(time_now())
+    {}
+
     ~InputBufferQueues(void)
     {
         this->resize(0);
@@ -143,7 +147,12 @@ struct InputBufferQueues
 
     GRAS_FORCE_INLINE void __update(const size_t i)
     {
+        const bool was_ready = _bitset[i];
         _bitset.set(i, _enqueued_bytes[i] >= _reserve_bytes[i]);
+        const bool is_ready = _bitset[i];
+        if (is_ready and not was_ready) total_idle_times[i] += (time_now() - _became_idle_times[i]);
+        if (not is_ready and was_ready) _became_idle_times[i] = time_now();
+        ASSERT(total_idle_times[i] <= (time_now() - _init_time));
     }
 
     GRAS_FORCE_INLINE size_t get_items_enqueued(const size_t i)
@@ -166,6 +175,9 @@ struct InputBufferQueues
     std::vector<size_t> _preload_bytes;
     std::vector<boost::shared_ptr<SimpleBufferQueue> > _aux_queues;
     std::vector<item_index_t> bytes_copied;
+    std::vector<time_ticks_t> total_idle_times;
+    std::vector<time_ticks_t> _became_idle_times;
+    const time_ticks_t _init_time;
 };
 
 
@@ -179,7 +191,9 @@ GRAS_FORCE_INLINE void InputBufferQueues::resize(const size_t size)
     _preload_bytes.resize(size, 0);
     _reserve_bytes.resize(size, 1);
     _maximum_bytes.resize(size, MAX_AUX_BUFF_BYTES);
-    bytes_copied.resize(size);
+    bytes_copied.resize(size, 0);
+    total_idle_times.resize(size, 0);
+    _became_idle_times.resize(size, time_now());
 }
 
 inline void InputBufferQueues::update_config(

@@ -146,6 +146,8 @@ static std::string query_stats(ElementImpl *self, const boost::property_tree::pt
         my_block_ptree_append(tags_produced);
         my_block_ptree_append(msgs_produced);
         my_block_ptree_append(bytes_copied);
+        my_block_ptree_append(inputs_idle);
+        my_block_ptree_append(outputs_idle);
         blocks.push_back(std::make_pair(message.block_id, block));
     }
     root.push_back(std::make_pair("blocks", blocks));

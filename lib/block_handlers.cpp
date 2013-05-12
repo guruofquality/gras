@@ -149,6 +149,8 @@ void BlockActor::handle_get_stats(
     }
     this->stats.actor_queue_depth = this->GetNumQueuedMessages();
     this->stats.bytes_copied = this->input_queues.bytes_copied;
+    this->stats.inputs_idle = this->input_queues.total_idle_times;
+    this->stats.outputs_idle = this->output_queues.total_idle_times;
 
     //create the message reply object
     GetStatsMessage message;

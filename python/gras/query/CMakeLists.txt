@@ -21,6 +21,7 @@ INSTALL(
     chart_handler_breakdown.js
     chart_port_counters.js
     chart_global_counters.js
+    chart_port_downtime.js
     main.css
     DESTINATION ${GR_PYTHON_DIR}/gras/query
     COMPONENT ${GRAS_COMP_PYTHON}

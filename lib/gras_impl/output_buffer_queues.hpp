@@ -14,6 +14,10 @@ struct OutputBufferQueues
 {
     std::string name; //for debug
 
+    OutputBufferQueues(void):
+        _init_time(time_now())
+    {}
+
     void set_buffer_queue(const size_t i, BufferQueueSptr queue)
     {
         _queues[i] = queue;
@@ -32,6 +36,8 @@ struct OutputBufferQueues
         _queues.resize(size);
         _reserve_bytes.resize(size, 1);
         _inline_buffer.resize(size);
+        total_idle_times.resize(size, 0);
+        _became_idle_times.resize(size, time_now());
     }
 
     GRAS_FORCE_INLINE void push(const size_t i, const SBuffer &buff)
@@ -116,14 +122,18 @@ struct OutputBufferQueues
 
     GRAS_FORCE_INLINE void _update(const size_t i)
     {
-        if (not _queues[i] or _queues[i]->empty())
+        size_t avail = 0;
+        if (_queues[i] and not _queues[i]->empty())
         {
-            _bitset.reset(i);
-            return;
+            const SBuffer &front = _queues[i]->front();
+           avail = front.get_actual_length() - front.offset -  front.length;
         }
-        const SBuffer &front = _queues[i]->front();
-        const size_t avail = front.get_actual_length() - front.offset -  front.length;
+        const bool was_ready = _bitset[i];
         _bitset.set(i, avail >= _reserve_bytes[i]);
+        const bool is_ready = _bitset[i];
+        if (is_ready and not was_ready) total_idle_times[i] += (time_now() - _became_idle_times[i]);
+        if (not is_ready and was_ready) _became_idle_times[i] = time_now();
+        ASSERT(total_idle_times[i] <= (time_now() - _init_time));
     }
 
     GRAS_FORCE_INLINE void set_inline(const size_t i, const SBuffer &inline_buffer)
@@ -137,6 +147,9 @@ struct OutputBufferQueues
     std::vector<BufferQueueSptr> _queues;
     std::vector<size_t> _reserve_bytes;
     std::vector<SBuffer> _inline_buffer;
+    std::vector<time_ticks_t> total_idle_times;
+    std::vector<time_ticks_t> _became_idle_times;
+    const time_ticks_t _init_time;
 
 };
 
