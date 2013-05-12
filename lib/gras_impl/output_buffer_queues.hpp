@@ -97,6 +97,7 @@ struct OutputBufferQueues
     GRAS_FORCE_INLINE void fail(const size_t i)
     {
         _bitset.reset(i);
+        _became_idle_times[i] = time_now();
     }
 
     GRAS_FORCE_INLINE bool ready(const size_t i) const

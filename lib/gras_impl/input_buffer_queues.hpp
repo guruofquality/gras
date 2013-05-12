@@ -112,6 +112,7 @@ struct InputBufferQueues
     GRAS_FORCE_INLINE void fail(const size_t i)
     {
         _bitset.reset(i);
+        _became_idle_times[i] = time_now();
     }
 
     size_t size(void) const
