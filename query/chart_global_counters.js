@@ -39,6 +39,7 @@ GrasChartGlobalCounts.prototype.update = function(point)
         ['Local pushes', '', 'framework_counter_local_pushes'],
         ['Shared pushes', '', 'framework_counter_shared_pushes'],
         ['Msg queue max', '', 'framework_counter_mailbox_queue_max'],
+        ['Max latency', 'ms', 'framework_counter_queue_latency_max'],
     ];
 
     var entries = 0;

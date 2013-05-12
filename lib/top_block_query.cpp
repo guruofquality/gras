@@ -107,6 +107,7 @@ static std::string query_stats(ElementImpl *self, const boost::property_tree::pt
         root.put("framework_counter_local_pushes", tp->GetCounterValue(Theron::COUNTER_LOCAL_PUSHES));
         root.put("framework_counter_shared_pushes", tp->GetCounterValue(Theron::COUNTER_SHARED_PUSHES));
         root.put("framework_counter_mailbox_queue_max", tp->GetCounterValue(Theron::COUNTER_MAILBOX_QUEUE_MAX));
+        root.put("framework_counter_queue_latency_max", tp->GetCounterValue(Theron::COUNTER_QUEUE_LATENCY_MAX));
     }
 
     //iterate through blocks
