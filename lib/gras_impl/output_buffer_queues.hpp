@@ -122,14 +122,17 @@ struct OutputBufferQueues
 
     GRAS_FORCE_INLINE void _update(const size_t i)
     {
-        size_t avail = 0;
+        const bool was_ready = _bitset[i];
         if (_queues[i] and not _queues[i]->empty())
         {
             const SBuffer &front = _queues[i]->front();
-           avail = front.get_actual_length() - front.offset -  front.length;
+           const size_t avail = front.get_actual_length() - front.offset -  front.length;
+            _bitset.set(i, avail >= _reserve_bytes[i]);
         }
-        const bool was_ready = _bitset[i];
-        _bitset.set(i, avail >= _reserve_bytes[i]);
+        else
+        {
+            _bitset.reset(i);
+        }
         const bool is_ready = _bitset[i];
         if (is_ready and not was_ready) total_idle_times[i] += (time_now() - _became_idle_times[i]);
         if (not is_ready and was_ready) _became_idle_times[i] = time_now();
