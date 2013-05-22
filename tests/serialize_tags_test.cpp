@@ -8,24 +8,15 @@
 #include <PMC/Serialize.hpp>
 #include <gras/tags.hpp>
 
-// include headers that implement a archive in simple text format
-#include <boost/archive/polymorphic_text_oarchive.hpp>
-#include <boost/archive/polymorphic_text_iarchive.hpp>
-#include <sstream>
 #include <cstdlib>
 
 static PMCC loopback_test(PMCC p0)
 {
     std::cout << "\ndoing loopback test on " << p0 << std::endl;
-    std::stringstream ss;
-    boost::archive::polymorphic_text_oarchive oa(ss);
+    const std::string data = PMC::serialize(p0, "TEXT");
 
-    oa << p0;
-    //std::cout << "stringstream holds " << ss.str() << std::endl;
-
-    boost::archive::polymorphic_text_iarchive ia(ss);
-    PMCC p1;
-    ia >> p1;
+    std::cout << "serialized object " << data << std::endl;
+    PMCC p1 = PMC::deserialize(data, "TEXT");
 
     return p1;
 }
