@@ -16,6 +16,7 @@
 #include <gras_impl/output_buffer_queues.hpp>
 #include <gras_impl/input_buffer_queues.hpp>
 #include <gras_impl/interruptible_thread.hpp>
+#include <boost/thread.hpp>
 #include <vector>
 #include <set>
 #include <map>
@@ -62,6 +63,7 @@ struct BlockActor : Apology::Worker
         this->RegisterHandler(this, &BlockActor::handle_prop_access);
         this->RegisterHandler(this, &BlockActor::handle_self_kick);
         this->RegisterHandler(this, &BlockActor::handle_get_stats);
+        this->RegisterHandler(this, &BlockActor::handle_ping);
     }
 
     //handlers
@@ -92,6 +94,7 @@ struct BlockActor : Apology::Worker
     void handle_prop_access(const PropAccessMessage &, const Theron::Address);
     void handle_self_kick(const SelfKickMessage &, const Theron::Address);
     void handle_get_stats(const GetStatsMessage &, const Theron::Address);
+    void handle_ping(const PingMessage &, const Theron::Address);
 
     //helpers
     void mark_done(void);
@@ -108,6 +111,11 @@ struct BlockActor : Apology::Worker
     void update_input_avail(const size_t index);
     bool is_input_done(const size_t index);
     bool is_work_allowed(void);
+
+    //check for blockage thread monitor
+    void ping_thread_loop(void);
+    bool _ping_thread_running;
+    boost::thread *_ping_thread;
 
     //per port properties
     std::vector<InputPortConfig> input_configs;

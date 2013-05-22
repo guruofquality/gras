@@ -3,6 +3,7 @@
 #include <gras/thread_pool.hpp>
 #include <gras_impl/block_actor.hpp>
 #include <Theron/Framework.h>
+#include <Theron/Receiver.h>
 #include <iostream>
 
 using namespace gras;
@@ -50,9 +51,35 @@ BlockActor::BlockActor(void):
         active_thread_pool.reset(); //actors hold this, now its safe to reset, weak_framework only
     }
     this->register_handlers();
+
+}
+
+void BlockActor::ping_thread_loop(void)
+{
+    Theron::Receiver receiver;
+    while (_ping_thread_running)
+    {
+        this->Send(PingMessage(), receiver.GetAddress());
+        const boost::system_time sent_time = boost::get_system_time();
+        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        while (receiver.Count() != 1)
+        {
+            std::cerr
+                << boost::format("Deadlock warning: %s has not yielded the thread context for %u seconds.")
+                % block_ptr->to_string() % (boost::get_system_time() - sent_time).total_seconds()
+                << std::endl;
+            boost::this_thread::sleep(boost::posix_time::seconds(1));
+        }
+        receiver.Consume(1);
+    }
+}
+
+void BlockActor::handle_ping(const PingMessage &, const Theron::Address from)
+{
+    this->Send(0, from); //ACK
 }
 
 BlockActor::~BlockActor(void)
 {
-    //NOP
+    
 }

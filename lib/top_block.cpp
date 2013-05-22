@@ -81,8 +81,7 @@ void TopBlock::start(void)
         (*this)->executor->post_all(TopAllocMessage());
     }
     {
-        TopActiveMessage message;
-        (*this)->executor->post_all(message);
+        (*this)->executor->post_all(TopActiveMessage());
     }
 }
 

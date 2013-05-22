@@ -153,6 +153,11 @@ struct GetStatsMessage
     time_ticks_t stats_time;
 };
 
+struct PingMessage
+{
+    //empty
+};
+
 } //namespace gras
 
 #include <Theron/Register.h>
@@ -185,5 +190,6 @@ THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputUpdateMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::PropAccessMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::SelfKickMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::GetStatsMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::PingMessage);
 
 #endif /*INCLUDED_LIBGRAS_IMPL_MESSAGES_HPP*/
