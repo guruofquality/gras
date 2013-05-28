@@ -225,15 +225,19 @@ struct GRAS_API Block : Element
     void post_output_msg(const size_t which_output, const PMCC &msg);
 
     /*!
-     * Pop input message convenience routine.
-     * This routine reads the first input message,
-     * and erases this message from the given port.
-     * The intention is to simplify the use case
-     * for using this for port messages only.
-     * If no message, the return value is null.
+     * Pop a message from the specified port.
+     * This is a non-blocking call, and will return
+     * a null PMC when no message is available.
+     * Suppose PMCC msg = this->pop_input_msg(0);
+     * Use if(msg) to detect if the PMC is valid.
+     *
+     * There is no API to discover the queue depth.
+     * Therefore, users can either pop the queue exhaustively
+     * or call pop once and wait for work to be called again.
+     * If there are more messages, work is called again ASAP.
      *
      * \param which_input the index of the input port
-     * \return the message on the front of the queue
+     * \return the message on the port or null PMC
      */
     PMCC pop_input_msg(const size_t which_input);
 
