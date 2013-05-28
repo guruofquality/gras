@@ -23,6 +23,8 @@
 namespace gras
 {
 
+typedef boost::shared_ptr<PropertyRegistry> PropertyRegistrySptr;
+
 struct BlockActor : Apology::Worker
 {
     BlockActor(void);

@@ -97,14 +97,14 @@ static PMCC prop_access_dispatcher(ActorType &actor, const std::string &key, con
     return receiver.message.value;
 }
 
-void Block::_register_getter(const std::string &key, PMCC pr)
+void Block::_register_getter(const std::string &key, void *pr)
 {
-    (*this)->block->getter_registry[key] = pr.as<PropertyRegistrySptr>();
+    (*this)->block->getter_registry[key].reset(reinterpret_cast<PropertyRegistry *>(pr));
 }
 
-void Block::_register_setter(const std::string &key, PMCC pr)
+void Block::_register_setter(const std::string &key, void *pr)
 {
-    (*this)->block->setter_registry[key] = pr.as<PropertyRegistrySptr>();
+    (*this)->block->setter_registry[key].reset(reinterpret_cast<PropertyRegistry *>(pr));
 }
 
 void Block::_set_property(const std::string &key, const PMCC &value)

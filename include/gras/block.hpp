@@ -535,8 +535,8 @@ struct GRAS_API Block : Element
      * private implementation guts for overloads and template support
      ******************************************************************/
     virtual PMCC _handle_prop_access(const std::string &, const PMCC &, const bool);
-    void _register_getter(const std::string &, PMCC);
-    void _register_setter(const std::string &, PMCC);
+    void _register_getter(const std::string &, void *);
+    void _register_setter(const std::string &, void *);
     virtual void _set_property(const std::string &, const PMCC &);
     virtual PMCC _get_property(const std::string &);
 };

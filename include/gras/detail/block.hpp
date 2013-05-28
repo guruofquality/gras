@@ -14,8 +14,6 @@ struct GRAS_API PropertyRegistry
     virtual PMCC get(void) = 0;
 };
 
-typedef boost::shared_ptr<PropertyRegistry> PropertyRegistrySptr;
-
 template <typename ClassType, typename ValueType>
 class PropertyRegistryImpl : public PropertyRegistry
 {
@@ -58,9 +56,8 @@ inline void Block::register_getter(
 )
 {
     ClassType *obj = dynamic_cast<ClassType *>(this);
-    PropertyRegistrySptr pr;
-    pr.reset(new PropertyRegistryImpl<ClassType, ValueType>(obj, get, NULL));
-    this->_register_getter(key, PMC_M(pr));
+    void *pr = new PropertyRegistryImpl<ClassType, ValueType>(obj, get, NULL);
+    this->_register_getter(key, pr);
 }
 
 template <typename ClassType, typename ValueType>
@@ -70,9 +67,8 @@ inline void Block::register_setter(
 )
 {
     ClassType *obj = dynamic_cast<ClassType *>(this);
-    PropertyRegistrySptr pr;
-    pr.reset(new PropertyRegistryImpl<ClassType, ValueType>(obj, NULL, set));
-    this->_register_setter(key, PMC_M(pr));
+    void *pr = new PropertyRegistryImpl<ClassType, ValueType>(obj, NULL, set);
+    this->_register_setter(key, pr);
 }
 
 template <typename ValueType>
