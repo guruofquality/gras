@@ -114,7 +114,7 @@ set(CMAKE_PROJECT_NAME gnuradio) #for submodule vars
 
 set(GR_MOAR_LIBRARIES ${GRAS_LIBRARIES})
 
-#add_subdirectory(gnuradio)
+add_subdirectory(gnuradio)
 
 ########################################################################
 # add GRAS to gnuradio cpack registry
@@ -195,7 +195,7 @@ if(ENABLE_GR_DIGITAL)
     list(APPEND GR_TEST_TARGET_DEPS gnuradio-digital gnuradio-filter gnuradio-fft gnuradio-analog)
 endif(ENABLE_GR_DIGITAL)
 
-#add_subdirectory(grextras)
+add_subdirectory(grextras)
 
 ########################################################################
 # add GrExtras to gnuradio cpack registry
