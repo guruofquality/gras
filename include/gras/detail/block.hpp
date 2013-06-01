@@ -3,6 +3,8 @@
 #ifndef INCLUDED_GRAS_DETAIL_BLOCK_HPP
 #define INCLUDED_GRAS_DETAIL_BLOCK_HPP
 
+#include <typeinfo>
+
 namespace gras
 {
 
@@ -12,6 +14,7 @@ struct GRAS_API PropertyRegistry
     virtual ~PropertyRegistry(void);
     virtual void set(const PMCC &) = 0;
     virtual PMCC get(void) = 0;
+    virtual const std::type_info &type(void) const = 0;
 };
 
 template <typename ClassType, typename ValueType>
@@ -37,6 +40,11 @@ public:
     PMCC get(void)
     {
         return PMC_M((_my_class->*_getter)());
+    }
+
+    const std::type_info &type(void) const
+    {
+        return typeid(ValueType);
     }
 
 private:

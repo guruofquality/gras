@@ -24,6 +24,11 @@ namespace gras
 {
 
 typedef boost::shared_ptr<PropertyRegistry> PropertyRegistrySptr;
+struct PropertyRegistryPair
+{
+    PropertyRegistrySptr setter;
+    PropertyRegistrySptr getter;
+};
 
 struct BlockActor : Apology::Worker
 {
@@ -163,8 +168,7 @@ struct BlockActor : Apology::Worker
     std::vector<std::vector<OutputHintMessage> > output_allocation_hints;
 
     //property stuff
-    std::map<std::string, PropertyRegistrySptr> getter_registry;
-    std::map<std::string, PropertyRegistrySptr> setter_registry;
+    std::map<std::string, PropertyRegistryPair> property_registry;
 
     BlockStats stats;
 };

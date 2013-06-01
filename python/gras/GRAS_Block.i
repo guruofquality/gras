@@ -176,6 +176,26 @@ struct BlockPython : Block
     }
 
     virtual PMCC _Py_handle_prop_access(const std::string &key, const PMCC &value, const bool set) = 0;
+
+    void dummy_setter(const PMCC &)
+    {
+        //NOP
+    }
+    PMCC dummy_getter(void)
+    {
+        return PMC();
+    }
+
+    void _Py_register_dummy_setter(const std::string &key)
+    {
+        this->register_setter(key, &BlockPython::dummy_setter);
+    }
+
+    void _Py_register_dummy_getter(const std::string &key)
+    {
+        this->register_getter(key, &BlockPython::dummy_getter);
+    }
+
 };
 
 }
@@ -291,8 +311,10 @@ class Block(BlockPython):
             return PMC_M(getter())
 
     def register_getter(self, key, getter):
+        self._Py_register_dummy_getter(key)
         self.__getter_registry[key] = getter
 
     def register_setter(self, key, setter):
+        self._Py_register_dummy_setter(key)
         self.__setter_registry[key] = setter
 %}

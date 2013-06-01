@@ -45,10 +45,8 @@ void BlockActor::handle_prop_access(
 
 PMCC Block::_handle_prop_access(const std::string &key, const PMCC &value, const bool set)
 {
-    PropertyRegistrySptr pr = (set)?
-        (*this)->block->setter_registry[key] :
-        (*this)->block->getter_registry[key]
-    ;
+    const PropertyRegistryPair &pair = (*this)->block->property_registry[key];
+    PropertyRegistrySptr pr = (set)? pair.setter : pair.getter;
     if (not pr) throw std::invalid_argument("no property registered for key: " + key);
     if (set)
     {
@@ -99,12 +97,12 @@ static PMCC prop_access_dispatcher(ActorType &actor, const std::string &key, con
 
 void Block::_register_getter(const std::string &key, void *pr)
 {
-    (*this)->block->getter_registry[key].reset(reinterpret_cast<PropertyRegistry *>(pr));
+    (*this)->block->property_registry[key].getter.reset(reinterpret_cast<PropertyRegistry *>(pr));
 }
 
 void Block::_register_setter(const std::string &key, void *pr)
 {
-    (*this)->block->setter_registry[key].reset(reinterpret_cast<PropertyRegistry *>(pr));
+    (*this)->block->property_registry[key].setter.reset(reinterpret_cast<PropertyRegistry *>(pr));
 }
 
 void Block::_set_property(const std::string &key, const PMCC &value)
