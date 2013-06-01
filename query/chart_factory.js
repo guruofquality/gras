@@ -251,7 +251,7 @@ function gras_chart_factory_init(registry)
     $.getJSON('/blocks.json', function(data)
     {
         var container = $('#chart_designer_blocks');
-        $.each(data.blocks, function(index, id)
+        $.each(data.blocks, function(id, attrs)
         {
             registry.block_ids.push(id);
             var cb_id = "chart_designer_blocks " + id;

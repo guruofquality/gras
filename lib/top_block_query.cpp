@@ -47,9 +47,29 @@ static std::string query_blocks(ElementImpl *self, const boost::property_tree::p
     boost::property_tree::ptree e;
     BOOST_FOREACH(Apology::Worker *worker, self->executor->get_workers())
     {
-        boost::property_tree::ptree t;
-        t.put_value(dynamic_cast<BlockActor *>(worker)->block_ptr->to_string());
-        e.push_back(std::make_pair("", t));
+        BlockActor *block = dynamic_cast<BlockActor *>(worker);
+        boost::property_tree::ptree prop_e;
+        typedef std::pair<std::string, PropertyRegistryPair> PropRegistryKVP;
+        BOOST_FOREACH(const PropRegistryKVP &p, block->property_registry)
+        {
+            boost::property_tree::ptree prop_attrs;
+            if (p.second.setter)
+            {
+                boost::property_tree::ptree type;
+                type.put_value(p.second.setter->type().name());
+                prop_attrs.push_back(std::make_pair("setter", type));
+            }
+            if (p.second.getter)
+            {
+                boost::property_tree::ptree type;
+                type.put_value(p.second.getter->type().name());
+                prop_attrs.push_back(std::make_pair("getter", type));
+            }
+            boost::property_tree::ptree block_attrs;
+            block_attrs.push_back(std::make_pair(p.first, prop_attrs));
+            prop_e.push_back(std::make_pair("props", block_attrs));
+        }
+        e.push_back(std::make_pair(block->block_ptr->to_string(), prop_e));
     }
     root.push_back(std::make_pair("blocks", e));
     return my_write_json(root);
@@ -155,38 +175,6 @@ static std::string query_stats(ElementImpl *self, const boost::property_tree::pt
     return my_write_json(root);
 }
 
-static std::string query_props(ElementImpl *self, const boost::property_tree::ptree &)
-{
-    boost::property_tree::ptree root;
-    boost::property_tree::ptree e;
-    BOOST_FOREACH(Apology::Worker *worker, self->executor->get_workers())
-    {
-        BlockActor *block = dynamic_cast<BlockActor *>(worker);
-        boost::property_tree::ptree prop_e;
-        typedef std::pair<std::string, PropertyRegistryPair> PropRegistryKVP;
-        BOOST_FOREACH(const PropRegistryKVP &p, block->property_registry)
-        {
-            boost::property_tree::ptree attrs;
-            if (p.second.setter)
-            {
-                boost::property_tree::ptree type;
-                type.put_value(p.second.setter->type().name());
-                attrs.push_back(std::make_pair("set_type", type));
-            }
-            if (p.second.getter)
-            {
-                boost::property_tree::ptree type;
-                type.put_value(p.second.getter->type().name());
-                attrs.push_back(std::make_pair("get_type", type));
-            }
-            prop_e.push_back(std::make_pair(p.first, attrs));
-        }
-        e.push_back(std::make_pair(block->block_ptr->to_string(), prop_e));
-    }
-    root.push_back(std::make_pair("props", e));
-    return my_write_json(root);
-}
-
 std::string TopBlock::query(const std::string &args)
 {
     //why the fuck does no OS ever patch boost when there is a bug
@@ -200,6 +188,5 @@ std::string TopBlock::query(const std::string &args)
     std::string path = query_args_pt.get<std::string>("args.path");
     if (path == "/blocks.json") return query_blocks(this->get(), query_args_pt);
     if (path == "/stats.json") return query_stats(this->get(), query_args_pt);
-    if (path == "/props.json") return query_props(this->get(), query_args_pt);
     return "";
 }

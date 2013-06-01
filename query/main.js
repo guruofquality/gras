@@ -61,7 +61,7 @@ var gras_query_stats = function(registry)
 /***********************************************************************
  * Init
  **********************************************************************/
-var gras_stats_main = function()
+var gras_query_main = function()
 {
     //create a new registry - storage for gui state
     var registry = new GrasStatsRegistry();

@@ -46,11 +46,16 @@ class QueryTest(unittest.TestCase):
 
         blocks_json = self.tb.query("<args><path>/blocks.json</path></args>")
         print blocks_json
-        json.loads(blocks_json)
+        blocks_python = json.loads(blocks_json)
+        print blocks_python
+        self.assertEqual(len(blocks_python['blocks']), 2)
 
         stats_json = self.tb.query("<args><path>/stats.json</path></args>")
         print stats_json
-        json.loads(stats_json)
+        stats_python = json.loads(stats_json)
+        print stats_python
+        self.assertTrue('tps' in stats_python)
+        self.assertTrue('now' in stats_python)
 
     def test_props(self):
         vec_source = VectorSource(numpy.uint32, [0, 9, 8, 7, 6])
@@ -59,9 +64,11 @@ class QueryTest(unittest.TestCase):
         self.tb.connect(vec_source, block, vec_sink)
         self.tb.run()
 
-        props_json = self.tb.query("<args><path>/props.json</path></args>")
-        print props_json
-        json.loads(props_json)
+        blocks_json = self.tb.query("<args><path>/blocks.json</path></args>")
+        print blocks_json
+        blocks_python = json.loads(blocks_json)
+        print blocks_python
+        self.assertEqual(len(blocks_python['blocks']), 3)
 
 if __name__ == '__main__':
     unittest.main()

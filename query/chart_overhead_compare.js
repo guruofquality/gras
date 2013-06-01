@@ -23,8 +23,11 @@ GrasChartOverheadCompare.prototype.update = function(point)
     data_set.push(['Task', 'Percent']);
     $.each(this.ids, function(index, id)
     {
-        var percents = gras_extract_percent_times(point, id);
-        data_set.push([id, percents['total']]);
+        if (id in point.blocks) //skip this ID if it didnt show up in the data
+        {
+            var percents = gras_extract_percent_times(point, id);
+            data_set.push([id, percents['total']]);
+        }
     });
 
     var data = google.visualization.arrayToDataTable(data_set)
