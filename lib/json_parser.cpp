@@ -5,7 +5,7 @@
 //why the fuck does no OS ever patch boost when there is a bug
 //https://svn.boost.org/trac/boost/ticket/6785
 #if BOOST_VERSION == 104900
-#include "json_parser_read_104900.hpp"
+#include "boost_fail/json_parser_read_104900.hpp"
 #endif
 //--------- end bullshit --------------//
 

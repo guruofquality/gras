@@ -4,7 +4,6 @@ import unittest
 import gras
 import numpy
 from demo_blocks import *
-import json
 
 class MyBlock(gras.Block):
     def __init__(self):
@@ -45,25 +44,22 @@ class QueryTest(unittest.TestCase):
         self.assertEqual(vec_sink.get_vector(), (0, 9, 8, 7, 6))
 
         #query the block list
-        blocks_json = self.tb.query('{"path": "/blocks.json"}')
-        print blocks_json
-        blocks_python = json.loads(blocks_json)
-        print blocks_python
-        self.assertEqual(len(blocks_python['blocks']), 2)
+        blocks_result = self.tb.query(dict(path="/blocks.json"))
+        self.assertEqual(len(blocks_result['blocks']), 2)
 
         #pick a block to query below:
-        block_id = blocks_python['blocks'].keys()[0]
+        block_id = blocks_result['blocks'].keys()[0]
 
         #query the stats
-        stats_json = self.tb.query(str('{"path": "/stats.json", "blocks": ["%s"]}'%block_id))
-        print stats_json
-        stats_python = json.loads(stats_json)
-        print stats_python
-        self.assertTrue('tps' in stats_python)
-        self.assertTrue('now' in stats_python)
+        stats_result = self.tb.query(dict(
+            path="/stats.json",
+            blocks=[block_id],
+        ))
+        self.assertTrue('tps' in stats_result)
+        self.assertTrue('now' in stats_result)
 
         #found the block we asked for
-        self.assertTrue(block_id in stats_python['blocks'])
+        self.assertTrue(block_id in stats_result['blocks'])
 
     def test_props(self):
         vec_source = VectorSource(numpy.uint32, [0, 9, 8, 7, 6])
@@ -72,11 +68,9 @@ class QueryTest(unittest.TestCase):
         self.tb.connect(vec_source, block, vec_sink)
         self.tb.run()
 
-        blocks_json = self.tb.query('{"path": "/blocks.json"}')
-        print blocks_json
-        blocks_python = json.loads(blocks_json)
-        print blocks_python
-        self.assertEqual(len(blocks_python['blocks']), 3)
+        #query the block list
+        blocks_result = self.tb.query(dict(path="/blocks.json"))
+        self.assertEqual(len(blocks_result['blocks']), 3)
 
 if __name__ == '__main__':
     unittest.main()

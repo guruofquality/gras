@@ -174,6 +174,14 @@ class TopBlock(TopBlockPython):
     def disconnect(self, *args):
         return internal_connect__(TopBlockPython.disconnect, self, *args)
 
+    def query(self, args):
+        if isinstance(args, str): return TopBlockPython.query(self, args)
+        else:
+            import json
+            query_str = json.dumps(args)
+            result_str = TopBlockPython.query(self, query_str)
+            return json.loads(result_str)
+
 class HierBlock(HierBlockPython):
     def __init__(self, name="Hier"):
         HierBlockPython.__init__(self, name)
