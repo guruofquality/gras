@@ -65,12 +65,18 @@ class QueryTest(unittest.TestCase):
         vec_source = VectorSource(numpy.uint32, [0, 9, 8, 7, 6])
         vec_sink = VectorSink(numpy.uint32)
         block = MyBlock()
+        block.set_uid("my_block_uid")
         self.tb.connect(vec_source, block, vec_sink)
         self.tb.run()
 
         #query the block list
         blocks_result = self.tb.query(dict(path="/blocks.json"))
         self.assertEqual(len(blocks_result['blocks']), 3)
+        self.assertTrue('my_block_uid' in blocks_result['blocks'])
+
+        #set the property
+
+        #get the property
 
 if __name__ == '__main__':
     unittest.main()

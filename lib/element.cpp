@@ -33,7 +33,7 @@ Element::Element(const std::string &name)
         catch(const std::invalid_argument &ex)
         {
             extra = str(boost::format("%04x") % short(h++));
-            uid = name+"#"+extra;
+            uid = name+" "+extra;
         }
     }
     if (not extra.empty()) (*this)->repr = name;
@@ -72,6 +72,11 @@ void Element::set_container(WeakContainer *container)
 bool Element::equals(const Element &rhs)
 {
     return this->get() == rhs.get();
+}
+
+std::string Element::to_string(void) const
+{
+    return (*this)->repr;
 }
 
 void Element::adopt_element(const std::string &name, const Element &child)
