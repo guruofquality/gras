@@ -154,7 +154,7 @@ void BlockActor::handle_get_stats(
 
     //create the message reply object
     GetStatsMessage message;
-    message.block_id = this->block_ptr->to_string();
+    message.block_id = this->block_ptr->get_uid();
     message.stats = this->stats;
     message.stats_time = time_now();
 

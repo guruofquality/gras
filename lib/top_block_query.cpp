@@ -56,7 +56,7 @@ static ptree query_blocks(ElementImpl *self, const ptree &)
             block_attrs.push_back(std::make_pair(p.first, prop_attrs));
             prop_e.push_back(std::make_pair("props", block_attrs));
         }
-        e.push_back(std::make_pair(block->block_ptr->to_string(), prop_e));
+        e.push_back(std::make_pair(block->block_ptr->get_uid(), prop_e));
     }
     root.push_back(std::make_pair("blocks", e));
     return root;
@@ -80,7 +80,7 @@ static ptree query_stats(ElementImpl *self, const ptree &query)
     BOOST_FOREACH(Apology::Worker *worker, self->executor->get_workers())
     {
         //filter workers not needed in query
-        const std::string id = dynamic_cast<BlockActor *>(worker)->block_ptr->to_string();
+        const std::string id = dynamic_cast<BlockActor *>(worker)->block_ptr->get_uid();
         if (std::find(block_ids.begin(), block_ids.end(), id) == block_ids.end()) continue;
 
         //send a message to the block's actor to query stats

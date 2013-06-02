@@ -71,7 +71,7 @@ static void wait_block_cleanup(ElementImpl &self)
         case BLOCK_CLEANUP_WAIT:
             if (boost::get_system_time() > start + boost::posix_time::seconds(1))
             {
-                std::cerr << self.id << ", waiting for you to finish." << std::endl;
+                std::cerr << self.repr << ", waiting for you to finish." << std::endl;
                 state = BLOCK_CLEANUP_WARN;
             }
             break;
@@ -79,7 +79,7 @@ static void wait_block_cleanup(ElementImpl &self)
         case BLOCK_CLEANUP_WARN:
             if (boost::get_system_time() > start + boost::posix_time::seconds(2))
             {
-                std::cerr << self.id << ", give up the thread context!" << std::endl;
+                std::cerr << self.repr << ", give up the thread context!" << std::endl;
                 state = BLOCK_CLEANUP_DAMN;
             }
             break;
@@ -87,7 +87,7 @@ static void wait_block_cleanup(ElementImpl &self)
         case BLOCK_CLEANUP_DAMN:
             if (boost::get_system_time() > start + boost::posix_time::seconds(3))
             {
-                std::cerr << self.id << " FAIL; application will now hang..." << std::endl;
+                std::cerr << self.repr << " FAIL; application will now hang..." << std::endl;
                 state = BLOCK_CLEANUP_DOTS;
             }
             break;

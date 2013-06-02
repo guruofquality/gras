@@ -3,11 +3,10 @@
 #include "element_impl.hpp"
 #include <gras/element.hpp>
 #include <boost/format.hpp>
-#include <boost/detail/atomic_count.hpp>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
-
-static boost::detail::atomic_count unique_id_pool(0);
+#include <boost/functional/hash.hpp>
+#include <cstdlib>
 
 using namespace gras;
 
@@ -20,8 +19,25 @@ Element::Element(const std::string &name)
 {
     this->reset(new ElementImpl());
     (*this)->name = name;
-    (*this)->unique_id = ++unique_id_pool;
-    (*this)->id = str(boost::format("%s(%d)") % this->name() % this->unique_id());
+    std::string extra;
+    std::string uid = name;
+    boost::hash<std::string> string_hash;
+    std::size_t h = string_hash(uid);
+    while (true)
+    {
+        try
+        {
+            this->set_uid(uid);
+            break;
+        }
+        catch(const std::invalid_argument &ex)
+        {
+            extra = str(boost::format("%04x") % short(h++));
+            uid = name+"#"+extra;
+        }
+    }
+    if (not extra.empty()) (*this)->repr = name;
+    else (*this)->repr = str(boost::format("%s (%s)") % name % extra);
 
     if (GENESIS) std::cerr << "New element: " << to_string() << std::endl;
 }
@@ -56,21 +72,6 @@ void Element::set_container(WeakContainer *container)
 bool Element::equals(const Element &rhs)
 {
     return this->get() == rhs.get();
-}
-
-long Element::unique_id(void) const
-{
-    return (*this)->unique_id;
-}
-
-std::string Element::name(void) const
-{
-    return (*this)->name;
-}
-
-std::string Element::to_string(void) const
-{
-    return (*this)->id;
 }
 
 void Element::adopt_element(const std::string &name, const Element &child)

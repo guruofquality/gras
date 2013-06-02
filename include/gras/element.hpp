@@ -56,18 +56,37 @@ struct GRAS_API Element : boost::shared_ptr<ElementImpl>
      */
     bool equals(const Element &rhs);
 
+    /*!
+     * Get a canonical name for this element.
+     * This is used for printing elements for debug purposes.
+     * Do not rely on the string to have any specific formatting.
+     * \return a canonical string representation
+     */
+    std::string to_string(void) const;
+
     /*******************************************************************
      * identification interface
      ******************************************************************/
 
-    //! An integer ID that is unique across the process
-    long unique_id(void) const;
+    /*!
+     * Set the unique identifier of this element.
+     * The UID must be unique across the process.
+     * Typically the user will set a UID so an element
+     * will have a known indentification for the query client.
+     * This call will throw if UID is not process-unique.
+     * \param uid a new unique identifier for this element
+     */
+    void set_uid(const std::string &uid);
 
-    //! Get the name of this element
-    std::string name(void) const;
-
-    //! get a canonical name for this element
-    std::string to_string(void) const;
+    /*!
+     * Get the unique identifier of this element.
+     * Typically, a name is given to an element on construction.
+     * By default UID will be the name or name + some hash
+     * when there is more than one element of the same name.
+     * Otherwise UID is set the by the set_uid API call.
+     * \return the element's unique identifier as a string
+     */
+    std::string get_uid(void) const;
 
     /*******************************************************************
      * element tree interface

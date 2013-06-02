@@ -25,10 +25,11 @@ struct ElementImpl
     void hier_block_cleanup(void);
     void block_cleanup(void);
 
-    //common element properties
+    //element identification
     std::string name;
-    long unique_id;
-    std::string id;
+    std::string repr;
+    boost::shared_ptr<std::string> uid;
+
     boost::shared_ptr<WeakContainer> weak_self;
 
     //top block stuff
