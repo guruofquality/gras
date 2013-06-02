@@ -75,8 +75,24 @@ class QueryTest(unittest.TestCase):
         self.assertTrue('my_block_uid' in blocks_result['blocks'])
 
         #set the property
+        self.tb.query(dict(
+            path="/props.json",
+            block='my_block_uid',
+            key='foo',
+            action='set',
+            value=42,
+        ))
+        self.assertEqual(block.foo, 42)
 
         #get the property
+        block.set('foo', 21)
+        result = self.tb.query(dict(
+            path="/props.json",
+            block='my_block_uid',
+            key='foo',
+            action='get'
+        ))
+        self.assertEqual(result['value'], 21)
 
 if __name__ == '__main__':
     unittest.main()

@@ -77,16 +77,15 @@ struct PropAccessReceiver : Theron::Receiver
 /***********************************************************************
  * Handle the get and set calls from the user's call-stack
  **********************************************************************/
-template <typename ActorType>
-static PMCC prop_access_dispatcher(ActorType &actor, const std::string &key, const PMCC &value, const bool set)
+PMCC BlockActor::prop_access_dispatcher(const std::string &key, const PMCC &value, const bool set)
 {
     PropAccessReceiver receiver;
     PropAccessMessage message;
-    message.prio_token = actor->prio_token;
+    message.prio_token = this->prio_token;
     message.set = set;
     message.key = key;
     message.value = value;
-    actor->GetFramework().Send(message, receiver.GetAddress(), actor->GetAddress());
+    this->GetFramework().Send(message, receiver.GetAddress(), this->GetAddress());
     receiver.Wait();
     if (not receiver.message.error.empty())
     {
@@ -107,10 +106,10 @@ void Block::_register_setter(const std::string &key, void *pr)
 
 void Block::_set_property(const std::string &key, const PMCC &value)
 {
-    prop_access_dispatcher((*this)->block, key, value, true);
+    (*this)->block->prop_access_dispatcher(key, value, true);
 }
 
 PMCC Block::_get_property(const std::string &key)
 {
-    return prop_access_dispatcher((*this)->block, key, PMCC(), false);
+    return (*this)->block->prop_access_dispatcher(key, PMCC(), false);
 }

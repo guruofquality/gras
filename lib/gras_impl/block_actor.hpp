@@ -169,6 +169,7 @@ struct BlockActor : Apology::Worker
 
     //property stuff
     std::map<std::string, PropertyRegistryPair> property_registry;
+    PMCC prop_access_dispatcher(const std::string &key, const PMCC &value, const bool set);
 
     BlockStats stats;
 };

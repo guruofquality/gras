@@ -160,14 +160,91 @@ static ptree query_stats(ElementImpl *self, const ptree &query)
     return root;
 }
 
+static PMCC ptree_to_pmc(const ptree &value, const std::type_info &info)
+{
+    //if the type is PMCC - educated guess and recursively call
+    if (info == typeid(PMCC) or info == typeid(PMC))
+    {
+        //single child or array?
+        //can we cast to number?
+        //TODO be lazy and do number for initial tests
+        return ptree_to_pmc(value, typeid(long));
+    }
+
+    #define ptree_to_pmc_try(type) \
+    if (info == typeid(type)) return PMC_M(value.get_value<type>());
+
+    //determine number
+    ptree_to_pmc_try(char);
+    ptree_to_pmc_try(signed char);
+    ptree_to_pmc_try(unsigned char);
+    ptree_to_pmc_try(signed short);
+    ptree_to_pmc_try(unsigned short);
+    ptree_to_pmc_try(signed int);
+    ptree_to_pmc_try(unsigned int);
+    ptree_to_pmc_try(signed long);
+    ptree_to_pmc_try(unsigned long);
+    ptree_to_pmc_try(signed long long);
+    ptree_to_pmc_try(unsigned long long);
+    //complex number
+    //string
+    ptree_to_pmc_try(std::string);
+    //determine number vector
+
+    //otherwise null -- will crap out
+    return PMC();
+}
+
+static ptree pmc_to_ptree(const PMCC &value)
+{
+    ptree v;
+    #define pmc_to_ptree_try(type) \
+    if (value.is<type>()) {v.put_value(value.as<type>()); return v;}
+
+    //determine number
+    pmc_to_ptree_try(char);
+    pmc_to_ptree_try(signed char);
+    pmc_to_ptree_try(unsigned char);
+    pmc_to_ptree_try(signed short);
+    pmc_to_ptree_try(unsigned short);
+    pmc_to_ptree_try(signed int);
+    pmc_to_ptree_try(unsigned int);
+    pmc_to_ptree_try(signed long);
+    pmc_to_ptree_try(unsigned long);
+    pmc_to_ptree_try(signed long long);
+    pmc_to_ptree_try(unsigned long long);
+
+    //determine string
+    pmc_to_ptree_try(std::string);
+
+    return v;
+}
+
 static ptree query_props(ElementImpl *self, const ptree &query)
 {
     ptree root;
     const std::string block_id = query.get<std::string>("block");
     const std::string prop_key = query.get<std::string>("key");
     const std::string action = query.get<std::string>("action");
-    const std::string value = query.get<std::string>("value");
-    //TODO :-)
+    BOOST_FOREACH(Apology::Worker *worker, self->executor->get_workers())
+    {
+        BlockActor *block = dynamic_cast<BlockActor *>(worker);
+        if (block->block_ptr->get_uid() != block_id) continue;
+        if (action == "set")
+        {
+            const std::type_info &t = block->property_registry[prop_key].setter->type();
+            const PMCC p = ptree_to_pmc(query.get_child("value"), t);
+            block->prop_access_dispatcher(prop_key, p, true);
+        }
+        if (action == "get")
+        {
+            PMCC p = block->prop_access_dispatcher(prop_key, PMC(), false);
+            ptree v = pmc_to_ptree(p);
+            root.push_back(std::make_pair("block", query.get_child("block")));
+            root.push_back(std::make_pair("key", query.get_child("key")));
+            root.push_back(std::make_pair("value", v));
+        }
+    }
     return root;
 }
 
