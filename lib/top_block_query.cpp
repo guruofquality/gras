@@ -4,12 +4,8 @@
 #include <gras/top_block.hpp>
 #include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/property_tree/xml_parser.hpp>
-#include <boost/regex.hpp>
 #include <Theron/DefaultAllocator.h>
 #include <algorithm>
-#include <sstream>
 
 using namespace gras;
 
@@ -30,18 +26,7 @@ struct GetStatsReceiver : Theron::Receiver
     std::vector<GetStatsMessage> messages;
 };
 
-//http://stackoverflow.com/questions/13464383/boost-property-write-json-incorrect-behaviour
-static std::string my_write_json(const boost::property_tree::ptree &pt)
-{
-    boost::regex exp("\"(null|true|false|[0-9]+(\\.[0-9]+)?)\"");
-    std::stringstream ss;
-    boost::property_tree::json_parser::write_json(ss, pt);
-    std::string rv = boost::regex_replace(ss.str(), exp, "$1");
-
-    return rv;
-}
-
-static std::string query_blocks(ElementImpl *self, const boost::property_tree::ptree &)
+static boost::property_tree::ptree query_blocks(ElementImpl *self, const boost::property_tree::ptree &)
 {
     boost::property_tree::ptree root;
     boost::property_tree::ptree e;
@@ -72,17 +57,17 @@ static std::string query_blocks(ElementImpl *self, const boost::property_tree::p
         e.push_back(std::make_pair(block->block_ptr->to_string(), prop_e));
     }
     root.push_back(std::make_pair("blocks", e));
-    return my_write_json(root);
+    return root;
 }
 
-static std::string query_stats(ElementImpl *self, const boost::property_tree::ptree &query)
+static boost::property_tree::ptree query_stats(ElementImpl *self, const boost::property_tree::ptree &query)
 {
 
     //parse list of block ids needed in this query
     std::vector<std::string> block_ids;
-    BOOST_FOREACH(const boost::property_tree::ptree::value_type &v, query.get_child("args"))
+    if (query.count("blocks") != 0)
     {
-        if (v.first.data() == std::string("block"))
+        BOOST_FOREACH(const boost::property_tree::ptree::value_type &v, query.get_child("blocks"))
         {
             block_ids.push_back(v.second.get<std::string>(""));
         }
@@ -171,22 +156,21 @@ static std::string query_stats(ElementImpl *self, const boost::property_tree::pt
         blocks.push_back(std::make_pair(message.block_id, block));
     }
     root.push_back(std::make_pair("blocks", blocks));
-
-    return my_write_json(root);
+    return root;
 }
+
+boost::property_tree::ptree json_to_ptree(const std::string &s);
+std::string ptree_to_json(const boost::property_tree::ptree &p);
 
 std::string TopBlock::query(const std::string &args)
 {
-    //why the fuck does no OS ever patch boost when there is a bug
-    //https://svn.boost.org/trac/boost/ticket/6785
-    //serialize the path args into xml -- but I just wanted json
-    std::stringstream query_args_ss(args);
-    boost::property_tree::ptree query_args_pt;
-    boost::property_tree::xml_parser::read_xml(query_args_ss, query_args_pt);
+    //convert json args into property tree
+    const boost::property_tree::ptree query_args_pt = json_to_ptree(args);
 
     //dispatch based on path arg
-    std::string path = query_args_pt.get<std::string>("args.path");
-    if (path == "/blocks.json") return query_blocks(this->get(), query_args_pt);
-    if (path == "/stats.json") return query_stats(this->get(), query_args_pt);
-    return "";
+    std::string path = query_args_pt.get<std::string>("path");
+    boost::property_tree::ptree result;
+    if (path == "/blocks.json") result = query_blocks(this->get(), query_args_pt);
+    if (path == "/stats.json") result = query_stats(this->get(), query_args_pt);
+    return ptree_to_json(result);
 }

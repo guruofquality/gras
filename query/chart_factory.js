@@ -39,7 +39,14 @@ function gras_chart_factory_update(registry, point)
     registry.point = point; //store last data point
     $.each(registry.active_charts, function(index, chart_info)
     {
-        chart_info.chart.update(point);
+        try
+        {
+            chart_info.chart.update(point);
+        }
+        catch(err)
+        {
+            //jQuery.error("gras_chart_factory_update error: " + err.message);
+        }
     });
 }
 

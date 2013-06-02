@@ -44,18 +44,26 @@ class QueryTest(unittest.TestCase):
 
         self.assertEqual(vec_sink.get_vector(), (0, 9, 8, 7, 6))
 
-        blocks_json = self.tb.query("<args><path>/blocks.json</path></args>")
+        #query the block list
+        blocks_json = self.tb.query('{"path": "/blocks.json"}')
         print blocks_json
         blocks_python = json.loads(blocks_json)
         print blocks_python
         self.assertEqual(len(blocks_python['blocks']), 2)
 
-        stats_json = self.tb.query("<args><path>/stats.json</path></args>")
+        #pick a block to query below:
+        block_id = blocks_python['blocks'].keys()[0]
+
+        #query the stats
+        stats_json = self.tb.query(str('{"path": "/stats.json", "blocks": ["%s"]}'%block_id))
         print stats_json
         stats_python = json.loads(stats_json)
         print stats_python
         self.assertTrue('tps' in stats_python)
         self.assertTrue('now' in stats_python)
+
+        #found the block we asked for
+        self.assertTrue(block_id in stats_python['blocks'])
 
     def test_props(self):
         vec_source = VectorSource(numpy.uint32, [0, 9, 8, 7, 6])
@@ -64,7 +72,7 @@ class QueryTest(unittest.TestCase):
         self.tb.connect(vec_source, block, vec_sink)
         self.tb.run()
 
-        blocks_json = self.tb.query("<args><path>/blocks.json</path></args>")
+        blocks_json = self.tb.query('{"path": "/blocks.json"}')
         print blocks_json
         blocks_python = json.loads(blocks_json)
         print blocks_python

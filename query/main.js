@@ -33,7 +33,7 @@ var gras_query_stats = function(registry)
         url: "/stats.json",
         dataType: "json",
         traditional: true, //needed to parse data
-        data: {block:gras_chart_factory_active_blocks(registry)},
+        data: {blocks:gras_chart_factory_active_blocks(registry)},
         success: function(response)
         {
             registry.online = true;

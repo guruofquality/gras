@@ -35,16 +35,10 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 arg_strs = dict((str(k), str(v)) for k, v in args.iteritems())
                 s.wfile.write(json.dumps(arg_strs))
             else:
-                #why the fuck does no OS ever patch boost when there is a bug
-                #https://svn.boost.org/trac/boost/ticket/6785
-                #serialize the path args into xml -- but I just wanted json
-                def xml_from_qs(k, v):
-                    if not isinstance(v, list): v = [v]
-                    return ''.join(['<%s>%s</%s>'%(k, v_i, k) for v_i in v])
-                query_args = [xml_from_qs(k,v) for k,v in urlparse.parse_qs(o.query).iteritems()]
-                query_args.append(xml_from_qs('path', path))
-                xml_args = xml_from_qs('args', ''.join(query_args))
-                s.wfile.write(args['top_block'].query(xml_args))
+                query_args = dict([(k,v) for k,v in urlparse.parse_qs(o.query).iteritems()])
+                query_args['path'] = path
+                json_args = json.dumps(query_args)
+                s.wfile.write(args['top_block'].query(json_args))
             return
 
         #clean up path for filesystem
