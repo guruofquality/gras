@@ -168,18 +168,18 @@ static ptree query_props(ElementImpl *self, const ptree &query)
     ptree root;
     const std::string block_id = query.get<std::string>("block");
     const std::string prop_key = query.get<std::string>("key");
-    const std::string action = query.get<std::string>("action");
+    const bool set = query.count("value") != 0;
     BOOST_FOREACH(Apology::Worker *worker, self->executor->get_workers())
     {
         BlockActor *block = dynamic_cast<BlockActor *>(worker);
         if (block->block_ptr->get_uid() != block_id) continue;
-        if (action == "set")
+        if (set)
         {
             const std::type_info &t = block->property_registry[prop_key].setter->type();
             const PMCC p = ptree_to_pmc(query.get_child("value"), t);
             block->prop_access_dispatcher(prop_key, p, true);
         }
-        if (action == "get")
+        else
         {
             PMCC p = block->prop_access_dispatcher(prop_key, PMC(), false);
             ptree v = pmc_to_ptree(p);

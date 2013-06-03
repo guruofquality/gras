@@ -88,7 +88,6 @@ class QueryTest(unittest.TestCase):
             path="/props.json",
             block='test_numeric_query',
             key='numeric_value',
-            action='set',
             value=42,
         ))
         self.assertEqual(block.numeric_value, 42)
@@ -99,7 +98,6 @@ class QueryTest(unittest.TestCase):
             path="/props.json",
             block='test_numeric_query',
             key='numeric_value',
-            action='get'
         ))
         self.assertEqual(result['value'], 21)
 
@@ -108,7 +106,6 @@ class QueryTest(unittest.TestCase):
             path="/props.json",
             block='test_numeric_query',
             key='numeric_value',
-            action='set',
             value='(0, 42)',
         ))
         self.assertEqual(block.numeric_value, 42j)
@@ -119,7 +116,6 @@ class QueryTest(unittest.TestCase):
             path="/props.json",
             block='test_numeric_query',
             key='numeric_value',
-            action='get'
         ))
         self.assertEqual(result['value'], '(0,21)')
 
@@ -136,7 +132,6 @@ class QueryTest(unittest.TestCase):
             path="/props.json",
             block='test_vector_query',
             key='vector_value',
-            action='set',
             value=[1, 2, 3, 4, 5],
         ))
         self.assertEqual(list(block.vector_value), [1, 2, 3, 4, 5])
@@ -147,7 +142,6 @@ class QueryTest(unittest.TestCase):
             path="/props.json",
             block='test_vector_query',
             key='vector_value',
-            action='get'
         ))
         self.assertEqual(list(result['value']), [6, 7, 8, 9])
 
