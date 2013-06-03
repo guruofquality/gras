@@ -8,25 +8,25 @@ from demo_blocks import *
 class MyBlock(gras.Block):
     def __init__(self):
         gras.Block.__init__(self, "MyBlock", out_sig=[numpy.uint32], in_sig=[numpy.uint32])
-        self.integer_value = 0
-        self.register_getter("integer_value", self.get_integer_value)
-        self.register_setter("integer_value", self.set_integer_value)
+        self.numeric_value = 0
+        self.register_getter("numeric_value", self.get_numeric_value)
+        self.register_setter("numeric_value", self.set_numeric_value)
         self.vector_value = [0]
         self.register_getter("vector_value", self.get_vector_value)
         self.register_setter("vector_value", self.set_vector_value)
 
     def work(self, ins, outs):
         n = min(len(ins[0]), len(outs[0]))
-        outs[0][:n] = ins[0][:n] + self.integer_value
+        outs[0][:n] = ins[0][:n] + self.numeric_value
         self.consume(n)
         self.produce(n)
 
-    def get_integer_value(self):
-        return self.integer_value
+    def get_numeric_value(self):
+        return self.numeric_value
 
-    def set_integer_value(self, new_integer_value):
-        print "new_integer_value", new_integer_value
-        self.integer_value = new_integer_value
+    def set_numeric_value(self, new_numeric_value):
+        print "new_numeric_value", new_numeric_value
+        self.numeric_value = new_numeric_value
 
     def get_vector_value(self):
         return self.vector_value
@@ -70,38 +70,58 @@ class QueryTest(unittest.TestCase):
         #found the block we asked for
         self.assertTrue(block_id in stats_result['blocks'])
 
-    def test_integer_query(self):
+    def test_numeric_query(self):
         vec_source = VectorSource(numpy.uint32, [0, 9, 8, 7, 6])
         vec_sink = VectorSink(numpy.uint32)
         block = MyBlock()
-        block.set_uid("test_integer_query")
+        block.set_uid("test_numeric_query")
         self.tb.connect(vec_source, block, vec_sink)
         self.tb.run()
 
         #query the block list
         blocks_result = self.tb.query(dict(path="/blocks.json"))
         self.assertEqual(len(blocks_result['blocks']), 3)
-        self.assertTrue('test_integer_query' in blocks_result['blocks'])
+        self.assertTrue('test_numeric_query' in blocks_result['blocks'])
 
         #set the integer property
         self.tb.query(dict(
             path="/props.json",
-            block='test_integer_query',
-            key='integer_value',
+            block='test_numeric_query',
+            key='numeric_value',
             action='set',
             value=42,
         ))
-        self.assertEqual(block.integer_value, 42)
+        self.assertEqual(block.numeric_value, 42)
 
         #get the integer property
-        block.set('integer_value', 21)
+        block.set('numeric_value', 21)
         result = self.tb.query(dict(
             path="/props.json",
-            block='test_integer_query',
-            key='integer_value',
+            block='test_numeric_query',
+            key='numeric_value',
             action='get'
         ))
         self.assertEqual(result['value'], 21)
+
+        #set the complex property
+        self.tb.query(dict(
+            path="/props.json",
+            block='test_numeric_query',
+            key='numeric_value',
+            action='set',
+            value='(0, 42)',
+        ))
+        self.assertEqual(block.numeric_value, 42j)
+
+        #get the complex property
+        block.set('numeric_value', 21j)
+        result = self.tb.query(dict(
+            path="/props.json",
+            block='test_numeric_query',
+            key='numeric_value',
+            action='get'
+        ))
+        self.assertEqual(result['value'], '(0,21)')
 
     def test_vector_query(self):
         vec_source = VectorSource(numpy.uint32, [0, 9, 8, 7, 6])
@@ -119,8 +139,17 @@ class QueryTest(unittest.TestCase):
             action='set',
             value=[1, 2, 3, 4, 5],
         ))
-        print block.vector_value
         self.assertEqual(list(block.vector_value), [1, 2, 3, 4, 5])
+
+        #get the vector property
+        block.set('vector_value', [6, 7, 8, 9])
+        result = self.tb.query(dict(
+            path="/props.json",
+            block='test_vector_query',
+            key='vector_value',
+            action='get'
+        ))
+        self.assertEqual(list(result['value']), [6, 7, 8, 9])
 
 if __name__ == '__main__':
     unittest.main()

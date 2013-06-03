@@ -5,6 +5,9 @@
 #include <PMC/Containers.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/foreach.hpp>
+#include <vector>
+#include <complex>
+#include <sstream>
 
 using namespace boost::property_tree;
 
@@ -17,9 +20,13 @@ PMCC ptree_to_pmc(const ptree &value, const std::type_info &hint)
         if (value.size() == 0)
         {
             //can we cast to number?
-            try{return ptree_to_pmc(value, typeid(long));}
+            try{return ptree_to_pmc(value, typeid(double));}
             catch(...){}
-            //TODO complex
+
+            //can we cast to complex?
+            try{return ptree_to_pmc(value, typeid(std::complex<double>));}
+            catch(...){}
+
             //then string
             return ptree_to_pmc(value, typeid(std::string));
         }
@@ -27,7 +34,7 @@ PMCC ptree_to_pmc(const ptree &value, const std::type_info &hint)
         else
         {
             //TODO more if statements - w/ define
-            return ptree_to_pmc(value, typeid(std::vector<long>));
+            return ptree_to_pmc(value, typeid(std::vector<double>));
         }
     }
 
@@ -46,7 +53,19 @@ PMCC ptree_to_pmc(const ptree &value, const std::type_info &hint)
     ptree_to_pmc_try(unsigned long);
     ptree_to_pmc_try(signed long long);
     ptree_to_pmc_try(unsigned long long);
-    //complex number TODO
+    ptree_to_pmc_try(float);
+    ptree_to_pmc_try(double);
+
+    //complex number
+    std::istringstream ss(value.get_value<std::string>());
+    if (hint == typeid(std::complex<double>))
+    {
+        std::complex<double> c; ss >> c; return PMC_M(c);
+    }
+    if (hint == typeid(std::complex<float>))
+    {
+        std::complex<float> c; ss >> c; return PMC_M(c);
+    }
 
     //string
     ptree_to_pmc_try(std::string);
@@ -56,7 +75,6 @@ PMCC ptree_to_pmc(const ptree &value, const std::type_info &hint)
     BOOST_FOREACH(const ptree::value_type &elem, value)
     {
         vec.push_back(elem.second.get_value<long>());
-        VAR(vec.back());
     }
     return PMC_M(vec);
 
@@ -82,19 +100,49 @@ ptree pmc_to_ptree(const PMCC &value)
     pmc_to_ptree_try(unsigned long);
     pmc_to_ptree_try(signed long long);
     pmc_to_ptree_try(unsigned long long);
+    pmc_to_ptree_try(float);
+    pmc_to_ptree_try(double);
+
+    //derermine complex
+    if (value.is<std::complex<double> >())
+    {
+        std::ostringstream oss;
+        oss << value.as<std::complex<double> >();
+        v.put_value(oss.str()); return v;
+    }
+    if (value.is<std::complex<float> >())
+    {
+        std::ostringstream oss;
+        oss << value.as<std::complex<float> >();
+        v.put_value(oss.str()); return v;
+    }
 
     //determine string
     pmc_to_ptree_try(std::string);
 
     //try numeric vector
-            //TODO more if statements - w/ define
-    if (value.is<std::vector<long> >())
-    {
-        BOOST_FOREACH(const long &elem, value.as<std::vector<long> >())
-        {
-            
-        }
+    #define pmc_to_ptree_tryv(type) \
+    if (value.is<std::vector<type> >()) \
+    { \
+        BOOST_FOREACH(const type &elem, value.as<std::vector<type> >()) \
+        { \
+            ptree t; t.put_value(elem); \
+            v.push_back(std::make_pair("", t)); \
+        } \
     }
+    pmc_to_ptree_tryv(char);
+    pmc_to_ptree_tryv(signed char);
+    pmc_to_ptree_tryv(unsigned char);
+    pmc_to_ptree_tryv(signed short);
+    pmc_to_ptree_tryv(unsigned short);
+    pmc_to_ptree_tryv(signed int);
+    pmc_to_ptree_tryv(unsigned int);
+    pmc_to_ptree_tryv(signed long);
+    pmc_to_ptree_tryv(unsigned long);
+    pmc_to_ptree_tryv(signed long long);
+    pmc_to_ptree_tryv(unsigned long long);
+    pmc_to_ptree_tryv(float);
+    pmc_to_ptree_tryv(double);
 
     return v;
 }
