@@ -70,7 +70,7 @@ static ptree query_stats(ElementImpl *self, const ptree &query)
     {
         BOOST_FOREACH(const ptree::value_type &v, query.get_child("blocks"))
         {
-            block_ids.push_back(v.second.get<std::string>(""));
+            block_ids.push_back(v.second.get_value<std::string>());
         }
     }
 
@@ -160,65 +160,8 @@ static ptree query_stats(ElementImpl *self, const ptree &query)
     return root;
 }
 
-static PMCC ptree_to_pmc(const ptree &value, const std::type_info &info)
-{
-    //if the type is PMCC - educated guess and recursively call
-    if (info == typeid(PMCC) or info == typeid(PMC))
-    {
-        //single child or array?
-        //can we cast to number?
-        //TODO be lazy and do number for initial tests
-        return ptree_to_pmc(value, typeid(long));
-    }
-
-    #define ptree_to_pmc_try(type) \
-    if (info == typeid(type)) return PMC_M(value.get_value<type>());
-
-    //determine number
-    ptree_to_pmc_try(char);
-    ptree_to_pmc_try(signed char);
-    ptree_to_pmc_try(unsigned char);
-    ptree_to_pmc_try(signed short);
-    ptree_to_pmc_try(unsigned short);
-    ptree_to_pmc_try(signed int);
-    ptree_to_pmc_try(unsigned int);
-    ptree_to_pmc_try(signed long);
-    ptree_to_pmc_try(unsigned long);
-    ptree_to_pmc_try(signed long long);
-    ptree_to_pmc_try(unsigned long long);
-    //complex number
-    //string
-    ptree_to_pmc_try(std::string);
-    //determine number vector
-
-    //otherwise null -- will crap out
-    return PMC();
-}
-
-static ptree pmc_to_ptree(const PMCC &value)
-{
-    ptree v;
-    #define pmc_to_ptree_try(type) \
-    if (value.is<type>()) {v.put_value(value.as<type>()); return v;}
-
-    //determine number
-    pmc_to_ptree_try(char);
-    pmc_to_ptree_try(signed char);
-    pmc_to_ptree_try(unsigned char);
-    pmc_to_ptree_try(signed short);
-    pmc_to_ptree_try(unsigned short);
-    pmc_to_ptree_try(signed int);
-    pmc_to_ptree_try(unsigned int);
-    pmc_to_ptree_try(signed long);
-    pmc_to_ptree_try(unsigned long);
-    pmc_to_ptree_try(signed long long);
-    pmc_to_ptree_try(unsigned long long);
-
-    //determine string
-    pmc_to_ptree_try(std::string);
-
-    return v;
-}
+PMCC ptree_to_pmc(const ptree &value, const std::type_info &hint);
+ptree pmc_to_ptree(const PMCC &value);
 
 static ptree query_props(ElementImpl *self, const ptree &query)
 {

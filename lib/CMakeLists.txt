@@ -67,6 +67,7 @@ list(APPEND GRAS_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/top_block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/top_block_query.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/json_parser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/pmc_to_ptree.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/register_messages.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/weak_container.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/serialize_types.cpp
