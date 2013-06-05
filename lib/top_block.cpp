@@ -114,10 +114,25 @@ void TopBlock::wait(void)
     //however, thread group cant be joined twice and this breaks some qa code
     //(*this)->thread_group->join_all();
 
+
+    boost::system_time print_time = boost::get_system_time() + boost::posix_time::seconds(5);
+
     //wait for all blocks to release the token
     while (not (*this)->token.unique())
     {
         wait_thread_yield();
+        if (print_time < boost::get_system_time())
+        {
+            print_time += boost::posix_time::seconds(5);
+            BOOST_FOREACH(Apology::Worker *worker, (*this)->executor->get_workers())
+            {
+                if (BlockActor::BLOCK_STATE_DONE != dynamic_cast<BlockActor *>(worker)->block_state)
+                {
+                    VAR(dynamic_cast<BlockActor *>(worker)->name);
+                    VAR(dynamic_cast<BlockActor *>(worker)->stats.work_count);
+                }
+            }
+        }
     }
 }
 
