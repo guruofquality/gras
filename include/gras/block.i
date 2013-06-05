@@ -26,6 +26,15 @@
 
         def get(self, key):
             return self._get_property(key)()
+
+        def post_output_msg(self, which_output, value):
+            if not isinstance(value, PMCC): value = PMC_M(value)
+            self._post_output_msg(which_output, value)
+
+        def post_input_msg(self, which_input, value):
+            if not isinstance(value, PMCC): value = PMC_M(value)
+            self._post_input_msg(which_input, value)
+
     %}
 }
 

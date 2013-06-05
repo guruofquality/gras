@@ -12,7 +12,7 @@ void Block::post_output_tag(const size_t which_output, const Tag &tag)
     (*this)->block->post_downstream(which_output, InputTagMessage(tag));
 }
 
-void Block::post_output_msg(const size_t which_output, const PMCC &msg)
+void Block::_post_output_msg(const size_t which_output, const PMCC &msg)
 {
     (*this)->block->stats.msgs_produced[which_output]++;
     (*this)->block->post_downstream(which_output, InputMsgMessage(msg));
@@ -56,7 +56,7 @@ void Block::post_input_tag(const size_t which_input, const Tag &tag)
     actor.GetFramework().Send(message, Theron::Address::Null(), actor.GetAddress());
 }
 
-void Block::post_input_msg(const size_t which_input, const PMCC &msg)
+void Block::_post_input_msg(const size_t which_input, const PMCC &msg)
 {
     InputMsgMessage message(msg);
     message.index = which_input;

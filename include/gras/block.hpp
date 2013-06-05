@@ -222,7 +222,8 @@ struct GRAS_API Block : Element
      * \param which_output the index of the output port
      * \param msg the message object to pass downstream
      */
-    void post_output_msg(const size_t which_output, const PMCC &msg);
+    template <typename ValueType>
+    void post_output_msg(const size_t which_output, const ValueType &value);
 
     /*!
      * Pop a message from the specified port.
@@ -248,7 +249,8 @@ struct GRAS_API Block : Element
      * \param which_input an input port on this block
      * \param msg the message to post to the input port
      */
-    void post_input_msg(const size_t which_input, const PMCC &tag);
+    template <typename ValueType>
+    void post_input_msg(const size_t which_input, const ValueType &value);
 
     /*******************************************************************
      * The property interface:
@@ -543,6 +545,8 @@ struct GRAS_API Block : Element
     void _register_setter(const std::string &, void *);
     virtual void _set_property(const std::string &, const PMCC &);
     virtual PMCC _get_property(const std::string &);
+    void _post_output_msg(const size_t which_output, const PMCC &msg);
+    void _post_input_msg(const size_t which_input, const PMCC &msg);
 };
 
 } //namespace gras
