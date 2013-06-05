@@ -102,9 +102,12 @@ struct InputBufferQueues
 
     GRAS_FORCE_INLINE void pop(const size_t i)
     {
-        ASSERT(not _queues[i].empty());
-        _queues[i].front().reset();
-        _queues[i].pop_front();
+        while (not _queues[i].empty() and _queues[i].front().length == 0)
+        {
+            //ASSERT(not _queues[i].empty());
+            _queues[i].front().reset();
+            _queues[i].pop_front();
+        }
     }
 
     void push(const size_t i, const SBuffer &buffer);
@@ -346,7 +349,6 @@ GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t b
     front.length -= bytes_consumed;
     //ASSERT(front.offset <= front.get_actual_length());
     ASSERT((_queues[i].front().length % _items_sizes[i]) == 0);
-    if (front.length == 0) this->pop(i);
 
     //update the number of bytes in this queue
     ASSERT(_enqueued_bytes[i] >= bytes_consumed);
@@ -364,7 +366,6 @@ GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t b
     {
         b1.offset -= b0.length;
         b1.length += b0.length;
-        this->pop(i);
     }
     #endif //GRAS_ENABLE_BUFFER_STITCHING
 }

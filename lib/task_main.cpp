@@ -91,7 +91,6 @@ void BlockActor::task_main(void)
         this->task_work();
     }
     this->stats.time_last_work = time_now();
-    TimerAccumulate ta_post(this->stats.total_time_post);
 
     //------------------------------------------------------------------
     //-- Post-work output tasks
@@ -109,7 +108,10 @@ void BlockActor::task_main(void)
         //Post a buffer message downstream only if the produce flag was marked.
         //So this explicitly after consuming the output queues so pop is called.
         //This is because pop may have special hooks in it to prepare the buffer.
+        
+    TimerAccumulate ta_post(this->stats.total_time_post);
         if GRAS_LIKELY(this->produce_outputs[i]) this->post_downstream(i, buff_msg);
+        ta_post.done();
         this->produce_outputs[i] = false;
     }
 
@@ -119,6 +121,10 @@ void BlockActor::task_main(void)
     for (size_t i = 0; i < num_inputs; i++)
     {
         this->trim_msgs(i);
+
+    TimerAccumulate ta_post(this->stats.total_time_post);
+        this->input_queues.pop(i);
+        ta_post.done();
 
         //update the inputs available bit field
         this->update_input_avail(i);
