@@ -15,7 +15,7 @@ HierBlock::HierBlock(void)
 HierBlock::HierBlock(const std::string &name):
     Element(name)
 {
-    (*this)->topology = boost::shared_ptr<Apology::Topology>(new Apology::Topology());
+    (*this)->topology.reset(new Apology::Topology());
 }
 
 HierBlock::~HierBlock(void)

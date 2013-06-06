@@ -35,7 +35,7 @@ ThreadPool get_active_thread_pool(void)
  **********************************************************************/
 
 BlockActor::BlockActor(const ThreadPool &tp):
-    Apology::Worker((tp)? *tp : *get_active_thread_pool())
+    Theron::Actor((tp)? *tp : *get_active_thread_pool())
 {
     const char * gras_tpp = getenv("GRAS_TPP");
     if (gras_tpp != NULL)

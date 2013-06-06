@@ -16,8 +16,8 @@ void BlockActor::task_main(void)
     //------------------------------------------------------------------
     if GRAS_UNLIKELY(not this->is_work_allowed()) return;
 
-    const size_t num_inputs = this->get_num_inputs();
-    const size_t num_outputs = this->get_num_outputs();
+    const size_t num_inputs = worker->get_num_inputs();
+    const size_t num_outputs = worker->get_num_outputs();
 
     //------------------------------------------------------------------
     //-- initialize input buffers before work
@@ -109,7 +109,7 @@ void BlockActor::task_main(void)
         //Post a buffer message downstream only if the produce flag was marked.
         //So this explicitly after consuming the output queues so pop is called.
         //This is because pop may have special hooks in it to prepare the buffer.
-        if GRAS_LIKELY(data->produce_outputs[i]) this->post_downstream(i, buff_msg);
+        if GRAS_LIKELY(data->produce_outputs[i]) worker->post_downstream(i, buff_msg);
         data->produce_outputs[i] = false;
     }
 

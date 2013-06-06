@@ -9,13 +9,13 @@ using namespace gras;
 void Block::post_output_tag(const size_t which_output, const Tag &tag)
 {
     (*this)->block_data->stats.tags_produced[which_output]++;
-    (*this)->block->post_downstream(which_output, InputTagMessage(tag));
+    (*this)->worker->post_downstream(which_output, InputTagMessage(tag));
 }
 
 void Block::_post_output_msg(const size_t which_output, const PMCC &msg)
 {
     (*this)->block_data->stats.msgs_produced[which_output]++;
-    (*this)->block->post_downstream(which_output, InputMsgMessage(msg));
+    (*this)->worker->post_downstream(which_output, InputMsgMessage(msg));
 }
 
 TagIter Block::get_input_tags(const size_t which_input)
@@ -36,7 +36,7 @@ PMCC Block::pop_input_msg(const size_t which_input)
 
 void Block::propagate_tags(const size_t i, const TagIter &iter)
 {
-    const size_t num_outputs = (*this)->block->get_num_outputs();
+    const size_t num_outputs = (*this)->worker->get_num_outputs();
     for (size_t o = 0; o < num_outputs; o++)
     {
         BOOST_FOREACH(gras::Tag t, iter)

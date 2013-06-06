@@ -51,7 +51,7 @@ void BlockActor::handle_input_token(const InputTokenMessage &message, const Ther
 {
     TimerAccumulate ta(data->stats.total_time_input);
     MESSAGE_TRACER();
-    ASSERT(message.index < this->get_num_inputs());
+    ASSERT(message.index < worker->get_num_inputs());
 
     //store the token of the upstream producer
     data->token_pool.insert(message.token);
@@ -83,7 +83,7 @@ void BlockActor::handle_input_alloc(const InputAllocMessage &message, const Ther
     //handle the upstream block allocation request
     OutputAllocMessage new_msg;
     new_msg.queue = block_ptr->input_buffer_allocator(index, message.config);
-    if (new_msg.queue) this->post_upstream(index, new_msg);
+    if (new_msg.queue) worker->post_upstream(index, new_msg);
 }
 
 void BlockActor::handle_input_update(const InputUpdateMessage &message, const Theron::Address)

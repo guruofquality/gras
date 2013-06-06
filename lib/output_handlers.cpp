@@ -25,7 +25,7 @@ void BlockActor::handle_output_token(const OutputTokenMessage &message, const Th
 {
     TimerAccumulate ta(data->stats.total_time_output);
     MESSAGE_TRACER();
-    ASSERT(message.index < this->get_num_outputs());
+    ASSERT(message.index < worker->get_num_outputs());
 
     //store the token of the downstream consumer
     data->token_pool.insert(message.token);

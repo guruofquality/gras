@@ -24,11 +24,11 @@ void BlockActor::handle_topology(
 ){
     MESSAGE_TRACER();
 
-    const size_t num_inputs = this->get_num_inputs();
-    const size_t num_outputs = this->get_num_outputs();
+    const size_t num_inputs = worker->get_num_inputs();
+    const size_t num_outputs = worker->get_num_outputs();
 
     //call notify_topology on block before committing settings
-    this->block_ptr->notify_topology(num_inputs, num_outputs);
+    block_ptr->notify_topology(num_inputs, num_outputs);
 
     //resize and fill port properties
     resize_fill_back(data->input_configs, num_inputs);

@@ -14,7 +14,7 @@ void Block::produce(const size_t which_output, const size_t num_items)
 
 void Block::produce(const size_t num_items)
 {
-    const size_t num_outputs = (*this)->block->get_num_outputs();
+    const size_t num_outputs = (*this)->worker->get_num_outputs();
     for (size_t o = 0; o < num_outputs; o++)
     {
         (*this)->block->produce(o, num_items);
@@ -42,7 +42,13 @@ void Block::pop_output_buffer(const size_t which_output, const size_t num_bytes)
 
 void Block::post_output_buffer(const size_t which_output, const SBuffer &buffer)
 {
-    (*this)->block->produce_buffer(which_output, buffer);
+    (*this)->block_data->output_queues.consume(which_output);
+    ASSERT((buffer.length % (*this)->block_data->output_configs[which_output].item_size) == 0);
+    const size_t items = buffer.length/(*this)->block_data->output_configs[which_output].item_size;
+    (*this)->block_data->stats.items_produced[which_output] += items;
+    InputBufferMessage buff_msg;
+    buff_msg.buffer = buffer;
+    (*this)->worker->post_downstream(which_output, buff_msg);
 }
 
 GRAS_FORCE_INLINE void BlockActor::produce(const size_t i, const size_t items)
@@ -56,15 +62,4 @@ GRAS_FORCE_INLINE void BlockActor::produce(const size_t i, const size_t items)
     const size_t bytes = items*data->output_configs[i].item_size;
     buff.length += bytes;
     data->produce_outputs[i] = true;
-}
-
-GRAS_FORCE_INLINE void BlockActor::produce_buffer(const size_t i, const SBuffer &buffer)
-{
-    data->output_queues.consume(i);
-    ASSERT((buffer.length % data->output_configs[i].item_size) == 0);
-    const size_t items = buffer.length/data->output_configs[i].item_size;
-    data->stats.items_produced[i] += items;
-    InputBufferMessage buff_msg;
-    buff_msg.buffer = buffer;
-    this->post_downstream(i, buff_msg);
 }

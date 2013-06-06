@@ -20,7 +20,7 @@ TopBlock::TopBlock(void)
 TopBlock::TopBlock(const std::string &name):
     HierBlock(name)
 {
-    (*this)->executor = boost::shared_ptr<Apology::Executor>(new Apology::Executor((*this)->topology.get()));
+    (*this)->executor.reset(new Apology::Executor((*this)->topology.get()));
     (*this)->token = Token::make();
     (*this)->thread_group = SharedThreadGroup(new boost::thread_group());
     if (GENESIS) std::cerr

@@ -33,6 +33,9 @@ Block::Block(const std::string &name):
     Element(name)
 {
     (*this)->block.reset(new BlockActor());
+    (*this)->worker.reset(new Apology::Worker());
+    (*this)->worker->set_actor((*this)->block.get());
+    (*this)->block->worker = (*this)->worker.get();
     (*this)->block->prio_token = Token::make();
     (*this)->thread_pool = (*this)->block->thread_pool; //ref copy of pool
     (*this)->block->name = name; //for debug purposes
@@ -155,13 +158,13 @@ const OutputPortConfig &Block::output_config(const size_t which_output) const
 void Block::commit_config(void)
 {
     Theron::Actor &actor = *((*this)->block);
-    for (size_t i = 0; i < (*this)->block->get_num_inputs(); i++)
+    for (size_t i = 0; i < (*this)->worker->get_num_inputs(); i++)
     {
         InputUpdateMessage message;
         message.index = i;
         actor.GetFramework().Send(message, Theron::Address::Null(), actor.GetAddress());
     }
-    for (size_t i = 0; i < (*this)->block->get_num_outputs(); i++)
+    for (size_t i = 0; i < (*this)->worker->get_num_outputs(); i++)
     {
         OutputUpdateMessage message;
         message.index = i;

@@ -43,31 +43,31 @@ void BlockActor::handle_top_token(
     MESSAGE_TRACER();
 
     //create input tokens and send allocation hints
-    for (size_t i = 0; i < this->get_num_inputs(); i++)
+    for (size_t i = 0; i < worker->get_num_inputs(); i++)
     {
         data->input_tokens[i] = Token::make();
         data->inputs_done.reset(i);
         OutputTokenMessage token_msg;
         token_msg.token = data->input_tokens[i];
-        this->post_upstream(i, token_msg);
+        worker->post_upstream(i, token_msg);
 
         //TODO, schedule this message as a pre-allocation message
         //tell the upstream about the input requirements
         OutputHintMessage output_hints;
         output_hints.reserve_bytes = data->input_configs[i].reserve_items*data->input_configs[i].item_size;
         output_hints.token = data->input_tokens[i];
-        this->post_upstream(i, output_hints);
+        worker->post_upstream(i, output_hints);
 
     }
 
     //create output token
-    for (size_t i = 0; i < this->get_num_outputs(); i++)
+    for (size_t i = 0; i < worker->get_num_outputs(); i++)
     {
         data->output_tokens[i] = Token::make();
         data->outputs_done.reset(i);
         InputTokenMessage token_msg;
         token_msg.token = data->output_tokens[i];
-        this->post_downstream(i, token_msg);
+        worker->post_downstream(i, token_msg);
     }
 
     //store a token to the top level topology
@@ -137,7 +137,7 @@ void BlockActor::handle_get_stats(
 
     //instantaneous states we update here,
     //and not interleaved with the rest of the code
-    const size_t num_inputs = this->get_num_inputs();
+    const size_t num_inputs = worker->get_num_inputs();
     data->stats.items_enqueued.resize(num_inputs);
     data->stats.tags_enqueued.resize(num_inputs);
     data->stats.msgs_enqueued.resize(num_inputs);

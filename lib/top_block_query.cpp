@@ -32,12 +32,12 @@ static ptree query_blocks(ElementImpl *self, const ptree &)
 {
     ptree root;
     ptree e;
-    BOOST_FOREACH(Apology::Worker *worker, self->executor->get_workers())
+    BOOST_FOREACH(Apology::Worker *w, self->executor->get_workers())
     {
-        BlockActor *block = dynamic_cast<BlockActor *>(worker);
+        BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
         ptree prop_e;
         typedef std::pair<std::string, PropertyRegistryPair> PropRegistryKVP;
-        BOOST_FOREACH(const PropRegistryKVP &p, block->data->property_registry)
+        BOOST_FOREACH(const PropRegistryKVP &p, actor->data->property_registry)
         {
             ptree prop_attrs;
             if (p.second.setter)
@@ -56,7 +56,7 @@ static ptree query_blocks(ElementImpl *self, const ptree &)
             block_attrs.push_back(std::make_pair(p.first, prop_attrs));
             prop_e.push_back(std::make_pair("props", block_attrs));
         }
-        e.push_back(std::make_pair(block->block_ptr->get_uid(), prop_e));
+        e.push_back(std::make_pair(actor->block_ptr->get_uid(), prop_e));
     }
     root.push_back(std::make_pair("blocks", e));
     return root;
@@ -77,16 +77,18 @@ static ptree query_stats(ElementImpl *self, const ptree &query)
     //get stats with custom receiver and set high prio
     GetStatsReceiver receiver;
     size_t outstandingCount(0);
-    BOOST_FOREACH(Apology::Worker *worker, self->executor->get_workers())
+    BOOST_FOREACH(Apology::Worker *w, self->executor->get_workers())
     {
+        BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
+
         //filter workers not needed in query
-        const std::string id = dynamic_cast<BlockActor *>(worker)->block_ptr->get_uid();
+        const std::string id = actor->block_ptr->get_uid();
         if (std::find(block_ids.begin(), block_ids.end(), id) == block_ids.end()) continue;
 
         //send a message to the block's actor to query stats
         GetStatsMessage message;
-        message.prio_token = dynamic_cast<BlockActor *>(worker)->prio_token;
-        worker->GetFramework().Send(message, receiver.GetAddress(), worker->GetAddress());
+        message.prio_token = actor->prio_token;
+        actor->GetFramework().Send(message, receiver.GetAddress(), actor->GetAddress());
         outstandingCount++;
     }
     while (outstandingCount) outstandingCount -= receiver.Wait(outstandingCount);
@@ -169,19 +171,19 @@ static ptree query_props(ElementImpl *self, const ptree &query)
     const std::string block_id = query.get<std::string>("block");
     const std::string prop_key = query.get<std::string>("key");
     const bool set = query.count("value") != 0;
-    BOOST_FOREACH(Apology::Worker *worker, self->executor->get_workers())
+    BOOST_FOREACH(Apology::Worker *w, self->executor->get_workers())
     {
-        BlockActor *block = dynamic_cast<BlockActor *>(worker);
-        if (block->block_ptr->get_uid() != block_id) continue;
+        BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
+        if (actor->block_ptr->get_uid() != block_id) continue;
         if (set)
         {
-            const std::type_info &t = block->data->property_registry[prop_key].setter->type();
+            const std::type_info &t = actor->data->property_registry[prop_key].setter->type();
             const PMCC p = ptree_to_pmc(query.get_child("value"), t);
-            block->prop_access_dispatcher(prop_key, p, true);
+            actor->prop_access_dispatcher(prop_key, p, true);
         }
         else
         {
-            PMCC p = block->prop_access_dispatcher(prop_key, PMC(), false);
+            PMCC p = actor->prop_access_dispatcher(prop_key, PMC(), false);
             ptree v = pmc_to_ptree(p);
             root.push_back(std::make_pair("block", query.get_child("block")));
             root.push_back(std::make_pair("key", query.get_child("key")));

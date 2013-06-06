@@ -14,7 +14,7 @@
 namespace gras
 {
 
-struct BlockActor : Apology::Worker
+struct BlockActor : Theron::Actor
 {
     BlockActor(const ThreadPool &tp = ThreadPool());
     ~BlockActor(void);
@@ -23,6 +23,7 @@ struct BlockActor : Apology::Worker
     ThreadPool thread_pool;
     Token prio_token;
     boost::shared_ptr<BlockData> data;
+    Apology::Worker *worker;
 
     //do it here so we can match w/ the handler declarations
     void register_handlers(void)
@@ -95,7 +96,6 @@ struct BlockActor : Apology::Worker
     void trim_msgs(const size_t index);
     void produce(const size_t index, const size_t items);
     void consume(const size_t index, const size_t items);
-    void produce_buffer(const size_t index, const SBuffer &buffer);
     void task_kicker(void);
     void update_input_avail(const size_t index);
     bool is_input_done(const size_t index);

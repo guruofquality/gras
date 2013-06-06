@@ -18,14 +18,14 @@ void BlockActor::mark_done(void)
     block_ptr->notify_inactive();
 
     //flush partial output buffers to the downstream
-    for (size_t i = 0; i < this->get_num_outputs(); i++)
+    for (size_t i = 0; i < worker->get_num_outputs(); i++)
     {
         if (not data->output_queues.ready(i)) continue;
         SBuffer &buff = data->output_queues.front(i);
         if (buff.length == 0) continue;
         InputBufferMessage buff_msg;
         buff_msg.buffer = buff;
-        this->post_downstream(i, buff_msg);
+        worker->post_downstream(i, buff_msg);
         data->output_queues.pop(i);
     }
 
@@ -42,7 +42,7 @@ void BlockActor::mark_done(void)
     data->output_queues.flush_all();
 
     //release all tags and msgs
-    for (size_t i = 0; i < this->get_num_inputs(); i++)
+    for (size_t i = 0; i < worker->get_num_inputs(); i++)
     {
         data->input_msgs[i].clear();
         data->input_tags[i].clear();
@@ -51,13 +51,13 @@ void BlockActor::mark_done(void)
     //tell the upstream and downstram to re-check their tokens
     //this is how the other blocks know who is interested,
     //and can decide based on interest to set done or not
-    for (size_t i = 0; i < this->get_num_inputs(); i++)
+    for (size_t i = 0; i < worker->get_num_inputs(); i++)
     {
-        this->post_upstream(i, OutputCheckMessage());
+        worker->post_upstream(i, OutputCheckMessage());
     }
-    for (size_t i = 0; i < this->get_num_outputs(); i++)
+    for (size_t i = 0; i < worker->get_num_outputs(); i++)
     {
-        this->post_downstream(i, InputCheckMessage());
+        worker->post_downstream(i, InputCheckMessage());
     }
 
     if (ARMAGEDDON) std::cerr

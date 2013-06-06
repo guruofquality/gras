@@ -58,7 +58,7 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
     MESSAGE_TRACER();
 
     //allocate output buffers which will also wake up the task
-    const size_t num_outputs = this->get_num_outputs();
+    const size_t num_outputs = worker->get_num_outputs();
     for (size_t i = 0; i < num_outputs; i++)
     {
         const size_t bytes = recommend_length(
@@ -87,7 +87,7 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
         config.token = token;
         message.config = config;
         message.token = token;
-        this->post_downstream(i, message);
+        worker->post_downstream(i, message);
     }
 
     this->Send(0, from); //ACK
