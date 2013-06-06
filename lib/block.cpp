@@ -7,23 +7,6 @@
 
 using namespace gras;
 
-InputPortConfig::InputPortConfig(void)
-{
-    item_size = 1;
-    reserve_items = 1;
-    maximum_items = 0;
-    inline_buffer = false;
-    preload_items = 0;
-    force_done = true;
-}
-
-OutputPortConfig::OutputPortConfig(void)
-{
-    item_size = 1;
-    reserve_items = 1;
-    maximum_items = 0;
-}
-
 Block::Block(void)
 {
     //NOP
@@ -43,10 +26,6 @@ Block::Block(const std::string &name):
 
     //setup some state variables
     (*this)->block_data->block_state = BLOCK_STATE_INIT;
-
-    //call block methods to init stuff
-    this->set_interruptible_work(false);
-    this->set_buffer_affinity(-1);
 }
 
 Block::~Block(void)
@@ -142,6 +121,16 @@ typename V::value_type &vector_get_resize(V &v, const size_t index)
     return v[index];
 }
 
+const GlobalBlockConfig &Block::global_config(void) const
+{
+    return (*this)->block_data->global_config;
+}
+
+GlobalBlockConfig &Block::global_config(void)
+{
+    return (*this)->block_data->global_config;
+}
+
 InputPortConfig &Block::input_config(const size_t which_input)
 {
     return vector_get_resize((*this)->block_data->input_configs, which_input);
@@ -201,14 +190,4 @@ void Block::set_thread_pool(const ThreadPool &thread_pool)
     (*this)->block_actor.reset(new BlockActor(thread_pool));
     (*this)->setup_actor();
     wait_actor_idle((*this)->repr, *old_actor);
-}
-
-void Block::set_buffer_affinity(const long affinity)
-{
-    (*this)->block_data->buffer_affinity = affinity;
-}
-
-void Block::set_interruptible_work(const bool enb)
-{
-    (*this)->block_data->interruptible_work = enb;
 }

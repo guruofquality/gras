@@ -74,7 +74,7 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
         SBufferConfig config;
         config.memory = NULL;
         config.length = bytes;
-        config.affinity = data->buffer_affinity;
+        config.affinity = data->global_config.buffer_affinity;
         config.token = token;
 
         BufferQueueSptr queue = data->block->output_buffer_allocator(i, config);

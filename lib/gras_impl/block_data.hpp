@@ -67,13 +67,12 @@ struct BlockData
     std::vector<std::vector<PMCC> > input_msgs;
 
     //interruptible thread stuff
-    bool interruptible_work;
     SharedThreadGroup thread_group;
     boost::shared_ptr<InterruptibleThread> interruptible_thread;
 
     //is the fg running?
     BlockState block_state;
-    long buffer_affinity;
+    GlobalBlockConfig global_config;
 
     std::vector<std::vector<OutputHintMessage> > output_allocation_hints;
 
