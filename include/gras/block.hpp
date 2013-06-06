@@ -28,8 +28,21 @@ struct GRAS_API Block : Element
     virtual ~Block(void);
 
     /*******************************************************************
-     * Deal with input and output port configuration
+     * Deal with block configuration configuration
      ******************************************************************/
+
+    /*!
+     * Set the thread pool of this block.
+     * Every block is created in the default active thread pool.
+     * This call will migrate the block to a new specified pool.
+     */
+    void set_thread_pool(const ThreadPool &thread_pool);
+
+    //! Get the global block config settings
+    const GlobalBlockConfig &global_config(void) const;
+
+    //! Get the global block config settings
+    GlobalBlockConfig &global_config(void);
 
     //! Get the configuration rules of an input port
     const InputPortConfig &input_config(const size_t which_input) const;
@@ -380,34 +393,8 @@ struct GRAS_API Block : Element
     virtual void notify_topology(const size_t num_inputs, const size_t num_outputs);
 
     /*******************************************************************
-     * routines related to affinity and allocation
+     * custom buffer queue API
      ******************************************************************/
-
-    /*!
-     * Set the thread pool of this block.
-     * Every block is created in the default active thread pool.
-     * This call will migrate the block to a new specified pool.
-     */
-    void set_thread_pool(const ThreadPool &thread_pool);
-
-    /*!
-     * Set if the work call should be interruptible by stop().
-     * Some work implementations block with the expectation of
-     * getting a boost thread interrupt in a blocking call.
-     * Set set_interruptible_work(true) if this is the case.
-     * By default, work implementations are not interruptible.
-     */
-    void set_interruptible_work(const bool enb);
-
-    /*!
-     * Set the node affinity of this block.
-     * This call affects how output buffers are allocated.
-     * By default memory is allocated by malloc.
-     * When the affinity is set, virtual memory
-     * will be locked to a physical CPU/memory node.
-     * \param affinity a memory node on the system
-     */
-    void set_buffer_affinity(const long affinity);
 
     /*!
      * The output buffer allocator method.
