@@ -34,8 +34,8 @@ ThreadPool get_active_thread_pool(void)
  * Block actor construction - gets active framework
  **********************************************************************/
 
-BlockActor::BlockActor(void):
-    Apology::Worker(*get_active_thread_pool())
+BlockActor::BlockActor(const ThreadPool &tp):
+    Apology::Worker((tp)? *tp : *get_active_thread_pool())
 {
     const char * gras_tpp = getenv("GRAS_TPP");
     if (gras_tpp != NULL)

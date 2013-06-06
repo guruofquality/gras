@@ -36,10 +36,11 @@ Block::Block(const std::string &name):
     (*this)->block->prio_token = Token::make();
     (*this)->thread_pool = (*this)->block->thread_pool; //ref copy of pool
     (*this)->block->name = name; //for debug purposes
+    (*this)->block->block_ptr = this;
+    (*this)->block->data.reset(new BlockData());
 
     //setup some state variables
-    (*this)->block->block_ptr = this;
-    (*this)->block->block_state = BlockActor::BLOCK_STATE_INIT;
+    (*this)->block->data = BlockActor::BLOCK_STATE_INIT;
 
     //call block methods to init stuff
     this->set_interruptible_work(false);
@@ -181,6 +182,11 @@ void Block::notify_inactive(void)
 void Block::notify_topology(const size_t, const size_t)
 {
     return;
+}
+
+void Block::set_thread_pool(const ThreadPool &thread_pool)
+{
+    //TODO
 }
 
 void Block::set_buffer_affinity(const long affinity)
