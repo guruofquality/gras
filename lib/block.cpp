@@ -38,9 +38,10 @@ Block::Block(const std::string &name):
     (*this)->block->name = name; //for debug purposes
     (*this)->block->block_ptr = this;
     (*this)->block->data.reset(new BlockData());
+    (*this)->block_data = (*this)->block->data;
 
     //setup some state variables
-    (*this)->block->data = BlockActor::BLOCK_STATE_INIT;
+    (*this)->block_data->block_state = BLOCK_STATE_INIT;
 
     //call block methods to init stuff
     this->set_interruptible_work(false);
@@ -133,22 +134,22 @@ typename V::value_type &vector_get_resize(V &v, const size_t index)
 
 InputPortConfig &Block::input_config(const size_t which_input)
 {
-    return vector_get_resize((*this)->block->input_configs, which_input);
+    return vector_get_resize((*this)->block_data->input_configs, which_input);
 }
 
 const InputPortConfig &Block::input_config(const size_t which_input) const
 {
-    return vector_get_const((*this)->block->input_configs, which_input);
+    return vector_get_const((*this)->block_data->input_configs, which_input);
 }
 
 OutputPortConfig &Block::output_config(const size_t which_output)
 {
-    return vector_get_resize((*this)->block->output_configs, which_output);
+    return vector_get_resize((*this)->block_data->output_configs, which_output);
 }
 
 const OutputPortConfig &Block::output_config(const size_t which_output) const
 {
-    return vector_get_const((*this)->block->output_configs, which_output);
+    return vector_get_const((*this)->block_data->output_configs, which_output);
 }
 
 void Block::commit_config(void)
@@ -191,10 +192,10 @@ void Block::set_thread_pool(const ThreadPool &thread_pool)
 
 void Block::set_buffer_affinity(const long affinity)
 {
-    (*this)->block->buffer_affinity = affinity;
+    (*this)->block_data->buffer_affinity = affinity;
 }
 
 void Block::set_interruptible_work(const bool enb)
 {
-    (*this)->block->interruptible_work = enb;
+    (*this)->block_data->interruptible_work = enb;
 }

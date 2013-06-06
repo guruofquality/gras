@@ -14,13 +14,6 @@
 namespace gras
 {
 
-typedef boost::shared_ptr<PropertyRegistry> PropertyRegistrySptr;
-struct PropertyRegistryPair
-{
-    PropertyRegistrySptr setter;
-    PropertyRegistrySptr getter;
-};
-
 struct BlockActor : Apology::Worker
 {
     BlockActor(const ThreadPool &tp = ThreadPool());
@@ -111,8 +104,11 @@ struct BlockActor : Apology::Worker
     //work helpers
     inline void task_work(void)
     {
-        block_ptr->work(this->input_items, this->output_items);
+        block_ptr->work(data->input_items, data->output_items);
     }
+
+    //property stuff
+    PMCC prop_access_dispatcher(const std::string &key, const PMCC &value, const bool set);
 };
 
 //-------------- common functions from this BlockActor class ---------//
@@ -124,27 +120,27 @@ GRAS_FORCE_INLINE void BlockActor::task_kicker(void)
 
 GRAS_FORCE_INLINE void BlockActor::update_input_avail(const size_t i)
 {
-    const bool has_input_bufs = not this->input_queues.empty(i) and this->input_queues.ready(i);
-    const bool has_input_msgs = not this->input_msgs[i].empty();
-    this->inputs_available.set(i, has_input_bufs or has_input_msgs);
-    this->input_queues.update_has_msg(i, has_input_msgs);
+    const bool has_input_bufs = not data->input_queues.empty(i) and data->input_queues.ready(i);
+    const bool has_input_msgs = not data->input_msgs[i].empty();
+    data->inputs_available.set(i, has_input_bufs or has_input_msgs);
+    data->input_queues.update_has_msg(i, has_input_msgs);
 }
 
 GRAS_FORCE_INLINE bool BlockActor::is_input_done(const size_t i)
 {
-    const bool force_done = this->input_configs[i].force_done;
-    if GRAS_LIKELY(force_done) return this->inputs_done[i] and not this->inputs_available[i];
-    return this->inputs_done.all() and this->inputs_available.none();
+    const bool force_done = data->input_configs[i].force_done;
+    if GRAS_LIKELY(force_done) return data->inputs_done[i] and not data->inputs_available[i];
+    return data->inputs_done.all() and data->inputs_available.none();
 }
 
 GRAS_FORCE_INLINE bool BlockActor::is_work_allowed(void)
 {
     return (
         this->prio_token.unique() and
-        this->block_state == BLOCK_STATE_LIVE and
-        this->inputs_available.any() and
-        this->input_queues.all_ready() and
-        this->output_queues.all_ready()
+        data->block_state == BLOCK_STATE_LIVE and
+        data->inputs_available.any() and
+        data->input_queues.all_ready() and
+        data->output_queues.all_ready()
     );
 }
 

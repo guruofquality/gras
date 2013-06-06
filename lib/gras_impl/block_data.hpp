@@ -24,6 +24,13 @@ struct PropertyRegistryPair
     PropertyRegistrySptr getter;
 };
 
+enum BlockState
+{
+    BLOCK_STATE_INIT,
+    BLOCK_STATE_LIVE,
+    BLOCK_STATE_DONE,
+};
+
 struct BlockData
 {
     //per port properties
@@ -61,19 +68,13 @@ struct BlockData
     boost::shared_ptr<InterruptibleThread> interruptible_thread;
 
     //is the fg running?
-    enum
-    {
-        BLOCK_STATE_INIT,
-        BLOCK_STATE_LIVE,
-        BLOCK_STATE_DONE,
-    } block_state;
+    BlockState block_state;
     long buffer_affinity;
 
     std::vector<std::vector<OutputHintMessage> > output_allocation_hints;
 
     //property stuff
     std::map<std::string, PropertyRegistryPair> property_registry;
-    PMCC prop_access_dispatcher(const std::string &key, const PMCC &value, const bool set);
 
     BlockStats stats;
 };

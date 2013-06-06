@@ -31,42 +31,42 @@ void BlockActor::handle_topology(
     this->block_ptr->notify_topology(num_inputs, num_outputs);
 
     //resize and fill port properties
-    resize_fill_back(this->input_configs, num_inputs);
-    resize_fill_back(this->output_configs, num_outputs);
+    resize_fill_back(data->input_configs, num_inputs);
+    resize_fill_back(data->output_configs, num_outputs);
 
     //resize the bytes consumed/produced
-    resize_fill_grow(this->stats.items_consumed, num_inputs, 0);
-    resize_fill_grow(this->stats.tags_consumed, num_inputs, 0);
-    resize_fill_grow(this->stats.msgs_consumed, num_inputs, 0);
-    resize_fill_grow(this->stats.items_produced, num_outputs, 0);
-    resize_fill_grow(this->stats.tags_produced, num_outputs, 0);
-    resize_fill_grow(this->stats.msgs_produced, num_outputs, 0);
+    resize_fill_grow(data->stats.items_consumed, num_inputs, 0);
+    resize_fill_grow(data->stats.tags_consumed, num_inputs, 0);
+    resize_fill_grow(data->stats.msgs_consumed, num_inputs, 0);
+    resize_fill_grow(data->stats.items_produced, num_outputs, 0);
+    resize_fill_grow(data->stats.tags_produced, num_outputs, 0);
+    resize_fill_grow(data->stats.msgs_produced, num_outputs, 0);
 
     //resize all work buffers to match current connections
-    this->input_items.resize(num_inputs);
-    this->output_items.resize(num_outputs);
-    this->input_queues.resize(num_inputs);
-    this->output_queues.resize(num_outputs);
-    this->produce_outputs.resize(num_outputs, false);
-    this->inputs_available.resize(num_inputs);
-    if (num_inputs == 0) this->inputs_available.resize(1, true); //so its always "available"
+    data->input_items.resize(num_inputs);
+    data->output_items.resize(num_outputs);
+    data->input_queues.resize(num_inputs);
+    data->output_queues.resize(num_outputs);
+    data->produce_outputs.resize(num_outputs, false);
+    data->inputs_available.resize(num_inputs);
+    if (num_inputs == 0) data->inputs_available.resize(1, true); //so its always "available"
 
     //copy the name into the queues for debug purposes
-    this->input_queues.name = this->name;
-    this->output_queues.name = this->name;
+    data->input_queues.name = this->name;
+    data->output_queues.name = this->name;
 
     //resize the token trackers
-    this->input_tokens.resize(num_inputs);
-    this->output_tokens.resize(num_outputs);
-    this->inputs_done.resize(num_inputs);
-    this->outputs_done.resize(num_outputs);
-    this->output_allocation_hints.resize(num_outputs);
+    data->input_tokens.resize(num_inputs);
+    data->output_tokens.resize(num_outputs);
+    data->inputs_done.resize(num_inputs);
+    data->outputs_done.resize(num_outputs);
+    data->output_allocation_hints.resize(num_outputs);
 
     //resize tags vector to match sizes
-    this->input_tags_changed.resize(num_inputs);
-    this->input_tags.resize(num_inputs);
-    this->num_input_msgs_read.resize(num_inputs);
-    this->input_msgs.resize(num_inputs);
+    data->input_tags_changed.resize(num_inputs);
+    data->input_tags.resize(num_inputs);
+    data->num_input_msgs_read.resize(num_inputs);
+    data->input_msgs.resize(num_inputs);
 
     //a block looses all connections, allow it to free
     if (num_inputs == 0 and num_outputs == 0)

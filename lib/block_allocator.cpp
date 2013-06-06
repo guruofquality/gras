@@ -62,10 +62,10 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
     for (size_t i = 0; i < num_outputs; i++)
     {
         const size_t bytes = recommend_length(
-            this->output_allocation_hints[i],
-            my_round_up_mult(AT_LEAST_BYTES, this->output_configs[i].item_size),
-            this->output_configs[i].reserve_items*this->output_configs[i].item_size,
-            this->output_configs[i].maximum_items*this->output_configs[i].item_size
+            data->output_allocation_hints[i],
+            my_round_up_mult(AT_LEAST_BYTES, data->output_configs[i].item_size),
+            data->output_configs[i].reserve_items*data->output_configs[i].item_size,
+            data->output_configs[i].maximum_items*data->output_configs[i].item_size
         );
 
         SBufferDeleter deleter = boost::bind(&buffer_returner, this->thread_pool, this->GetAddress(), i, _1);
@@ -74,11 +74,11 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
         SBufferConfig config;
         config.memory = NULL;
         config.length = bytes;
-        config.affinity = this->buffer_affinity;
+        config.affinity = data->buffer_affinity;
         config.token = token;
 
         BufferQueueSptr queue = block_ptr->output_buffer_allocator(i, config);
-        this->output_queues.set_buffer_queue(i, queue);
+        data->output_queues.set_buffer_queue(i, queue);
 
         InputAllocMessage message;
         //new token for the downstream allocator

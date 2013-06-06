@@ -37,7 +37,7 @@ static ptree query_blocks(ElementImpl *self, const ptree &)
         BlockActor *block = dynamic_cast<BlockActor *>(worker);
         ptree prop_e;
         typedef std::pair<std::string, PropertyRegistryPair> PropRegistryKVP;
-        BOOST_FOREACH(const PropRegistryKVP &p, block->property_registry)
+        BOOST_FOREACH(const PropRegistryKVP &p, block->data->property_registry)
         {
             ptree prop_attrs;
             if (p.second.setter)
@@ -175,7 +175,7 @@ static ptree query_props(ElementImpl *self, const ptree &query)
         if (block->block_ptr->get_uid() != block_id) continue;
         if (set)
         {
-            const std::type_info &t = block->property_registry[prop_key].setter->type();
+            const std::type_info &t = block->data->property_registry[prop_key].setter->type();
             const PMCC p = ptree_to_pmc(query.get_child("value"), t);
             block->prop_access_dispatcher(prop_key, p, true);
         }
