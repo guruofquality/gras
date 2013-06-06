@@ -3,32 +3,11 @@
 #ifndef INCLUDED_GRAS_TOP_BLOCK_HPP
 #define INCLUDED_GRAS_TOP_BLOCK_HPP
 
+#include <gras/block_config.hpp>
 #include <gras/hier_block.hpp>
 
 namespace gras
 {
-
-struct GRAS_API GlobalBlockConfig
-{
-    GlobalBlockConfig(void);
-
-    /*!
-     * Constrain the maximum number of items that
-     * work can be called with for all output ports.
-     *
-     * Default = 0 aka disabled.
-     */
-    size_t maximum_output_items;
-
-    /*!
-     * Set the global memory node affinity.
-     * Blocks that have not been explicitly set,
-     * will take on this new buffer_affinity.
-     *
-     * Default = -1 aka no affinity.
-     */
-    long buffer_affinity;
-};
 
 struct GRAS_API TopBlock : HierBlock
 {
