@@ -15,7 +15,7 @@ void BlockActor::handle_top_active(
 
     if (data->block_state != BLOCK_STATE_LIVE)
     {
-        block_ptr->notify_active();
+        data->block->notify_active();
         data->stats.start_time = time_now();
     }
     data->block_state = BLOCK_STATE_LIVE;
@@ -154,7 +154,7 @@ void BlockActor::handle_get_stats(
 
     //create the message reply object
     GetStatsMessage message;
-    message.block_id = block_ptr->get_uid();
+    message.block_id = data->block->get_uid();
     message.stats = data->stats;
     message.stats_time = time_now();
 

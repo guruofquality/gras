@@ -28,7 +28,7 @@ void BlockActor::handle_topology(
     const size_t num_outputs = worker->get_num_outputs();
 
     //call notify_topology on block before committing settings
-    block_ptr->notify_topology(num_inputs, num_outputs);
+    data->block->notify_topology(num_inputs, num_outputs);
 
     //resize and fill port properties
     resize_fill_back(data->input_configs, num_inputs);

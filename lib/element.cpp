@@ -138,5 +138,5 @@ Block *Element::locate_block(const std::string &path)
     }
 
     //return block ptr as result
-    return elem->block_actor->block_ptr;
+    return elem->block_data->block;
 }

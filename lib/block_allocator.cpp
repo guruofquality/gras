@@ -77,7 +77,7 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
         config.affinity = data->buffer_affinity;
         config.token = token;
 
-        BufferQueueSptr queue = block_ptr->output_buffer_allocator(i, config);
+        BufferQueueSptr queue = data->block->output_buffer_allocator(i, config);
         data->output_queues.set_buffer_queue(i, queue);
 
         InputAllocMessage message;

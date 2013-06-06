@@ -3,6 +3,7 @@
 #ifndef INCLUDED_LIBGRAS_IMPL_BLOCK_DATA_HPP
 #define INCLUDED_LIBGRAS_IMPL_BLOCK_DATA_HPP
 
+#include <gras/block.hpp>
 #include <gras_impl/debug.hpp>
 #include <gras_impl/bitset.hpp>
 #include <gras_impl/token.hpp>
@@ -33,6 +34,9 @@ enum BlockState
 
 struct BlockData
 {
+    //block pointer to call into parent
+    Block *block;
+
     //per port properties
     std::vector<InputPortConfig> input_configs;
     std::vector<OutputPortConfig> output_configs;

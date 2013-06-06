@@ -18,7 +18,6 @@ struct BlockActor : Theron::Actor
 {
     BlockActor(const ThreadPool &tp = ThreadPool());
     ~BlockActor(void);
-    Block *block_ptr;
     std::string name; //for debug
     ThreadPool thread_pool;
     Token prio_token;
@@ -104,7 +103,7 @@ struct BlockActor : Theron::Actor
     //work helpers
     inline void task_work(void)
     {
-        block_ptr->work(data->input_items, data->output_items);
+        data->block->work(data->input_items, data->output_items);
     }
 
     //property stuff

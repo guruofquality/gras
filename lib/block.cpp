@@ -34,11 +34,12 @@ Block::Block(const std::string &name):
 {
     //create non-actor containers
     (*this)->block_data.reset(new BlockData());
+    (*this)->block_data->block = this;
     (*this)->worker.reset(new Apology::Worker());
 
     //create actor and init members
     (*this)->block_actor.reset(new BlockActor());
-    (*this)->setup_actor(this);
+    (*this)->setup_actor();
 
     //setup some state variables
     (*this)->block_data->block_state = BLOCK_STATE_INIT;
@@ -53,11 +54,10 @@ Block::~Block(void)
     //NOP
 }
 
-void ElementImpl::setup_actor(Block *block_ptr)
+void ElementImpl::setup_actor(void)
 {
     this->block_actor->worker = this->worker.get();
     this->block_actor->name = name; //for debug purposes
-    this->block_actor->block_ptr = block_ptr;
     this->block_actor->data = this->block_data;
     this->worker->set_actor(this->block_actor.get());
     this->thread_pool = this->block_actor->thread_pool; //ref copy of pool
@@ -199,7 +199,7 @@ void Block::set_thread_pool(const ThreadPool &thread_pool)
 {
     boost::shared_ptr<BlockActor> old_actor = (*this)->block_actor;
     (*this)->block_actor.reset(new BlockActor(thread_pool));
-    (*this)->setup_actor(this);
+    (*this)->setup_actor();
     wait_actor_idle((*this)->repr, *old_actor);
 }
 

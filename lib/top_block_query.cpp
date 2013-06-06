@@ -56,7 +56,7 @@ static ptree query_blocks(ElementImpl *self, const ptree &)
             block_attrs.push_back(std::make_pair(p.first, prop_attrs));
             prop_e.push_back(std::make_pair("props", block_attrs));
         }
-        e.push_back(std::make_pair(actor->block_ptr->get_uid(), prop_e));
+        e.push_back(std::make_pair(actor->data->block->get_uid(), prop_e));
     }
     root.push_back(std::make_pair("blocks", e));
     return root;
@@ -82,7 +82,7 @@ static ptree query_stats(ElementImpl *self, const ptree &query)
         BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
 
         //filter workers not needed in query
-        const std::string id = actor->block_ptr->get_uid();
+        const std::string id = actor->data->block->get_uid();
         if (std::find(block_ids.begin(), block_ids.end(), id) == block_ids.end()) continue;
 
         //send a message to the block's actor to query stats
@@ -174,7 +174,7 @@ static ptree query_props(ElementImpl *self, const ptree &query)
     BOOST_FOREACH(Apology::Worker *w, self->executor->get_workers())
     {
         BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
-        if (actor->block_ptr->get_uid() != block_id) continue;
+        if (actor->data->block->get_uid() != block_id) continue;
         if (set)
         {
             const std::type_info &t = actor->data->property_registry[prop_key].setter->type();

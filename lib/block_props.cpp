@@ -24,7 +24,7 @@ void BlockActor::handle_prop_access(
     //call into the handler overload to do the property access
     try
     {
-        reply.value = block_ptr->_handle_prop_access(message.key, message.value, message.set);
+        reply.value = data->block->_handle_prop_access(message.key, message.value, message.set);
     }
     catch (const std::exception &e)
     {

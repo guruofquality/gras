@@ -15,7 +15,7 @@ void BlockActor::mark_done(void)
     if (data->block_state == BLOCK_STATE_DONE) return; //can re-enter checking done first
 
     data->stats.stop_time = time_now();
-    block_ptr->notify_inactive();
+    data->block->notify_inactive();
 
     //flush partial output buffers to the downstream
     for (size_t i = 0; i < worker->get_num_outputs(); i++)
@@ -62,7 +62,7 @@ void BlockActor::mark_done(void)
 
     if (ARMAGEDDON) std::cerr
         << "==================================================\n"
-        << "== The " << block_ptr->to_string() << " is done...\n"
+        << "== The " << name << " is done...\n"
         << "==================================================\n"
         << std::flush;
 }

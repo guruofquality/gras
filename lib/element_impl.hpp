@@ -19,6 +19,8 @@ namespace gras
 
 struct ElementImpl
 {
+    //setup stuff
+    void setup_actor(void);
 
     //deconstructor stuff
     ~ElementImpl(void);
@@ -48,7 +50,6 @@ struct ElementImpl
     boost::shared_ptr<Apology::Executor> executor;
     boost::shared_ptr<BlockActor> block_actor;
     boost::shared_ptr<BlockData> block_data;
-    void setup_actor(Block *block_ptr);
     ThreadPool thread_pool;
     Apology::Base *get_elem(void) const
     {
