@@ -50,6 +50,7 @@ BlockActor::BlockActor(const ThreadPool &tp):
         active_thread_pool.reset(); //actors hold this, now its safe to reset, weak_framework only
     }
     this->register_handlers();
+    this->prio_token = Token::make();
 }
 
 BlockActor::~BlockActor(void)
