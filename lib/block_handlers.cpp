@@ -92,9 +92,15 @@ void BlockActor::handle_top_config(
     }
 
     //overwrite with global node affinity setting for buffers if not set
-    if (data->buffer_affinity == -1)
+    if (data->global_config.buffer_affinity == -1)
     {
-        data->buffer_affinity = message.buffer_affinity;
+        data->global_config.buffer_affinity = message.buffer_affinity;
+    }
+
+    //overwrite with global interruptable setting for work if not set
+    if (data->global_config.interruptible_work == false)
+    {
+        data->global_config.interruptible_work = message.interruptible_work;
     }
 
     this->Send(0, from); //ACK
@@ -111,7 +117,7 @@ void BlockActor::handle_top_thread_group(
     //spawn a new thread if this block is a source
     data->thread_group = message;
     data->interruptible_thread.reset(); //erase old one
-    if (data->interruptible_work)
+    if (data->global_config.interruptible_work)
     {
         data->interruptible_thread = boost::make_shared<InterruptibleThread>(
             data->thread_group, boost::bind(&BlockActor::task_work, this)

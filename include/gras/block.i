@@ -13,6 +13,7 @@
 %import <gras/sbuffer.i>
 %include <gras/buffer_queue.hpp>
 %include <gras/thread_pool.hpp>
+%include <gras/block_config.hpp>
 %include <gras/block.hpp>
 
 ////////////////////////////////////////////////////////////////////////

@@ -6,6 +6,7 @@ install(FILES
     exception.i
     chrono.hpp
     block.hpp
+    block_config.hpp
     block.i
     element.hpp
     element.i

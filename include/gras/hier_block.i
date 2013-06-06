@@ -8,6 +8,7 @@
 %}
 
 %import <gras/element.i>
+%include <gras/block_config.hpp>
 %include <gras/hier_block.hpp>
 
 #endif /*INCLUDED_GRAS_HIER_BLOCK_I*/
