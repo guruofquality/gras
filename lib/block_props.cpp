@@ -24,7 +24,7 @@ void BlockActor::handle_prop_access(
     //call into the handler overload to do the property access
     try
     {
-        reply.value = block_ptr->_handle_prop_access(message.key, message.value, message.set);
+        reply.value = data->block->_handle_prop_access(message.key, message.value, message.set);
     }
     catch (const std::exception &e)
     {
@@ -45,7 +45,7 @@ void BlockActor::handle_prop_access(
 
 PMCC Block::_handle_prop_access(const std::string &key, const PMCC &value, const bool set)
 {
-    const PropertyRegistryPair &pair = (*this)->block->property_registry[key];
+    const PropertyRegistryPair &pair = (*this)->block_data->property_registry[key];
     PropertyRegistrySptr pr = (set)? pair.setter : pair.getter;
     if (not pr) throw std::invalid_argument("no property registered for key: " + key);
     if (set)
@@ -96,20 +96,20 @@ PMCC BlockActor::prop_access_dispatcher(const std::string &key, const PMCC &valu
 
 void Block::_register_getter(const std::string &key, void *pr)
 {
-    (*this)->block->property_registry[key].getter.reset(reinterpret_cast<PropertyRegistry *>(pr));
+    (*this)->block_data->property_registry[key].getter.reset(reinterpret_cast<PropertyRegistry *>(pr));
 }
 
 void Block::_register_setter(const std::string &key, void *pr)
 {
-    (*this)->block->property_registry[key].setter.reset(reinterpret_cast<PropertyRegistry *>(pr));
+    (*this)->block_data->property_registry[key].setter.reset(reinterpret_cast<PropertyRegistry *>(pr));
 }
 
 void Block::_set_property(const std::string &key, const PMCC &value)
 {
-    (*this)->block->prop_access_dispatcher(key, value, true);
+    (*this)->block_actor->prop_access_dispatcher(key, value, true);
 }
 
 PMCC Block::_get_property(const std::string &key)
 {
-    return (*this)->block->prop_access_dispatcher(key, PMCC(), false);
+    return (*this)->block_actor->prop_access_dispatcher(key, PMCC(), false);
 }

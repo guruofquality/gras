@@ -4,40 +4,25 @@
 #define INCLUDED_LIBGRAS_IMPL_BLOCK_ACTOR_HPP
 
 #include <gras_impl/debug.hpp>
-#include <gras_impl/bitset.hpp>
-#include <gras/gras.hpp>
 #include <gras/block.hpp>
 #include <gras/top_block.hpp>
 #include <gras/thread_pool.hpp>
 #include <Apology/Worker.hpp>
-#include <gras_impl/token.hpp>
-#include <gras_impl/stats.hpp>
 #include <gras_impl/messages.hpp>
-#include <gras_impl/output_buffer_queues.hpp>
-#include <gras_impl/input_buffer_queues.hpp>
-#include <gras_impl/interruptible_thread.hpp>
-#include <vector>
-#include <set>
-#include <map>
+#include <gras_impl/block_data.hpp>
 
 namespace gras
 {
 
-typedef boost::shared_ptr<PropertyRegistry> PropertyRegistrySptr;
-struct PropertyRegistryPair
+struct BlockActor : Theron::Actor
 {
-    PropertyRegistrySptr setter;
-    PropertyRegistrySptr getter;
-};
-
-struct BlockActor : Apology::Worker
-{
-    BlockActor(void);
+    BlockActor(const ThreadPool &tp = ThreadPool());
     ~BlockActor(void);
-    Block *block_ptr;
     std::string name; //for debug
     ThreadPool thread_pool;
     Token prio_token;
+    boost::shared_ptr<BlockData> data;
+    Apology::Worker *worker;
 
     //do it here so we can match w/ the handler declarations
     void register_handlers(void)
@@ -110,68 +95,19 @@ struct BlockActor : Apology::Worker
     void trim_msgs(const size_t index);
     void produce(const size_t index, const size_t items);
     void consume(const size_t index, const size_t items);
-    void produce_buffer(const size_t index, const SBuffer &buffer);
     void task_kicker(void);
     void update_input_avail(const size_t index);
     bool is_input_done(const size_t index);
     bool is_work_allowed(void);
 
-    //per port properties
-    std::vector<InputPortConfig> input_configs;
-    std::vector<OutputPortConfig> output_configs;
-
-    //work buffers for the new work interface
-    Block::InputItems input_items;
-    Block::OutputItems output_items;
-
-    //track the subscriber counts
-    std::vector<Token> input_tokens;
-    std::vector<Token> output_tokens;
-    BitSet inputs_done;
-    BitSet outputs_done;
-    std::set<Token> token_pool;
-
-    //buffer queues and ready conditions
-    InputBufferQueues input_queues;
-    OutputBufferQueues output_queues;
-    std::vector<bool> produce_outputs;
-    BitSet inputs_available;
-    std::vector<time_ticks_t> time_input_not_ready;
-    std::vector<time_ticks_t> time_output_not_ready;
-
-    //tag and msg tracking
-    std::vector<bool> input_tags_changed;
-    std::vector<std::vector<Tag> > input_tags;
-    std::vector<size_t> num_input_msgs_read;
-    std::vector<std::vector<PMCC> > input_msgs;
-
-    //interruptible thread stuff
-    bool interruptible_work;
-    SharedThreadGroup thread_group;
-    boost::shared_ptr<InterruptibleThread> interruptible_thread;
-
     //work helpers
     inline void task_work(void)
     {
-        block_ptr->work(this->input_items, this->output_items);
+        data->block->work(data->input_items, data->output_items);
     }
 
-    //is the fg running?
-    enum
-    {
-        BLOCK_STATE_INIT,
-        BLOCK_STATE_LIVE,
-        BLOCK_STATE_DONE,
-    } block_state;
-    long buffer_affinity;
-
-    std::vector<std::vector<OutputHintMessage> > output_allocation_hints;
-
     //property stuff
-    std::map<std::string, PropertyRegistryPair> property_registry;
     PMCC prop_access_dispatcher(const std::string &key, const PMCC &value, const bool set);
-
-    BlockStats stats;
 };
 
 //-------------- common functions from this BlockActor class ---------//
@@ -183,27 +119,27 @@ GRAS_FORCE_INLINE void BlockActor::task_kicker(void)
 
 GRAS_FORCE_INLINE void BlockActor::update_input_avail(const size_t i)
 {
-    const bool has_input_bufs = not this->input_queues.empty(i) and this->input_queues.ready(i);
-    const bool has_input_msgs = not this->input_msgs[i].empty();
-    this->inputs_available.set(i, has_input_bufs or has_input_msgs);
-    this->input_queues.update_has_msg(i, has_input_msgs);
+    const bool has_input_bufs = not data->input_queues.empty(i) and data->input_queues.ready(i);
+    const bool has_input_msgs = not data->input_msgs[i].empty();
+    data->inputs_available.set(i, has_input_bufs or has_input_msgs);
+    data->input_queues.update_has_msg(i, has_input_msgs);
 }
 
 GRAS_FORCE_INLINE bool BlockActor::is_input_done(const size_t i)
 {
-    const bool force_done = this->input_configs[i].force_done;
-    if GRAS_LIKELY(force_done) return this->inputs_done[i] and not this->inputs_available[i];
-    return this->inputs_done.all() and this->inputs_available.none();
+    const bool force_done = data->input_configs[i].force_done;
+    if GRAS_LIKELY(force_done) return data->inputs_done[i] and not data->inputs_available[i];
+    return data->inputs_done.all() and data->inputs_available.none();
 }
 
 GRAS_FORCE_INLINE bool BlockActor::is_work_allowed(void)
 {
     return (
         this->prio_token.unique() and
-        this->block_state == BLOCK_STATE_LIVE and
-        this->inputs_available.any() and
-        this->input_queues.all_ready() and
-        this->output_queues.all_ready()
+        data->block_state == BLOCK_STATE_LIVE and
+        data->inputs_available.any() and
+        data->input_queues.all_ready() and
+        data->output_queues.all_ready()
     );
 }
 

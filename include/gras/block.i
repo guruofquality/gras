@@ -12,6 +12,7 @@
 %include <gras/tag_iter.i>
 %import <gras/sbuffer.i>
 %include <gras/buffer_queue.hpp>
+%include <gras/thread_pool.hpp>
 %include <gras/block.hpp>
 
 ////////////////////////////////////////////////////////////////////////

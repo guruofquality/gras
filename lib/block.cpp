@@ -32,14 +32,17 @@ Block::Block(void)
 Block::Block(const std::string &name):
     Element(name)
 {
-    (*this)->block.reset(new BlockActor());
-    (*this)->block->prio_token = Token::make();
-    (*this)->thread_pool = (*this)->block->thread_pool; //ref copy of pool
-    (*this)->block->name = name; //for debug purposes
+    //create non-actor containers
+    (*this)->block_data.reset(new BlockData());
+    (*this)->block_data->block = this;
+    (*this)->worker.reset(new Apology::Worker());
+
+    //create actor and init members
+    (*this)->block_actor.reset(new BlockActor());
+    (*this)->setup_actor();
 
     //setup some state variables
-    (*this)->block->block_ptr = this;
-    (*this)->block->block_state = BlockActor::BLOCK_STATE_INIT;
+    (*this)->block_data->block_state = BLOCK_STATE_INIT;
 
     //call block methods to init stuff
     this->set_interruptible_work(false);
@@ -51,6 +54,15 @@ Block::~Block(void)
     //NOP
 }
 
+void ElementImpl::setup_actor(void)
+{
+    this->block_actor->worker = this->worker.get();
+    this->block_actor->name = name; //for debug purposes
+    this->block_actor->data = this->block_data;
+    this->worker->set_actor(this->block_actor.get());
+    this->thread_pool = this->block_actor->thread_pool; //ref copy of pool
+}
+
 enum block_cleanup_state_type
 {
     BLOCK_CLEANUP_WAIT,
@@ -59,11 +71,11 @@ enum block_cleanup_state_type
     BLOCK_CLEANUP_DOTS,
 };
 
-static void wait_block_cleanup(ElementImpl &self)
+static void wait_actor_idle(const std::string &repr, Theron::Actor &actor)
 {
     const boost::system_time start = boost::get_system_time();
     block_cleanup_state_type state = BLOCK_CLEANUP_WAIT;
-    while (self.block->GetNumQueuedMessages())
+    while (actor.GetNumQueuedMessages())
     {
         boost::this_thread::sleep(boost::posix_time::milliseconds(1));
         switch (state)
@@ -71,7 +83,7 @@ static void wait_block_cleanup(ElementImpl &self)
         case BLOCK_CLEANUP_WAIT:
             if (boost::get_system_time() > start + boost::posix_time::seconds(1))
             {
-                std::cerr << self.repr << ", waiting for you to finish." << std::endl;
+                std::cerr << repr << ", waiting for you to finish." << std::endl;
                 state = BLOCK_CLEANUP_WARN;
             }
             break;
@@ -79,7 +91,7 @@ static void wait_block_cleanup(ElementImpl &self)
         case BLOCK_CLEANUP_WARN:
             if (boost::get_system_time() > start + boost::posix_time::seconds(2))
             {
-                std::cerr << self.repr << ", give up the thread context!" << std::endl;
+                std::cerr << repr << ", give up the thread context!" << std::endl;
                 state = BLOCK_CLEANUP_DAMN;
             }
             break;
@@ -87,7 +99,7 @@ static void wait_block_cleanup(ElementImpl &self)
         case BLOCK_CLEANUP_DAMN:
             if (boost::get_system_time() > start + boost::posix_time::seconds(3))
             {
-                std::cerr << self.repr << " FAIL; application will now hang..." << std::endl;
+                std::cerr << repr << " FAIL; application will now hang..." << std::endl;
                 state = BLOCK_CLEANUP_DOTS;
             }
             break;
@@ -100,10 +112,10 @@ static void wait_block_cleanup(ElementImpl &self)
 void ElementImpl::block_cleanup(void)
 {
     //wait for actor to chew through enqueued messages
-    wait_block_cleanup(*this);
+    wait_actor_idle(this->repr, *this->block_actor);
 
     //delete the actor
-    this->block.reset();
+    this->block_actor.reset();
 
     //unref actor's framework
     this->thread_pool.reset(); //must be deleted after actor
@@ -132,34 +144,34 @@ typename V::value_type &vector_get_resize(V &v, const size_t index)
 
 InputPortConfig &Block::input_config(const size_t which_input)
 {
-    return vector_get_resize((*this)->block->input_configs, which_input);
+    return vector_get_resize((*this)->block_data->input_configs, which_input);
 }
 
 const InputPortConfig &Block::input_config(const size_t which_input) const
 {
-    return vector_get_const((*this)->block->input_configs, which_input);
+    return vector_get_const((*this)->block_data->input_configs, which_input);
 }
 
 OutputPortConfig &Block::output_config(const size_t which_output)
 {
-    return vector_get_resize((*this)->block->output_configs, which_output);
+    return vector_get_resize((*this)->block_data->output_configs, which_output);
 }
 
 const OutputPortConfig &Block::output_config(const size_t which_output) const
 {
-    return vector_get_const((*this)->block->output_configs, which_output);
+    return vector_get_const((*this)->block_data->output_configs, which_output);
 }
 
 void Block::commit_config(void)
 {
-    Theron::Actor &actor = *((*this)->block);
-    for (size_t i = 0; i < (*this)->block->get_num_inputs(); i++)
+    Theron::Actor &actor = *((*this)->block_actor);
+    for (size_t i = 0; i < (*this)->worker->get_num_inputs(); i++)
     {
         InputUpdateMessage message;
         message.index = i;
         actor.GetFramework().Send(message, Theron::Address::Null(), actor.GetAddress());
     }
-    for (size_t i = 0; i < (*this)->block->get_num_outputs(); i++)
+    for (size_t i = 0; i < (*this)->worker->get_num_outputs(); i++)
     {
         OutputUpdateMessage message;
         message.index = i;
@@ -183,12 +195,20 @@ void Block::notify_topology(const size_t, const size_t)
     return;
 }
 
+void Block::set_thread_pool(const ThreadPool &thread_pool)
+{
+    boost::shared_ptr<BlockActor> old_actor = (*this)->block_actor;
+    (*this)->block_actor.reset(new BlockActor(thread_pool));
+    (*this)->setup_actor();
+    wait_actor_idle((*this)->repr, *old_actor);
+}
+
 void Block::set_buffer_affinity(const long affinity)
 {
-    (*this)->block->buffer_affinity = affinity;
+    (*this)->block_data->buffer_affinity = affinity;
 }
 
 void Block::set_interruptible_work(const bool enb)
 {
-    (*this)->block->interruptible_work = enb;
+    (*this)->block_data->interruptible_work = enb;
 }

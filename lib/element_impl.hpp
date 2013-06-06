@@ -4,6 +4,7 @@
 #define INCLUDED_LIBGRAS_ELEMENT_IMPL_HPP
 
 #include <gras_impl/block_actor.hpp>
+#include <Apology/Worker.hpp>
 #include <Apology/Topology.hpp>
 #include <Apology/Executor.hpp>
 #include <gras/element.hpp>
@@ -18,6 +19,8 @@ namespace gras
 
 struct ElementImpl
 {
+    //setup stuff
+    void setup_actor(void);
 
     //deconstructor stuff
     ~ElementImpl(void);
@@ -42,25 +45,29 @@ struct ElementImpl
     std::map<std::string, Element> children;
 
     //things may be in this element
+    boost::shared_ptr<Apology::Worker> worker;
     boost::shared_ptr<Apology::Topology> topology;
     boost::shared_ptr<Apology::Executor> executor;
-    boost::shared_ptr<BlockActor> block;
+    boost::shared_ptr<BlockActor> block_actor;
+    boost::shared_ptr<BlockData> block_data;
     ThreadPool thread_pool;
     Apology::Base *get_elem(void) const
     {
-        if (block) return block.get();
-        return topology.get();
+        if (worker) return worker.get();
+        if (topology) return topology.get();
+        else throw std::runtime_error("ElementImpl::get_elem fail");
     }
 
     template <typename MessageType>
     void bcast_prio_msg(const MessageType &msg)
     {
         Theron::Receiver receiver;
-        BOOST_FOREACH(Apology::Worker *worker, this->executor->get_workers())
+        BOOST_FOREACH(Apology::Worker *w, this->executor->get_workers())
         {
+            BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
             MessageType message = msg;
-            message.prio_token = dynamic_cast<BlockActor *>(worker)->prio_token;
-            worker->GetFramework().Send(message, receiver.GetAddress(), worker->GetAddress());
+            message.prio_token = actor->prio_token;
+            actor->GetFramework().Send(message, receiver.GetAddress(), actor->GetAddress());
         }
         size_t outstandingCount(this->executor->get_workers().size());
         while (outstandingCount != 0)

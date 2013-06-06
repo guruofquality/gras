@@ -34,8 +34,8 @@ ThreadPool get_active_thread_pool(void)
  * Block actor construction - gets active framework
  **********************************************************************/
 
-BlockActor::BlockActor(void):
-    Apology::Worker(*get_active_thread_pool())
+BlockActor::BlockActor(const ThreadPool &tp):
+    Theron::Actor((tp)? *tp : *get_active_thread_pool())
 {
     const char * gras_tpp = getenv("GRAS_TPP");
     if (gras_tpp != NULL)
@@ -50,6 +50,7 @@ BlockActor::BlockActor(void):
         active_thread_pool.reset(); //actors hold this, now its safe to reset, weak_framework only
     }
     this->register_handlers();
+    this->prio_token = Token::make();
 }
 
 BlockActor::~BlockActor(void)

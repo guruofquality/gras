@@ -5,6 +5,7 @@
 
 #include <gras/element.hpp>
 #include <gras/sbuffer.hpp>
+#include <gras/thread_pool.hpp>
 #include <gras/tag_iter.hpp>
 #include <gras/tags.hpp>
 #include <gras/work_buffer.hpp>
@@ -486,6 +487,13 @@ struct GRAS_API Block : Element
     /*******************************************************************
      * routines related to affinity and allocation
      ******************************************************************/
+
+    /*!
+     * Set the thread pool of this block.
+     * Every block is created in the default active thread pool.
+     * This call will migrate the block to a new specified pool.
+     */
+    void set_thread_pool(const ThreadPool &thread_pool);
 
     /*!
      * Set if the work call should be interruptible by stop().
