@@ -16,7 +16,8 @@ namespace gras
 
 struct BlockActor : Theron::Actor
 {
-    BlockActor(const ThreadPool &tp = ThreadPool());
+    static BlockActor *make(const ThreadPool &tp = ThreadPool());
+    BlockActor(const ThreadPool &tp);
     ~BlockActor(void);
     std::string name; //for debug
     ThreadPool thread_pool;

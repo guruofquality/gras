@@ -21,7 +21,7 @@ Block::Block(const std::string &name):
     (*this)->worker.reset(new Apology::Worker());
 
     //create actor and init members
-    (*this)->block_actor.reset(new BlockActor());
+    (*this)->block_actor.reset(BlockActor::make());
     (*this)->setup_actor();
 
     //setup some state variables
@@ -187,7 +187,7 @@ void Block::notify_topology(const size_t, const size_t)
 void Block::set_thread_pool(const ThreadPool &thread_pool)
 {
     boost::shared_ptr<BlockActor> old_actor = (*this)->block_actor;
-    (*this)->block_actor.reset(new BlockActor(thread_pool));
+    (*this)->block_actor.reset(BlockActor::make(thread_pool));
     (*this)->setup_actor();
     wait_actor_idle((*this)->repr, *old_actor);
 }

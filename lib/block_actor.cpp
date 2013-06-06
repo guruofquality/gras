@@ -17,38 +17,46 @@ void ThreadPool::set_active(void)
     weak_framework = *this;
 }
 
-static ThreadPool active_thread_pool;
-
+//! this routine used by the query interface only for stats
 ThreadPool get_active_thread_pool(void)
 {
-    if (not weak_framework.lock())
-    {
-        active_thread_pool = ThreadPool(ThreadPoolConfig());
-        active_thread_pool.set_active();
-        std::cout << "Created default thread pool with " << active_thread_pool->GetNumThreads() << " threads." << std::endl;
-    }
-    return weak_framework;
+    return ThreadPool(weak_framework);
 }
 
 /***********************************************************************
- * Block actor construction - gets active framework
+ * Block actor factory - gets active framework
  **********************************************************************/
-
-BlockActor::BlockActor(const ThreadPool &tp):
-    Theron::Actor((tp)? *tp : *get_active_thread_pool())
+BlockActor *BlockActor::make(const ThreadPool &tp)
 {
-    const char * gras_tpp = getenv("GRAS_TPP");
-    if (gras_tpp != NULL)
+    //thread pool provided, use it
+    if (tp) return new BlockActor(tp);
+
+    //was the thread per block env specified
+    if (getenv("GRAS_TPP"))
     {
         ThreadPoolConfig config;
         config.thread_count = 1;
-        this->thread_pool = ThreadPool(config);
+        return new BlockActor(ThreadPool(config));
     }
+
+    //otherwise, create/use active pool
     else
     {
-        this->thread_pool = get_active_thread_pool();
-        active_thread_pool.reset(); //actors hold this, now its safe to reset, weak_framework only
+        ThreadPool active(weak_framework);
+        if (not active)
+        {
+            active = ThreadPool(ThreadPoolConfig());
+            active.set_active();
+            std::cout << "Created default thread pool with " << active->GetNumThreads() << " threads." << std::endl;
+        }
+        return new BlockActor(active);
     }
+}
+
+BlockActor::BlockActor(const ThreadPool &tp):
+    Theron::Actor(*tp)
+{
+    this->thread_pool = tp;
     this->register_handlers();
     this->prio_token = Token::make();
 }
