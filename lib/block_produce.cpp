@@ -42,10 +42,11 @@ void Block::pop_output_buffer(const size_t which_output, const size_t num_bytes)
 
 void Block::post_output_buffer(const size_t which_output, const SBuffer &buffer)
 {
-    (*this)->block_data->output_queues.consume(which_output);
-    ASSERT((buffer.length % (*this)->block_data->output_configs[which_output].item_size) == 0);
-    const size_t items = buffer.length/(*this)->block_data->output_configs[which_output].item_size;
-    (*this)->block_data->stats.items_produced[which_output] += items;
+    boost::shared_ptr<BlockData> &data = (*this)->block_data;
+    data->output_queues.consume(which_output);
+    ASSERT((buffer.length % data->output_configs[which_output].item_size) == 0);
+    const size_t items = buffer.length/data->output_configs[which_output].item_size;
+    data->stats.items_produced[which_output] += items;
     InputBufferMessage buff_msg;
     buff_msg.buffer = buffer;
     (*this)->worker->post_downstream(which_output, buff_msg);
