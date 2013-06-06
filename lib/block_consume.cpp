@@ -10,7 +10,7 @@ using namespace gras;
 void Block::consume(const size_t which_input, const size_t num_items)
 {
     ASSERT(long(num_items) >= 0); //sign bit set? you dont want a negative
-    (*this)->block->consume(which_input, num_items);
+    (*this)->block_actor->consume(which_input, num_items);
 }
 
 void Block::consume(const size_t num_items)
@@ -18,7 +18,7 @@ void Block::consume(const size_t num_items)
     const size_t num_inputs = (*this)->worker->get_num_inputs();
     for (size_t i = 0; i < num_inputs; i++)
     {
-        (*this)->block->consume(i, num_items);
+        (*this)->block_actor->consume(i, num_items);
     }
 }
 

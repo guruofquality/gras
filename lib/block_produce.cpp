@@ -9,7 +9,7 @@ using namespace gras;
 void Block::produce(const size_t which_output, const size_t num_items)
 {
     ASSERT(long(num_items) >= 0); //sign bit set? you dont want a negative
-    (*this)->block->produce(which_output, num_items);
+    (*this)->block_actor->produce(which_output, num_items);
 }
 
 void Block::produce(const size_t num_items)
@@ -17,7 +17,7 @@ void Block::produce(const size_t num_items)
     const size_t num_outputs = (*this)->worker->get_num_outputs();
     for (size_t o = 0; o < num_outputs; o++)
     {
-        (*this)->block->produce(o, num_items);
+        (*this)->block_actor->produce(o, num_items);
     }
 }
 

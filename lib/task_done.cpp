@@ -7,7 +7,7 @@ using namespace gras;
 
 void Block::mark_done(void)
 {
-    (*this)->block->mark_done();
+    (*this)->block_actor->mark_done();
 }
 
 void BlockActor::mark_done(void)

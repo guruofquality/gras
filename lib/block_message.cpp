@@ -52,7 +52,7 @@ void Block::post_input_tag(const size_t which_input, const Tag &tag)
 {
     InputTagMessage message(tag);
     message.index = which_input;
-    Theron::Actor &actor = *((*this)->block);
+    Theron::Actor &actor = *((*this)->block_actor);
     actor.GetFramework().Send(message, Theron::Address::Null(), actor.GetAddress());
 }
 
@@ -60,7 +60,7 @@ void Block::_post_input_msg(const size_t which_input, const PMCC &msg)
 {
     InputMsgMessage message(msg);
     message.index = which_input;
-    Theron::Actor &actor = *((*this)->block);
+    Theron::Actor &actor = *((*this)->block_actor);
     actor.GetFramework().Send(message, Theron::Address::Null(), actor.GetAddress());
 }
 
@@ -69,6 +69,6 @@ void Block::post_input_buffer(const size_t which_input, const SBuffer &buffer)
     InputBufferMessage message;
     message.index = which_input;
     message.buffer = buffer;
-    Theron::Actor &actor = *((*this)->block);
+    Theron::Actor &actor = *((*this)->block_actor);
     actor.GetFramework().Send(message, Theron::Address::Null(), actor.GetAddress());
 }

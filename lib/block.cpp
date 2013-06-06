@@ -32,16 +32,16 @@ Block::Block(void)
 Block::Block(const std::string &name):
     Element(name)
 {
-    (*this)->block.reset(new BlockActor());
+    (*this)->block_actor.reset(new BlockActor());
     (*this)->worker.reset(new Apology::Worker());
-    (*this)->worker->set_actor((*this)->block.get());
-    (*this)->block->worker = (*this)->worker.get();
-    (*this)->block->prio_token = Token::make();
-    (*this)->thread_pool = (*this)->block->thread_pool; //ref copy of pool
-    (*this)->block->name = name; //for debug purposes
-    (*this)->block->block_ptr = this;
-    (*this)->block->data.reset(new BlockData());
-    (*this)->block_data = (*this)->block->data;
+    (*this)->worker->set_actor((*this)->block_actor.get());
+    (*this)->block_actor->worker = (*this)->worker.get();
+    (*this)->block_actor->prio_token = Token::make();
+    (*this)->thread_pool = (*this)->block_actor->thread_pool; //ref copy of pool
+    (*this)->block_actor->name = name; //for debug purposes
+    (*this)->block_actor->block_ptr = this;
+    (*this)->block_actor->data.reset(new BlockData());
+    (*this)->block_data = (*this)->block_actor->data;
 
     //setup some state variables
     (*this)->block_data->block_state = BLOCK_STATE_INIT;
@@ -68,7 +68,7 @@ static void wait_block_cleanup(ElementImpl &self)
 {
     const boost::system_time start = boost::get_system_time();
     block_cleanup_state_type state = BLOCK_CLEANUP_WAIT;
-    while (self.block->GetNumQueuedMessages())
+    while (self.block_actor->GetNumQueuedMessages())
     {
         boost::this_thread::sleep(boost::posix_time::milliseconds(1));
         switch (state)
@@ -108,7 +108,7 @@ void ElementImpl::block_cleanup(void)
     wait_block_cleanup(*this);
 
     //delete the actor
-    this->block.reset();
+    this->block_actor.reset();
 
     //unref actor's framework
     this->thread_pool.reset(); //must be deleted after actor
@@ -157,7 +157,7 @@ const OutputPortConfig &Block::output_config(const size_t which_output) const
 
 void Block::commit_config(void)
 {
-    Theron::Actor &actor = *((*this)->block);
+    Theron::Actor &actor = *((*this)->block_actor);
     for (size_t i = 0; i < (*this)->worker->get_num_inputs(); i++)
     {
         InputUpdateMessage message;

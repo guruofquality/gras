@@ -46,7 +46,7 @@ struct ElementImpl
     boost::shared_ptr<Apology::Worker> worker;
     boost::shared_ptr<Apology::Topology> topology;
     boost::shared_ptr<Apology::Executor> executor;
-    boost::shared_ptr<BlockActor> block;
+    boost::shared_ptr<BlockActor> block_actor;
     boost::shared_ptr<BlockData> block_data;
     ThreadPool thread_pool;
     Apology::Base *get_elem(void) const

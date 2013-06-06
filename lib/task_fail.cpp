@@ -7,12 +7,12 @@ using namespace gras;
 
 void Block::mark_output_fail(const size_t which_output)
 {
-    (*this)->block->output_fail(which_output);
+    (*this)->block_actor->output_fail(which_output);
 }
 
 void Block::mark_input_fail(const size_t which_input)
 {
-    (*this)->block->input_fail(which_input);
+    (*this)->block_actor->input_fail(which_input);
 }
 
 void BlockActor::input_fail(const size_t i)

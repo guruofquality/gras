@@ -61,7 +61,7 @@ ElementImpl::~ElementImpl(void)
 {
     if (this->executor) this->top_block_cleanup();
     if (this->topology) this->hier_block_cleanup();
-    if (this->block) this->block_cleanup();
+    if (this->worker) this->block_cleanup();
 }
 
 void Element::set_container(WeakContainer *container)
@@ -138,5 +138,5 @@ Block *Element::locate_block(const std::string &path)
     }
 
     //return block ptr as result
-    return elem->block->block_ptr;
+    return elem->block_actor->block_ptr;
 }

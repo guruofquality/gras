@@ -106,10 +106,10 @@ void Block::_register_setter(const std::string &key, void *pr)
 
 void Block::_set_property(const std::string &key, const PMCC &value)
 {
-    (*this)->block->prop_access_dispatcher(key, value, true);
+    (*this)->block_actor->prop_access_dispatcher(key, value, true);
 }
 
 PMCC Block::_get_property(const std::string &key)
 {
-    return (*this)->block->prop_access_dispatcher(key, PMCC(), false);
+    return (*this)->block_actor->prop_access_dispatcher(key, PMCC(), false);
 }
