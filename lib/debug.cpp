@@ -20,11 +20,7 @@ struct DebugAssertPrinter
 {
     DebugAssertPrinter(void)
     {
-        std::cerr
-            << "###################################################\n"
-            << "## ATTENTION!!! The debug asserts are enabled\n"
-            << "###################################################\n"
-            << std::flush;
+        std::cerr << ">>> GRAS: The debug asserts are enabled. <<<" << std::endl;
     }
 };
 
