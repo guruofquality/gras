@@ -16,7 +16,7 @@ list(APPEND GRAS_LIBRARIES ${Boost_LIBRARIES})
 # Setup Theron Deps
 ########################################################################
 set(THERON_SOURCE_DIR ${GRAS_SOURCE_DIR}/Theron)
-include(${THERON_SOURCE_DIR}/TheronSetup.cmake)
+include(${THERON_SOURCE_DIR}/cmake/TheronSetup.cmake)
 include_directories(${THERON_INCLUDE_DIRS})
 link_directories(${THERON_LIBRARY_DIRS})
 add_definitions(${THERON_DEFINES})
