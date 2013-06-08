@@ -33,7 +33,7 @@ void BlockActor::input_fail(const size_t i)
     }
 
     //check that the input is not already maxed
-    if (data->input_queues.is_front_maximal(i))
+    if (not data->input_queues.empty(i) and data->input_queues.is_front_maximal(i))
     {
         throw std::runtime_error("input_fail called on maximum_items buffer in " + name);
     }
