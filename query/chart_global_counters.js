@@ -29,11 +29,12 @@ GrasChartGlobalCounts.prototype.update = function(point)
         ul.append(li);
     }
 
-    var stuff = [
+    var allocator_stuff = [
         ['Allocated', 'bytes', 'default_allocator_bytes_allocated'],
         ['Peak size', 'bytes', 'default_allocator_peak_bytes_allocated'],
         ['Num mallocs', '', 'default_allocator_allocation_count'],
-
+    ];
+    var framework_stuff = [
         ['Total msgs', '', 'framework_counter_messages_processed'],
         ['Thread yields', '', 'framework_counter_yields'],
         ['Local pushes', '', 'framework_counter_local_pushes'],
@@ -42,7 +43,7 @@ GrasChartGlobalCounts.prototype.update = function(point)
     ];
 
     var entries = 0;
-    $.each(stuff, function(contents_i, contents)
+    $.each(allocator_stuff, function(contents_i, contents)
     {
         var dir = contents[0];
         var units = contents[1];
@@ -53,6 +54,22 @@ GrasChartGlobalCounts.prototype.update = function(point)
             make_entry(dir, count.toString() + ' ' + units);
             entries++;
         }
+    });
+    $.each(point.thread_pools, function(tp_i, tp_info)
+    {
+        make_entry('ThreadPool' + tp_i.toString(), '');
+        $.each(framework_stuff, function(contents_i, contents)
+        {
+            var dir = contents[0];
+            var units = contents[1];
+            var key = contents[2];
+            var count = (key in tp_info)? tp_info[key] : 0;
+            if (count > 0)
+            {
+                make_entry(dir, count.toString() + ' ' + units);
+                entries++;
+            }
+        });
     });
     if (entries == 0) make_entry("Counts", "none");
 }

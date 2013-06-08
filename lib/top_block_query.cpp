@@ -1,17 +1,16 @@
 // Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
 #include "element_impl.hpp"
-#include <gras/top_block.hpp>
+#include "gras_impl/query_common.hpp"
 #include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <Theron/DefaultAllocator.h>
 #include <algorithm>
+#include <set>
 
 using namespace gras;
 
 using namespace boost::property_tree;
-
-ThreadPool get_active_thread_pool(void);
 
 struct GetStatsReceiver : Theron::Receiver
 {
@@ -107,15 +106,25 @@ static ptree query_stats(ElementImpl *self, const ptree &query)
         root.put("default_allocator_allocation_count", allocator->GetAllocationCount());
     }
 
-    ThreadPool tp = get_active_thread_pool();
-    if (tp)
+    //thread pool counts
+    std::set<ThreadPool> thread_pools;
+    BOOST_FOREACH(Apology::Worker *w, self->executor->get_workers())
     {
-        root.put("framework_counter_messages_processed", tp->GetCounterValue(Theron::COUNTER_MESSAGES_PROCESSED));
-        root.put("framework_counter_yields", tp->GetCounterValue(Theron::COUNTER_YIELDS));
-        root.put("framework_counter_local_pushes", tp->GetCounterValue(Theron::COUNTER_LOCAL_PUSHES));
-        root.put("framework_counter_shared_pushes", tp->GetCounterValue(Theron::COUNTER_SHARED_PUSHES));
-        root.put("framework_counter_mailbox_queue_max", tp->GetCounterValue(Theron::COUNTER_MAILBOX_QUEUE_MAX));
+        BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
+        thread_pools.insert(actor->thread_pool);
     }
+    ptree tp_e;
+    BOOST_FOREACH(const ThreadPool &tp, thread_pools)
+    {
+        ptree t;
+        t.put("framework_counter_messages_processed", tp->GetCounterValue(Theron::COUNTER_MESSAGES_PROCESSED));
+        t.put("framework_counter_yields", tp->GetCounterValue(Theron::COUNTER_YIELDS));
+        t.put("framework_counter_local_pushes", tp->GetCounterValue(Theron::COUNTER_LOCAL_PUSHES));
+        t.put("framework_counter_shared_pushes", tp->GetCounterValue(Theron::COUNTER_SHARED_PUSHES));
+        t.put("framework_counter_mailbox_queue_max", tp->GetCounterValue(Theron::COUNTER_MAILBOX_QUEUE_MAX));
+        tp_e.push_back(std::make_pair("", t));
+    }
+    root.push_back(std::make_pair("thread_pools", tp_e));
 
     //iterate through blocks
     ptree blocks;
@@ -162,9 +171,6 @@ static ptree query_stats(ElementImpl *self, const ptree &query)
     return root;
 }
 
-PMCC ptree_to_pmc(const ptree &value, const std::type_info &hint);
-ptree pmc_to_ptree(const PMCC &value);
-
 static ptree query_props(ElementImpl *self, const ptree &query)
 {
     ptree root;
@@ -192,9 +198,6 @@ static ptree query_props(ElementImpl *self, const ptree &query)
     }
     return root;
 }
-
-ptree json_to_ptree(const std::string &s);
-std::string ptree_to_json(const ptree &p);
 
 std::string TopBlock::query(const std::string &args)
 {

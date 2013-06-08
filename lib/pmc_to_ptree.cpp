@@ -1,5 +1,6 @@
 // Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
+#include "gras_impl/query_common.hpp"
 #include "gras_impl/debug.hpp"
 #include <PMC/PMC.hpp>
 #include <PMC/Containers.hpp>
@@ -11,7 +12,7 @@
 
 using namespace boost::property_tree;
 
-PMCC ptree_to_pmc(const ptree &value, const std::type_info &hint)
+PMCC gras::ptree_to_pmc(const ptree &value, const std::type_info &hint)
 {
     //if the type is PMCC - educated guess and recursively call
     if (hint == typeid(PMCC) or hint == typeid(PMC))
@@ -82,7 +83,7 @@ PMCC ptree_to_pmc(const ptree &value, const std::type_info &hint)
     return PMC();
 }
 
-ptree pmc_to_ptree(const PMCC &value)
+ptree gras::pmc_to_ptree(const PMCC &value)
 {
     ptree v;
     #define pmc_to_ptree_try(type) \
