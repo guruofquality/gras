@@ -3,7 +3,6 @@
 #include "element_impl.hpp"
 #include <gras_impl/block_actor.hpp>
 #include <gras/block.hpp>
-#include "tag_handlers.hpp"
 
 using namespace gras;
 
@@ -39,6 +38,5 @@ GRAS_FORCE_INLINE void BlockActor::consume(const size_t i, const size_t items)
     #endif
     data->stats.items_consumed[i] += items;
     const size_t bytes = items*data->input_configs[i].item_size;
-    data->input_queues.consume(i, bytes);
-    this->trim_tags(i);
+    data->num_input_bytes_read[i] += bytes;
 }

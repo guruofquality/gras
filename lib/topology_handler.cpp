@@ -66,6 +66,7 @@ void BlockActor::handle_topology(
     data->input_tags_changed.resize(num_inputs);
     data->input_tags.resize(num_inputs);
     data->num_input_msgs_read.resize(num_inputs);
+    data->num_input_bytes_read.resize(num_inputs);
     data->input_msgs.resize(num_inputs);
 
     //a block looses all connections, allow it to free

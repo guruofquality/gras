@@ -28,6 +28,7 @@ void BlockActor::task_main(void)
     for (size_t i = 0; i < num_inputs; i++)
     {
         this->sort_tags(i);
+        data->num_input_bytes_read[i] = 0;
         data->num_input_msgs_read[i] = 0;
 
         ASSERT(data->input_queues.ready(i));
@@ -92,6 +93,7 @@ void BlockActor::task_main(void)
     }
     data->stats.time_last_work = time_now();
     TimerAccumulate ta_post(data->stats.total_time_post);
+    bool mark_done = false;
 
     //------------------------------------------------------------------
     //-- Post-work output tasks
@@ -118,15 +120,21 @@ void BlockActor::task_main(void)
     //------------------------------------------------------------------
     for (size_t i = 0; i < num_inputs; i++)
     {
+        //call consumption routines to free up resources
         this->trim_msgs(i);
+        this->trim_tags(i);
+        data->input_queues.consume(i, data->num_input_bytes_read[i]);
 
         //update the inputs available bit field
         this->update_input_avail(i);
 
         //missing at least one upstream provider?
         //since nothing else is coming in, its safe to mark done
-        if GRAS_UNLIKELY(this->is_input_done(i)) this->mark_done();
+        mark_done = mark_done or this->is_input_done(i);
     }
+
+    //marked done by post work logic
+    if GRAS_UNLIKELY(mark_done) this->mark_done();
 
     //still have IO ready? kick off another task
     this->task_kicker();
