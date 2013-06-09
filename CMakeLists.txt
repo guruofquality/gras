@@ -10,7 +10,7 @@ set(GRAS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(GRAS_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 function(GRAS_CHECK_SUBMODULE directory)
-    if(NOT EXISTS ${GRAS_SOURCE_DIR}/${directory})
+    if(NOT EXISTS ${GRAS_SOURCE_DIR}/${directory}/CMakeLists.txt)
         message(FATAL_ERROR "
 submodule ${directory} does not exist!!
 Did you remember to run the following commands?
