@@ -332,8 +332,6 @@ GRAS_FORCE_INLINE void InputBufferQueues::push(const size_t i, const SBuffer &bu
 
 GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t bytes_consumed)
 {
-    if GRAS_UNLIKELY(bytes_consumed == 0) return;
-
     ASSERT(not _queues[i].empty());
     ASSERT((bytes_consumed % _items_sizes[i]) == 0);
     SBuffer &front = _queues[i].front();
