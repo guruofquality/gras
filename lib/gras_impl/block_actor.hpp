@@ -91,9 +91,6 @@ struct BlockActor : Theron::Actor
     void task_main(void);
     void input_fail(const size_t index);
     void output_fail(const size_t index);
-    void sort_tags(const size_t index);
-    void trim_tags(const size_t index);
-    void trim_msgs(const size_t index);
     void produce(const size_t index, const size_t items);
     void consume(const size_t index, const size_t items);
     void task_kicker(void);
