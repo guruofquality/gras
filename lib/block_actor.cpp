@@ -4,6 +4,8 @@
 #include <gras_impl/block_actor.hpp>
 #include <Theron/Framework.h>
 #include <iostream>
+#include <set>
+#include <map>
 
 using namespace gras;
 
@@ -17,11 +19,19 @@ void ThreadPool::set_active(void)
     weak_framework = *this;
 }
 
-//! this routine used by the query interface only for stats
-ThreadPool get_active_thread_pool(void)
+/***********************************************************************
+ * Map of thread pools to actors - not used externally yet
+ **********************************************************************/
+typedef std::pair<ThreadPool, std::set<BlockActor *> > ThreadPoolMapPair;
+typedef std::map<ThreadPool, std::set<BlockActor *> > ThreadPoolMap;
+
+static ThreadPoolMap &get_tpm(void)
 {
-    return ThreadPool(weak_framework);
+    static ThreadPoolMap tpm;
+    return tpm;
 }
+
+static boost::mutex tpm_mutex;
 
 /***********************************************************************
  * Block actor factory - gets active framework
@@ -59,9 +69,18 @@ BlockActor::BlockActor(const ThreadPool &tp):
     this->thread_pool = tp;
     this->register_handlers();
     this->prio_token = Token::make();
+
+    //enter the actor into the thread pool map
+    boost::mutex::scoped_lock lock(tpm_mutex);
+    get_tpm()[tp].insert(this);
 }
 
 BlockActor::~BlockActor(void)
 {
-    //NOP
+    const ThreadPool &tp = this->thread_pool;
+
+    //clear the actor from the thread pool map
+    boost::mutex::scoped_lock lock(tpm_mutex);
+    get_tpm()[tp].erase(this);
+    if (get_tpm()[tp].empty()) get_tpm().erase(tp);
 }
