@@ -3,6 +3,7 @@
 #include "element_impl.hpp"
 #include "gras_impl/query_common.hpp"
 #include <boost/foreach.hpp>
+#include <boost/format.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <Theron/DefaultAllocator.h>
 #include <algorithm>
@@ -199,6 +200,48 @@ static ptree query_props(ElementImpl *self, const ptree &query)
     return root;
 }
 
+static std::string query_flows(ElementImpl *self, const ptree &query)
+{
+    std::string buff;
+    buff += "digraph flat_flows {\n";
+    buff += "rankdir=LR;\n";
+    buff += "node [shape=record];\n";
+
+    BOOST_FOREACH(Apology::Worker *w, self->executor->get_workers())
+    {
+        BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
+        std::string in_ports_str, out_ports_str;
+        for (size_t i = 0; i < w->get_num_inputs(); i++)
+        {
+            if (i) in_ports_str += " | ";
+            in_ports_str += str(boost::format("<in%u> %u") % i % i);
+        }
+        if (in_ports_str.size()) in_ports_str = "{" + in_ports_str + "} | ";
+        for (size_t i = 0; i < w->get_num_outputs(); i++)
+        {
+            if (i) out_ports_str += " | ";
+            out_ports_str += str(boost::format("<out%u> %u") % i % i);
+        }
+        if (out_ports_str.size()) out_ports_str = " | {" + out_ports_str + "}";
+        buff += str(boost::format("%s [shape=record,label=\"{ %s %s %s }\"];\n")
+            % actor->GetAddress().AsString() % in_ports_str % actor->data->block->get_uid() % out_ports_str
+        );
+    }
+
+    BOOST_FOREACH(const Apology::Flow &flow, self->executor->get_flat_flows())
+    {
+        buff += str(boost::format("%s:out%u -> %s:in%u;\n")
+            % dynamic_cast<const Apology::Worker *>(flow.src.elem)->get_actor()->GetAddress().AsString()
+            % flow.src.index
+            % dynamic_cast<const Apology::Worker *>(flow.dst.elem)->get_actor()->GetAddress().AsString()
+            % flow.dst.index
+        );
+    }
+
+    buff += "}\n";
+    return buff;
+}
+
 std::string TopBlock::query(const std::string &args)
 {
     //convert json args into property tree
@@ -207,6 +250,7 @@ std::string TopBlock::query(const std::string &args)
     //dispatch based on path arg
     std::string path = query.get<std::string>("path");
     ptree result;
+    if (path == "/flows.dot") return query_flows(this->get(), query);
     if (path == "/blocks.json") result = query_blocks(this->get(), query);
     if (path == "/stats.json") result = query_stats(this->get(), query);
     if (path == "/props.json") result = query_props(this->get(), query);

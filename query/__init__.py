@@ -26,6 +26,17 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         args = server_registry[s.server]
         path = o.path
 
+        if path == "/flow.png":
+            s.send_response(200)
+            s.send_header("Content-type", "image/png")
+            s.end_headers()
+            dot = args['top_block'].query(json.dumps(dict(path='/flows.dot')))
+            import subprocess
+            open("/tmp/dot.dot", 'w').write(dot)
+            subprocess.check_call(["dot", "-T", "png", "-o", "/tmp/dot.png", "/tmp/dot.dot"])
+            s.wfile.write(open("/tmp/dot.png").read())
+            return
+
         #handle json requests
         if path.endswith('.json'):
             s.send_response(200)
