@@ -205,7 +205,7 @@ static std::string query_flows(ElementImpl *self, const ptree &query)
     std::string buff;
     buff += "digraph flat_flows {\n";
     buff += "rankdir=LR;\n";
-    buff += "node [shape=record];\n";
+    buff += "node [shape=record, fontsize=10];\n";
 
     BOOST_FOREACH(Apology::Worker *w, self->executor->get_workers())
     {
@@ -223,8 +223,8 @@ static std::string query_flows(ElementImpl *self, const ptree &query)
             out_ports_str += str(boost::format("<out%u> %u") % i % i);
         }
         if (out_ports_str.size()) out_ports_str = " | {" + out_ports_str + "}";
-        buff += str(boost::format("%s [shape=record,label=\"{ %s %s %s }\"];\n")
-            % actor->GetAddress().AsString() % in_ports_str % actor->data->block->get_uid() % out_ports_str
+        buff += str(boost::format("%s [shape=record, label=\"{ %s %s %s }\", style=filled];\n")
+            % actor->GetAddress().AsString() % in_ports_str % actor->data->block->to_string() % out_ports_str
         );
     }
 

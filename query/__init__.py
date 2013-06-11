@@ -32,9 +32,9 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             s.end_headers()
             dot = args['top_block'].query(json.dumps(dict(path='/flows.dot')))
             import subprocess
-            open("/tmp/dot.dot", 'w').write(dot)
-            subprocess.check_call(["dot", "-T", "png", "-o", "/tmp/dot.png", "/tmp/dot.dot"])
-            s.wfile.write(open("/tmp/dot.png").read())
+            p = subprocess.Popen(args=["dot", "-T", "png"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            (stdout, stderr) = p.communicate(input=dot)
+            s.wfile.write(stdout)
             return
 
         #handle json requests
