@@ -14,6 +14,7 @@ if (NOT Boost_FOUND)
 endif()
 
 set(test_sources
+    chrono_time_test.cpp
     block_props_test.cpp
     serialize_tags_test.cpp
 )
