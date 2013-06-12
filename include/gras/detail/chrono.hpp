@@ -29,7 +29,6 @@ namespace gras
 #else
 
 #include <ctime>
-#include <sys/time.h>
 
 namespace gras
 {
@@ -37,14 +36,8 @@ namespace gras
     GRAS_FORCE_INLINE time_ticks_t time_now(void)
     {
         struct timespec ts;
-        if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0)
-            return ts.tv_sec*1000000000UL + ts.tv_nsec;
-
-        struct timeval tv;
-        if (gettimeofday(&tv, NULL) == 0)
-            return tv.tv_sec*1000000000UL + tv.tv_usec*1000UL;
-
-        return 0;
+        clock_gettime(CLOCK_MONOTONIC, &ts);
+        return ts.tv_sec*time_tps() + ts.tv_nsec;
     }
 
     GRAS_FORCE_INLINE time_ticks_t time_tps(void)
