@@ -39,7 +39,11 @@ Element::Element(const std::string &name)
     if (not extra.empty()) (*this)->repr = name;
     else (*this)->repr = str(boost::format("%s (%s)") % name % extra);
 
-    if (GENESIS) std::cerr << "New element: " << to_string() << std::endl;
+    if (GENESIS) std::cerr
+        << "===================================================\n"
+        << "== Element Created: " << to_string() << "\n"
+        << "===================================================\n"
+        << std::flush;
 }
 
 Element::~Element(void)
@@ -62,6 +66,11 @@ ElementImpl::~ElementImpl(void)
     if (this->executor) this->top_block_cleanup();
     if (this->topology) this->hier_block_cleanup();
     if (this->worker) this->block_cleanup();
+    if (ARMAGEDDON) std::cerr
+        << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"
+        << "xx Element Destroyed: " << name << "\n"
+        << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"
+        << std::flush;
 }
 
 void Element::set_container(WeakContainer *container)
