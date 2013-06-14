@@ -72,12 +72,29 @@ PMCC gras::ptree_to_pmc(const ptree &value, const std::type_info &hint)
     ptree_to_pmc_try(std::string);
 
     //determine number vector
-    std::vector<long> vec;
-    BOOST_FOREACH(const ptree::value_type &elem, value)
-    {
-        vec.push_back(elem.second.get_value<long>());
+    #define ptree_to_pmc_tryv(type) \
+    if (hint == typeid(std::vector<type>)) \
+    { \
+        std::vector<type> vec; \
+        BOOST_FOREACH(const ptree::value_type &elem, value) \
+        { \
+            vec.push_back(elem.second.get_value<type>()); \
+        } \
+        return PMC_M(vec); \
     }
-    return PMC_M(vec);
+    ptree_to_pmc_tryv(char);
+    ptree_to_pmc_tryv(signed char);
+    ptree_to_pmc_tryv(unsigned char);
+    ptree_to_pmc_tryv(signed short);
+    ptree_to_pmc_tryv(unsigned short);
+    ptree_to_pmc_tryv(signed int);
+    ptree_to_pmc_tryv(unsigned int);
+    ptree_to_pmc_tryv(signed long);
+    ptree_to_pmc_tryv(unsigned long);
+    ptree_to_pmc_tryv(signed long long);
+    ptree_to_pmc_tryv(unsigned long long);
+    ptree_to_pmc_tryv(float);
+    ptree_to_pmc_tryv(double);
 
     //otherwise null -- will crap out
     return PMC();
