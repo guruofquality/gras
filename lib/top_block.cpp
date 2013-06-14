@@ -17,11 +17,6 @@ TopBlock::TopBlock(const std::string &name):
     (*this)->executor.reset(new Apology::Executor((*this)->topology.get()));
     (*this)->token = Token::make();
     (*this)->thread_group = SharedThreadGroup(new boost::thread_group());
-    if (GENESIS) std::cerr
-        << "===================================================\n"
-        << "== Top Block Created: " << name << "\n"
-        << "===================================================\n"
-        << std::flush;
 }
 
 TopBlock::~TopBlock(void)
@@ -34,11 +29,6 @@ void ElementImpl::top_block_cleanup(void)
     this->bcast_prio_msg(TopInertMessage());
     this->topology->clear_all();
     this->executor->commit();
-    if (ARMAGEDDON) std::cerr
-        << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"
-        << "xx Top Block Destroyed: " << name << "\n"
-        << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"
-        << std::flush;
 }
 
 const GlobalBlockConfig &TopBlock::global_config(void) const

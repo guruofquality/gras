@@ -37,7 +37,7 @@ namespace gras
     {
         struct timespec ts;
         clock_gettime(CLOCK_MONOTONIC, &ts);
-        return ts.tv_sec*1000000000UL + ts.tv_nsec;
+        return ts.tv_sec*time_tps() + ts.tv_nsec;
     }
 
     GRAS_FORCE_INLINE time_ticks_t time_tps(void)

@@ -1,15 +1,15 @@
 [submodule "Theron"]
 	path = Theron
-	url = https://github.com/guruofquality/Theron.git
+	url = http://github.com/guruofquality/Theron.git
 [submodule "Apology"]
 	path = Apology
-	url = https://github.com/guruofquality/Apology.git
+	url = http://github.com/guruofquality/Apology.git
 [submodule "PMC"]
 	path = PMC
-	url = https://github.com/guruofquality/PMC.git
+	url = http://github.com/guruofquality/PMC.git
 [submodule "gnuradio"]
 	path = gnuradio
-	url = https://github.com/guruofquality/gnuradio.git
+	url = http://github.com/guruofquality/gnuradio.git
 [submodule "grextras"]
 	path = grextras
-	url = https://github.com/guruofquality/grextras.git
+	url = http://github.com/guruofquality/grextras.git

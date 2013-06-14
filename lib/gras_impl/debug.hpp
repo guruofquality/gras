@@ -20,6 +20,7 @@ extern void *operator new(std::size_t n) throw (std::bad_alloc);
 //----------------------------------------------------------------------
 #define GENESIS 0
 #define ARMAGEDDON 0
+#define DONE_PRINTS 0
 
 //----------------------------------------------------------------------
 //-- define to enable these debugs:

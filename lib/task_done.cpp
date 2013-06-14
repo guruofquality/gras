@@ -62,7 +62,7 @@ void BlockActor::mark_done(void)
         worker->post_downstream(i, InputCheckMessage());
     }
 
-    if (ARMAGEDDON) std::cerr
+    if (DONE_PRINTS) std::cerr
         << "==================================================\n"
         << "== The " << name << " is done...\n"
         << "==================================================\n"

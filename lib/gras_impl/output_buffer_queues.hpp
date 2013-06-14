@@ -127,7 +127,7 @@ struct OutputBufferQueues
         if (_queues[i] and not _queues[i]->empty())
         {
             const SBuffer &front = _queues[i]->front();
-           const size_t avail = front.get_actual_length() - front.offset -  front.length;
+            const size_t avail = front.get_actual_length() - front.offset -  front.length;
             _bitset.set(i, avail >= _reserve_bytes[i]);
         }
         else
