@@ -26,11 +26,11 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         args = server_registry[s.server]
         path = o.path
 
-        if path == "/flow.png":
+        if path == "/topology.png":
             s.send_response(200)
             s.send_header("Content-type", "image/png")
             s.end_headers()
-            dot = args['top_block'].query(json.dumps(dict(path='/flows.dot')))
+            dot = args['top_block'].query(json.dumps(dict(path='/topology.dot')))
             import subprocess
             p = subprocess.Popen(args=["dot", "-T", "png"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             (stdout, stderr) = p.communicate(input=dot)

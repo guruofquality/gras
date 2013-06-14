@@ -200,7 +200,7 @@ static ptree query_props(ElementImpl *self, const ptree &query)
     return root;
 }
 
-static std::string query_flows(ElementImpl *self, const ptree &query)
+static std::string query_topology(ElementImpl *self, const ptree &query)
 {
     std::string buff;
     buff += "digraph flat_flows {\n";
@@ -223,17 +223,26 @@ static std::string query_flows(ElementImpl *self, const ptree &query)
             out_ports_str += str(boost::format("<out%u> %u") % i % i);
         }
         if (out_ports_str.size()) out_ports_str = " | {" + out_ports_str + "}";
-        buff += str(boost::format("%s [shape=record, label=\"{ %s %s %s }\", style=filled];\n")
-            % actor->GetAddress().AsString() % in_ports_str % actor->data->block->to_string() % out_ports_str
+        std::string color;
+        switch (actor->data->block_state)
+        {
+        case BLOCK_STATE_INIT: color = "white"; break;
+        case BLOCK_STATE_LIVE: color = "azure"; break;
+        case BLOCK_STATE_DONE: color = "grey"; break;
+        }
+        buff += str(boost::format("%u [shape=record, label=\"{ %s %s %s }\", style=filled, fillcolor=%s];\n")
+            % actor->GetAddress().AsInteger() % in_ports_str
+            % actor->data->block->to_string() % out_ports_str
+            % color
         );
     }
 
     BOOST_FOREACH(const Apology::Flow &flow, self->executor->get_flat_flows())
     {
-        buff += str(boost::format("%s:out%u -> %s:in%u;\n")
-            % dynamic_cast<const Apology::Worker *>(flow.src.elem)->get_actor()->GetAddress().AsString()
+        buff += str(boost::format("%u:out%u -> %u:in%u;\n")
+            % dynamic_cast<const Apology::Worker *>(flow.src.elem)->get_actor()->GetAddress().AsInteger()
             % flow.src.index
-            % dynamic_cast<const Apology::Worker *>(flow.dst.elem)->get_actor()->GetAddress().AsString()
+            % dynamic_cast<const Apology::Worker *>(flow.dst.elem)->get_actor()->GetAddress().AsInteger()
             % flow.dst.index
         );
     }
@@ -250,7 +259,7 @@ std::string TopBlock::query(const std::string &args)
     //dispatch based on path arg
     std::string path = query.get<std::string>("path");
     ptree result;
-    if (path == "/flows.dot") return query_flows(this->get(), query);
+    if (path == "/topology.dot") return query_topology(this->get(), query);
     if (path == "/blocks.json") result = query_blocks(this->get(), query);
     if (path == "/stats.json") result = query_stats(this->get(), query);
     if (path == "/props.json") result = query_props(this->get(), query);

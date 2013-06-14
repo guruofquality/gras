@@ -98,10 +98,27 @@ void TopBlock::wait(void)
     //however, thread group cant be joined twice and this breaks some qa code
     //(*this)->thread_group->join_all();
 
+    boost::system_time check_done_time = boost::get_system_time();
+    bool has_a_done = false;
+
     //wait for all blocks to release the token
     while (not (*this)->token.unique())
     {
         wait_thread_yield();
+        if (boost::get_system_time() > check_done_time)
+        {
+            if (has_a_done)
+            {
+                std::cerr << this->query("{\"path\":\"/topology.dot\"}") << std::endl;
+                check_done_time += boost::posix_time::seconds(2);
+            }
+            BOOST_FOREACH(Apology::Worker *w, (*this)->executor->get_workers())
+            {
+                BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
+                if (actor->data->block_state == BLOCK_STATE_DONE) has_a_done = true;
+            }
+            check_done_time += boost::posix_time::seconds(1);
+        }
     }
 }
 
