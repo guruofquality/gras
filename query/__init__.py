@@ -26,6 +26,19 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         args = server_registry[s.server]
         path = o.path
 
+        #generate the topology png
+        if path == "/topology.png":
+            s.send_response(200)
+            s.send_header("Content-type", "image/png")
+            s.end_headers()
+            dot_markup = args['top_block'].query(json.dumps(dict(path='/topology.dot')))
+            import subprocess
+            dot_exe = os.environ.get("DOT_EXECUTABLE", "dot")
+            p = subprocess.Popen(args=[dot_exe, "-T", "png"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            (stdout, stderr) = p.communicate(input=dot_markup)
+            s.wfile.write(stdout)
+            return
+
         #handle json requests
         if path.endswith('.json'):
             s.send_response(200)

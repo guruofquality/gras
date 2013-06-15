@@ -5,7 +5,6 @@
 #include <boost/format.hpp>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/functional/hash.hpp>
 #include <cstdlib>
 
 using namespace gras;
@@ -19,12 +18,10 @@ Element::Element(const std::string &name)
 {
     this->reset(new ElementImpl());
     (*this)->name = name;
-    std::string extra;
-    std::string uid = name;
-    boost::hash<std::string> string_hash;
-    std::size_t h = string_hash(uid);
+    size_t which = 0;
     while (true)
     {
+        const std::string uid = str(boost::format("%s_%u") % name % which);
         try
         {
             this->set_uid(uid);
@@ -32,12 +29,10 @@ Element::Element(const std::string &name)
         }
         catch(const std::invalid_argument &ex)
         {
-            extra = str(boost::format("%04x") % short(h++));
-            uid = name+" "+extra;
+            which++;
         }
     }
-    if (not extra.empty()) (*this)->repr = name;
-    else (*this)->repr = str(boost::format("%s (%s)") % name % extra);
+    (*this)->repr = str(boost::format("%s (%u)") % name % which);
 
     if (GENESIS) std::cerr
         << "===================================================\n"

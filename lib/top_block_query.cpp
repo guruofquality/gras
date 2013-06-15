@@ -3,6 +3,7 @@
 #include "element_impl.hpp"
 #include "gras_impl/query_common.hpp"
 #include <boost/foreach.hpp>
+#include <boost/format.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <Theron/DefaultAllocator.h>
 #include <algorithm>
@@ -199,6 +200,57 @@ static ptree query_props(ElementImpl *self, const ptree &query)
     return root;
 }
 
+static std::string query_topology(ElementImpl *self, const ptree &query)
+{
+    std::string buff;
+    buff += "digraph flat_flows {\n";
+    buff += "rankdir=LR;\n";
+    buff += "node [shape=record, fontsize=10];\n";
+
+    BOOST_FOREACH(Apology::Worker *w, self->executor->get_workers())
+    {
+        BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
+        std::string in_ports_str, out_ports_str;
+        for (size_t i = 0; i < w->get_num_inputs(); i++)
+        {
+            if (i) in_ports_str += " | ";
+            in_ports_str += str(boost::format("<in%u> %u") % i % i);
+        }
+        if (in_ports_str.size()) in_ports_str = "{" + in_ports_str + "} | ";
+        for (size_t i = 0; i < w->get_num_outputs(); i++)
+        {
+            if (i) out_ports_str += " | ";
+            out_ports_str += str(boost::format("<out%u> %u") % i % i);
+        }
+        if (out_ports_str.size()) out_ports_str = " | {" + out_ports_str + "}";
+        std::string color;
+        switch (actor->data->block_state)
+        {
+        case BLOCK_STATE_INIT: color = "white"; break;
+        case BLOCK_STATE_LIVE: color = "azure"; break;
+        case BLOCK_STATE_DONE: color = "grey"; break;
+        }
+        buff += str(boost::format("%u [shape=record, label=\"{ %s %s %s }\", style=filled, fillcolor=%s];\n")
+            % actor->GetAddress().AsInteger() % in_ports_str
+            % actor->data->block->to_string() % out_ports_str
+            % color
+        );
+    }
+
+    BOOST_FOREACH(const Apology::Flow &flow, self->executor->get_flat_flows())
+    {
+        buff += str(boost::format("%u:out%u -> %u:in%u;\n")
+            % dynamic_cast<const Apology::Worker *>(flow.src.elem)->get_actor()->GetAddress().AsInteger()
+            % flow.src.index
+            % dynamic_cast<const Apology::Worker *>(flow.dst.elem)->get_actor()->GetAddress().AsInteger()
+            % flow.dst.index
+        );
+    }
+
+    buff += "}\n";
+    return buff;
+}
+
 std::string TopBlock::query(const std::string &args)
 {
     //convert json args into property tree
@@ -207,6 +259,7 @@ std::string TopBlock::query(const std::string &args)
     //dispatch based on path arg
     std::string path = query.get<std::string>("path");
     ptree result;
+    if (path == "/topology.dot") return query_topology(this->get(), query);
     if (path == "/blocks.json") result = query_blocks(this->get(), query);
     if (path == "/stats.json") result = query_stats(this->get(), query);
     if (path == "/props.json") result = query_props(this->get(), query);
