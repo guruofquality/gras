@@ -21,7 +21,7 @@ Element::Element(const std::string &name)
     size_t which = 0;
     while (true)
     {
-        const std::string uid = str(boost::format("%s %u") % name % which);
+        const std::string uid = str(boost::format("%s_%u") % name % which);
         try
         {
             this->set_uid(uid);
