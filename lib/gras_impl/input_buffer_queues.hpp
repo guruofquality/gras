@@ -77,7 +77,7 @@ struct InputBufferQueues
     }
 
     //! Call when input bytes consumed by work
-    void consume(const size_t i, const size_t bytes_consumed);
+    void consume(const size_t i, const size_t items_consumed);
 
     void resize(const size_t size);
 
@@ -330,8 +330,9 @@ GRAS_FORCE_INLINE void InputBufferQueues::push(const size_t i, const SBuffer &bu
 
 }
 
-GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t bytes_consumed)
+GRAS_FORCE_INLINE void InputBufferQueues::consume(const size_t i, const size_t items_consumed)
 {
+    const size_t bytes_consumed = items_consumed * _items_sizes[i];
     ASSERT(not _queues[i].empty());
     ASSERT((bytes_consumed % _items_sizes[i]) == 0);
     SBuffer &front = _queues[i].front();

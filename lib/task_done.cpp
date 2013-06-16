@@ -46,7 +46,7 @@ void BlockActor::mark_done(void)
     {
         data->input_msgs[i].clear();
         data->input_tags[i].clear();
-        data->num_input_bytes_read[i] = 0;
+        data->num_input_items_read[i] = 0;
         data->num_input_msgs_read[i] = 0;
     }
 

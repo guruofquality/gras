@@ -23,7 +23,7 @@ void Block::consume(const size_t num_items)
 
 item_index_t Block::get_consumed(const size_t which_input)
 {
-    return (*this)->block_data->stats.items_consumed[which_input];
+    return (*this)->block_data->total_items_consumed[which_input];
 }
 
 SBuffer Block::get_input_buffer(const size_t which_input) const
@@ -37,6 +37,5 @@ GRAS_FORCE_INLINE void BlockActor::consume(const size_t i, const size_t items)
     std::cerr << name << " consume " << items << std::endl;
     #endif
     data->stats.items_consumed[i] += items;
-    const size_t bytes = items*data->input_configs[i].item_size;
-    data->num_input_bytes_read[i] += bytes;
+    data->num_input_items_read[i] += items;
 }

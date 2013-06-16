@@ -23,7 +23,7 @@ void Block::produce(const size_t num_items)
 
 item_index_t Block::get_produced(const size_t which_output)
 {
-    return (*this)->block_data->stats.items_produced[which_output];
+    return (*this)->block_data->total_items_produced[which_output];
 }
 
 SBuffer Block::get_output_buffer(const size_t which_output) const
@@ -62,5 +62,5 @@ GRAS_FORCE_INLINE void BlockActor::produce(const size_t i, const size_t items)
     data->stats.items_produced[i] += items;
     const size_t bytes = items*data->output_configs[i].item_size;
     buff.length += bytes;
-    data->produce_outputs[i] = true;
+    data->num_output_items_read[i] += items;
 }

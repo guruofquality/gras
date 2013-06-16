@@ -55,7 +55,6 @@ struct BlockData
     //buffer queues and ready conditions
     InputBufferQueues input_queues;
     OutputBufferQueues output_queues;
-    std::vector<bool> produce_outputs;
     BitSet inputs_available;
     std::vector<time_ticks_t> time_input_not_ready;
     std::vector<time_ticks_t> time_output_not_ready;
@@ -64,7 +63,10 @@ struct BlockData
     std::vector<bool> input_tags_changed;
     std::vector<std::vector<Tag> > input_tags;
     std::vector<size_t> num_input_msgs_read;
-    std::vector<size_t> num_input_bytes_read;
+    std::vector<size_t> num_input_items_read;
+    std::vector<size_t> num_output_items_read;
+    std::vector<size_t> total_items_consumed;
+    std::vector<size_t> total_items_produced;
     std::vector<std::vector<PMCC> > input_msgs;
 
     //interruptible thread stuff

@@ -47,8 +47,9 @@ void BlockActor::handle_topology(
     data->output_items.resize(num_outputs);
     data->input_queues.resize(num_inputs);
     data->output_queues.resize(num_outputs);
-    data->produce_outputs.resize(num_outputs, false);
     data->inputs_available.resize(num_inputs);
+    data->total_items_consumed.resize(num_inputs);
+    data->total_items_produced.resize(num_outputs);
     if (num_inputs == 0) data->inputs_available.resize(1, true); //so its always "available"
 
     //copy the name into the queues for debug purposes
@@ -66,7 +67,8 @@ void BlockActor::handle_topology(
     data->input_tags_changed.resize(num_inputs);
     data->input_tags.resize(num_inputs);
     data->num_input_msgs_read.resize(num_inputs);
-    data->num_input_bytes_read.resize(num_inputs);
+    data->num_input_items_read.resize(num_inputs);
+    data->num_output_items_read.resize(num_outputs);
     data->input_msgs.resize(num_inputs);
 
     //a block looses all connections, allow it to free
