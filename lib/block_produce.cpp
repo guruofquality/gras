@@ -50,6 +50,7 @@ void Block::post_output_buffer(const size_t which_output, const SBuffer &buffer)
     InputBufferMessage buff_msg;
     buff_msg.buffer = buffer;
     (*this)->worker->post_downstream(which_output, buff_msg);
+    data->num_output_items_read[which_output] += items;
 }
 
 GRAS_FORCE_INLINE void BlockActor::produce(const size_t i, const size_t items)
