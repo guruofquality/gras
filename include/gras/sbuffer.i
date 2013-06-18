@@ -37,10 +37,17 @@
                 nitems=self.length,
                 readonly=readonly
             )
-
-        def __len__(self): return self.length
-
     %}
+
+    size_t __len__(void)
+    {
+        return ($self)->length;
+    }
+
+    bool __nonzero__(void)
+    {
+        return bool(*($self));
+    }
 }
 
 #endif /*INCLUDED_GRAS_SBUFFER_I*/

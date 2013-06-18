@@ -12,10 +12,15 @@ class SBufferTest(unittest.TestCase):
         print c.length
         print c.memory
 
+    def test_null_sbuffer(self):
+        s = gras.SBuffer()
+        self.assertFalse(s)
+
     def test_make_sbuffer(self):
         c = gras.SBufferConfig()
         c.length = 42
         s = gras.SBuffer(c)
+        self.assertTrue(s)
         self.assertEqual(c.length, s.get_actual_length())
         self.assertEqual(c.length, s.length)
         self.assertEqual(c.length, len(s))
@@ -23,6 +28,14 @@ class SBufferTest(unittest.TestCase):
     def test_get_sbuffer(self):
         c = gras.SBufferConfig()
         c.length = 24
+        s = gras.SBuffer(c)
+        a = s.get()
+        self.assertEqual(c.length, len(s))
+        self.assertEqual(c.length, len(a))
+
+    def test_get_zero_len_sbuffer(self):
+        c = gras.SBufferConfig()
+        c.length = 0
         s = gras.SBuffer(c)
         a = s.get()
         self.assertEqual(c.length, len(s))
