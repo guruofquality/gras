@@ -180,7 +180,27 @@ static void circular_buffer_delete(SBuffer &buff, CircularBuffer *circ_buff)
 
 SBuffer make_circular_buffer(const size_t num_bytes)
 {
-    CircularBuffer *circ_buff = new CircularBuffer(num_bytes);
+    CircularBuffer *circ_buff = NULL;
+    size_t trial_count = 0;
+    while (circ_buff == NULL)
+    {
+        trial_count++;
+        try
+        {
+            circ_buff = new CircularBuffer(num_bytes);
+        }
+        catch(const boost::interprocess::interprocess_exception &ex)
+        {
+            std::cerr << boost::format(
+                "GRAS: make_circular_buffer threw ipc exception on attempt %u\n%s"
+            ) % trial_count % ex.what() << std::endl;
+            if (trial_count== 3) throw ex;
+        }
+        catch(...)
+        {
+            throw;
+        }
+    }
     SBufferDeleter deleter = boost::bind(&circular_buffer_delete, _1, circ_buff);
     SBufferConfig config;
     config.memory = circ_buff->buff_addr;
