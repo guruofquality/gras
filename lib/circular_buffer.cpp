@@ -194,7 +194,7 @@ SBuffer make_circular_buffer(const size_t num_bytes)
             std::cerr << boost::format(
                 "GRAS: make_circular_buffer threw ipc exception on attempt %u\n%s"
             ) % trial_count % ex.what() << std::endl;
-            if (trial_count== 3) throw ex;
+            if (trial_count == 3) throw ex;
         }
         catch(...)
         {
