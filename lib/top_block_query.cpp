@@ -211,16 +211,19 @@ static std::string query_topology(ElementImpl *self, const ptree &query)
     {
         BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
         std::string in_ports_str, out_ports_str;
+        const bool done = actor->data->block_state == BLOCK_STATE_DONE;
         for (size_t i = 0; i < w->get_num_inputs(); i++)
         {
             if (i) in_ports_str += " | ";
             in_ports_str += str(boost::format("<in%u> %u") % i % i);
+            if (not done and actor->data->inputs_done[i]) in_ports_str += "x";
         }
         if (in_ports_str.size()) in_ports_str = "{" + in_ports_str + "} | ";
         for (size_t i = 0; i < w->get_num_outputs(); i++)
         {
             if (i) out_ports_str += " | ";
             out_ports_str += str(boost::format("<out%u> %u") % i % i);
+            if (not done and actor->data->outputs_done[i]) out_ports_str += "x";
         }
         if (out_ports_str.size()) out_ports_str = " | {" + out_ports_str + "}";
         std::string color;
