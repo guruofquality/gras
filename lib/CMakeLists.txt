@@ -48,6 +48,7 @@ list(APPEND GRAS_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer_queue_circ.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer_queue_pool.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tags.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/time_tag.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_config.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_message.cpp
