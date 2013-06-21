@@ -2,6 +2,7 @@
 
 #include <gras/sbuffer.hpp>
 #include <gras/tags.hpp>
+#include <gras/time_tag.hpp>
 #include <PMC/Serialize.hpp>
 #include <boost/serialization/split_free.hpp>
 #include <boost/serialization/string.hpp>
@@ -82,3 +83,17 @@ void serialize(Archive &ar, gras::StreamTag &t, const unsigned int)
 }}
 
 PMC_SERIALIZE_EXPORT(gras::StreamTag, "PMC<gras::StreamTag>")
+
+/***********************************************************************
+ * support for time tag type
+ **********************************************************************/
+namespace boost { namespace serialization {
+template <class Archive>
+void serialize(Archive &ar, gras::TimeTag &t, const unsigned int)
+{
+    ar & t._fsecs;
+    ar & t._ticks;
+}
+}}
+
+PMC_SERIALIZE_EXPORT(gras::TimeTag, "PMC<gras::TimeTag>")

@@ -16,8 +16,9 @@ install(FILES
     sbuffer.hpp
     sbuffer.i
     tags.hpp
-    time_tag.hpp
     tags.i
+    time_tag.hpp
+    time_tag.i
     tag_iter.hpp
     tag_iter.i
     thread_pool.hpp

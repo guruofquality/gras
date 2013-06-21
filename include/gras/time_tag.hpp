@@ -11,6 +11,13 @@
 namespace gras
 {
 
+/*!
+ * TimeTag represents an absolute time or a time delta.
+ * A TimeTag can be converted to and from a tick count.
+ * Conversion support is provided for the pseudo-standard
+ * PMCTuple format often used inside a StreamTag value.
+ * And TimeTag supports overloaded arithmetic operations.
+ */
 struct GRAS_API TimeTag :
     boost::less_than_comparable<TimeTag>,
     boost::additive<TimeTag>
