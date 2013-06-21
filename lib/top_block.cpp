@@ -90,6 +90,9 @@ GRAS_FORCE_INLINE void wait_thread_yield(void)
     boost::this_thread::sleep(boost::posix_time::milliseconds(1));
 }
 
+static const boost::posix_time::time_duration CHECK_DONE_INTERVAL = boost::posix_time::milliseconds(100);
+static const boost::posix_time::time_duration INPUT_DONE_GRACE_PERIOD = boost::posix_time::milliseconds(100);
+
 void TopBlock::wait(void)
 {
     //We do not need to join "special" threads;
@@ -99,7 +102,7 @@ void TopBlock::wait(void)
     //(*this)->thread_group->join_all();
 
     //QA lockup detection setup
-    const bool lockup_debug = getenv("GRAS_LOCKUP_DEBUG") != NULL;
+    bool lockup_debug = getenv("GRAS_LOCKUP_DEBUG") != NULL;
     boost::system_time check_done_time = boost::get_system_time();
     bool has_a_done = false;
 
@@ -107,19 +110,31 @@ void TopBlock::wait(void)
     while (not (*this)->token.unique())
     {
         wait_thread_yield();
-        if (lockup_debug and boost::get_system_time() > check_done_time)
+
+        //determine if we should check on the done status
+        if (boost::get_system_time() < check_done_time) continue;
+        check_done_time += CHECK_DONE_INTERVAL;
+
+        //optional dot print to understand lockup condition
+        if (has_a_done and lockup_debug)
         {
-            if (has_a_done)
+            std::cerr << TopBlock::query("{\"path\":\"/topology.dot\"}") << std::endl;
+            lockup_debug = false;
+        }
+
+        //loop through blocks looking for non-done blocks with done inputs
+        BOOST_FOREACH(Apology::Worker *w, (*this)->executor->get_workers())
+        {
+            BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
+            if (actor->data->block_state == BLOCK_STATE_DONE) has_a_done = true;
+            if (actor->data->inputs_done.size() and actor->data->inputs_done.any())
             {
-                std::cerr << this->query("{\"path\":\"/topology.dot\"}") << std::endl;
-                check_done_time += boost::posix_time::seconds(3);
+                const boost::system_time grace_over = actor->data->first_input_done_time + INPUT_DONE_GRACE_PERIOD;
+                if ((not lockup_debug) and (boost::get_system_time() > grace_over))
+                {
+                    actor->GetFramework().Send(TopInertMessage(), Theron::Address::Null(), actor->GetAddress());
+                }
             }
-            BOOST_FOREACH(Apology::Worker *w, (*this)->executor->get_workers())
-            {
-                BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
-                if (actor->data->block_state == BLOCK_STATE_DONE) has_a_done = true;
-            }
-            check_done_time += boost::posix_time::seconds(2);
         }
     }
 }

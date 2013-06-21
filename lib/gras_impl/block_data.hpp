@@ -51,6 +51,7 @@ struct BlockData
     BitSet inputs_done;
     BitSet outputs_done;
     std::set<Token> token_pool;
+    boost::system_time first_input_done_time;
 
     //buffer queues and ready conditions
     InputBufferQueues input_queues;

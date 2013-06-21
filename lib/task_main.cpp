@@ -193,15 +193,6 @@ void BlockActor::task_main(void)
         data->total_items_produced[i] += data->num_output_items_read[i];
     }
 
-    //now recheck the status, mark block done if an input is done
-    if GRAS_UNLIKELY(data->inputs_done.any())
-    {
-        for (size_t i = 0; i < num_inputs; i++)
-        {
-            if (this->is_input_done(i)) this->mark_done();
-        }
-    }
-
     //still have IO ready? kick off another task
     this->task_kicker();
 }

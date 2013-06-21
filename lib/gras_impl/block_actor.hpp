@@ -95,7 +95,6 @@ struct BlockActor : Theron::Actor
     void consume(const size_t index, const size_t items);
     void task_kicker(void);
     void update_input_avail(const size_t index);
-    bool is_input_done(const size_t index);
     bool is_work_allowed(void);
 
     //work helpers
@@ -121,13 +120,6 @@ GRAS_FORCE_INLINE void BlockActor::update_input_avail(const size_t i)
     const bool has_input_msgs = not data->input_msgs[i].empty();
     data->inputs_available.set(i, has_input_bufs or has_input_msgs);
     data->input_queues.update_has_msg(i, has_input_msgs);
-}
-
-GRAS_FORCE_INLINE bool BlockActor::is_input_done(const size_t i)
-{
-    const bool force_done = data->input_configs[i].force_done;
-    if GRAS_LIKELY(force_done) return data->inputs_done[i] and not data->inputs_available[i];
-    return data->inputs_done.all() and data->inputs_available.none();
 }
 
 GRAS_FORCE_INLINE bool BlockActor::is_work_allowed(void)

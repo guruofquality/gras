@@ -33,7 +33,7 @@ void BlockActor::handle_top_inert(
 
     this->mark_done();
 
-    this->Send(0, from); //ACK
+    if (from != Theron::Address::Null()) this->Send(0, from); //ACK
 }
 
 void BlockActor::handle_top_token(

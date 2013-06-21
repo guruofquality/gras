@@ -18,7 +18,6 @@ InputPortConfig::InputPortConfig(void)
     maximum_items = 0;
     inline_buffer = false;
     preload_items = 0;
-    force_done = true;
 }
 
 OutputPortConfig::OutputPortConfig(void)

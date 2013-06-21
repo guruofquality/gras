@@ -109,22 +109,6 @@ struct GRAS_API InputPortConfig
      * Default = 0.
      */
     size_t preload_items;
-
-    /*!
-     * Force this block done when input port is done.
-     * When the upstream feeding this port declares done,
-     * this block will mark done once upstream notifies.
-     * The primary usage is to modify the done logic
-     * for the purposes of unit test confiruability.
-     *
-     * If the force done option is false, the block will
-     * not mark done when this port's upstream is done.
-     * However, this block will mark done when all
-     * input ports are done, reguardless of this setting.
-     *
-     * Default = true.
-     */
-    bool force_done;
 };
 
 //! Configuration parameters for an output port

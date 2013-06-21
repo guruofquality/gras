@@ -63,6 +63,12 @@ void BlockActor::handle_input_check(const InputCheckMessage &message, const Ther
     MESSAGE_TRACER();
     const size_t index = message.index;
 
+    //record time of the first input declared done
+    if (not data->inputs_done.any())
+    {
+        data->first_input_done_time = boost::get_system_time();
+    }
+
     //an upstream block declared itself done, recheck the token
     data->inputs_done.set(index, data->input_tokens[index].unique());
 
@@ -70,8 +76,15 @@ void BlockActor::handle_input_check(const InputCheckMessage &message, const Ther
     ta.done();
     this->task_main();
 
-    //now recheck the status, mark block done if the input is done
-    if (this->is_input_done(index)) this->mark_done();
+    //Now check the status, mark block done if the input is done:
+    //When reserve_items is non zero, this ports is a sync input;
+    //mark the block done if the sync input will never be ready again.
+    //Otherwise, only mark done if all inputs are done with no data.
+    const size_t reserve_items = data->input_configs[index].reserve_items;
+    if (
+        (reserve_items != 0 and data->inputs_done[index] and not data->inputs_available[index])
+        or (reserve_items == 0 and data->inputs_done.all() and data->inputs_available.none())
+    ) this->mark_done();
 }
 
 void BlockActor::handle_input_alloc(const InputAllocMessage &message, const Theron::Address)
