@@ -14,7 +14,7 @@ def pmc_to_sbuffer(p):
     return s
 
 RegisterPy2PMC(
-    is_py = lambda x: isinstance(x, SBuffer),
+    is_py = lambda x: type(x) is SBuffer,
     py2pmc = swig_sbuffer_to_pmc,
 )
 
