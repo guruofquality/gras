@@ -7,6 +7,7 @@
 #include <PMC/PMC.hpp>
 #include <PMC/Serialize.hpp>
 #include <gras/tags.hpp>
+#include <gras/time_tag.hpp>
 
 #include <cstdlib>
 
@@ -64,4 +65,12 @@ BOOST_AUTO_TEST_CASE(test_pkt_msg_type)
     BOOST_CHECK_EQUAL(pkt_msg.info.type().name(), result_msg.info.type().name());
     BOOST_CHECK(pkt_msg.info.eq(result_msg.info));
     BOOST_CHECK(std::memcmp(pkt_msg.buff.get(), result_msg.buff.get(), pkt_msg.buff.length) == 0);
+}
+
+BOOST_AUTO_TEST_CASE(test_time_tag_type)
+{
+    const gras::TimeTag t0 = gras::TimeTag::from_ticks(42);
+    PMCC result = loopback_test(PMC_M(t0));
+    const gras::TimeTag &t1 = result.as<gras::TimeTag>();
+    BOOST_CHECK(t0 == t1);
 }

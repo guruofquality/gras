@@ -34,6 +34,16 @@
         if ((*($self)) > other) return +1;
         return 0;
     }
+
+    TimeTag __add__(const TimeTag &other)
+    {
+        return (*($self)) + other;
+    }
+
+    TimeTag __sub__(const TimeTag &other)
+    {
+        return (*($self)) - other;
+    }
 }
 
 #endif /*INCLUDED_GRAS_TIME_TAG_I*/
