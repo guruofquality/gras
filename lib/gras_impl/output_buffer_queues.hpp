@@ -142,6 +142,7 @@ struct OutputBufferQueues
 
     GRAS_FORCE_INLINE void set_inline(const size_t i, const SBuffer &inline_buffer)
     {
+        ASSERT(not _inline_buffer[i]);
         _inline_buffer[i] = inline_buffer;
         _inline_buffer[i].length = 0;
         _bitset.set(i);
