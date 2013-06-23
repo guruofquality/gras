@@ -45,17 +45,19 @@ TimeTag TimeTag::from_pmc(const PMCC &p)
     return normalize(t);
 }
 
-time_ticks_t TimeTag::to_ticks(void)
+time_ticks_t TimeTag::to_ticks(void) const
 {
     return _fsecs*time_tps() + _ticks;
 }
 
-time_ticks_t TimeTag::to_ticks(const double rate)
+time_ticks_t TimeTag::to_ticks(const double rate) const
 {
-    return _fsecs*time_tps() + boost::math::llround((_ticks*rate)/time_tps());
+    const time_ticks_t full = time_ticks_t(_fsecs*rate);
+    const double error = _fsecs - (full/rate);
+    return full + boost::math::llround(_ticks*rate/time_tps() + error*rate);
 }
 
-PMCC TimeTag::to_pmc(void)
+PMCC TimeTag::to_pmc(void) const
 {
     PMCTuple<2> tuple;
     tuple[0] = PMC_M<boost::uint64_t>(_fsecs);

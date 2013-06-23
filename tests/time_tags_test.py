@@ -24,6 +24,10 @@ class TimeTagsTest(unittest.TestCase):
         t3 = gras.TimeTag.from_ticks(time_ns_now, 1e9)
         self.assertEqual(t3.to_ticks(1e9), time_ns_now)
 
+        time_us_now = long(time.time()*1e6)
+        t4 = gras.TimeTag.from_ticks(time_us_now, 1e6)
+        self.assertEqual(t4.to_ticks(1e6), time_us_now)
+
     def test_time_tag_compare(self):
         t0 = gras.TimeTag.from_ticks(42)
         t1 = gras.TimeTag.from_ticks(-1000)

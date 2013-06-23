@@ -35,13 +35,13 @@ struct GRAS_API TimeTag :
     static TimeTag from_pmc(const PMCC &p);
 
     //! Convert this time tag to ticks w/ default ticks per second
-    time_ticks_t to_ticks(void);
+    time_ticks_t to_ticks(void) const;
 
     //! Convert this time tag to ticks w/ specified ticks per second
-    time_ticks_t to_ticks(const double rate);
+    time_ticks_t to_ticks(const double rate) const;
 
     //! Convert this time tag to a PMC containing a PMCTuple<2>(uint64, double)
-    PMCC to_pmc(void);
+    PMCC to_pmc(void) const;
 
     //! Addition for additive interface
     TimeTag &operator+=(const TimeTag &);
