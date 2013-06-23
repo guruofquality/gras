@@ -40,6 +40,7 @@ struct GRAS_API Tag : boost::less_than_comparable<Tag>
 };
 
 GRAS_API bool operator<(const Tag &lhs, const Tag &rhs);
+GRAS_API bool operator==(const Tag &lhs, const Tag &rhs);
 
 /*!
  * A stream tag is a commonly used structure

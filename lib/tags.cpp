@@ -15,6 +15,13 @@ bool gras::operator<(const Tag &lhs, const Tag &rhs)
     return lhs.offset < rhs.offset;
 }
 
+bool gras::operator==(const Tag &lhs, const Tag &rhs)
+{
+    return
+        lhs.offset == rhs.offset and
+        lhs.object.eq(rhs.object);
+}
+
 StreamTag::StreamTag(const PMCC &key, const PMCC &val, const PMCC &src):
     key(key), val(val), src(src)
 {

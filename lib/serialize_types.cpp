@@ -54,6 +54,19 @@ void load(Archive & ar, gras::SBuffer & b, unsigned int version)
 BOOST_SERIALIZATION_SPLIT_FREE(gras::SBuffer)
 PMC_SERIALIZE_EXPORT(gras::SBuffer, "PMC<gras::SBuffer>")
 
+/***********************************************************************
+ * support for tag type
+ **********************************************************************/
+namespace boost { namespace serialization {
+template <class Archive>
+void serialize(Archive &ar, gras::Tag &t, const unsigned int)
+{
+    ar & t.offset;
+    ar & t.object;
+}
+}}
+
+PMC_SERIALIZE_EXPORT(gras::Tag, "PMC<gras::Tag>")
 
 /***********************************************************************
  * support for special packet msg type
