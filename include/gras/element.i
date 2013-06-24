@@ -3,6 +3,8 @@
 #ifndef INCLUDED_GRAS_ELEMENT_I
 #define INCLUDED_GRAS_ELEMENT_I
 
+%module GRAS_Element
+
 %{
 #include <gras/element.hpp>
 %}
@@ -22,6 +24,7 @@ namespace gras
 ////////////////////////////////////////////////////////////////////////
 %include <std_string.i>
 %include <gras/gras.hpp>
+%include <gras/exception.i>
 %include <gras/element.hpp>
 
 ////////////////////////////////////////////////////////////////////////

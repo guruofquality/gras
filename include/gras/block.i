@@ -3,10 +3,13 @@
 #ifndef INCLUDED_GRAS_BLOCK_I
 #define INCLUDED_GRAS_BLOCK_I
 
+%module GRAS_Block
+
 %{
 #include <gras/block.hpp>
 %}
 
+%include <gras/exception.i>
 %import <gras/element.i>
 %import <gras/tags.i>
 %include <gras/tag_iter.i>

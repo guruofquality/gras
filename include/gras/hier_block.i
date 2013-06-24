@@ -3,12 +3,14 @@
 #ifndef INCLUDED_GRAS_HIER_BLOCK_I
 #define INCLUDED_GRAS_HIER_BLOCK_I
 
+%module GRAS_HierBlock
+
 %{
 #include <gras/hier_block.hpp>
 %}
 
+%include <gras/exception.i>
 %import <gras/element.i>
-%include <gras/block_config.hpp>
 %include <gras/hier_block.hpp>
 
 #endif /*INCLUDED_GRAS_HIER_BLOCK_I*/

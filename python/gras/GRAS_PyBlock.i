@@ -43,6 +43,10 @@
     }
 }
 
+%{
+#include <gras/block.hpp>
+%}
+
 ////////////////////////////////////////////////////////////////////////
 // SWIG up the representation for IO work arrays
 ////////////////////////////////////////////////////////////////////////
@@ -53,13 +57,10 @@
 ////////////////////////////////////////////////////////////////////////
 // Pull in the implementation goodies
 ////////////////////////////////////////////////////////////////////////
-%{
-#include <gras/block.hpp>
-#include <iostream>
-%}
-
-%include <gras/element.i>
-%include <gras/block.i>
+%import <gras/element.i>
+%import <gras/tags.i>
+%include <gras/tag_iter.i>
+%import <gras/block.i>
 
 %include "GRAS_Utils.i"
 
@@ -216,7 +217,7 @@ def sig_to_dtype_sig(sig):
     if sig is None: sig = ()
     return map(numpy.dtype, sig)
 
-class Block(BlockPython):
+class PyBlock(BlockPython):
     def __init__(self, name='Block', in_sig=None, out_sig=None):
         BlockPython.__init__(self, name)
         self.set_input_signature(in_sig)

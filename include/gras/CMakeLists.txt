@@ -23,6 +23,7 @@ install(FILES
     tag_iter.i
     thread_pool.hpp
     top_block.hpp
+    top_block.i
     work_buffer.hpp
     buffer_queue.hpp
     weak_container.hpp

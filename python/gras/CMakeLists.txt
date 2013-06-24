@@ -20,16 +20,24 @@ file(GLOB GR_SWIG_SOURCE_DEPS "${GRAS_SOURCE_DIR}/include/gras/*.i")
 
 GR_SWIG_MAKE(GRAS_Tags GRAS_Tags.i)
 GR_SWIG_MAKE(GRAS_TimeTag GRAS_TimeTag.i)
-GR_SWIG_MAKE(GRAS_Block GRAS_Block.i)
-GR_SWIG_MAKE(GRAS_HierBlock GRAS_HierBlock.i)
+GR_SWIG_MAKE(GRAS_Element ../../include/gras/element.i)
+GR_SWIG_MAKE(GRAS_Block ../../include/gras/block.i)
+GR_SWIG_MAKE(GRAS_HierBlock ../../include/gras/hier_block.i)
+GR_SWIG_MAKE(GRAS_TopBlock ../../include/gras/top_block.i)
+GR_SWIG_MAKE(GRAS_PyBlock GRAS_PyBlock.i)
+GR_SWIG_MAKE(GRAS_PyHierBlocks GRAS_PyHierBlocks.i)
 GR_SWIG_MAKE(GRAS_ThreadPool GRAS_ThreadPool.i)
 GR_SWIG_MAKE(GRAS_SBuffer GRAS_SBuffer.i)
 GR_SWIG_INSTALL(
     TARGETS
     GRAS_Tags
     GRAS_TimeTag
+    GRAS_Element
     GRAS_Block
     GRAS_HierBlock
+    GRAS_PyBlock
+    GRAS_PyHierBlocks
+    GRAS_TopBlock
     GRAS_ThreadPool
     GRAS_SBuffer
     DESTINATION ${GR_PYTHON_DIR}/gras

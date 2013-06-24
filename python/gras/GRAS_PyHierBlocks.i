@@ -26,9 +26,9 @@
 ////////////////////////////////////////////////////////////////////////
 // pull in hier and top interface
 ////////////////////////////////////////////////////////////////////////
-%include <gras/element.i>
-%include <gras/hier_block.i>
-%include <gras/top_block.hpp>
+%import <gras/element.i>
+%import <gras/hier_block.i>
+%import <gras/top_block.i>
 
 %include "GRAS_Utils.i"
 
@@ -137,6 +137,8 @@ struct HierBlockPython : HierBlock
 ////////////////////////////////////////////////////////////////////////
 %pythoncode %{
 
+from GRAS_Element import Element
+
 def to_element(obj):
     if isinstance(obj, Element): return obj
     try:
@@ -164,7 +166,7 @@ def internal_connect__(fcn, obj, *args):
 
         fcn(obj, src, src_index, sink, sink_index)
 
-class TopBlock(TopBlockPython):
+class PyTopBlock(TopBlockPython):
     def __init__(self, name="Top"):
         TopBlockPython.__init__(self, name)
 
@@ -182,7 +184,7 @@ class TopBlock(TopBlockPython):
             result_str = TopBlockPython.query(self, query_str)
             return json.loads(result_str)
 
-class HierBlock(HierBlockPython):
+class PyHierBlock(HierBlockPython):
     def __init__(self, name="Hier"):
         HierBlockPython.__init__(self, name)
 
