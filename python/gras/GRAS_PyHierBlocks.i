@@ -137,10 +137,7 @@ struct HierBlockPython : HierBlock
 ////////////////////////////////////////////////////////////////////////
 %pythoncode %{
 
-from GRAS_Element import Element
-
 def to_element(obj):
-    if isinstance(obj, Element): return obj
     try:
         elem = obj.to_element()
         set_weak_py_self(elem, obj)

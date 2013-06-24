@@ -9,7 +9,6 @@
 #include <gras/top_block.hpp>
 %}
 
-%include <gras/exception.i>
 %include <gras/gras.hpp>
 %include <gras/block_config.hpp>
 %import <gras/element.i>

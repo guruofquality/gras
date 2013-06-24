@@ -9,7 +9,6 @@
 #include <gras/block.hpp>
 %}
 
-%include <gras/exception.i>
 %import <gras/element.i>
 %import <gras/tags.i>
 %include <gras/tag_iter.i>
@@ -22,6 +21,9 @@
 ////////////////////////////////////////////////////////////////////////
 // Create pythonic gateway to get and set
 ////////////////////////////////////////////////////////////////////////
+%pythoncode %{
+from PMC import *
+%}
 %extend gras::Block
 {
     %insert("python")
