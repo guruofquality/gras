@@ -1,5 +1,10 @@
 # Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
+#add the current path of this module for installed client apps swig imports
+import os
+import sys
+sys.path.append(os.path.dirname(__file__))
+
 from PMC import *
 from GRAS_SBuffer import SBufferConfig, SBuffer
 from GRAS_Tags import Tag, StreamTag, PacketMsg
