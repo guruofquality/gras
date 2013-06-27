@@ -58,7 +58,6 @@
 // Pull in the implementation goodies
 ////////////////////////////////////////////////////////////////////////
 %import <gras/element.i>
-%import <gras/tags.i>
 %include <gras/tag_iter.i>
 %import <gras/block.i>
 

@@ -3,8 +3,6 @@
 #ifndef INCLUDED_GRAS_TIME_TAG_I
 #define INCLUDED_GRAS_TIME_TAG_I
 
-%module GRAS_TimeTag
-
 %{
 #include <gras/time_tag.hpp>
 %}
