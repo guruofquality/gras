@@ -3,6 +3,8 @@
 #ifndef INCLUDED_GRAS_TAGS_I
 #define INCLUDED_GRAS_TAGS_I
 
+%module (package="gras") GRAS_Tags
+
 %{
 #include <gras/tags.hpp>
 %}

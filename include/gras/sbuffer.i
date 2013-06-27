@@ -3,6 +3,8 @@
 #ifndef INCLUDED_GRAS_SBUFFER_I
 #define INCLUDED_GRAS_SBUFFER_I
 
+%module (package="gras") GRAS_SBuffer
+
 %{
 #include <gras/gras.hpp>
 #include <gras/sbuffer.hpp>

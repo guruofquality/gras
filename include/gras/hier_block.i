@@ -3,7 +3,7 @@
 #ifndef INCLUDED_GRAS_HIER_BLOCK_I
 #define INCLUDED_GRAS_HIER_BLOCK_I
 
-%module GRAS_HierBlock
+%module (package="gras") GRAS_HierBlock
 
 %{
 #include <gras/hier_block.hpp>

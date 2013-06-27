@@ -3,7 +3,7 @@
 #ifndef INCLUDED_GRAS_BLOCK_I
 #define INCLUDED_GRAS_BLOCK_I
 
-%module GRAS_Block
+%module (package="gras") GRAS_Block
 
 %{
 #include <gras/block.hpp>

@@ -71,7 +71,6 @@ list(APPEND GRAS_INCLUDE_DIRS ${GRAS_SOURCE_DIR}/include)
 ########################################################################
 # Paths for python
 ########################################################################
-list(APPEND GRAS_PYTHON_DIRS ${GRAS_SOURCE_DIR}/python)
 list(APPEND GRAS_PYTHON_DIRS ${GRAS_BINARY_DIR}/python)
 list(APPEND GRAS_PYTHON_DIRS ${GRAS_BINARY_DIR}/python/gras)
 list(APPEND GRAS_PYTHON_DIRS ${GRAS_BINARY_DIR}/python/gras/${CMAKE_BUILD_TYPE})

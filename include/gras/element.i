@@ -3,7 +3,7 @@
 #ifndef INCLUDED_GRAS_ELEMENT_I
 #define INCLUDED_GRAS_ELEMENT_I
 
-%module GRAS_Element
+%module (package="gras") GRAS_Element
 
 %{
 #include <gras/element.hpp>
