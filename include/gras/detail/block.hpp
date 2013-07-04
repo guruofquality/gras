@@ -34,7 +34,7 @@ public:
 
     void set(const PMCC &value)
     {
-        (_my_class->*_setter)(value.as<ValueType>());
+        (_my_class->*_setter)(value.safe_as<ValueType>());
     }
 
     PMCC get(void)
@@ -88,13 +88,13 @@ inline void Block::set(const std::string &key, const ValueType &value)
 template <typename ValueType>
 inline void Block::get(const std::string &key, ValueType &value)
 {
-    value = this->_get_property(key).as<ValueType>();
+    value = this->_get_property(key).safe_as<ValueType>();
 }
 
 template <typename ValueType>
 inline ValueType Block::get(const std::string &key)
 {
-    return this->_get_property(key).as<ValueType>();
+    return this->_get_property(key).safe_as<ValueType>();
 }
 
 template <typename ValueType>
