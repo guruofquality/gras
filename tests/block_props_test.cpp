@@ -53,6 +53,9 @@ BOOST_AUTO_TEST_CASE(test_property_set_get_with_reference)
 
     size_t my_foo; my_block.get("foo", my_foo);
     BOOST_CHECK_EQUAL(my_foo, size_t(42));
+
+    double my_foo_d; my_block.get("foo", my_foo_d);
+    BOOST_CHECK_EQUAL(my_foo_d, double(42));
 }
 
 BOOST_AUTO_TEST_CASE(test_property_errors)
@@ -63,5 +66,5 @@ BOOST_AUTO_TEST_CASE(test_property_errors)
     BOOST_CHECK_THROW(my_block.get<size_t>("bar"), std::exception);
 
     //wrong type for property
-    BOOST_CHECK_THROW(my_block.set("foo", double(42)), std::exception);
+    BOOST_CHECK_THROW(my_block.set("foo", "a string"), std::exception);
 }
