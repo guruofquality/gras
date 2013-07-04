@@ -186,11 +186,11 @@ static ptree query_props(ElementImpl *self, const ptree &query)
         {
             const std::type_info &t = actor->data->property_registry[prop_key].setter->type();
             const PMCC p = ptree_to_pmc(query.get_child("value"), t);
-            actor->prop_access_dispatcher(prop_key, p, true);
+            actor->data->block->Block::_set_property(prop_key, p);
         }
         else
         {
-            PMCC p = actor->prop_access_dispatcher(prop_key, PMC(), false);
+            PMCC p = actor->data->block->Block::_get_property(prop_key);
             ptree v = pmc_to_ptree(p);
             root.push_back(std::make_pair("block", query.get_child("block")));
             root.push_back(std::make_pair("key", query.get_child("key")));

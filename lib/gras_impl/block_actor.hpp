@@ -102,9 +102,6 @@ struct BlockActor : Theron::Actor
     {
         data->block->work(data->input_items, data->output_items);
     }
-
-    //property stuff
-    PMCC prop_access_dispatcher(const std::string &key, const PMCC &value, const bool set);
 };
 
 //-------------- common functions from this BlockActor class ---------//
