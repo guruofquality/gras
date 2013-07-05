@@ -166,23 +166,6 @@ struct GRAS_API Block : Element
      * Provides polymorphic, thread-safe access to block properties.
      ******************************************************************/
 
-    template <typename ClassType, typename ReturnType> void register_call(const std::string &key, ReturnType(ClassType::*fcn)(void));
-    template <typename ClassType, typename ReturnType, typename Arg0> void register_call(const std::string &key, ReturnType(ClassType::*fcn)(const Arg0 &));
-    template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1> void register_call(const std::string &key, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &));
-
-    template <typename ReturnType> ReturnType call(const std::string &key);
-    template <typename ReturnType, typename Arg0> ReturnType call(const std::string &key, const Arg0 &);
-    template <typename ReturnType, typename Arg0, typename Arg1> ReturnType call(const std::string &key, const Arg0 &, const Arg1 &);
-
-
-    template <typename ClassType> void register_call(const std::string &key, void(ClassType::*fcn)(void));
-    template <typename ClassType, typename Arg0> void register_call(const std::string &key, void(ClassType::*fcn)(const Arg0 &));
-    template <typename ClassType, typename Arg0, typename Arg1> void register_call(const std::string &key, void(ClassType::*fcn)(const Arg0 &, const Arg1 &));
-
-    void call(const std::string &key);
-    template <typename Arg0> void call(const std::string &key, const Arg0 &);
-    template <typename Arg0, typename Arg1> void call(const std::string &key, const Arg0 &, const Arg1 &);
-
     /*!
      * Register property getter method into the property interface.
      * Call register_getter() from the contructor of the block.
@@ -447,11 +430,6 @@ struct GRAS_API Block : Element
     /*******************************************************************
      * private implementation guts for overloads and template support
      ******************************************************************/
-
-    void _register_function(const std::string &, void *);
-    virtual PMCC _handle_function_access(const std::string &, const std::vector<PMCC> &);
-
-
     virtual PMCC _handle_prop_access(const std::string &, const PMCC &, const bool);
     void _register_getter(const std::string &, void *);
     void _register_setter(const std::string &, void *);
