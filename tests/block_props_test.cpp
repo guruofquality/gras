@@ -116,5 +116,5 @@ BOOST_AUTO_TEST_CASE(test_property_newshit)
     signed my_baz = my_block.call<signed>("baz", "hello", false);
     BOOST_CHECK_EQUAL(my_baz, signed(-1));
 
-    //my_block.call<int>("example_setter", 123);
+    //my_block.call("example_setter", 123);
 }

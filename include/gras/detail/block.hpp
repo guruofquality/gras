@@ -19,16 +19,13 @@ template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1>
 class FunctionRegistryImpl : public FunctionRegistry
 {
 public:
-    FunctionRegistryImpl(
-        ClassType *obj,
-        ReturnType(ClassType::*fcn0)(void),
-        ReturnType(ClassType::*fcn1)(const Arg0 &) = NULL,
-        ReturnType(ClassType::*fcn2)(const Arg0 &, const Arg1 &) = NULL
-    ):
-        _obj(obj),
-        _fcn0(fcn0),
-        _fcn1(fcn1),
-        _fcn2(fcn2)
+
+    typedef ReturnType(ClassType::*Fcn0)(void);
+    typedef ReturnType(ClassType::*Fcn1)(const Arg0 &);
+    typedef ReturnType(ClassType::*Fcn2)(const Arg0 &, const Arg1 &);
+
+    FunctionRegistryImpl(ClassType *obj, Fcn0 fcn0, Fcn1 fcn1 = NULL, Fcn2 fcn2 = NULL):
+        _obj(obj), _fcn0(fcn0), _fcn1(fcn1), _fcn2(fcn2)
     {}
     virtual ~FunctionRegistryImpl(void){}
 
@@ -42,9 +39,7 @@ public:
 
 private:
     ClassType *_obj;
-    ReturnType(ClassType::*_fcn0)(void);
-    ReturnType(ClassType::*_fcn1)(const Arg0 &);
-    ReturnType(ClassType::*_fcn2)(const Arg0 &, const Arg1 &);
+    Fcn0 _fcn0; Fcn1 _fcn1; Fcn2 _fcn2;
 };
 
 template <typename ClassType, typename ReturnType> void Block::register_call(const std::string &key, ReturnType(ClassType::*fcn)(void))
@@ -92,8 +87,26 @@ template <typename ReturnType, typename Arg0, typename Arg1> ReturnType Block::c
     return r.safe_as<ReturnType>();
 }
 
+inline void Block::call(const std::string &key)
+{
+    std::vector<PMCC> args;
+    _handle_function_access(key, args);
+}
 
+template <typename Arg0> void Block::call(const std::string &key, const Arg0 &a0)
+{
+    std::vector<PMCC> args;
+    args.push_back(PMC_M(a0));
+    _handle_function_access(key, args);
+}
 
+template <typename Arg0, typename Arg1> void Block::call(const std::string &key, const Arg0 &a0, const Arg1 &a1)
+{
+    std::vector<PMCC> args;
+    args.push_back(PMC_M(a0));
+    args.push_back(PMC_M(a1));
+    _handle_function_access(key, args);
+}
 
 struct GRAS_API PropertyRegistry
 {

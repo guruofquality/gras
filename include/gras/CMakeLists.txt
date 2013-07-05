@@ -4,6 +4,7 @@
 install(FILES
 
     exception.i
+    callable.hpp
     chrono.hpp
     block.hpp
     block_config.hpp
@@ -34,6 +35,7 @@ install(FILES
 
 install(FILES
 
+    detail/callable.hpp
     detail/block.hpp
     detail/chrono.hpp
     detail/element.hpp

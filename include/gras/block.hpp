@@ -174,6 +174,15 @@ struct GRAS_API Block : Element
     template <typename ReturnType, typename Arg0> ReturnType call(const std::string &key, const Arg0 &);
     template <typename ReturnType, typename Arg0, typename Arg1> ReturnType call(const std::string &key, const Arg0 &, const Arg1 &);
 
+
+    template <typename ClassType> void register_call(const std::string &key, void(ClassType::*fcn)(void));
+    template <typename ClassType, typename Arg0> void register_call(const std::string &key, void(ClassType::*fcn)(const Arg0 &));
+    template <typename ClassType, typename Arg0, typename Arg1> void register_call(const std::string &key, void(ClassType::*fcn)(const Arg0 &, const Arg1 &));
+
+    void call(const std::string &key);
+    template <typename Arg0> void call(const std::string &key, const Arg0 &);
+    template <typename Arg0, typename Arg1> void call(const std::string &key, const Arg0 &, const Arg1 &);
+
     /*!
      * Register property getter method into the property interface.
      * Call register_getter() from the contructor of the block.
