@@ -18,6 +18,7 @@
 namespace gras
 {
 
+typedef boost::shared_ptr<FunctionRegistry> FunctionRegistrySptr;
 typedef boost::shared_ptr<PropertyRegistry> PropertyRegistrySptr;
 struct PropertyRegistryPair
 {
@@ -82,6 +83,7 @@ struct BlockData
 
     //property stuff
     std::map<std::string, PropertyRegistryPair> property_registry;
+    std::map<std::string, FunctionRegistrySptr> function_registry;
 
     BlockStats stats;
 };

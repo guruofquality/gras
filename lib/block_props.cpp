@@ -5,6 +5,9 @@
 
 using namespace gras;
 
+FunctionRegistry::FunctionRegistry(void){}
+FunctionRegistry::~FunctionRegistry(void){}
+
 PropertyRegistry::PropertyRegistry(void){}
 PropertyRegistry::~PropertyRegistry(void){}
 
@@ -112,4 +115,16 @@ void Block::_set_property(const std::string &key, const PMCC &value)
 PMCC Block::_get_property(const std::string &key)
 {
     return prop_access_dispatcher((*this)->block_actor, key, PMCC(), false);
+}
+
+
+void Block::_register_function(const std::string &key, void *fr)
+{
+    (*this)->block_data->function_registry[key].reset(reinterpret_cast<FunctionRegistry *>(fr));
+}
+
+PMCC Block::_handle_function_access(const std::string &key, const std::vector<PMCC> &args)
+{
+    //TODO this is testing -- needs to call actor instead
+    return (*this)->block_data->function_registry[key]->call(args);
 }
