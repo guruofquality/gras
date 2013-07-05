@@ -39,20 +39,26 @@ struct GRAS_API Callable
     template <typename ClassType, typename ReturnType>
     void register_call(const std::string &key, ReturnType(ClassType::*fcn)(void));
 
-    template <typename ClassType, typename ReturnType, typename Arg0>
-    void register_call(const std::string &key, ReturnType(ClassType::*fcn)(const Arg0 &));
-
-    template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1>
-    void register_call(const std::string &key, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &));
-
     template <typename ClassType>
     void register_call(const std::string &key, void(ClassType::*fcn)(void));
+
+    template <typename ClassType, typename ReturnType, typename Arg0>
+    void register_call(const std::string &key, ReturnType(ClassType::*fcn)(const Arg0 &));
 
     template <typename ClassType, typename Arg0>
     void register_call(const std::string &key, void(ClassType::*fcn)(const Arg0 &));
 
+    template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1>
+    void register_call(const std::string &key, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &));
+
     template <typename ClassType, typename Arg0, typename Arg1>
     void register_call(const std::string &key, void(ClassType::*fcn)(const Arg0 &, const Arg1 &));
+
+    template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2>
+    void register_call(const std::string &key, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &));
+
+    template <typename ClassType, typename Arg0, typename Arg1, typename Arg2>
+    void register_call(const std::string &key, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &));
 
     /*******************************************************************
      * Call API - don't look here, template magic, not helpful
@@ -60,25 +66,32 @@ struct GRAS_API Callable
     template <typename ReturnType>
     ReturnType call(const std::string &key);
 
+    inline
+    void call(const std::string &key);
+
     template <typename ReturnType, typename Arg0>
     ReturnType call(const std::string &key, const Arg0 &);
-
-    template <typename ReturnType, typename Arg0, typename Arg1>
-    ReturnType call(const std::string &key, const Arg0 &, const Arg1 &);
-
-    void call(const std::string &key);
 
     template <typename Arg0>
     void call(const std::string &key, const Arg0 &);
 
+    template <typename ReturnType, typename Arg0, typename Arg1>
+    ReturnType call(const std::string &key, const Arg0 &, const Arg1 &);
+
     template <typename Arg0, typename Arg1>
     void call(const std::string &key, const Arg0 &, const Arg1 &);
+
+    template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2>
+    ReturnType call(const std::string &key, const Arg0 &, const Arg1 &, const Arg2 &);
+
+    template <typename Arg0, typename Arg1, typename Arg2>
+    void call(const std::string &key, const Arg0 &, const Arg1 &, const Arg2 &);
 
     /*******************************************************************
      * Private registration hooks
      ******************************************************************/
     void _register_call(const std::string &, void *);
-    virtual PMCC _handle_call(const std::string &, const std::vector<PMCC> &);
+    virtual PMCC _handle_call(const std::string &, const PMCC *);
     void *_call_registry;
 };
 
