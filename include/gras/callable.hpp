@@ -79,7 +79,7 @@ struct GRAS_API Callable
      ******************************************************************/
     void _register_call(const std::string &, void *);
     virtual PMCC _handle_call(const std::string &, const std::vector<PMCC> &);
-    std::map<std::string, void *> _call_registry;
+    void *_call_registry;
 };
 
 } //namespace gras

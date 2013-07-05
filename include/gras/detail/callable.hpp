@@ -8,15 +8,15 @@
 namespace gras
 {
 
-struct GRAS_API CallableRegistry
+struct GRAS_API CallableRegistryEntry
 {
-    CallableRegistry(void);
-    virtual ~CallableRegistry(void);
+    CallableRegistryEntry(void);
+    virtual ~CallableRegistryEntry(void);
     virtual PMCC call(const std::vector<PMCC> &args) = 0;
 };
 
 template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1>
-class CallableRegistryImpl : public CallableRegistry
+class CallableRegistryEntryImpl : public CallableRegistryEntry
 {
 public:
 
@@ -24,10 +24,10 @@ public:
     typedef ReturnType(ClassType::*Fcn1)(const Arg0 &);
     typedef ReturnType(ClassType::*Fcn2)(const Arg0 &, const Arg1 &);
 
-    CallableRegistryImpl(ClassType *obj, Fcn0 fcn0, Fcn1 fcn1 = NULL, Fcn2 fcn2 = NULL):
+    CallableRegistryEntryImpl(ClassType *obj, Fcn0 fcn0, Fcn1 fcn1 = NULL, Fcn2 fcn2 = NULL):
         _obj(obj), _fcn0(fcn0), _fcn1(fcn1), _fcn2(fcn2)
     {}
-    virtual ~CallableRegistryImpl(void){}
+    virtual ~CallableRegistryEntryImpl(void){}
 
     PMCC call(const std::vector<PMCC> &args)
     {
@@ -42,35 +42,40 @@ private:
     Fcn0 _fcn0; Fcn1 _fcn1; Fcn2 _fcn2;
 };
 
-template <typename ClassType, typename ReturnType> void Callable::register_call(const std::string &key, ReturnType(ClassType::*fcn)(void))
+template <typename ClassType, typename ReturnType>
+void Callable::register_call(const std::string &key, ReturnType(ClassType::*fcn)(void))
 {
     ClassType *obj = dynamic_cast<ClassType *>(this);
-    void *fr = new CallableRegistryImpl<ClassType, ReturnType, int, int>(obj, fcn);
+    void *fr = new CallableRegistryEntryImpl<ClassType, ReturnType, int, int>(obj, fcn);
     _register_call(key, fr);
 }
 
-template <typename ClassType, typename ReturnType, typename Arg0> void Callable::register_call(const std::string &key, ReturnType(ClassType::*fcn)(const Arg0 &))
+template <typename ClassType, typename ReturnType, typename Arg0>
+void Callable::register_call(const std::string &key, ReturnType(ClassType::*fcn)(const Arg0 &))
 {
     ClassType *obj = dynamic_cast<ClassType *>(this);
-    void *fr = new CallableRegistryImpl<ClassType, ReturnType, Arg0, int>(obj, NULL, fcn);
+    void *fr = new CallableRegistryEntryImpl<ClassType, ReturnType, Arg0, int>(obj, NULL, fcn);
     _register_call(key, fr);
 }
 
-template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1> void Callable::register_call(const std::string &key, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &))
+template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1>
+void Callable::register_call(const std::string &key, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &))
 {
     ClassType *obj = dynamic_cast<ClassType *>(this);
-    void *fr = new CallableRegistryImpl<ClassType, ReturnType, Arg0, Arg1>(obj, NULL, NULL, fcn);
+    void *fr = new CallableRegistryEntryImpl<ClassType, ReturnType, Arg0, Arg1>(obj, NULL, NULL, fcn);
     _register_call(key, fr);
 }
 
-template <typename ReturnType> ReturnType Callable::call(const std::string &key)
+template <typename ReturnType>
+ReturnType Callable::call(const std::string &key)
 {
     std::vector<PMCC> args;
     PMCC r = _handle_call(key, args);
     return r.safe_as<ReturnType>();
 }
 
-template <typename ReturnType, typename Arg0> ReturnType Callable::call(const std::string &key, const Arg0 &a0)
+template <typename ReturnType, typename Arg0>
+ReturnType Callable::call(const std::string &key, const Arg0 &a0)
 {
     std::vector<PMCC> args;
     args.push_back(PMC_M(a0));
@@ -78,7 +83,8 @@ template <typename ReturnType, typename Arg0> ReturnType Callable::call(const st
     return r.safe_as<ReturnType>();
 }
 
-template <typename ReturnType, typename Arg0, typename Arg1> ReturnType Callable::call(const std::string &key, const Arg0 &a0, const Arg1 &a1)
+template <typename ReturnType, typename Arg0, typename Arg1>
+ReturnType Callable::call(const std::string &key, const Arg0 &a0, const Arg1 &a1)
 {
     std::vector<PMCC> args;
     args.push_back(PMC_M(a0));
@@ -87,20 +93,23 @@ template <typename ReturnType, typename Arg0, typename Arg1> ReturnType Callable
     return r.safe_as<ReturnType>();
 }
 
-inline void Callable::call(const std::string &key)
+inline
+void Callable::call(const std::string &key)
 {
     std::vector<PMCC> args;
     _handle_call(key, args);
 }
 
-template <typename Arg0> void Callable::call(const std::string &key, const Arg0 &a0)
+template <typename Arg0>
+void Callable::call(const std::string &key, const Arg0 &a0)
 {
     std::vector<PMCC> args;
     args.push_back(PMC_M(a0));
     _handle_call(key, args);
 }
 
-template <typename Arg0, typename Arg1> void Callable::call(const std::string &key, const Arg0 &a0, const Arg1 &a1)
+template <typename Arg0, typename Arg1>
+void Callable::call(const std::string &key, const Arg0 &a0, const Arg1 &a1)
 {
     std::vector<PMCC> args;
     args.push_back(PMC_M(a0));
