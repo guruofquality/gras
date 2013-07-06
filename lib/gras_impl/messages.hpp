@@ -135,7 +135,7 @@ struct CallableMessage
 {
     Token prio_token;
     std::string key;
-    PMCC *args;
+    PMCC args;
     PMCC ret;
     std::string error;
 };

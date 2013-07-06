@@ -25,14 +25,23 @@ namespace gras
 %include <std_string.i>
 %include <gras/gras.hpp>
 %include <gras/element.hpp>
+%import <PMC/PMC.i>
 
 ////////////////////////////////////////////////////////////////////////
 // Operator overloads for Element
 ////////////////////////////////////////////////////////////////////////
+%pythoncode %{
+from PMC import *
+%}
 %extend gras::Element
 {
     %insert("python")
     %{
+        def x(self, key, *args):
+            pmcargs = PMC_M(list(args))
+            pmcret = self._handle_call(key, pmcargs)
+            return pmcret()
+
         def __eq__(self, rhs):
             if not isinstance(rhs, Element): return False
             return self.equals(rhs)

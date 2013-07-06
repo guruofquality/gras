@@ -16,7 +16,6 @@ void BlockActor::handle_callable(
     //setup reply
     CallableMessage reply;
     reply.key = message.key;
-    reply.args = NULL;
 
     //call into the handler overload to do the property access
     try
@@ -40,7 +39,7 @@ void BlockActor::handle_callable(
     this->Send(SelfKickMessage(), this->GetAddress());
 }
 
-PMCC Block::_handle_call_ts(const std::string &key, const PMCC *args)
+PMCC Block::_handle_call_ts(const std::string &key, const PMCC &args)
 {
     //got here, so we call the base class unless this got overloaded
     return Callable::_handle_call(key, args);
@@ -67,14 +66,14 @@ struct CallableReceiver : Theron::Receiver
 /***********************************************************************
  * Handle the get and set calls from the user's call-stack
  **********************************************************************/
-PMCC Block::_handle_call(const std::string &key, const PMCC *args)
+PMCC Block::_handle_call(const std::string &key, const PMCC &args)
 {
     CallableReceiver receiver;
     CallableMessage message;
     boost::shared_ptr<BlockActor> actor = (*this)->block_actor;
     message.prio_token = actor->prio_token;
     message.key = key;
-    message.args = (PMCC *)args;
+    message.args = args;
     actor->GetFramework().Send(message, receiver.GetAddress(), actor->GetAddress());
     receiver.Wait();
     if (not receiver.message.error.empty())

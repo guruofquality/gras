@@ -25,7 +25,7 @@ void Callable::_register_call(const std::string &key, void *entry)
     (*cr)[key].reset(reinterpret_cast<CallableRegistryEntry *>(entry));
 }
 
-PMCC Callable::_handle_call(const std::string &key, const PMCC *args)
+PMCC Callable::_handle_call(const std::string &key, const PMCC &args)
 {
     CallableRegistry *cr = reinterpret_cast<CallableRegistry *>(_call_registry.get());
     boost::shared_ptr<CallableRegistryEntry> entry = (*cr)[key];

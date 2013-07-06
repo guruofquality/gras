@@ -97,7 +97,7 @@ struct GRAS_API Callable
      * Private registration hooks
      ******************************************************************/
     void _register_call(const std::string &, void *);
-    virtual PMCC _handle_call(const std::string &, const PMCC *);
+    virtual PMCC _handle_call(const std::string &, const PMCC &);
     boost::shared_ptr<void> _call_registry;
 };
 

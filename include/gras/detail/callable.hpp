@@ -3,6 +3,8 @@
 #ifndef INCLUDED_GRAS_DETAIL_CALLABLE_HPP
 #define INCLUDED_GRAS_DETAIL_CALLABLE_HPP
 
+#include <PMC/Containers.hpp> //PMCList
+
 namespace gras
 {
 
@@ -13,7 +15,7 @@ struct GRAS_API CallableRegistryEntry
 {
     CallableRegistryEntry(void);
     virtual ~CallableRegistryEntry(void);
-    virtual PMCC call(const PMCC *args) = 0;
+    virtual PMCC call(const PMCC &args) = 0;
 };
 
 /***********************************************************************
@@ -25,7 +27,7 @@ struct CallableRegistryEntryImpl0 : CallableRegistryEntry
     typedef ReturnType(ClassType::*Fcn)(void);
     CallableRegistryEntryImpl0(ClassType *obj, Fcn fcn):
     _obj(obj), _fcn(fcn){}
-    PMCC call(const PMCC *args)
+    PMCC call(const PMCC &)
     {
         return PMC_M((_obj->*_fcn)());
     }
@@ -46,7 +48,7 @@ struct CallableRegistryEntryImplVoid0 : CallableRegistryEntry
     typedef void(ClassType::*Fcn)(void);
     CallableRegistryEntryImplVoid0(ClassType *obj, Fcn fcn):
     _obj(obj), _fcn(fcn){}
-    PMCC call(const PMCC *args)
+    PMCC call(const PMCC &)
     {
         (_obj->*_fcn)(); return PMCC();
     }
@@ -70,9 +72,10 @@ struct CallableRegistryEntryImpl1 : CallableRegistryEntry
     typedef ReturnType(ClassType::*Fcn)(const Arg0 &);
     CallableRegistryEntryImpl1(ClassType *obj, Fcn fcn):
     _obj(obj), _fcn(fcn){}
-    PMCC call(const PMCC *args)
+    PMCC call(const PMCC &args)
     {
-        return PMC_M((_obj->*_fcn)(args[0].safe_as<Arg0>()));
+        const PMCList &a = args.as<PMCList>();
+        return PMC_M((_obj->*_fcn)(a[0].safe_as<Arg0>()));
     }
     ClassType *_obj; Fcn _fcn;
 };
@@ -91,9 +94,10 @@ struct CallableRegistryEntryImplVoid1 : CallableRegistryEntry
     typedef void(ClassType::*Fcn)(const Arg0 &);
     CallableRegistryEntryImplVoid1(ClassType *obj, Fcn fcn):
     _obj(obj), _fcn(fcn){}
-    PMCC call(const PMCC *args)
+    PMCC call(const PMCC &args)
     {
-        (_obj->*_fcn)(args[0].safe_as<Arg0>()); return PMCC();
+        const PMCList &a = args.as<PMCList>();
+        (_obj->*_fcn)(a[0].safe_as<Arg0>()); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
 };
@@ -115,9 +119,10 @@ struct CallableRegistryEntryImpl2 : CallableRegistryEntry
     typedef ReturnType(ClassType::*Fcn)(const Arg0 &, const Arg1 &);
     CallableRegistryEntryImpl2(ClassType *obj, Fcn fcn):
     _obj(obj), _fcn(fcn){}
-    PMCC call(const PMCC *args)
+    PMCC call(const PMCC &args)
     {
-        return PMC_M((_obj->*_fcn)(args[0].safe_as<Arg0>(), args[1].safe_as<Arg1>()));
+        const PMCList &a = args.as<PMCList>();
+        return PMC_M((_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>()));
     }
     ClassType *_obj; Fcn _fcn;
 };
@@ -136,9 +141,10 @@ struct CallableRegistryEntryImplVoid2 : CallableRegistryEntry
     typedef void(ClassType::*Fcn)(const Arg0 &, const Arg1 &);
     CallableRegistryEntryImplVoid2(ClassType *obj, Fcn fcn):
     _obj(obj), _fcn(fcn){}
-    PMCC call(const PMCC *args)
+    PMCC call(const PMCC &args)
     {
-        (_obj->*_fcn)(args[0].safe_as<Arg0>(), args[1].safe_as<Arg1>()); return PMCC();
+        const PMCList &a = args.as<PMCList>();
+        (_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>()); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
 };
@@ -160,9 +166,10 @@ struct CallableRegistryEntryImpl3 : CallableRegistryEntry
     typedef ReturnType(ClassType::*Fcn)(const Arg0 &, const Arg1 &, const Arg2 &);
     CallableRegistryEntryImpl3(ClassType *obj, Fcn fcn):
     _obj(obj), _fcn(fcn){}
-    PMCC call(const PMCC *args)
+    PMCC call(const PMCC &args)
     {
-        return PMC_M((_obj->*_fcn)(args[0].safe_as<Arg0>(), args[1].safe_as<Arg1>(), args[2].safe_as<Arg2>()));
+        const PMCList &a = args.as<PMCList>();
+        return PMC_M((_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>()));
     }
     ClassType *_obj; Fcn _fcn;
 };
@@ -181,9 +188,10 @@ struct CallableRegistryEntryImplVoid3 : CallableRegistryEntry
     typedef void(ClassType::*Fcn)(const Arg0 &, const Arg1 &, const Arg2 &);
     CallableRegistryEntryImplVoid3(ClassType *obj, Fcn fcn):
     _obj(obj), _fcn(fcn){}
-    PMCC call(const PMCC *args)
+    PMCC call(const PMCC &args)
     {
-        (_obj->*_fcn)(args[0].safe_as<Arg0>(), args[1].safe_as<Arg1>(), args[2].safe_as<Arg2>()); return PMCC();
+        const PMCList &a = args.as<PMCList>();
+        (_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>()); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
 };
@@ -202,16 +210,16 @@ void Callable::register_call(const std::string &key, void(ClassType::*fcn)(const
 template <typename ReturnType>
 ReturnType Callable::x(const std::string &key)
 {
-    PMCC args[0];
-    PMCC r = _handle_call(key, args);
+    PMCList args(0);
+    PMCC r = _handle_call(key, PMC_M(args));
     return r.safe_as<ReturnType>();
 }
 
 inline
 void Callable::x(const std::string &key)
 {
-    PMCC args[0];
-    _handle_call(key, args);
+    PMCList args(0);
+    _handle_call(key, PMC_M(args));
 }
 
 /***********************************************************************
@@ -220,18 +228,18 @@ void Callable::x(const std::string &key)
 template <typename ReturnType, typename Arg0>
 ReturnType Callable::x(const std::string &key, const Arg0 &a0)
 {
-    PMCC args[1];
+    PMCList args(1);
     args[0] = PMC_M(a0);
-    PMCC r = _handle_call(key, args);
+    PMCC r = _handle_call(key, PMC_M(args));
     return r.safe_as<ReturnType>();
 }
 
 template <typename Arg0>
 void Callable::x(const std::string &key, const Arg0 &a0)
 {
-    PMCC args[1];
+    PMCList args(1);
     args[0] = PMC_M(a0);
-    _handle_call(key, args);
+    _handle_call(key, PMC_M(args));
 }
 
 /***********************************************************************
@@ -240,20 +248,20 @@ void Callable::x(const std::string &key, const Arg0 &a0)
 template <typename ReturnType, typename Arg0, typename Arg1>
 ReturnType Callable::x(const std::string &key, const Arg0 &a0, const Arg1 &a1)
 {
-    PMCC args[2];
+    PMCList args(2);
     args[0] = PMC_M(a0);
     args[1] = PMC_M(a1);
-    PMCC r = _handle_call(key, args);
+    PMCC r = _handle_call(key, PMC_M(args));
     return r.safe_as<ReturnType>();
 }
 
 template <typename Arg0, typename Arg1>
 void Callable::x(const std::string &key, const Arg0 &a0, const Arg1 &a1)
 {
-    PMCC args[2];
+    PMCList args(2);
     args[0] = PMC_M(a0);
     args[1] = PMC_M(a1);
-    _handle_call(key, args);
+    _handle_call(key, PMC_M(args));
 }
 
 /***********************************************************************
@@ -262,22 +270,22 @@ void Callable::x(const std::string &key, const Arg0 &a0, const Arg1 &a1)
 template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2>
 ReturnType Callable::x(const std::string &key, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2)
 {
-    PMCC args[3];
+    PMCList args(3);
     args[0] = PMC_M(a0);
     args[1] = PMC_M(a1);
     args[2] = PMC_M(a2);
-    PMCC r = _handle_call(key, args);
+    PMCC r = _handle_call(key, PMC_M(args));
     return r.safe_as<ReturnType>();
 }
 
 template <typename Arg0, typename Arg1, typename Arg2>
 void Callable::x(const std::string &key, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2)
 {
-    PMCC args[3];
+    PMCList args(3);
     args[0] = PMC_M(a0);
     args[1] = PMC_M(a1);
     args[2] = PMC_M(a2);
-    _handle_call(key, args);
+    _handle_call(key, PMC_M(args));
 }
 
 } //namespace gras

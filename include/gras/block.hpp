@@ -339,8 +339,8 @@ struct GRAS_API Block : Element
     /*******************************************************************
      * private implementation guts for overloads and template support
      ******************************************************************/
-    PMCC _handle_call(const std::string &, const PMCC *);
-    virtual PMCC _handle_call_ts(const std::string &, const PMCC *);
+    virtual PMCC _handle_call(const std::string &, const PMCC &);
+    virtual PMCC _handle_call_ts(const std::string &, const PMCC &);
     void _post_output_msg(const size_t which_output, const PMCC &msg);
     void _post_input_msg(const size_t which_input, const PMCC &msg);
 };
