@@ -5,8 +5,8 @@
 
 #include <gras/gras.hpp>
 #include <PMC/PMC.hpp>
+#include <boost/shared_ptr.hpp>
 #include <string>
-#include <vector>
 
 namespace gras
 {
@@ -92,7 +92,7 @@ struct GRAS_API Callable
      ******************************************************************/
     void _register_call(const std::string &, void *);
     virtual PMCC _handle_call(const std::string &, const PMCC *);
-    void *_call_registry;
+    boost::shared_ptr<void> _call_registry;
 };
 
 } //namespace gras

@@ -11,24 +11,23 @@ typedef std::map<std::string, boost::shared_ptr<CallableRegistryEntry> > Callabl
 
 Callable::Callable(void)
 {
-    _call_registry = new CallableRegistry();
+    _call_registry.reset(new CallableRegistry());
 }
 
 Callable::~Callable(void)
 {
-    CallableRegistry *cr = reinterpret_cast<CallableRegistry *>(_call_registry);
-    delete cr;
+    _call_registry.reset();
 }
 
 void Callable::_register_call(const std::string &key, void *entry)
 {
-    CallableRegistry *cr = reinterpret_cast<CallableRegistry *>(_call_registry);
+    CallableRegistry *cr = reinterpret_cast<CallableRegistry *>(_call_registry.get());
     (*cr)[key].reset(reinterpret_cast<CallableRegistryEntry *>(entry));
 }
 
 PMCC Callable::_handle_call(const std::string &key, const PMCC *args)
 {
-    CallableRegistry *cr = reinterpret_cast<CallableRegistry *>(_call_registry);
+    CallableRegistry *cr = reinterpret_cast<CallableRegistry *>(_call_registry.get());
     boost::shared_ptr<CallableRegistryEntry> entry = (*cr)[key];
     if (not entry) throw std::invalid_argument("Callable: no method registered for key: " + key);
     return entry->call(args);
