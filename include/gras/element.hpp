@@ -9,6 +9,7 @@
 #endif //_MSC_VER
 
 #include <gras/gras.hpp>
+#include <gras/callable.hpp>
 #include <gras/weak_container.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -18,7 +19,7 @@ namespace gras
 /*!
  * Element is a base class for all topological elements.
  */
-struct GRAS_API Element : boost::shared_ptr<ElementImpl>
+struct GRAS_API Element : Callable, boost::shared_ptr<ElementImpl>
 {
     //! Create an empty element
     Element(void);

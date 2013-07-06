@@ -36,6 +36,7 @@ static ptree query_blocks(ElementImpl *self, const ptree &)
     {
         BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
         ptree prop_e;
+        /*
         typedef std::pair<std::string, PropertyRegistryPair> PropRegistryKVP;
         BOOST_FOREACH(const PropRegistryKVP &p, actor->data->property_registry)
         {
@@ -56,6 +57,7 @@ static ptree query_blocks(ElementImpl *self, const ptree &)
             block_attrs.push_back(std::make_pair(p.first, prop_attrs));
             prop_e.push_back(std::make_pair("props", block_attrs));
         }
+        */
         e.push_back(std::make_pair(actor->data->block->get_uid(), prop_e));
     }
     root.push_back(std::make_pair("blocks", e));
@@ -182,6 +184,7 @@ static ptree query_props(ElementImpl *self, const ptree &query)
     {
         BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
         if (actor->data->block->get_uid() != block_id) continue;
+        /*
         if (set)
         {
             const std::type_info &t = actor->data->property_registry[prop_key].setter->type();
@@ -196,6 +199,7 @@ static ptree query_props(ElementImpl *self, const ptree &query)
             root.push_back(std::make_pair("key", query.get_child("key")));
             root.push_back(std::make_pair("value", v));
         }
+        */
     }
     return root;
 }

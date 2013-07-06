@@ -3,8 +3,6 @@
 #ifndef INCLUDED_GRAS_DETAIL_CALLABLE_HPP
 #define INCLUDED_GRAS_DETAIL_CALLABLE_HPP
 
-#include <typeinfo>
-
 namespace gras
 {
 
