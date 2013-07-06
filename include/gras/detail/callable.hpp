@@ -202,7 +202,7 @@ void Callable::register_call(const std::string &key, void(ClassType::*fcn)(const
  * Call implementations with 0 args
  **********************************************************************/
 template <typename ReturnType>
-ReturnType Callable::call(const std::string &key)
+ReturnType Callable::x(const std::string &key)
 {
     PMCC args[0];
     PMCC r = _handle_call(key, args);
@@ -210,7 +210,7 @@ ReturnType Callable::call(const std::string &key)
 }
 
 inline
-void Callable::call(const std::string &key)
+void Callable::x(const std::string &key)
 {
     PMCC args[0];
     _handle_call(key, args);
@@ -220,7 +220,7 @@ void Callable::call(const std::string &key)
  * Call implementations with 1 args
  **********************************************************************/
 template <typename ReturnType, typename Arg0>
-ReturnType Callable::call(const std::string &key, const Arg0 &a0)
+ReturnType Callable::x(const std::string &key, const Arg0 &a0)
 {
     PMCC args[1];
     args[0] = PMC_M(a0);
@@ -229,7 +229,7 @@ ReturnType Callable::call(const std::string &key, const Arg0 &a0)
 }
 
 template <typename Arg0>
-void Callable::call(const std::string &key, const Arg0 &a0)
+void Callable::x(const std::string &key, const Arg0 &a0)
 {
     PMCC args[1];
     args[0] = PMC_M(a0);
@@ -240,7 +240,7 @@ void Callable::call(const std::string &key, const Arg0 &a0)
  * Call implementations with 2 args
  **********************************************************************/
 template <typename ReturnType, typename Arg0, typename Arg1>
-ReturnType Callable::call(const std::string &key, const Arg0 &a0, const Arg1 &a1)
+ReturnType Callable::x(const std::string &key, const Arg0 &a0, const Arg1 &a1)
 {
     PMCC args[2];
     args[0] = PMC_M(a0);
@@ -250,7 +250,7 @@ ReturnType Callable::call(const std::string &key, const Arg0 &a0, const Arg1 &a1
 }
 
 template <typename Arg0, typename Arg1>
-void Callable::call(const std::string &key, const Arg0 &a0, const Arg1 &a1)
+void Callable::x(const std::string &key, const Arg0 &a0, const Arg1 &a1)
 {
     PMCC args[2];
     args[0] = PMC_M(a0);
@@ -262,7 +262,7 @@ void Callable::call(const std::string &key, const Arg0 &a0, const Arg1 &a1)
  * Call implementations with 3 args
  **********************************************************************/
 template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2>
-ReturnType Callable::call(const std::string &key, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2)
+ReturnType Callable::x(const std::string &key, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2)
 {
     PMCC args[3];
     args[0] = PMC_M(a0);
@@ -273,7 +273,7 @@ ReturnType Callable::call(const std::string &key, const Arg0 &a0, const Arg1 &a1
 }
 
 template <typename Arg0, typename Arg1, typename Arg2>
-void Callable::call(const std::string &key, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2)
+void Callable::x(const std::string &key, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2)
 {
     PMCC args[3];
     args[0] = PMC_M(a0);

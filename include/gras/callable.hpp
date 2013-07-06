@@ -23,7 +23,13 @@ namespace gras
  * this->register_call("set_foo", &MyClass::set_foo);
  *
  * Call a method on a instance of MyClass:
- * my_class->call("set_foo", new_foo_val);
+ * my_class->x("set_foo", new_foo_val);
+ *
+ * Why x for the call method?
+ *  - The "x" is short, one character of screen width.
+ *  - The "x" looks like "*", which is commonly used.
+ *  - The overloaded () operator sucks with pointers.
+ *  - The overloaded () operator has template issues.
  */
 struct GRAS_API Callable
 {
@@ -64,28 +70,28 @@ struct GRAS_API Callable
      * Call API - don't look here, template magic, not helpful
      ******************************************************************/
     template <typename ReturnType>
-    ReturnType call(const std::string &key);
+    ReturnType x(const std::string &key);
 
     inline
-    void call(const std::string &key);
+    void x(const std::string &key);
 
     template <typename ReturnType, typename Arg0>
-    ReturnType call(const std::string &key, const Arg0 &);
+    ReturnType x(const std::string &key, const Arg0 &);
 
     template <typename Arg0>
-    void call(const std::string &key, const Arg0 &);
+    void x(const std::string &key, const Arg0 &);
 
     template <typename ReturnType, typename Arg0, typename Arg1>
-    ReturnType call(const std::string &key, const Arg0 &, const Arg1 &);
+    ReturnType x(const std::string &key, const Arg0 &, const Arg1 &);
 
     template <typename Arg0, typename Arg1>
-    void call(const std::string &key, const Arg0 &, const Arg1 &);
+    void x(const std::string &key, const Arg0 &, const Arg1 &);
 
     template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2>
-    ReturnType call(const std::string &key, const Arg0 &, const Arg1 &, const Arg2 &);
+    ReturnType x(const std::string &key, const Arg0 &, const Arg1 &, const Arg2 &);
 
     template <typename Arg0, typename Arg1, typename Arg2>
-    void call(const std::string &key, const Arg0 &, const Arg1 &, const Arg2 &);
+    void x(const std::string &key, const Arg0 &, const Arg1 &, const Arg2 &);
 
     /*******************************************************************
      * Private registration hooks
