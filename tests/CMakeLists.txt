@@ -17,6 +17,7 @@ set(test_sources
     callable_test.cpp
     chrono_time_test.cpp
     block_props_test.cpp
+    factory_test.cpp
     serialize_tags_test.cpp
 )
 

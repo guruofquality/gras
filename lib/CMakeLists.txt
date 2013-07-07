@@ -44,6 +44,7 @@ list(APPEND GRAS_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/callable.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/element.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/element_uid.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sbuffer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/circular_buffer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer_queue_circ.cpp

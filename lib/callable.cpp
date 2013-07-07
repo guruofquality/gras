@@ -42,6 +42,7 @@ void Callable::unregister_call(const std::string &name)
 void Callable::_register_call(const std::string &name, void *entry)
 {
     CallableRegistry *cr = reinterpret_cast<CallableRegistry *>(_call_registry.get());
+    if (cr->count(name) != 0) throw std::invalid_argument("Callable - method already registered for name: " + name);
     (*cr)[name].reset(reinterpret_cast<CallableRegistryEntry *>(entry));
 }
 

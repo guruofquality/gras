@@ -11,6 +11,7 @@ install(FILES
     block.i
     element.hpp
     element.i
+    factory.hpp
     gras.hpp
     hier_block.hpp
     hier_block.i
@@ -39,6 +40,7 @@ install(FILES
     detail/block.hpp
     detail/chrono.hpp
     detail/element.hpp
+    detail/factory.hpp
     detail/sbuffer.hpp
     detail/work_buffer.hpp
 
