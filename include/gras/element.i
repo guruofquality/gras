@@ -40,9 +40,9 @@ from PMC import *
 {
     %insert("python")
     %{
-        def x(self, key, *args):
+        def x(self, name, *args):
             pmcargs = PMC_M(list(args))
-            pmcret = self._handle_call(key, pmcargs)
+            pmcret = self._handle_call(name, pmcargs)
             return pmcret()
 
         def __getattr__(self, name):

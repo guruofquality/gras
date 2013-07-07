@@ -42,71 +42,71 @@ public:
     //! Destructor (virtual for subclasses)
     virtual ~Callable(void);
 
-    //! Get a list of keys for registered calls
-    std::vector<std::string> get_registered_keys(void) const;
+    //! Get a list of names for registered calls
+    std::vector<std::string> get_registered_names(void) const;
 
 protected:
     /*!
      * Unregister a previously registered call.
-     * Throws if the key is not found in the registry.
+     * Throws if the name is not found in the registry.
      */
-    void unregister_call(const std::string &key);
+    void unregister_call(const std::string &name);
 
     /*******************************************************************
      * Register API - don't look here, template magic, not helpful
      ******************************************************************/
 protected:
     template <typename ClassType, typename ReturnType>
-    void register_call(const std::string &key, ReturnType(ClassType::*fcn)(void));
+    void register_call(const std::string &name, ReturnType(ClassType::*fcn)(void));
 
     template <typename ClassType>
-    void register_call(const std::string &key, void(ClassType::*fcn)(void));
+    void register_call(const std::string &name, void(ClassType::*fcn)(void));
 
     template <typename ClassType, typename ReturnType, typename Arg0>
-    void register_call(const std::string &key, ReturnType(ClassType::*fcn)(const Arg0 &));
+    void register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &));
 
     template <typename ClassType, typename Arg0>
-    void register_call(const std::string &key, void(ClassType::*fcn)(const Arg0 &));
+    void register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &));
 
     template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1>
-    void register_call(const std::string &key, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &));
+    void register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &));
 
     template <typename ClassType, typename Arg0, typename Arg1>
-    void register_call(const std::string &key, void(ClassType::*fcn)(const Arg0 &, const Arg1 &));
+    void register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &, const Arg1 &));
 
     template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2>
-    void register_call(const std::string &key, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &));
+    void register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &));
 
     template <typename ClassType, typename Arg0, typename Arg1, typename Arg2>
-    void register_call(const std::string &key, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &));
+    void register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &));
 
     /*******************************************************************
      * Call API - don't look here, template magic, not helpful
      ******************************************************************/
 public:
     template <typename ReturnType>
-    ReturnType x(const std::string &key);
+    ReturnType x(const std::string &name);
 
     inline
-    void x(const std::string &key);
+    void x(const std::string &name);
 
     template <typename ReturnType, typename Arg0>
-    ReturnType x(const std::string &key, const Arg0 &);
+    ReturnType x(const std::string &name, const Arg0 &);
 
     template <typename Arg0>
-    void x(const std::string &key, const Arg0 &);
+    void x(const std::string &name, const Arg0 &);
 
     template <typename ReturnType, typename Arg0, typename Arg1>
-    ReturnType x(const std::string &key, const Arg0 &, const Arg1 &);
+    ReturnType x(const std::string &name, const Arg0 &, const Arg1 &);
 
     template <typename Arg0, typename Arg1>
-    void x(const std::string &key, const Arg0 &, const Arg1 &);
+    void x(const std::string &name, const Arg0 &, const Arg1 &);
 
     template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2>
-    ReturnType x(const std::string &key, const Arg0 &, const Arg1 &, const Arg2 &);
+    ReturnType x(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &);
 
     template <typename Arg0, typename Arg1, typename Arg2>
-    void x(const std::string &key, const Arg0 &, const Arg1 &, const Arg2 &);
+    void x(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &);
 
     /*******************************************************************
      * Private registration hooks

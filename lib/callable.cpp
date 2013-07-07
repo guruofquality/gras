@@ -21,35 +21,35 @@ Callable::~Callable(void)
     _call_registry.reset();
 }
 
-std::vector<std::string> Callable::get_registered_keys(void) const
+std::vector<std::string> Callable::get_registered_names(void) const
 {
     CallableRegistry *cr = reinterpret_cast<CallableRegistry *>(_call_registry.get());
-    std::vector<std::string> keys;
+    std::vector<std::string> names;
     BOOST_FOREACH(const CallableRegistryPair &p, (*cr))
     {
-        keys.push_back(p.first);
+        names.push_back(p.first);
     }
-    return keys;
+    return names;
 }
 
-void Callable::unregister_call(const std::string &key)
+void Callable::unregister_call(const std::string &name)
 {
     CallableRegistry *cr = reinterpret_cast<CallableRegistry *>(_call_registry.get());
-    if (cr->count(key) == 0) throw std::invalid_argument("Callable - no method registered for key: " + key);
-    cr->erase(key);
+    if (cr->count(name) == 0) throw std::invalid_argument("Callable - no method registered for name: " + name);
+    cr->erase(name);
 }
 
-void Callable::_register_call(const std::string &key, void *entry)
+void Callable::_register_call(const std::string &name, void *entry)
 {
     CallableRegistry *cr = reinterpret_cast<CallableRegistry *>(_call_registry.get());
-    (*cr)[key].reset(reinterpret_cast<CallableRegistryEntry *>(entry));
+    (*cr)[name].reset(reinterpret_cast<CallableRegistryEntry *>(entry));
 }
 
-PMCC Callable::_handle_call(const std::string &key, const PMCC &args)
+PMCC Callable::_handle_call(const std::string &name, const PMCC &args)
 {
     CallableRegistry *cr = reinterpret_cast<CallableRegistry *>(_call_registry.get());
-    if (cr->count(key) == 0) throw std::invalid_argument("Callable - no method registered for key: " + key);
-    return (*cr)[key]->call(args);
+    if (cr->count(name) == 0) throw std::invalid_argument("Callable - no method registered for name: " + name);
+    return (*cr)[name]->call(args);
 }
 
 CallableRegistryEntry::CallableRegistryEntry(void)

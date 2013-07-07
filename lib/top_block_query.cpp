@@ -36,7 +36,7 @@ static ptree query_blocks(ElementImpl *self, const ptree &)
     {
         BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
         ptree prop_e;
-        BOOST_FOREACH(const std::string &key, actor->data->block->get_registered_keys())
+        BOOST_FOREACH(const std::string &key, actor->data->block->get_registered_names())
         {
             ptree pname; pname.put_value(key);
             prop_e.push_back(std::make_pair("call", pname));

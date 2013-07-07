@@ -157,24 +157,24 @@ struct BlockPython : Block
 
     virtual void _Py_propagate_tags(const size_t which_input, const TagIter &iter) = 0;
 
-    PMCC _handle_call(const std::string &key, const PMCC &args)
+    PMCC _handle_call(const std::string &name, const PMCC &args)
     {
         PyTSPhondler phil;
-        return Block::_handle_call(key, args);
+        return Block::_handle_call(name, args);
     }
 
-    PMCC _handle_call_ts(const std::string &key, const PMCC &args)
+    PMCC _handle_call_ts(const std::string &name, const PMCC &args)
     {
         PyGILPhondler phil;
-        return this->_Py_handle_call_ts(key, args);
+        return this->_Py_handle_call_ts(name, args);
     }
 
-    virtual PMCC _Py_handle_call_ts(const std::string &key, const PMCC &args) = 0;
+    virtual PMCC _Py_handle_call_ts(const std::string &name, const PMCC &args) = 0;
 
-    //dummy registration so the C++ knows at least the key names
-    void dummy_register_call(const std::string &key)
+    //dummy registration so the C++ knows at least the name names
+    void dummy_register_call(const std::string &name)
     {
-        this->register_call(key, &BlockPython::__my_dummy);
+        this->register_call(name, &BlockPython::__my_dummy);
     }
 
     //dummy call that should not really be called!
@@ -286,13 +286,13 @@ class PyBlock(BlockPython):
                 t.offset -= self.get_consumed(i)
                 self.post_output_tag(o, t)
 
-    def _Py_handle_call_ts(self, key, args):
-        call = self.__call_registry[key]
+    def _Py_handle_call_ts(self, name, args):
+        call = self.__call_registry[name]
         pyargs = args()
         pyret = call(*pyargs)
         return PMC_M(pyret)
 
-    def register_call(self, key, call):
-        self.dummy_register_call(key) #c++ knows key name
-        self.__call_registry[key] = call
+    def register_call(self, name, call):
+        self.dummy_register_call(name) #c++ knows name name
+        self.__call_registry[name] = call
 %}
