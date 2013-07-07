@@ -9,11 +9,11 @@ class MyBlock(gras.Block):
     def __init__(self):
         gras.Block.__init__(self, "MyBlock", out_sig=[numpy.uint32], in_sig=[numpy.uint32])
         self.numeric_value = 0
-        self.register_getter("numeric_value", self.get_numeric_value)
-        self.register_setter("numeric_value", self.set_numeric_value)
+        self.register_call("get_numeric_value", self.get_numeric_value)
+        self.register_call("set_numeric_value", self.set_numeric_value)
         self.vector_value = [0]
-        self.register_getter("vector_value", self.get_vector_value)
-        self.register_setter("vector_value", self.set_vector_value)
+        self.register_call("get_vector_value", self.get_vector_value)
+        self.register_call("set_vector_value", self.set_vector_value)
 
     def work(self, ins, outs):
         n = min(len(ins[0]), len(outs[0]))
@@ -85,37 +85,37 @@ class QueryTest(unittest.TestCase):
 
         #set the integer property
         self.tb.query(dict(
-            path="/props.json",
+            path="/calls.json",
             block='test_numeric_query',
-            key='numeric_value',
-            value=42,
+            name='set_numeric_value',
+            args=[42],
         ))
         self.assertEqual(block.numeric_value, 42)
 
         #get the integer property
-        block.set('numeric_value', 21)
+        block.set_numeric_value(21)
         result = self.tb.query(dict(
-            path="/props.json",
+            path="/calls.json",
             block='test_numeric_query',
-            key='numeric_value',
+            name='get_numeric_value',
         ))
         self.assertEqual(result['value'], 21)
 
         #set the complex property
         self.tb.query(dict(
-            path="/props.json",
+            path="/calls.json",
             block='test_numeric_query',
-            key='numeric_value',
-            value='(0, 42)',
+            name='set_numeric_value',
+            args=['(0, 42)'],
         ))
         self.assertEqual(block.numeric_value, 42j)
 
         #get the complex property
-        block.set('numeric_value', 21j)
+        block.set_numeric_value(21j)
         result = self.tb.query(dict(
-            path="/props.json",
+            path="/calls.json",
             block='test_numeric_query',
-            key='numeric_value',
+            name='get_numeric_value',
         ))
         self.assertEqual(result['value'], '(0,21)')
 
@@ -129,19 +129,19 @@ class QueryTest(unittest.TestCase):
 
         #set the vector property
         self.tb.query(dict(
-            path="/props.json",
+            path="/calls.json",
             block='test_vector_query',
-            key='vector_value',
-            value=[1, 2, 3, 4, 5],
+            name='set_vector_value',
+            args=[[1, 2, 3, 4, 5]],
         ))
         self.assertEqual(list(block.vector_value), [1, 2, 3, 4, 5])
 
         #get the vector property
-        block.set('vector_value', [6, 7, 8, 9])
+        block.set_vector_value([6, 7, 8, 9])
         result = self.tb.query(dict(
-            path="/props.json",
+            path="/calls.json",
             block='test_vector_query',
-            key='vector_value',
+            name='get_vector_value',
         ))
         self.assertEqual(list(result['value']), [6, 7, 8, 9])
 

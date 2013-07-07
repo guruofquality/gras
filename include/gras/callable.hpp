@@ -6,6 +6,7 @@
 #include <gras/gras.hpp>
 #include <PMC/PMC.hpp>
 #include <boost/shared_ptr.hpp>
+#include <vector>
 #include <string>
 
 namespace gras
@@ -34,11 +35,22 @@ namespace gras
 class GRAS_API Callable
 {
 public:
+
     //! Default constructor
     Callable(void);
 
     //! Destructor (virtual for subclasses)
     virtual ~Callable(void);
+
+    //! Get a list of keys for registered calls
+    std::vector<std::string> get_registered_keys(void) const;
+
+protected:
+    /*!
+     * Unregister a previously registered call.
+     * Throws if the key is not found in the registry.
+     */
+    void unregister_call(const std::string &key);
 
     /*******************************************************************
      * Register API - don't look here, template magic, not helpful

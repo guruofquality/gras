@@ -170,6 +170,18 @@ struct BlockPython : Block
     }
 
     virtual PMCC _Py_handle_call_ts(const std::string &key, const PMCC &args) = 0;
+
+    //dummy registration so the C++ knows at least the key names
+    void dummy_register_call(const std::string &key)
+    {
+        this->register_call(key, &BlockPython::__my_dummy);
+    }
+
+    //dummy call that should not really be called!
+    void __my_dummy(void)
+    {
+        throw std::runtime_error("BlockPython dummy method called -- should not happen!");
+    }
 };
 
 }
@@ -281,5 +293,6 @@ class PyBlock(BlockPython):
         return PMC_M(pyret)
 
     def register_call(self, key, call):
+        self.dummy_register_call(key) #c++ knows key name
         self.__call_registry[key] = call
 %}
