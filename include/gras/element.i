@@ -12,6 +12,8 @@
 namespace gras
 {
     %ignore Element::set_container;
+    %ignore Callable::x;
+    %ignore Callable::register_call;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -23,9 +25,10 @@ namespace gras
 // Export swig element comprehension
 ////////////////////////////////////////////////////////////////////////
 %include <std_string.i>
-%include <gras/gras.hpp>
-%include <gras/element.hpp>
 %import <PMC/PMC.i>
+%include <gras/gras.hpp>
+%include <gras/callable.hpp>
+%include <gras/element.hpp>
 
 ////////////////////////////////////////////////////////////////////////
 // Operator overloads for Element

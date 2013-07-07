@@ -105,7 +105,7 @@ struct GRAS_API Element : Callable, boost::shared_ptr<ElementImpl>
     void adopt_element(const std::string &name, const Element &child);
 
     /*!
-     * Locate a block in the element tree hierarchy.
+     * Locate an element in the element tree hierarchy.
      *
      * Paths are unix style, absolte and relatives paths are possible.
      * This call throws an invalid argument when bad paths are given.
@@ -113,10 +113,10 @@ struct GRAS_API Element : Callable, boost::shared_ptr<ElementImpl>
      * Example path: /my_hier_block/my_block0
      * Example path: ../my_block1
      *
-     * \param path a path to a block (leaf) in the tree
-     * \return a pointer to the block
+     * \param path a path to an element (leaf) in the tree
+     * \return a pointer to the element object
      */
-    Block *locate_block(const std::string &path);
+    Element *locate_element(const std::string &path);
 
 };
 

@@ -59,27 +59,27 @@ class BlockPropsTest(unittest.TestCase):
         my_block.x("set_foo", 42)
         self.assertEqual(my_block.x("get_foo"), 42)
 
-        my_block0 = tb.locate_block('/my_hier/my_block')
+        my_block0 = tb.locate_element('/my_hier/my_block')
         self.assertEqual(my_block0.x("get_foo"), 42)
 
-        my_block1 = hb.locate_block('my_block')
+        my_block1 = hb.locate_element('my_block')
         self.assertEqual(my_block1.x("get_foo"), 42)
 
-        my_block2 = hb.locate_block('./../my_hier/my_block')
+        my_block2 = hb.locate_element('./../my_hier/my_block')
         self.assertEqual(my_block2.x("get_foo"), 42)
 
         threw = False
-        try: hb.locate_block('../../my_hier/my_block')
+        try: hb.locate_element('../../my_hier/my_block')
         except: threw = True
         self.assertTrue(threw)
 
         threw = False
-        try: hb.locate_block('../../my_hier/my_block0')
+        try: hb.locate_element('../../my_hier/my_block0')
         except: threw = True
         self.assertTrue(threw)
 
         threw = False
-        try: hb.locate_block('../../my_hier/my_block/test')
+        try: hb.locate_element('../../my_hier/my_block/test')
         except: threw = True
         self.assertTrue(threw)
 

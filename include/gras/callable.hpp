@@ -31,8 +31,9 @@ namespace gras
  *  - The overloaded () operator sucks with pointers.
  *  - The overloaded () operator has template issues.
  */
-struct GRAS_API Callable
+class GRAS_API Callable
 {
+public:
     //! Default constructor
     Callable(void);
 
@@ -42,6 +43,7 @@ struct GRAS_API Callable
     /*******************************************************************
      * Register API - don't look here, template magic, not helpful
      ******************************************************************/
+protected:
     template <typename ClassType, typename ReturnType>
     void register_call(const std::string &key, ReturnType(ClassType::*fcn)(void));
 
@@ -69,6 +71,7 @@ struct GRAS_API Callable
     /*******************************************************************
      * Call API - don't look here, template magic, not helpful
      ******************************************************************/
+public:
     template <typename ReturnType>
     ReturnType x(const std::string &key);
 
@@ -96,8 +99,11 @@ struct GRAS_API Callable
     /*******************************************************************
      * Private registration hooks
      ******************************************************************/
+protected:
     void _register_call(const std::string &, void *);
+public:
     virtual PMCC _handle_call(const std::string &, const PMCC &);
+private:
     boost::shared_ptr<void> _call_registry;
 };
 

@@ -43,6 +43,7 @@ struct ElementImpl
     //element tree stuff
     Element parent;
     std::map<std::string, Element> children;
+    Element *self;
 
     //things may be in this element
     boost::shared_ptr<Apology::Worker> worker;
