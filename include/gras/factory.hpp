@@ -39,10 +39,8 @@ namespace gras
  * Example call into the factory:
  *  gras::Element *my_block = gras::Factory::make("make_my_block", arg0, arg1);
  */
-class GRAS_API Factory : Callable
+struct GRAS_API Factory
 {
-public:
-
     /*******************************************************************
      * Register API - don't look here, template magic, not helpful
      ******************************************************************/
@@ -73,9 +71,11 @@ public:
     template <typename Arg0, typename Arg1, typename Arg2>
     static Element *make(const std::string &name, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2);
 
-private:
+    /*******************************************************************
+     * Private registration hooks
+     ******************************************************************/
     static void _register_make(const std::string &, void *);
-    static Element *_make(const std::string &, const PMCC &);
+    static Element *_handle_make(const std::string &, const PMCC &);
 };
 
 }

@@ -38,7 +38,7 @@ void Factory::_register_make(const std::string &name, void *entry)
     get_factory_registry()[name].reset(reinterpret_cast<FactoryRegistryEntry *>(entry));
 }
 
-Element *Factory::_make(const std::string &name, const PMCC &args)
+Element *Factory::_handle_make(const std::string &name, const PMCC &args)
 {
     boost::mutex::scoped_lock l(mutex);
     if (get_factory_registry().count(name) == 0)

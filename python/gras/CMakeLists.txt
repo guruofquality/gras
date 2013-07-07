@@ -20,6 +20,7 @@ file(GLOB GR_SWIG_SOURCE_DEPS "${GRAS_SOURCE_DIR}/include/gras/*.i")
 
 GR_SWIG_MAKE(GRAS_Tags GRAS_Tags.i)
 GR_SWIG_MAKE(GRAS_TimeTag GRAS_TimeTag.i)
+GR_SWIG_MAKE(GRAS_Factory GRAS_Factory.i)
 GR_SWIG_MAKE(GRAS_Element GRAS_Element.i)
 GR_SWIG_MAKE(GRAS_Block GRAS_Block.i)
 GR_SWIG_MAKE(GRAS_HierBlock GRAS_HierBlock.i)
@@ -33,6 +34,7 @@ GR_SWIG_INSTALL(
     GRAS_Tags
     GRAS_TimeTag
     GRAS_Element
+    GRAS_Factory
     GRAS_Block
     GRAS_HierBlock
     GRAS_PyBlock

@@ -116,7 +116,7 @@ inline
 Element *Factory::make(const std::string &name)
 {
     PMCList args(0);
-    return Factory::_make(name, PMC_M(args));
+    return Factory::_handle_make(name, PMC_M(args));
 }
 
 template <typename Arg0>
@@ -124,7 +124,7 @@ Element *Factory::make(const std::string &name, const Arg0 &a0)
 {
     PMCList args(1);
     args[0] = PMC_M(a0);
-    return Factory::_make(name, PMC_M(args));
+    return Factory::_handle_make(name, PMC_M(args));
 }
 
 template <typename Arg0, typename Arg1>
@@ -133,7 +133,7 @@ Element *Factory::make(const std::string &name, const Arg0 &a0, const Arg1 &a1)
     PMCList args(2);
     args[0] = PMC_M(a0);
     args[1] = PMC_M(a1);
-    return Factory::_make(name, PMC_M(args));
+    return Factory::_handle_make(name, PMC_M(args));
 }
 
 template <typename Arg0, typename Arg1, typename Arg2>
@@ -143,7 +143,7 @@ Element *Factory::make(const std::string &name, const Arg0 &a0, const Arg1 &a1, 
     args[0] = PMC_M(a0);
     args[1] = PMC_M(a1);
     args[2] = PMC_M(a2);
-    return Factory::_make(name, PMC_M(args));
+    return Factory::_handle_make(name, PMC_M(args));
 }
 
 }
