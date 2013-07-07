@@ -27,10 +27,10 @@ class BlockPropsTest(unittest.TestCase):
         my_block = MyBlock()
         self.assertEqual(my_block.foo, 0)
 
-        my_block.x("set_foo", 42)
+        my_block.set_foo(42)
         self.assertEqual(my_block.foo, 42)
 
-        my_foo = my_block.x("get_foo")
+        my_foo = my_block.get_foo()
         self.assertEqual(my_foo, 42)
 
     def test_property_errors(self):
@@ -38,13 +38,13 @@ class BlockPropsTest(unittest.TestCase):
 
         #property does not exist
         threw = False
-        try: my_block.x("get_bar")
+        try: my_block.get_bar()
         except: threw = True
         self.assertTrue(threw)
 
         #wrong type for property
         threw = False
-        try: my_block.x("set_foo", None)
+        try: my_block.set_foo(None)
         except: threw = True
         self.assertTrue(threw)
 
@@ -56,17 +56,17 @@ class BlockPropsTest(unittest.TestCase):
         tb.adopt_element("my_hier", hb)
         hb.adopt_element("my_block", my_block)
 
-        my_block.x("set_foo", 42)
-        self.assertEqual(my_block.x("get_foo"), 42)
+        my_block.set_foo(42)
+        self.assertEqual(my_block.get_foo(), 42)
 
         my_block0 = tb.locate_element('/my_hier/my_block')
-        self.assertEqual(my_block0.x("get_foo"), 42)
+        self.assertEqual(my_block0.get_foo(), 42)
 
         my_block1 = hb.locate_element('my_block')
-        self.assertEqual(my_block1.x("get_foo"), 42)
+        self.assertEqual(my_block1.get_foo(), 42)
 
         my_block2 = hb.locate_element('./../my_hier/my_block')
-        self.assertEqual(my_block2.x("get_foo"), 42)
+        self.assertEqual(my_block2.get_foo(), 42)
 
         threw = False
         try: hb.locate_element('../../my_hier/my_block')

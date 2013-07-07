@@ -45,6 +45,9 @@ from PMC import *
             pmcret = self._handle_call(key, pmcargs)
             return pmcret()
 
+        def __getattr__(self, name):
+            return lambda *args: self.x(name, *args)
+
         def __eq__(self, rhs):
             if not isinstance(rhs, Element): return False
             return self.equals(rhs)
