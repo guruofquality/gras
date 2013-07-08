@@ -2,35 +2,41 @@
 # Include swig generation macros
 ########################################################################
 find_package(SWIG)
-find_package(PythonLibs)
-if(NOT SWIG_FOUND OR NOT PYTHONLIBS_FOUND)
+if(NOT SWIG_FOUND)
     return()
 endif()
-include(GrSwig)
+
+find_package(PythonLibs)
+if(NOT PYTHONLIBS_FOUND)
+    return()
+endif()
+
+include(UseSWIG)
 include(GrPython)
-find_package(Boost) #for headers
 
 ########################################################################
-# setup SWIG build
+# Local includes
 ########################################################################
-list(APPEND GR_SWIG_INCLUDE_DIRS ${GRAS_INCLUDE_DIRS})
-list(APPEND GR_SWIG_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
-set(GR_SWIG_LIBRARIES gras)
-file(GLOB GR_SWIG_SOURCE_DEPS "${GRAS_SOURCE_DIR}/include/gras/*.i")
+list(APPEND CMAKE_SWIG_INC_FLAGS "-I${PMC_SOURCE_DIR}/include")
+list(APPEND CMAKE_SWIG_INC_FLAGS "-I${GRAS_SOURCE_DIR}/include")
+include_directories(${GRAS_INCLUDE_DIRS})
 
-GR_SWIG_MAKE(GRAS_Tags GRAS_Tags.i)
-GR_SWIG_MAKE(GRAS_TimeTag GRAS_TimeTag.i)
-GR_SWIG_MAKE(GRAS_Factory GRAS_Factory.i)
-GR_SWIG_MAKE(GRAS_Element GRAS_Element.i)
-GR_SWIG_MAKE(GRAS_Block GRAS_Block.i)
-GR_SWIG_MAKE(GRAS_HierBlock GRAS_HierBlock.i)
-GR_SWIG_MAKE(GRAS_TopBlock GRAS_TopBlock.i)
-GR_SWIG_MAKE(GRAS_PyBlock GRAS_PyBlock.i)
-GR_SWIG_MAKE(GRAS_PyHierBlocks GRAS_PyHierBlocks.i)
-GR_SWIG_MAKE(GRAS_ThreadPool GRAS_ThreadPool.i)
-GR_SWIG_MAKE(GRAS_SBuffer GRAS_SBuffer.i)
-GR_SWIG_INSTALL(
-    TARGETS
+########################################################################
+# Python library setup
+########################################################################
+include_directories(${PYTHON_INCLUDE_PATH})
+include_directories(${PYTHON_INCLUDE_DIRS})
+
+########################################################################
+# Finding Boost headers
+########################################################################
+find_package(Boost)
+include_directories(${Boost_INCLUDE_DIRS})
+
+########################################################################
+# swig build modules
+########################################################################
+set(gras_swig_modules
     GRAS_Tags
     GRAS_TimeTag
     GRAS_Element
@@ -42,14 +48,38 @@ GR_SWIG_INSTALL(
     GRAS_TopBlock
     GRAS_ThreadPool
     GRAS_SBuffer
-    DESTINATION ${GR_PYTHON_DIR}/gras
-    COMPONENT ${GRAS_COMP_PYTHON}
 )
 
+file(GLOB pmc_i_files "${PMC_SOURCE_DIR}/include/PMC/*.i")
+file(GLOB gras_i_files "${GRAS_SOURCE_DIR}/include/gras/*.i")
+
+foreach(gras_swig_module ${gras_swig_modules})
+    message(STATUS "Configuring swig python module ${gras_swig_module}...")
+
+    #set the C++ property on the swig .i file so it builds
+    set_source_files_properties(${gras_swig_module}.i PROPERTIES CPLUSPLUS ON)
+
+    set(CMAKE_SWIG_FLAGS -fvirtual -module ${gras_swig_module} ${CMAKE_SWIG_INC_FLAGS})
+    set(SWIG_MODULE_${gras_swig_module}_EXTRA_DEPS ${pmc_i_files} ${gras_i_files})
+    SWIG_ADD_MODULE(${gras_swig_module} python ${gras_swig_module}.i)
+    SWIG_LINK_LIBRARIES(${gras_swig_module} ${GRAS_LIBRARIES} ${PYTHON_LIBRARIES})
+
+    install(
+        TARGETS ${SWIG_MODULE_${gras_swig_module}_REAL_NAME}
+        DESTINATION ${GR_PYTHON_DIR}/gras
+        COMPONENT ${GRAS_COMP_PYTHON}
+    )
+    install(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/${gras_swig_module}.py
+        DESTINATION ${GR_PYTHON_DIR}/gras
+        COMPONENT ${GRAS_COMP_PYTHON}
+    )
+endforeach(gras_swig_module)
+
 ########################################################################
-# Install rules
+# install other python files
 ########################################################################
-GR_PYTHON_INSTALL(
+INSTALL(
     FILES __init__.py GRAS_Utils.py
     DESTINATION ${GR_PYTHON_DIR}/gras
     COMPONENT ${GRAS_COMP_PYTHON}
