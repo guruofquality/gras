@@ -5,26 +5,22 @@
 
 using namespace gras;
 
-PropertyRegistry::PropertyRegistry(void){}
-PropertyRegistry::~PropertyRegistry(void){}
-
 /***********************************************************************
  * The actual thread-safe implementation of property handling
  **********************************************************************/
-void BlockActor::handle_prop_access(
-    const PropAccessMessage &message,
+void BlockActor::handle_callable(
+    const CallableMessage &message,
     const Theron::Address from
 )
 {
     //setup reply
-    PropAccessMessage reply;
-    reply.set = not message.set;
+    CallableMessage reply;
     reply.key = message.key;
 
     //call into the handler overload to do the property access
     try
     {
-        reply.value = data->block->_handle_prop_access(message.key, message.value, message.set);
+        reply.ret = data->block->_handle_call_ts(message.key, message.args);
     }
     catch (const std::exception &e)
     {
@@ -43,73 +39,46 @@ void BlockActor::handle_prop_access(
     this->Send(SelfKickMessage(), this->GetAddress());
 }
 
-PMCC Block::_handle_prop_access(const std::string &key, const PMCC &value, const bool set)
+PMCC Block::_handle_call_ts(const std::string &key, const PMCC &args)
 {
-    const PropertyRegistryPair &pair = (*this)->block_data->property_registry[key];
-    PropertyRegistrySptr pr = (set)? pair.setter : pair.getter;
-    if (not pr) throw std::invalid_argument("no property registered for key: " + key);
-    if (set)
-    {
-        pr->set(value);
-        return PMCC();
-    }
-    return pr->get();
+    //got here, so we call the base class unless this got overloaded
+    return Callable::_handle_call(key, args);
 }
 
 /***********************************************************************
  * A special receiver to handle the property access result
  **********************************************************************/
-struct PropAccessReceiver : Theron::Receiver
+struct CallableReceiver : Theron::Receiver
 {
-    PropAccessReceiver(void)
+    CallableReceiver(void)
     {
-        this->RegisterHandler(this, &PropAccessReceiver::handle_prop_access);
+        this->RegisterHandler(this, &CallableReceiver::handle_callable);
     }
 
-    void handle_prop_access(const PropAccessMessage &msg, const Theron::Address)
+    void handle_callable(const CallableMessage &msg, const Theron::Address)
     {
         this->message = msg;
     }
 
-    PropAccessMessage message;
+    CallableMessage message;
 };
 
 /***********************************************************************
  * Handle the get and set calls from the user's call-stack
  **********************************************************************/
-static PMCC prop_access_dispatcher(boost::shared_ptr<BlockActor> actor, const std::string &key, const PMCC &value, const bool set)
+PMCC Block::_handle_call(const std::string &key, const PMCC &args)
 {
-    PropAccessReceiver receiver;
-    PropAccessMessage message;
+    CallableReceiver receiver;
+    CallableMessage message;
+    boost::shared_ptr<BlockActor> actor = (*this)->block_actor;
     message.prio_token = actor->prio_token;
-    message.set = set;
     message.key = key;
-    message.value = value;
+    message.args = args;
     actor->GetFramework().Send(message, receiver.GetAddress(), actor->GetAddress());
     receiver.Wait();
     if (not receiver.message.error.empty())
     {
         throw std::runtime_error(receiver.message.error);
     }
-    return receiver.message.value;
-}
-
-void Block::_register_getter(const std::string &key, void *pr)
-{
-    (*this)->block_data->property_registry[key].getter.reset(reinterpret_cast<PropertyRegistry *>(pr));
-}
-
-void Block::_register_setter(const std::string &key, void *pr)
-{
-    (*this)->block_data->property_registry[key].setter.reset(reinterpret_cast<PropertyRegistry *>(pr));
-}
-
-void Block::_set_property(const std::string &key, const PMCC &value)
-{
-    prop_access_dispatcher((*this)->block_actor, key, value, true);
-}
-
-PMCC Block::_get_property(const std::string &key)
-{
-    return prop_access_dispatcher((*this)->block_actor, key, PMCC(), false);
+    return receiver.message.ret;
 }

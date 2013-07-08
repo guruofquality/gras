@@ -4,12 +4,14 @@
 install(FILES
 
     exception.i
+    callable.hpp
     chrono.hpp
     block.hpp
     block_config.hpp
     block.i
     element.hpp
     element.i
+    factory.hpp
     gras.hpp
     hier_block.hpp
     hier_block.i
@@ -34,9 +36,11 @@ install(FILES
 
 install(FILES
 
+    detail/callable.hpp
     detail/block.hpp
     detail/chrono.hpp
     detail/element.hpp
+    detail/factory.hpp
     detail/sbuffer.hpp
     detail/work_buffer.hpp
 

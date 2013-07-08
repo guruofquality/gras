@@ -12,7 +12,7 @@
 %feature("nodirector") gras::BlockPython::notify_inactive;
 %feature("nodirector") gras::BlockPython::notify_topology;
 %feature("nodirector") gras::BlockPython::work;
-%feature("nodirector") gras::BlockPython::_handle_prop_access;
+%feature("nodirector") gras::BlockPython::_handle_call_ts;
 
 ////////////////////////////////////////////////////////////////////////
 // http://www.swig.org/Doc2.0/Library.html#Library_stl_exceptions
@@ -157,45 +157,31 @@ struct BlockPython : Block
 
     virtual void _Py_propagate_tags(const size_t which_input, const TagIter &iter) = 0;
 
-    void _set_property(const std::string &key, const PMCC &value)
+    PMCC _handle_call(const std::string &name, const PMCC &args)
     {
         PyTSPhondler phil;
-        return Block::_set_property(key, value);
+        return Block::_handle_call(name, args);
     }
 
-    PMCC _get_property(const std::string &key)
-    {
-        PyTSPhondler phil;
-        return Block::_get_property(key);
-    }
-
-    PMCC _handle_prop_access(const std::string &key, const PMCC &value, const bool set)
+    PMCC _handle_call_ts(const std::string &name, const PMCC &args)
     {
         PyGILPhondler phil;
-        return this->_Py_handle_prop_access(key, value, set);
+        return this->_Py_handle_call_ts(name, args);
     }
 
-    virtual PMCC _Py_handle_prop_access(const std::string &key, const PMCC &value, const bool set) = 0;
+    virtual PMCC _Py_handle_call_ts(const std::string &name, const PMCC &args) = 0;
 
-    void dummy_setter(const PMCC &)
+    //dummy registration so the C++ knows at least the name names
+    void dummy_register_call(const std::string &name)
     {
-        //NOP
-    }
-    PMCC dummy_getter(void)
-    {
-        return PMC();
+        this->register_call(name, &BlockPython::__my_dummy);
     }
 
-    void _Py_register_dummy_setter(const std::string &key)
+    //dummy call that should not really be called!
+    void __my_dummy(void)
     {
-        this->register_setter(key, &BlockPython::dummy_setter);
+        throw std::runtime_error("BlockPython dummy method called -- should not happen!");
     }
-
-    void _Py_register_dummy_getter(const std::string &key)
-    {
-        this->register_getter(key, &BlockPython::dummy_getter);
-    }
-
 };
 
 }
@@ -221,8 +207,7 @@ class PyBlock(BlockPython):
         BlockPython.__init__(self, name)
         self.set_input_signature(in_sig)
         self.set_output_signature(out_sig)
-        self.__getter_registry = dict()
-        self.__setter_registry = dict()
+        self.__call_registry = dict()
 
     def set_input_signature(self, sig):
         self.__in_sig = sig_to_dtype_sig(sig)
@@ -301,20 +286,13 @@ class PyBlock(BlockPython):
                 t.offset -= self.get_consumed(i)
                 self.post_output_tag(o, t)
 
-    def _Py_handle_prop_access(self, key, value, set):
-        if set:
-            setter = self.__setter_registry[key]
-            setter(value())
-            return PMCC()
-        else:
-            getter = self.__getter_registry[key]
-            return PMC_M(getter())
+    def _Py_handle_call_ts(self, name, args):
+        call = self.__call_registry[name]
+        pyargs = args()
+        pyret = call(*pyargs)
+        return PMC_M(pyret)
 
-    def register_getter(self, key, getter):
-        self._Py_register_dummy_getter(key)
-        self.__getter_registry[key] = getter
-
-    def register_setter(self, key, setter):
-        self._Py_register_dummy_setter(key)
-        self.__setter_registry[key] = setter
+    def register_call(self, name, call):
+        self.dummy_register_call(name) #c++ knows name name
+        self.__call_registry[name] = call
 %}

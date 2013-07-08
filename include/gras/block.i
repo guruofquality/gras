@@ -19,7 +19,7 @@
 %include <gras/block.hpp>
 
 ////////////////////////////////////////////////////////////////////////
-// Create pythonic gateway to get and set
+// Create pythonic methods
 ////////////////////////////////////////////////////////////////////////
 %pythoncode %{
 from PMC import *
@@ -28,12 +28,6 @@ from PMC import *
 {
     %insert("python")
     %{
-        def set(self, key, value):
-            self._set_property(key, PMC_M(value))
-
-        def get(self, key):
-            return self._get_property(key)()
-
         def post_output_msg(self, which_output, value):
             if not isinstance(value, PMCC): value = PMC_M(value)
             self._post_output_msg(which_output, value)
@@ -41,7 +35,6 @@ from PMC import *
         def post_input_msg(self, which_input, value):
             if not isinstance(value, PMCC): value = PMC_M(value)
             self._post_input_msg(which_input, value)
-
     %}
 }
 

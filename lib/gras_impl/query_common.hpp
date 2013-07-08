@@ -11,7 +11,7 @@
 
 namespace gras
 {
-    PMCC ptree_to_pmc(const boost::property_tree::ptree &value, const std::type_info &hint);
+    PMCC ptree_to_pmc(const boost::property_tree::ptree &value);
     boost::property_tree::ptree pmc_to_ptree(const PMCC &value);
 
     boost::property_tree::ptree json_to_ptree(const std::string &s);

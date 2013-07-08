@@ -36,25 +36,10 @@ static ptree query_blocks(ElementImpl *self, const ptree &)
     {
         BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
         ptree prop_e;
-        typedef std::pair<std::string, PropertyRegistryPair> PropRegistryKVP;
-        BOOST_FOREACH(const PropRegistryKVP &p, actor->data->property_registry)
+        BOOST_FOREACH(const std::string &key, actor->data->block->get_registered_names())
         {
-            ptree prop_attrs;
-            if (p.second.setter)
-            {
-                ptree type;
-                type.put_value(p.second.setter->type().name());
-                prop_attrs.push_back(std::make_pair("setter", type));
-            }
-            if (p.second.getter)
-            {
-                ptree type;
-                type.put_value(p.second.getter->type().name());
-                prop_attrs.push_back(std::make_pair("getter", type));
-            }
-            ptree block_attrs;
-            block_attrs.push_back(std::make_pair(p.first, prop_attrs));
-            prop_e.push_back(std::make_pair("props", block_attrs));
+            ptree pname; pname.put_value(key);
+            prop_e.push_back(std::make_pair("call", pname));
         }
         e.push_back(std::make_pair(actor->data->block->get_uid(), prop_e));
     }
@@ -172,30 +157,28 @@ static ptree query_stats(ElementImpl *self, const ptree &query)
     return root;
 }
 
-static ptree query_props(ElementImpl *self, const ptree &query)
+static ptree query_calls(ElementImpl *self, const ptree &query)
 {
     ptree root;
     const std::string block_id = query.get<std::string>("block");
-    const std::string prop_key = query.get<std::string>("key");
-    const bool set = query.count("value") != 0;
+    const std::string call_name = query.get<std::string>("name");
     BOOST_FOREACH(Apology::Worker *w, self->executor->get_workers())
     {
         BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
         if (actor->data->block->get_uid() != block_id) continue;
-        if (set)
+        PMCList args;
+        if (query.count("args") != 0)
         {
-            const std::type_info &t = actor->data->property_registry[prop_key].setter->type();
-            const PMCC p = ptree_to_pmc(query.get_child("value"), t);
-            actor->data->block->Block::_set_property(prop_key, p);
+            BOOST_FOREACH(const ptree::value_type &elem, query.get_child("args"))
+            {
+                args.push_back(ptree_to_pmc(elem.second));
+            }
         }
-        else
-        {
-            PMCC p = actor->data->block->Block::_get_property(prop_key);
-            ptree v = pmc_to_ptree(p);
-            root.push_back(std::make_pair("block", query.get_child("block")));
-            root.push_back(std::make_pair("key", query.get_child("key")));
-            root.push_back(std::make_pair("value", v));
-        }
+        const PMCC p = actor->data->block->Block::_handle_call(call_name, PMC_M(args));
+        ptree v = pmc_to_ptree(p);
+        root.push_back(std::make_pair("block", query.get_child("block")));
+        root.push_back(std::make_pair("name", query.get_child("name")));
+        root.push_back(std::make_pair("value", v));
     }
     return root;
 }
@@ -265,6 +248,6 @@ std::string TopBlock::query(const std::string &args)
     if (path == "/topology.dot") return query_topology(this->get(), query);
     if (path == "/blocks.json") result = query_blocks(this->get(), query);
     if (path == "/stats.json") result = query_stats(this->get(), query);
-    if (path == "/props.json") result = query_props(this->get(), query);
+    if (path == "/calls.json") result = query_calls(this->get(), query);
     return ptree_to_json(result);
 }

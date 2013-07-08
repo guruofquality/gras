@@ -18,13 +18,6 @@
 namespace gras
 {
 
-typedef boost::shared_ptr<PropertyRegistry> PropertyRegistrySptr;
-struct PropertyRegistryPair
-{
-    PropertyRegistrySptr setter;
-    PropertyRegistrySptr getter;
-};
-
 enum BlockState
 {
     BLOCK_STATE_INIT,
@@ -79,9 +72,6 @@ struct BlockData
     GlobalBlockConfig global_config;
 
     std::vector<std::vector<OutputHintMessage> > output_allocation_hints;
-
-    //property stuff
-    std::map<std::string, PropertyRegistryPair> property_registry;
 
     BlockStats stats;
 };

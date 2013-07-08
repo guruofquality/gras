@@ -52,7 +52,7 @@ struct BlockActor : Theron::Actor
         this->RegisterHandler(this, &BlockActor::handle_output_alloc);
         this->RegisterHandler(this, &BlockActor::handle_output_update);
 
-        this->RegisterHandler(this, &BlockActor::handle_prop_access);
+        this->RegisterHandler(this, &BlockActor::handle_callable);
         this->RegisterHandler(this, &BlockActor::handle_self_kick);
         this->RegisterHandler(this, &BlockActor::handle_get_stats);
     }
@@ -82,7 +82,7 @@ struct BlockActor : Theron::Actor
     void handle_output_alloc(const OutputAllocMessage &, const Theron::Address);
     void handle_output_update(const OutputUpdateMessage &, const Theron::Address);
 
-    void handle_prop_access(const PropAccessMessage &, const Theron::Address);
+    void handle_callable(const CallableMessage &, const Theron::Address);
     void handle_self_kick(const SelfKickMessage &, const Theron::Address);
     void handle_get_stats(const GetStatsMessage &, const Theron::Address);
 

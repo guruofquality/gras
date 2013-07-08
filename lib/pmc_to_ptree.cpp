@@ -11,85 +11,45 @@
 
 using namespace boost::property_tree;
 
-PMCC gras::ptree_to_pmc(const ptree &value, const std::type_info &hint)
+PMCC gras::ptree_to_pmc(const ptree &value)
 {
-    //if the type is PMCC - educated guess and recursively call
-    if (hint == typeid(PMCC) or hint == typeid(PMC))
-    {
-        //single child
-        if (value.size() == 0)
-        {
-            //can we cast to number?
-            try{return ptree_to_pmc(value, typeid(double));}
-            catch(...){}
-
-            //can we cast to complex?
-            try{return ptree_to_pmc(value, typeid(std::complex<double>));}
-            catch(...){}
-
-            //then string
-            return ptree_to_pmc(value, typeid(std::string));
-        }
-        //array
-        else
-        {
-            try{return ptree_to_pmc(value, typeid(std::vector<std::complex<double> >));}
-            catch(...){}
-
-            try{return ptree_to_pmc(value, typeid(std::vector<double>));}
-            catch(...){}
-        }
-    }
 
     #define ptree_to_pmc_try(type) \
-    if (hint == typeid(type)) return PMC_M(value.get_value<type >());
+    try{return PMC_M(value.get_value<type >());} \
+    catch(...){}
 
-    //determine number
-    ptree_to_pmc_try(char);
-    ptree_to_pmc_try(signed char);
-    ptree_to_pmc_try(unsigned char);
-    ptree_to_pmc_try(signed short);
-    ptree_to_pmc_try(unsigned short);
-    ptree_to_pmc_try(signed int);
-    ptree_to_pmc_try(unsigned int);
-    ptree_to_pmc_try(signed long);
-    ptree_to_pmc_try(unsigned long);
-    ptree_to_pmc_try(signed long long);
-    ptree_to_pmc_try(unsigned long long);
-    ptree_to_pmc_try(float);
-    ptree_to_pmc_try(double);
-    ptree_to_pmc_try(std::complex<float>);
-    ptree_to_pmc_try(std::complex<double>);
-
-    //string
-    ptree_to_pmc_try(std::string);
-
-    //determine number vector
     #define ptree_to_pmc_tryv(type) \
-    if (hint == typeid(std::vector<type >)) \
-    { \
+    try{ \
         std::vector<type > vec; \
         BOOST_FOREACH(const ptree::value_type &elem, value) \
         { \
             vec.push_back(elem.second.get_value<type >()); \
         } \
         return PMC_M(vec); \
+    }catch(...){}
+
+    //single child
+    if (value.size() == 0)
+    {
+        //can we cast to integer?
+        ptree_to_pmc_try(long)
+
+        //can we cast to float?
+        ptree_to_pmc_try(double)
+
+        //can we cast to complex?
+        ptree_to_pmc_try(std::complex<double>)
+
+        //then string
+        ptree_to_pmc_try(std::string);
     }
-    ptree_to_pmc_tryv(char);
-    ptree_to_pmc_tryv(signed char);
-    ptree_to_pmc_tryv(unsigned char);
-    ptree_to_pmc_tryv(signed short);
-    ptree_to_pmc_tryv(unsigned short);
-    ptree_to_pmc_tryv(signed int);
-    ptree_to_pmc_tryv(unsigned int);
-    ptree_to_pmc_tryv(signed long);
-    ptree_to_pmc_tryv(unsigned long);
-    ptree_to_pmc_tryv(signed long long);
-    ptree_to_pmc_tryv(unsigned long long);
-    ptree_to_pmc_tryv(float);
-    ptree_to_pmc_tryv(double);
-    ptree_to_pmc_tryv(std::complex<float>);
-    ptree_to_pmc_tryv(std::complex<double>);
+    //array
+    else
+    {
+        ptree_to_pmc_tryv(long);
+        ptree_to_pmc_tryv(double);
+        ptree_to_pmc_tryv(std::complex<double>);
+    }
 
     //otherwise null -- will crap out
     return PMC();

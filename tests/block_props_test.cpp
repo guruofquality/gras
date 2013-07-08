@@ -11,8 +11,8 @@ struct MyBlock : gras::Block
         gras::Block("MyBlock")
     {
         foo = 0;
-        this->register_getter("foo", &MyBlock::get_foo);
-        this->register_setter("foo", &MyBlock::set_foo);
+        this->register_call("get_foo", &MyBlock::get_foo);
+        this->register_call("set_foo", &MyBlock::set_foo);
     }
 
     //dummy work
@@ -36,26 +36,11 @@ BOOST_AUTO_TEST_CASE(test_property_set_get_with_return)
     MyBlock my_block;
     BOOST_CHECK_EQUAL(my_block.foo, size_t(0));
 
-    my_block.set("foo", size_t(42));
+    my_block.x("set_foo", size_t(42));
     BOOST_CHECK_EQUAL(my_block.foo, size_t(42));
 
-    const size_t my_foo = my_block.get<size_t>("foo");
+    const size_t my_foo = my_block.x<size_t>("get_foo");
     BOOST_CHECK_EQUAL(my_foo, size_t(42));
-}
-
-BOOST_AUTO_TEST_CASE(test_property_set_get_with_reference)
-{
-    MyBlock my_block;
-    BOOST_CHECK_EQUAL(my_block.foo, size_t(0));
-
-    my_block.set("foo", size_t(42));
-    BOOST_CHECK_EQUAL(my_block.foo, size_t(42));
-
-    size_t my_foo; my_block.get("foo", my_foo);
-    BOOST_CHECK_EQUAL(my_foo, size_t(42));
-
-    double my_foo_d; my_block.get("foo", my_foo_d);
-    BOOST_CHECK_EQUAL(my_foo_d, double(42));
 }
 
 BOOST_AUTO_TEST_CASE(test_property_errors)
@@ -63,8 +48,8 @@ BOOST_AUTO_TEST_CASE(test_property_errors)
     MyBlock my_block;
 
     //property does not exist
-    BOOST_CHECK_THROW(my_block.get<size_t>("bar"), std::exception);
+    BOOST_CHECK_THROW(my_block.x<size_t>("get_bar"), std::exception);
 
     //wrong type for property
-    BOOST_CHECK_THROW(my_block.set("foo", "a string"), std::exception);
+    BOOST_CHECK_THROW(my_block.x("set_foo", "a string"), std::exception);
 }

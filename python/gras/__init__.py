@@ -10,6 +10,7 @@ from GRAS_SBuffer import SBufferConfig, SBuffer
 from GRAS_Tags import Tag, StreamTag, PacketMsg
 from GRAS_TimeTag import TimeTag
 from GRAS_Element import Element
+from GRAS_Factory import Factory
 import GRAS_Block
 import GRAS_HierBlock
 import GRAS_TopBlock

@@ -131,12 +131,12 @@ struct OutputUpdateMessage
 //-- do not ack
 //----------------------------------------------------------------------
 
-struct PropAccessMessage
+struct CallableMessage
 {
     Token prio_token;
-    bool set;
     std::string key;
-    PMCC value;
+    PMCC args;
+    PMCC ret;
     std::string error;
 };
 
@@ -182,7 +182,7 @@ THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputHintMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputAllocMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::OutputUpdateMessage);
 
-THERON_DECLARE_REGISTERED_MESSAGE(gras::PropAccessMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::CallableMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::SelfKickMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::GetStatsMessage);
 

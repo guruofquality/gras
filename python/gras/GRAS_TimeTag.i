@@ -1,9 +1,8 @@
 // Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
+%include <PMC/Registry.i>
 
 %include <gras/time_tag.i>
-
-%include <PMC/Registry.i>
 
 DECL_PMC_SWIG_TYPE(gras::TimeTag, swig_time_tag)
 

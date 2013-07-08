@@ -18,6 +18,7 @@ Element::Element(const std::string &name)
 {
     this->reset(new ElementImpl());
     (*this)->name = name;
+    (*this)->self = this;
     size_t which = 0;
     while (true)
     {
@@ -106,7 +107,7 @@ void Element::adopt_element(const std::string &name, const Element &child)
     (*this)->children[name] = child;
 }
 
-Block *Element::locate_block(const std::string &path)
+Element *Element::locate_element(const std::string &path)
 {
     //split the paths into nodes
     std::vector<std::string> nodes;
@@ -142,5 +143,5 @@ Block *Element::locate_block(const std::string &path)
     }
 
     //return block ptr as result
-    return elem->block_data->block;
+    return elem->self;
 }

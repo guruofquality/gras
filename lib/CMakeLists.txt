@@ -7,7 +7,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 ########################################################################
 # Setup Boost
 ########################################################################
-find_package(Boost COMPONENTS thread date_time regex system)
+find_package(Boost COMPONENTS thread date_time regex system filesystem)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 list(APPEND GRAS_LIBRARIES ${Boost_LIBRARIES})
@@ -37,12 +37,28 @@ file(GLOB apology_sources "${GRAS_SOURCE_DIR}/Apology/lib/*.cpp")
 list(APPEND GRAS_SOURCES ${apology_sources})
 
 ########################################################################
+# Setup Module Loader
+########################################################################
+file(TO_NATIVE_PATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/gras/modules" GRAS_MODULE_PATH)
+STRING(REPLACE "\\" "\\\\" GRAS_MODULE_PATH ${GRAS_MODULE_PATH})
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/module_loader.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/module_loader.cpp
+@ONLY)
+list(APPEND GRAS_SOURCES
+    ${CMAKE_CURRENT_BINARY_DIR}/module_loader.cpp
+)
+list(APPEND GRAS_LIBRARIES ${CMAKE_DL_LIBS})
+
+########################################################################
 # Append gras-core library sources
 ########################################################################
 list(APPEND GRAS_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/debug.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/callable.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/element.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/element_uid.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sbuffer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/circular_buffer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer_queue_circ.cpp

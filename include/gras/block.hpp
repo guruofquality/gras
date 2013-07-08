@@ -162,97 +162,6 @@ struct GRAS_API Block : Element
     void post_input_msg(const size_t which_input, const ValueType &value);
 
     /*******************************************************************
-     * The property interface:
-     * Provides polymorphic, thread-safe access to block properties.
-     ******************************************************************/
-
-    /*!
-     * Register property getter method into the property interface.
-     * Call register_getter() from the contructor of the block.
-     *
-     * Example register usage:
-     * this->register_getter("foo", &MyBlock::get_foo);
-     *
-     * Example method declaration:
-     * int get_foo(void);
-     *
-     * \param key the string to identify this property
-     * \param get the class method to get the property
-     */
-    template <typename ClassType, typename ValueType>
-    void register_getter(
-        const std::string &key,
-        ValueType(ClassType::*get)(void)
-    );
-
-    /*!
-     * Register property setter method into the property interface.
-     * Call register_setter() from the contructor of the block.
-     *
-     * Example register usage:
-     * this->register_setter("foo", &MyBlock::set_foo);
-     *
-     * Example method declaration:
-     * void set_foo(const int &new_foo);
-     *
-     * \param key the string to identify this property
-     * \param set the class method to set the property
-     */
-    template <typename ClassType, typename ValueType>
-    void register_setter(
-        const std::string &key,
-        void(ClassType::*set)(const ValueType &)
-    );
-
-    /*!
-     * Set the value of a registered property.
-     *
-     * This call is synchronous and will not return until
-     * the block has actually called the registered set operation.
-     *
-     * Note: the user must be careful to only use a value
-     * that is of the exact type associated with this property.
-     * Otherwise, set_property with throw a type error.
-     *
-     * Examples with explicit argument types:
-     * my_block->set<size_t>("foo", 42);
-     * my_block->set("foo", size_t(42));
-     *
-     * \param key the string to identify this property
-     * \param value the new value to set to this property
-     */
-    template <typename ValueType>
-    void set(const std::string &key, const ValueType &value);
-
-    /*!
-     * Get the value of a registered property with reference semantics.
-     *
-     * Note: the user must be careful to only use a value
-     * that is of the exact type associated with this property.
-     * Otherwise, get_property with throw a type error.
-     *
-     * Example getting property with reference semantics:
-     * size_t foo; my_block->get("foo", foo);
-     *
-     * \param key the string to identify this property
-     * \param value a reference to set to the result
-     */
-    template <typename ValueType>
-    void get(const std::string &key, ValueType &value);
-
-    /*!
-     * Get the value of a registered property with return semantics.
-     *
-     * Example getting property with return value semantics:
-     * const size_t foo = my_block->get<size_t>("foo");
-     *
-     * \param key the string to identify this property
-     * \return the value of this property
-     */
-    template <typename ValueType>
-    ValueType get(const std::string &key);
-
-    /*******************************************************************
      * Work related routines and fail states
      ******************************************************************/
 
@@ -430,11 +339,8 @@ struct GRAS_API Block : Element
     /*******************************************************************
      * private implementation guts for overloads and template support
      ******************************************************************/
-    virtual PMCC _handle_prop_access(const std::string &, const PMCC &, const bool);
-    void _register_getter(const std::string &, void *);
-    void _register_setter(const std::string &, void *);
-    virtual void _set_property(const std::string &, const PMCC &);
-    virtual PMCC _get_property(const std::string &);
+    virtual PMCC _handle_call(const std::string &, const PMCC &);
+    virtual PMCC _handle_call_ts(const std::string &, const PMCC &);
     void _post_output_msg(const size_t which_output, const PMCC &msg);
     void _post_input_msg(const size_t which_input, const PMCC &msg);
 };
