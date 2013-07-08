@@ -12,4 +12,19 @@
 %import <gras/element.i>
 %include <gras/hier_block.hpp>
 
+////////////////////////////////////////////////////////////////////////
+// Create pythonic methods
+////////////////////////////////////////////////////////////////////////
+%pythoncode %{
+from PMC import *
+%}
+%extend gras::HierBlock
+{
+    %insert("python")
+    %{
+        def __getattr__(self, name):
+            return lambda *args: self.x(name, *args)
+    %}
+}
+
 #endif /*INCLUDED_GRAS_HIER_BLOCK_I*/

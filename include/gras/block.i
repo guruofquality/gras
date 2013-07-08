@@ -28,6 +28,9 @@ from PMC import *
 {
     %insert("python")
     %{
+        def __getattr__(self, name):
+            return lambda *args: self.x(name, *args)
+
         def post_output_msg(self, which_output, value):
             if not isinstance(value, PMCC): value = PMC_M(value)
             self._post_output_msg(which_output, value)

@@ -79,7 +79,7 @@ endforeach(gras_swig_module)
 ########################################################################
 # install other python files
 ########################################################################
-INSTALL(
+GR_PYTHON_INSTALL(
     FILES __init__.py GRAS_Utils.py
     DESTINATION ${GR_PYTHON_DIR}/gras
     COMPONENT ${GRAS_COMP_PYTHON}
