@@ -13,9 +13,9 @@
  * Declare this macro at the global scope in a cpp file.
  * The block will register at static initialization time.
  */
-#define GRAS_REGISTER_FACTORY(name) \
-    GRAS_STATIC_BLOCK(name) \
-    {gras::Factory::register_make(#name, &name);}
+#define GRAS_REGISTER_FACTORY(name, fcn) \
+    GRAS_STATIC_BLOCK(fcn) \
+    {gras::Factory::register_make(name, &fcn);}
 
 namespace gras
 {

@@ -50,3 +50,17 @@ GR_ADD_TEST(sbuffer_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/sbuffe
 GR_ADD_TEST(query_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/query_test.py)
 GR_ADD_TEST(block_props_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/block_props_test.py)
 GR_ADD_TEST(time_tags_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/time_tags_test.py)
+
+########################################################################
+# Build an example loadable module
+########################################################################
+add_library(example_module MODULE example_module.cpp)
+target_link_libraries(example_module ${GRAS_LIBRARIES})
+
+set(CURRENT_LIBRARY_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
+if(WIN32)
+set(CURRENT_LIBRARY_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE})
+endif()
+file(TO_NATIVE_PATH "${CURRENT_LIBRARY_BUILD_DIR}" CURRENT_LIBRARY_BUILD_DIR)
+list(APPEND GR_TEST_ENVIRONS "GRAS_MODULE_PATH=${CURRENT_LIBRARY_BUILD_DIR}")
+GR_ADD_TEST(module_loader_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/module_loader_test.py)
