@@ -8,14 +8,6 @@
 #include <PMC/PMC.hpp>
 #include <string>
 
-//! A fixture for static initialization code
-#define GRAS_STATIC_BLOCK(name) \
-    static struct name ## _static_fixture__ \
-    { \
-        name ## _static_fixture__(void); \
-    } name ## _static_fixture_instance__; \
-    name ## _static_fixture__::name ## _static_fixture__(void)
-
 /*!
  * Register a block's factory function:
  * Declare this macro at the global scope in a cpp file.

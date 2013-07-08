@@ -23,19 +23,16 @@ namespace gras
 %include <gras/factory.hpp>
 
 ////////////////////////////////////////////////////////////////////////
-// Create python methods for factories
+// Create python make method for the factory
 ////////////////////////////////////////////////////////////////////////
-%pythoncode%{
-
-class StaticPyFactory(object):
-
-    def __getattr__(self, name):
+%extend gras::Factory
+{
+    %insert("python")
+    %{
+        @staticmethod
         def make(name, *args):
             from PMC import PMC_M
             pmcargs = PMC_M(list(args))
             return Factory._handle_make(name, pmcargs)
-        return lambda *args: make(name, *args)
-
-PyFactory = StaticPyFactory()
-
-%}
+    %}
+}
