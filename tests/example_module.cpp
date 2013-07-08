@@ -2,6 +2,7 @@
 
 #include <gras/block.hpp>
 #include <gras/factory.hpp>
+#include <iostream>
 
 struct MyBlock : gras::Block
 {
@@ -9,6 +10,11 @@ struct MyBlock : gras::Block
         gras::Block("MyBlock")
     {
         this->register_call("get_num", &MyBlock::get_num);
+    }
+
+    ~MyBlock(void)
+    {
+        std::cout << "~MyBlock" << std::endl;
     }
 
     int get_num(void)
