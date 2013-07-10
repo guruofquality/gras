@@ -31,7 +31,7 @@ struct MyBlock : gras::Block
     size_t foo;
 };
 
-BOOST_AUTO_TEST_CASE(test_property_set_get_with_return)
+BOOST_AUTO_TEST_CASE(test_calls_get_set)
 {
     MyBlock my_block;
     BOOST_CHECK_EQUAL(my_block.foo, size_t(0));
@@ -43,13 +43,13 @@ BOOST_AUTO_TEST_CASE(test_property_set_get_with_return)
     BOOST_CHECK_EQUAL(my_foo, size_t(42));
 }
 
-BOOST_AUTO_TEST_CASE(test_property_errors)
+BOOST_AUTO_TEST_CASE(test_callable_errors)
 {
     MyBlock my_block;
 
-    //property does not exist
+    //call does not exist
     BOOST_CHECK_THROW(my_block.x<size_t>("get_bar"), std::exception);
 
-    //wrong type for property
+    //wrong type for call
     BOOST_CHECK_THROW(my_block.x("set_foo", "a string"), std::exception);
 }

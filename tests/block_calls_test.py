@@ -21,9 +21,9 @@ class MyBlock(gras.Block):
         new_foo + 0 #throws if its not a number
         self.foo = new_foo
 
-class BlockPropsTest(unittest.TestCase):
+class BlockCallsTest(unittest.TestCase):
 
-    def test_property_set_get(self):
+    def test_calls_get_set(self):
         my_block = MyBlock()
         self.assertEqual(my_block.foo, 0)
 
@@ -33,16 +33,16 @@ class BlockPropsTest(unittest.TestCase):
         my_foo = my_block.get_foo()
         self.assertEqual(my_foo, 42)
 
-    def test_property_errors(self):
+    def test_calls_errors(self):
         my_block = MyBlock()
 
-        #property does not exist
+        #call does not exist
         threw = False
         try: my_block.get_bar()
         except: threw = True
         self.assertTrue(threw)
 
-        #wrong type for property
+        #wrong type for call
         threw = False
         try: my_block.set_foo(None)
         except: threw = True

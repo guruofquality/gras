@@ -70,7 +70,7 @@ list(APPEND GRAS_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/block_message.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_consume.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_produce.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/block_props.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/block_calls.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/thread_pool.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/block_actor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/task_done.cpp

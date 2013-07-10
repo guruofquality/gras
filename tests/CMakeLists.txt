@@ -16,7 +16,7 @@ endif()
 set(test_sources
     callable_test.cpp
     chrono_time_test.cpp
-    block_props_test.cpp
+    block_calls_test.cpp
     factory_test.cpp
     serialize_tags_test.cpp
 )
@@ -48,7 +48,7 @@ GR_ADD_TEST(hier_block_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/hie
 GR_ADD_TEST(thread_pool_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/thread_pool_test.py)
 GR_ADD_TEST(sbuffer_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/sbuffer_test.py)
 GR_ADD_TEST(query_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/query_test.py)
-GR_ADD_TEST(block_props_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/block_props_test.py)
+GR_ADD_TEST(block_calls_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/block_calls_test.py)
 GR_ADD_TEST(time_tags_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/time_tags_test.py)
 
 ########################################################################
