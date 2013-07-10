@@ -6,6 +6,7 @@
 #include <PMC/Containers.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/foreach.hpp>
+#include <boost/cstdint.hpp>
 #include <vector>
 #include <complex>
 
@@ -32,7 +33,7 @@ PMCC gras::ptree_to_pmc(const ptree &value)
     if (value.size() == 0)
     {
         //can we cast to integer?
-        ptree_to_pmc_try(long long)
+        ptree_to_pmc_try(boost::int64_t)
 
         //can we cast to float?
         ptree_to_pmc_try(double)
@@ -46,7 +47,7 @@ PMCC gras::ptree_to_pmc(const ptree &value)
     //array
     else
     {
-        ptree_to_pmc_tryv(long long);
+        ptree_to_pmc_tryv(boost::int64_t);
         ptree_to_pmc_tryv(double);
         ptree_to_pmc_tryv(std::complex<double>);
     }
