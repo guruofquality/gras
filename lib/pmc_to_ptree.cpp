@@ -32,7 +32,7 @@ PMCC gras::ptree_to_pmc(const ptree &value)
     if (value.size() == 0)
     {
         //can we cast to integer?
-        ptree_to_pmc_try(long)
+        ptree_to_pmc_try(long long)
 
         //can we cast to float?
         ptree_to_pmc_try(double)
@@ -46,7 +46,7 @@ PMCC gras::ptree_to_pmc(const ptree &value)
     //array
     else
     {
-        ptree_to_pmc_tryv(long);
+        ptree_to_pmc_tryv(long long);
         ptree_to_pmc_tryv(double);
         ptree_to_pmc_tryv(std::complex<double>);
     }
