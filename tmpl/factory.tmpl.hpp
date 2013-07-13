@@ -37,16 +37,16 @@ struct GRAS_API Factory
      * Register API - don't look here, template magic, not helpful
      ******************************************************************/
     #for $NARGS in range($MAX_ARGS)
-    template <typename ReturnType, $expand('typename Arg%d', $NARGS)>
-    static void register_make(const std::string &name, ReturnType(*fcn)($expand('const Arg%d &', $NARGS)));
+    template <typename ReturnType, $expand('typename A%d', $NARGS)>
+    static void register_make(const std::string &name, ReturnType(*fcn)($expand('const A%d &', $NARGS)));
 
     #end for
     /*******************************************************************
      * Make API - don't look here, template magic, not helpful
      ******************************************************************/;
     #for $NARGS in range($MAX_ARGS)
-    template <$expand('typename Arg%d', $NARGS)>
-    static Element *make(const std::string &name, $expand('const Arg%d &', $NARGS));
+    template <$expand('typename A%d', $NARGS)>
+    static Element *make(const std::string &name, $expand('const A%d &', $NARGS));
 
     #end for
     /*******************************************************************

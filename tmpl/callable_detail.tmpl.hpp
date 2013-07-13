@@ -22,49 +22,49 @@ struct GRAS_API CallableRegistryEntry
 /***********************************************************************
  * Registration for return with $NARGS args
  **********************************************************************/
-template <typename ClassType, typename ReturnType, $expand('typename Arg%d', $NARGS)>
+template <typename ClassType, typename ReturnType, $expand('typename A%d', $NARGS)>
 struct CallableRegistryEntryImpl$(NARGS) : CallableRegistryEntry
 {
-    typedef ReturnType(ClassType::*Fcn)($expand('const Arg%d &', $NARGS));
+    typedef ReturnType(ClassType::*Fcn)($expand('const A%d &', $NARGS));
     CallableRegistryEntryImpl$(NARGS)(ClassType *obj, Fcn fcn):
     _obj(obj), _fcn(fcn){}
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
         if (a.size() < $NARGS) throw a;
-        return PMC_M((_obj->*_fcn)($expand('a[%d].safe_as<Arg%d>()', $NARGS)));
+        return PMC_M((_obj->*_fcn)($expand('a[%d].safe_as<A%d>()', $NARGS)));
     }
     ClassType *_obj; Fcn _fcn;
 };
 
-template <typename ClassType, typename ReturnType, $expand('typename Arg%d', $NARGS)>
-void Callable::register_call(const std::string &name, ReturnType(ClassType::*fcn)($expand('const Arg%d &', $NARGS)))
+template <typename ClassType, typename ReturnType, $expand('typename A%d', $NARGS)>
+void Callable::register_call(const std::string &name, ReturnType(ClassType::*fcn)($expand('const A%d &', $NARGS)))
 {
     ClassType *obj = dynamic_cast<ClassType *>(this);
-    void *fr = new CallableRegistryEntryImpl$(NARGS)<ClassType, ReturnType, $expand('Arg%d', $NARGS)>(obj, fcn);
+    void *fr = new CallableRegistryEntryImpl$(NARGS)<ClassType, ReturnType, $expand('A%d', $NARGS)>(obj, fcn);
     _register_call(name, fr);
 }
 
-template <typename ClassType, $expand('typename Arg%d', $NARGS)>
+template <typename ClassType, $expand('typename A%d', $NARGS)>
 struct CallableRegistryEntryImplVoid$(NARGS) : CallableRegistryEntry
 {
-    typedef void(ClassType::*Fcn)($expand('const Arg%d &', $NARGS));
+    typedef void(ClassType::*Fcn)($expand('const A%d &', $NARGS));
     CallableRegistryEntryImplVoid$(NARGS)(ClassType *obj, Fcn fcn):
     _obj(obj), _fcn(fcn){}
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
         if (a.size() < $NARGS) throw a;
-        (_obj->*_fcn)($expand('a[%d].safe_as<Arg%d>()', $NARGS)); return PMCC();
+        (_obj->*_fcn)($expand('a[%d].safe_as<A%d>()', $NARGS)); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
 };
 
-template <typename ClassType, $expand('typename Arg%d', $NARGS)>
-void Callable::register_call(const std::string &name, void(ClassType::*fcn)($expand('const Arg%d &', $NARGS)))
+template <typename ClassType, $expand('typename A%d', $NARGS)>
+void Callable::register_call(const std::string &name, void(ClassType::*fcn)($expand('const A%d &', $NARGS)))
 {
     ClassType *obj = dynamic_cast<ClassType *>(this);
-    void *fr = new CallableRegistryEntryImplVoid$(NARGS)<ClassType, $expand('Arg%d', $NARGS)>(obj, fcn);
+    void *fr = new CallableRegistryEntryImplVoid$(NARGS)<ClassType, $expand('A%d', $NARGS)>(obj, fcn);
     _register_call(name, fr);
 }
 
@@ -73,8 +73,8 @@ void Callable::register_call(const std::string &name, void(ClassType::*fcn)($exp
 /***********************************************************************
  * Call implementations with $NARGS args
  **********************************************************************/
-template <typename ReturnType, $expand('typename Arg%d', $NARGS)>
-ReturnType Callable::x(const std::string &name, $expand('const Arg%d &a%d', $NARGS))
+template <typename ReturnType, $expand('typename A%d', $NARGS)>
+ReturnType Callable::x(const std::string &name, $expand('const A%d &a%d', $NARGS))
 {
     PMCList args($NARGS);
     #for $i in range($NARGS):
@@ -84,8 +84,8 @@ ReturnType Callable::x(const std::string &name, $expand('const Arg%d &a%d', $NAR
     return r.safe_as<ReturnType>();
 }
 
-template <$expand('typename Arg%d', $NARGS)>
-void Callable::x(const std::string &name, $expand('const Arg%d &a%d', $NARGS))
+template <$expand('typename A%d', $NARGS)>
+void Callable::x(const std::string &name, $expand('const A%d &a%d', $NARGS))
 {
     PMCList args($NARGS);
     #for $i in range($NARGS):

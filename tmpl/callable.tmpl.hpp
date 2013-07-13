@@ -57,11 +57,11 @@ protected:
      ******************************************************************/
 protected:
     #for $NARGS in range($MAX_ARGS)
-    template <typename ClassType, typename ReturnType, $expand('typename Arg%d', $NARGS)>
-    void register_call(const std::string &name, ReturnType(ClassType::*fcn)($expand('const Arg%d &', $NARGS)));
+    template <typename ClassType, typename ReturnType, $expand('typename A%d', $NARGS)>
+    void register_call(const std::string &name, ReturnType(ClassType::*fcn)($expand('const A%d &', $NARGS)));
 
-    template <typename ClassType, $expand('typename Arg%d', $NARGS)>
-    void register_call(const std::string &name, void(ClassType::*fcn)($expand('const Arg%d &', $NARGS)));
+    template <typename ClassType, $expand('typename A%d', $NARGS)>
+    void register_call(const std::string &name, void(ClassType::*fcn)($expand('const A%d &', $NARGS)));
 
     #end for
     /*******************************************************************
@@ -69,11 +69,11 @@ protected:
      ******************************************************************/
 public:
     #for $NARGS in range($MAX_ARGS)
-    template <typename ReturnType, $expand('typename Arg%d', $NARGS)>
-    ReturnType x(const std::string &name, $expand('const Arg%d &', $NARGS));
+    template <typename ReturnType, $expand('typename A%d', $NARGS)>
+    ReturnType x(const std::string &name, $expand('const A%d &', $NARGS));
 
-    template <$expand('typename Arg%d', $NARGS)>
-    void x(const std::string &name, $expand('const Arg%d &', $NARGS));
+    template <$expand('typename A%d', $NARGS)>
+    void x(const std::string &name, $expand('const A%d &', $NARGS));
 
     #end for
     /*******************************************************************

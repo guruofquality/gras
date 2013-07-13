@@ -39,35 +39,35 @@ struct GRAS_API Factory
     template <typename ReturnType>
     static void register_make(const std::string &name, ReturnType(*fcn)());
 
-    template <typename ReturnType, typename Arg0>
-    static void register_make(const std::string &name, ReturnType(*fcn)(const Arg0 &));
+    template <typename ReturnType, typename A0>
+    static void register_make(const std::string &name, ReturnType(*fcn)(const A0 &));
 
-    template <typename ReturnType, typename Arg0, typename Arg1>
-    static void register_make(const std::string &name, ReturnType(*fcn)(const Arg0 &, const Arg1 &));
+    template <typename ReturnType, typename A0, typename A1>
+    static void register_make(const std::string &name, ReturnType(*fcn)(const A0 &, const A1 &));
 
-    template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2>
-    static void register_make(const std::string &name, ReturnType(*fcn)(const Arg0 &, const Arg1 &, const Arg2 &));
+    template <typename ReturnType, typename A0, typename A1, typename A2>
+    static void register_make(const std::string &name, ReturnType(*fcn)(const A0 &, const A1 &, const A2 &));
 
-    template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3>
-    static void register_make(const std::string &name, ReturnType(*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &));
+    template <typename ReturnType, typename A0, typename A1, typename A2, typename A3>
+    static void register_make(const std::string &name, ReturnType(*fcn)(const A0 &, const A1 &, const A2 &, const A3 &));
 
-    template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
-    static void register_make(const std::string &name, ReturnType(*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &));
+    template <typename ReturnType, typename A0, typename A1, typename A2, typename A3, typename A4>
+    static void register_make(const std::string &name, ReturnType(*fcn)(const A0 &, const A1 &, const A2 &, const A3 &, const A4 &));
 
-    template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
-    static void register_make(const std::string &name, ReturnType(*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &));
+    template <typename ReturnType, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5>
+    static void register_make(const std::string &name, ReturnType(*fcn)(const A0 &, const A1 &, const A2 &, const A3 &, const A4 &, const A5 &));
 
-    template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6>
-    static void register_make(const std::string &name, ReturnType(*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &));
+    template <typename ReturnType, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+    static void register_make(const std::string &name, ReturnType(*fcn)(const A0 &, const A1 &, const A2 &, const A3 &, const A4 &, const A5 &, const A6 &));
 
-    template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7>
-    static void register_make(const std::string &name, ReturnType(*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &));
+    template <typename ReturnType, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7>
+    static void register_make(const std::string &name, ReturnType(*fcn)(const A0 &, const A1 &, const A2 &, const A3 &, const A4 &, const A5 &, const A6 &, const A7 &));
 
-    template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8>
-    static void register_make(const std::string &name, ReturnType(*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &));
+    template <typename ReturnType, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8>
+    static void register_make(const std::string &name, ReturnType(*fcn)(const A0 &, const A1 &, const A2 &, const A3 &, const A4 &, const A5 &, const A6 &, const A7 &, const A8 &));
 
-    template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8, typename Arg9>
-    static void register_make(const std::string &name, ReturnType(*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &, const Arg9 &));
+    template <typename ReturnType, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8, typename A9>
+    static void register_make(const std::string &name, ReturnType(*fcn)(const A0 &, const A1 &, const A2 &, const A3 &, const A4 &, const A5 &, const A6 &, const A7 &, const A8 &, const A9 &));
 
     /*******************************************************************
      * Make API - don't look here, template magic, not helpful
@@ -75,35 +75,35 @@ struct GRAS_API Factory
     inline
     static Element *make(const std::string &name);
 
-    template <typename Arg0>
-    static Element *make(const std::string &name, const Arg0 &);
+    template <typename A0>
+    static Element *make(const std::string &name, const A0 &);
 
-    template <typename Arg0, typename Arg1>
-    static Element *make(const std::string &name, const Arg0 &, const Arg1 &);
+    template <typename A0, typename A1>
+    static Element *make(const std::string &name, const A0 &, const A1 &);
 
-    template <typename Arg0, typename Arg1, typename Arg2>
-    static Element *make(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &);
+    template <typename A0, typename A1, typename A2>
+    static Element *make(const std::string &name, const A0 &, const A1 &, const A2 &);
 
-    template <typename Arg0, typename Arg1, typename Arg2, typename Arg3>
-    static Element *make(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &);
+    template <typename A0, typename A1, typename A2, typename A3>
+    static Element *make(const std::string &name, const A0 &, const A1 &, const A2 &, const A3 &);
 
-    template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
-    static Element *make(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &);
+    template <typename A0, typename A1, typename A2, typename A3, typename A4>
+    static Element *make(const std::string &name, const A0 &, const A1 &, const A2 &, const A3 &, const A4 &);
 
-    template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
-    static Element *make(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &);
+    template <typename A0, typename A1, typename A2, typename A3, typename A4, typename A5>
+    static Element *make(const std::string &name, const A0 &, const A1 &, const A2 &, const A3 &, const A4 &, const A5 &);
 
-    template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6>
-    static Element *make(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &);
+    template <typename A0, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+    static Element *make(const std::string &name, const A0 &, const A1 &, const A2 &, const A3 &, const A4 &, const A5 &, const A6 &);
 
-    template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7>
-    static Element *make(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &);
+    template <typename A0, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7>
+    static Element *make(const std::string &name, const A0 &, const A1 &, const A2 &, const A3 &, const A4 &, const A5 &, const A6 &, const A7 &);
 
-    template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8>
-    static Element *make(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &);
+    template <typename A0, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8>
+    static Element *make(const std::string &name, const A0 &, const A1 &, const A2 &, const A3 &, const A4 &, const A5 &, const A6 &, const A7 &, const A8 &);
 
-    template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8, typename Arg9>
-    static Element *make(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &, const Arg9 &);
+    template <typename A0, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8, typename A9>
+    static Element *make(const std::string &name, const A0 &, const A1 &, const A2 &, const A3 &, const A4 &, const A5 &, const A6 &, const A7 &, const A8 &, const A9 &);
 
     /*******************************************************************
      * Private registration hooks

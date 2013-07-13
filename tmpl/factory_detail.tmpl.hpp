@@ -22,24 +22,24 @@ struct GRAS_API FactoryRegistryEntry
 /***********************************************************************
  * Templated registration - $NARGS args
  **********************************************************************/
-template <typename ReturnType, $expand('typename Arg%d', $NARGS)>
+template <typename ReturnType, $expand('typename A%d', $NARGS)>
 struct FactoryRegistryEntryImpl$(NARGS) : FactoryRegistryEntry
 {
-    typedef ReturnType(*Fcn)($expand('const Arg%d &', $NARGS));
+    typedef ReturnType(*Fcn)($expand('const A%d &', $NARGS));
     FactoryRegistryEntryImpl$(NARGS)(Fcn fcn):_fcn(fcn){}
     Element *make(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
         if (a.size() < $NARGS) throw a;
-        return _fcn($expand('a[%d].safe_as<Arg%d>()', $NARGS));
+        return _fcn($expand('a[%d].safe_as<A%d>()', $NARGS));
     }
     Fcn _fcn;
 };
 
-template <typename ReturnType, $expand('typename Arg%d', $NARGS)>
-void Factory::register_make(const std::string &name, ReturnType(*fcn)($expand('const Arg%d &', $NARGS)))
+template <typename ReturnType, $expand('typename A%d', $NARGS)>
+void Factory::register_make(const std::string &name, ReturnType(*fcn)($expand('const A%d &', $NARGS)))
 {
-    void *r = new FactoryRegistryEntryImpl$(NARGS)<ReturnType, $expand('Arg%d', $NARGS)>(fcn);
+    void *r = new FactoryRegistryEntryImpl$(NARGS)<ReturnType, $expand('A%d', $NARGS)>(fcn);
     Factory::_register_make(name, r);
 }
 
@@ -48,8 +48,8 @@ void Factory::register_make(const std::string &name, ReturnType(*fcn)($expand('c
  * Templated make implementations
  **********************************************************************/
 #for $NARGS in range($MAX_ARGS)
-template <$expand('typename Arg%d', $NARGS)>
-Element *Factory::make(const std::string &name, $expand('const Arg%d &a%d', $NARGS))
+template <$expand('typename A%d', $NARGS)>
+Element *Factory::make(const std::string &name, $expand('const A%d &a%d', $NARGS))
 {
     PMCList args($NARGS);
     #for $i in range($NARGS):
