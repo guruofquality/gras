@@ -22,7 +22,7 @@ if __name__ == '__main__':
     in_path = sys.argv[1]
     out_path = sys.argv[2]
     tmpl = open(in_path, 'r').read()
-    for key in ['define', 'include', 'if', 'endif', 'else', 'ifdef', 'ifndef']:
+    for key in ['define', 'include', 'if', 'endif', 'else', 'ifdef', 'ifndef', 'pragma']:
         tmpl = tmpl.replace('#%s'%key, '\\#%s'%key)
     code = str(Template(tmpl, dict(
         MAX_ARGS=MAX_ARGS, expand=expand,

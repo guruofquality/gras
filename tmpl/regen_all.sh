@@ -10,10 +10,10 @@
 # And the build system does not depend on Cheetah templates.
 
 SCRIPT="`readlink -e $0`"
-SCRIPTPATH="`dirname $SCRIPT`"
-DEST=${SCRIPTPATH}/../include/gras
+SRCDIR="`dirname $SCRIPT`"
+DESTDIR=${SRCDIR}/../include/gras
 
-python expand_template.py factory.tmpl.hpp ${DEST}/factory.hpp
-python expand_template.py factory_detail.tmpl.hpp ${DEST}/detail/factory.hpp
-python expand_template.py callable.tmpl.hpp ${DEST}/callable.hpp
-python expand_template.py callable_detail.tmpl.hpp ${DEST}/detail/callable.hpp
+python ${SRCDIR}/expand_template.py ${SRCDIR}/factory.tmpl.hpp ${DESTDIR}/factory.hpp
+python ${SRCDIR}/expand_template.py ${SRCDIR}/factory_detail.tmpl.hpp ${DESTDIR}/detail/factory.hpp
+python ${SRCDIR}/expand_template.py ${SRCDIR}/callable.tmpl.hpp ${DESTDIR}/callable.hpp
+python ${SRCDIR}/expand_template.py ${SRCDIR}/callable_detail.tmpl.hpp ${DESTDIR}/detail/callable.hpp

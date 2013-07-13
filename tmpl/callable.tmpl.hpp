@@ -3,6 +3,11 @@
 #ifndef INCLUDED_GRAS_CALLABLE_HPP
 #define INCLUDED_GRAS_CALLABLE_HPP
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning (disable:4251)  // needs to have dll interface
+#endif //_MSC_VER
+
 #include <gras/gras.hpp>
 #include <PMC/PMC.hpp>
 #include <boost/shared_ptr.hpp>
@@ -90,5 +95,9 @@ private:
 } //namespace gras
 
 #include <gras/detail/callable.hpp>
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif //_MSC_VER
 
 #endif /*INCLUDED_GRAS_CALLABLE_HPP*/
