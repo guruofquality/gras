@@ -24,18 +24,20 @@ struct GRAS_API CallableRegistryEntry
 template <typename ClassType, typename ReturnType>
 struct CallableRegistryEntryImpl0 : CallableRegistryEntry
 {
-    typedef ReturnType(ClassType::*Fcn)(void);
+    typedef ReturnType(ClassType::*Fcn)();
     CallableRegistryEntryImpl0(ClassType *obj, Fcn fcn):
     _obj(obj), _fcn(fcn){}
-    PMCC call(const PMCC &)
+    PMCC call(const PMCC &args)
     {
+        const PMCList &a = args.as<PMCList>();
+        if (a.size() < 0) throw a;
         return PMC_M((_obj->*_fcn)());
     }
     ClassType *_obj; Fcn _fcn;
 };
 
 template <typename ClassType, typename ReturnType>
-void Callable::register_call(const std::string &name, ReturnType(ClassType::*fcn)(void))
+void Callable::register_call(const std::string &name, ReturnType(ClassType::*fcn)())
 {
     ClassType *obj = dynamic_cast<ClassType *>(this);
     void *fr = new CallableRegistryEntryImpl0<ClassType, ReturnType>(obj, fcn);
@@ -45,18 +47,20 @@ void Callable::register_call(const std::string &name, ReturnType(ClassType::*fcn
 template <typename ClassType>
 struct CallableRegistryEntryImplVoid0 : CallableRegistryEntry
 {
-    typedef void(ClassType::*Fcn)(void);
+    typedef void(ClassType::*Fcn)();
     CallableRegistryEntryImplVoid0(ClassType *obj, Fcn fcn):
     _obj(obj), _fcn(fcn){}
-    PMCC call(const PMCC &)
+    PMCC call(const PMCC &args)
     {
+        const PMCList &a = args.as<PMCList>();
+        if (a.size() < 0) throw a;
         (_obj->*_fcn)(); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
 };
 
 template <typename ClassType>
-void Callable::register_call(const std::string &name, void(ClassType::*fcn)(void))
+void Callable::register_call(const std::string &name, void(ClassType::*fcn)())
 {
     ClassType *obj = dynamic_cast<ClassType *>(this);
     void *fr = new CallableRegistryEntryImplVoid0<ClassType>(obj, fcn);
@@ -75,6 +79,7 @@ struct CallableRegistryEntryImpl1 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
+        if (a.size() < 1) throw a;
         return PMC_M((_obj->*_fcn)(a[0].safe_as<Arg0>()));
     }
     ClassType *_obj; Fcn _fcn;
@@ -97,6 +102,7 @@ struct CallableRegistryEntryImplVoid1 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
+        if (a.size() < 1) throw a;
         (_obj->*_fcn)(a[0].safe_as<Arg0>()); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
@@ -122,6 +128,7 @@ struct CallableRegistryEntryImpl2 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
+        if (a.size() < 2) throw a;
         return PMC_M((_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>()));
     }
     ClassType *_obj; Fcn _fcn;
@@ -144,6 +151,7 @@ struct CallableRegistryEntryImplVoid2 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
+        if (a.size() < 2) throw a;
         (_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>()); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
@@ -169,6 +177,7 @@ struct CallableRegistryEntryImpl3 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
+        if (a.size() < 3) throw a;
         return PMC_M((_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>()));
     }
     ClassType *_obj; Fcn _fcn;
@@ -191,6 +200,7 @@ struct CallableRegistryEntryImplVoid3 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
+        if (a.size() < 3) throw a;
         (_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>()); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
@@ -201,6 +211,349 @@ void Callable::register_call(const std::string &name, void(ClassType::*fcn)(cons
 {
     ClassType *obj = dynamic_cast<ClassType *>(this);
     void *fr = new CallableRegistryEntryImplVoid3<ClassType, Arg0, Arg1, Arg2>(obj, fcn);
+    _register_call(name, fr);
+}
+
+/***********************************************************************
+ * Registration for return with 4 args
+ **********************************************************************/
+template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3>
+struct CallableRegistryEntryImpl4 : CallableRegistryEntry
+{
+    typedef ReturnType(ClassType::*Fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &);
+    CallableRegistryEntryImpl4(ClassType *obj, Fcn fcn):
+    _obj(obj), _fcn(fcn){}
+    PMCC call(const PMCC &args)
+    {
+        const PMCList &a = args.as<PMCList>();
+        if (a.size() < 4) throw a;
+        return PMC_M((_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>(), a[3].safe_as<Arg3>()));
+    }
+    ClassType *_obj; Fcn _fcn;
+};
+
+template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3>
+void Callable::register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &))
+{
+    ClassType *obj = dynamic_cast<ClassType *>(this);
+    void *fr = new CallableRegistryEntryImpl4<ClassType, ReturnType, Arg0, Arg1, Arg2, Arg3>(obj, fcn);
+    _register_call(name, fr);
+}
+
+template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3>
+struct CallableRegistryEntryImplVoid4 : CallableRegistryEntry
+{
+    typedef void(ClassType::*Fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &);
+    CallableRegistryEntryImplVoid4(ClassType *obj, Fcn fcn):
+    _obj(obj), _fcn(fcn){}
+    PMCC call(const PMCC &args)
+    {
+        const PMCList &a = args.as<PMCList>();
+        if (a.size() < 4) throw a;
+        (_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>(), a[3].safe_as<Arg3>()); return PMCC();
+    }
+    ClassType *_obj; Fcn _fcn;
+};
+
+template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3>
+void Callable::register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &))
+{
+    ClassType *obj = dynamic_cast<ClassType *>(this);
+    void *fr = new CallableRegistryEntryImplVoid4<ClassType, Arg0, Arg1, Arg2, Arg3>(obj, fcn);
+    _register_call(name, fr);
+}
+
+/***********************************************************************
+ * Registration for return with 5 args
+ **********************************************************************/
+template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+struct CallableRegistryEntryImpl5 : CallableRegistryEntry
+{
+    typedef ReturnType(ClassType::*Fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &);
+    CallableRegistryEntryImpl5(ClassType *obj, Fcn fcn):
+    _obj(obj), _fcn(fcn){}
+    PMCC call(const PMCC &args)
+    {
+        const PMCList &a = args.as<PMCList>();
+        if (a.size() < 5) throw a;
+        return PMC_M((_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>(), a[3].safe_as<Arg3>(), a[4].safe_as<Arg4>()));
+    }
+    ClassType *_obj; Fcn _fcn;
+};
+
+template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+void Callable::register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &))
+{
+    ClassType *obj = dynamic_cast<ClassType *>(this);
+    void *fr = new CallableRegistryEntryImpl5<ClassType, ReturnType, Arg0, Arg1, Arg2, Arg3, Arg4>(obj, fcn);
+    _register_call(name, fr);
+}
+
+template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+struct CallableRegistryEntryImplVoid5 : CallableRegistryEntry
+{
+    typedef void(ClassType::*Fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &);
+    CallableRegistryEntryImplVoid5(ClassType *obj, Fcn fcn):
+    _obj(obj), _fcn(fcn){}
+    PMCC call(const PMCC &args)
+    {
+        const PMCList &a = args.as<PMCList>();
+        if (a.size() < 5) throw a;
+        (_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>(), a[3].safe_as<Arg3>(), a[4].safe_as<Arg4>()); return PMCC();
+    }
+    ClassType *_obj; Fcn _fcn;
+};
+
+template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+void Callable::register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &))
+{
+    ClassType *obj = dynamic_cast<ClassType *>(this);
+    void *fr = new CallableRegistryEntryImplVoid5<ClassType, Arg0, Arg1, Arg2, Arg3, Arg4>(obj, fcn);
+    _register_call(name, fr);
+}
+
+/***********************************************************************
+ * Registration for return with 6 args
+ **********************************************************************/
+template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
+struct CallableRegistryEntryImpl6 : CallableRegistryEntry
+{
+    typedef ReturnType(ClassType::*Fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &);
+    CallableRegistryEntryImpl6(ClassType *obj, Fcn fcn):
+    _obj(obj), _fcn(fcn){}
+    PMCC call(const PMCC &args)
+    {
+        const PMCList &a = args.as<PMCList>();
+        if (a.size() < 6) throw a;
+        return PMC_M((_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>(), a[3].safe_as<Arg3>(), a[4].safe_as<Arg4>(), a[5].safe_as<Arg5>()));
+    }
+    ClassType *_obj; Fcn _fcn;
+};
+
+template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
+void Callable::register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &))
+{
+    ClassType *obj = dynamic_cast<ClassType *>(this);
+    void *fr = new CallableRegistryEntryImpl6<ClassType, ReturnType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5>(obj, fcn);
+    _register_call(name, fr);
+}
+
+template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
+struct CallableRegistryEntryImplVoid6 : CallableRegistryEntry
+{
+    typedef void(ClassType::*Fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &);
+    CallableRegistryEntryImplVoid6(ClassType *obj, Fcn fcn):
+    _obj(obj), _fcn(fcn){}
+    PMCC call(const PMCC &args)
+    {
+        const PMCList &a = args.as<PMCList>();
+        if (a.size() < 6) throw a;
+        (_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>(), a[3].safe_as<Arg3>(), a[4].safe_as<Arg4>(), a[5].safe_as<Arg5>()); return PMCC();
+    }
+    ClassType *_obj; Fcn _fcn;
+};
+
+template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
+void Callable::register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &))
+{
+    ClassType *obj = dynamic_cast<ClassType *>(this);
+    void *fr = new CallableRegistryEntryImplVoid6<ClassType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5>(obj, fcn);
+    _register_call(name, fr);
+}
+
+/***********************************************************************
+ * Registration for return with 7 args
+ **********************************************************************/
+template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6>
+struct CallableRegistryEntryImpl7 : CallableRegistryEntry
+{
+    typedef ReturnType(ClassType::*Fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &);
+    CallableRegistryEntryImpl7(ClassType *obj, Fcn fcn):
+    _obj(obj), _fcn(fcn){}
+    PMCC call(const PMCC &args)
+    {
+        const PMCList &a = args.as<PMCList>();
+        if (a.size() < 7) throw a;
+        return PMC_M((_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>(), a[3].safe_as<Arg3>(), a[4].safe_as<Arg4>(), a[5].safe_as<Arg5>(), a[6].safe_as<Arg6>()));
+    }
+    ClassType *_obj; Fcn _fcn;
+};
+
+template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6>
+void Callable::register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &))
+{
+    ClassType *obj = dynamic_cast<ClassType *>(this);
+    void *fr = new CallableRegistryEntryImpl7<ClassType, ReturnType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6>(obj, fcn);
+    _register_call(name, fr);
+}
+
+template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6>
+struct CallableRegistryEntryImplVoid7 : CallableRegistryEntry
+{
+    typedef void(ClassType::*Fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &);
+    CallableRegistryEntryImplVoid7(ClassType *obj, Fcn fcn):
+    _obj(obj), _fcn(fcn){}
+    PMCC call(const PMCC &args)
+    {
+        const PMCList &a = args.as<PMCList>();
+        if (a.size() < 7) throw a;
+        (_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>(), a[3].safe_as<Arg3>(), a[4].safe_as<Arg4>(), a[5].safe_as<Arg5>(), a[6].safe_as<Arg6>()); return PMCC();
+    }
+    ClassType *_obj; Fcn _fcn;
+};
+
+template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6>
+void Callable::register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &))
+{
+    ClassType *obj = dynamic_cast<ClassType *>(this);
+    void *fr = new CallableRegistryEntryImplVoid7<ClassType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6>(obj, fcn);
+    _register_call(name, fr);
+}
+
+/***********************************************************************
+ * Registration for return with 8 args
+ **********************************************************************/
+template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7>
+struct CallableRegistryEntryImpl8 : CallableRegistryEntry
+{
+    typedef ReturnType(ClassType::*Fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &);
+    CallableRegistryEntryImpl8(ClassType *obj, Fcn fcn):
+    _obj(obj), _fcn(fcn){}
+    PMCC call(const PMCC &args)
+    {
+        const PMCList &a = args.as<PMCList>();
+        if (a.size() < 8) throw a;
+        return PMC_M((_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>(), a[3].safe_as<Arg3>(), a[4].safe_as<Arg4>(), a[5].safe_as<Arg5>(), a[6].safe_as<Arg6>(), a[7].safe_as<Arg7>()));
+    }
+    ClassType *_obj; Fcn _fcn;
+};
+
+template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7>
+void Callable::register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &))
+{
+    ClassType *obj = dynamic_cast<ClassType *>(this);
+    void *fr = new CallableRegistryEntryImpl8<ClassType, ReturnType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7>(obj, fcn);
+    _register_call(name, fr);
+}
+
+template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7>
+struct CallableRegistryEntryImplVoid8 : CallableRegistryEntry
+{
+    typedef void(ClassType::*Fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &);
+    CallableRegistryEntryImplVoid8(ClassType *obj, Fcn fcn):
+    _obj(obj), _fcn(fcn){}
+    PMCC call(const PMCC &args)
+    {
+        const PMCList &a = args.as<PMCList>();
+        if (a.size() < 8) throw a;
+        (_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>(), a[3].safe_as<Arg3>(), a[4].safe_as<Arg4>(), a[5].safe_as<Arg5>(), a[6].safe_as<Arg6>(), a[7].safe_as<Arg7>()); return PMCC();
+    }
+    ClassType *_obj; Fcn _fcn;
+};
+
+template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7>
+void Callable::register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &))
+{
+    ClassType *obj = dynamic_cast<ClassType *>(this);
+    void *fr = new CallableRegistryEntryImplVoid8<ClassType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7>(obj, fcn);
+    _register_call(name, fr);
+}
+
+/***********************************************************************
+ * Registration for return with 9 args
+ **********************************************************************/
+template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8>
+struct CallableRegistryEntryImpl9 : CallableRegistryEntry
+{
+    typedef ReturnType(ClassType::*Fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &);
+    CallableRegistryEntryImpl9(ClassType *obj, Fcn fcn):
+    _obj(obj), _fcn(fcn){}
+    PMCC call(const PMCC &args)
+    {
+        const PMCList &a = args.as<PMCList>();
+        if (a.size() < 9) throw a;
+        return PMC_M((_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>(), a[3].safe_as<Arg3>(), a[4].safe_as<Arg4>(), a[5].safe_as<Arg5>(), a[6].safe_as<Arg6>(), a[7].safe_as<Arg7>(), a[8].safe_as<Arg8>()));
+    }
+    ClassType *_obj; Fcn _fcn;
+};
+
+template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8>
+void Callable::register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &))
+{
+    ClassType *obj = dynamic_cast<ClassType *>(this);
+    void *fr = new CallableRegistryEntryImpl9<ClassType, ReturnType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8>(obj, fcn);
+    _register_call(name, fr);
+}
+
+template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8>
+struct CallableRegistryEntryImplVoid9 : CallableRegistryEntry
+{
+    typedef void(ClassType::*Fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &);
+    CallableRegistryEntryImplVoid9(ClassType *obj, Fcn fcn):
+    _obj(obj), _fcn(fcn){}
+    PMCC call(const PMCC &args)
+    {
+        const PMCList &a = args.as<PMCList>();
+        if (a.size() < 9) throw a;
+        (_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>(), a[3].safe_as<Arg3>(), a[4].safe_as<Arg4>(), a[5].safe_as<Arg5>(), a[6].safe_as<Arg6>(), a[7].safe_as<Arg7>(), a[8].safe_as<Arg8>()); return PMCC();
+    }
+    ClassType *_obj; Fcn _fcn;
+};
+
+template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8>
+void Callable::register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &))
+{
+    ClassType *obj = dynamic_cast<ClassType *>(this);
+    void *fr = new CallableRegistryEntryImplVoid9<ClassType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8>(obj, fcn);
+    _register_call(name, fr);
+}
+
+/***********************************************************************
+ * Registration for return with 10 args
+ **********************************************************************/
+template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8, typename Arg9>
+struct CallableRegistryEntryImpl10 : CallableRegistryEntry
+{
+    typedef ReturnType(ClassType::*Fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &, const Arg9 &);
+    CallableRegistryEntryImpl10(ClassType *obj, Fcn fcn):
+    _obj(obj), _fcn(fcn){}
+    PMCC call(const PMCC &args)
+    {
+        const PMCList &a = args.as<PMCList>();
+        if (a.size() < 10) throw a;
+        return PMC_M((_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>(), a[3].safe_as<Arg3>(), a[4].safe_as<Arg4>(), a[5].safe_as<Arg5>(), a[6].safe_as<Arg6>(), a[7].safe_as<Arg7>(), a[8].safe_as<Arg8>(), a[9].safe_as<Arg9>()));
+    }
+    ClassType *_obj; Fcn _fcn;
+};
+
+template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8, typename Arg9>
+void Callable::register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &, const Arg9 &))
+{
+    ClassType *obj = dynamic_cast<ClassType *>(this);
+    void *fr = new CallableRegistryEntryImpl10<ClassType, ReturnType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9>(obj, fcn);
+    _register_call(name, fr);
+}
+
+template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8, typename Arg9>
+struct CallableRegistryEntryImplVoid10 : CallableRegistryEntry
+{
+    typedef void(ClassType::*Fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &, const Arg9 &);
+    CallableRegistryEntryImplVoid10(ClassType *obj, Fcn fcn):
+    _obj(obj), _fcn(fcn){}
+    PMCC call(const PMCC &args)
+    {
+        const PMCList &a = args.as<PMCList>();
+        if (a.size() < 10) throw a;
+        (_obj->*_fcn)(a[0].safe_as<Arg0>(), a[1].safe_as<Arg1>(), a[2].safe_as<Arg2>(), a[3].safe_as<Arg3>(), a[4].safe_as<Arg4>(), a[5].safe_as<Arg5>(), a[6].safe_as<Arg6>(), a[7].safe_as<Arg7>(), a[8].safe_as<Arg8>(), a[9].safe_as<Arg9>()); return PMCC();
+    }
+    ClassType *_obj; Fcn _fcn;
+};
+
+template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8, typename Arg9>
+void Callable::register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &, const Arg9 &))
+{
+    ClassType *obj = dynamic_cast<ClassType *>(this);
+    void *fr = new CallableRegistryEntryImplVoid10<ClassType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9>(obj, fcn);
     _register_call(name, fr);
 }
 
@@ -285,6 +638,230 @@ void Callable::x(const std::string &name, const Arg0 &a0, const Arg1 &a1, const 
     args[0] = PMC_M(a0);
     args[1] = PMC_M(a1);
     args[2] = PMC_M(a2);
+    _handle_call(name, PMC_M(args));
+}
+
+/***********************************************************************
+ * Call implementations with 4 args
+ **********************************************************************/
+template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3>
+ReturnType Callable::x(const std::string &name, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2, const Arg3 &a3)
+{
+    PMCList args(4);
+    args[0] = PMC_M(a0);
+    args[1] = PMC_M(a1);
+    args[2] = PMC_M(a2);
+    args[3] = PMC_M(a3);
+    PMCC r = _handle_call(name, PMC_M(args));
+    return r.safe_as<ReturnType>();
+}
+
+template <typename Arg0, typename Arg1, typename Arg2, typename Arg3>
+void Callable::x(const std::string &name, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2, const Arg3 &a3)
+{
+    PMCList args(4);
+    args[0] = PMC_M(a0);
+    args[1] = PMC_M(a1);
+    args[2] = PMC_M(a2);
+    args[3] = PMC_M(a3);
+    _handle_call(name, PMC_M(args));
+}
+
+/***********************************************************************
+ * Call implementations with 5 args
+ **********************************************************************/
+template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+ReturnType Callable::x(const std::string &name, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2, const Arg3 &a3, const Arg4 &a4)
+{
+    PMCList args(5);
+    args[0] = PMC_M(a0);
+    args[1] = PMC_M(a1);
+    args[2] = PMC_M(a2);
+    args[3] = PMC_M(a3);
+    args[4] = PMC_M(a4);
+    PMCC r = _handle_call(name, PMC_M(args));
+    return r.safe_as<ReturnType>();
+}
+
+template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+void Callable::x(const std::string &name, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2, const Arg3 &a3, const Arg4 &a4)
+{
+    PMCList args(5);
+    args[0] = PMC_M(a0);
+    args[1] = PMC_M(a1);
+    args[2] = PMC_M(a2);
+    args[3] = PMC_M(a3);
+    args[4] = PMC_M(a4);
+    _handle_call(name, PMC_M(args));
+}
+
+/***********************************************************************
+ * Call implementations with 6 args
+ **********************************************************************/
+template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
+ReturnType Callable::x(const std::string &name, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2, const Arg3 &a3, const Arg4 &a4, const Arg5 &a5)
+{
+    PMCList args(6);
+    args[0] = PMC_M(a0);
+    args[1] = PMC_M(a1);
+    args[2] = PMC_M(a2);
+    args[3] = PMC_M(a3);
+    args[4] = PMC_M(a4);
+    args[5] = PMC_M(a5);
+    PMCC r = _handle_call(name, PMC_M(args));
+    return r.safe_as<ReturnType>();
+}
+
+template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
+void Callable::x(const std::string &name, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2, const Arg3 &a3, const Arg4 &a4, const Arg5 &a5)
+{
+    PMCList args(6);
+    args[0] = PMC_M(a0);
+    args[1] = PMC_M(a1);
+    args[2] = PMC_M(a2);
+    args[3] = PMC_M(a3);
+    args[4] = PMC_M(a4);
+    args[5] = PMC_M(a5);
+    _handle_call(name, PMC_M(args));
+}
+
+/***********************************************************************
+ * Call implementations with 7 args
+ **********************************************************************/
+template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6>
+ReturnType Callable::x(const std::string &name, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2, const Arg3 &a3, const Arg4 &a4, const Arg5 &a5, const Arg6 &a6)
+{
+    PMCList args(7);
+    args[0] = PMC_M(a0);
+    args[1] = PMC_M(a1);
+    args[2] = PMC_M(a2);
+    args[3] = PMC_M(a3);
+    args[4] = PMC_M(a4);
+    args[5] = PMC_M(a5);
+    args[6] = PMC_M(a6);
+    PMCC r = _handle_call(name, PMC_M(args));
+    return r.safe_as<ReturnType>();
+}
+
+template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6>
+void Callable::x(const std::string &name, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2, const Arg3 &a3, const Arg4 &a4, const Arg5 &a5, const Arg6 &a6)
+{
+    PMCList args(7);
+    args[0] = PMC_M(a0);
+    args[1] = PMC_M(a1);
+    args[2] = PMC_M(a2);
+    args[3] = PMC_M(a3);
+    args[4] = PMC_M(a4);
+    args[5] = PMC_M(a5);
+    args[6] = PMC_M(a6);
+    _handle_call(name, PMC_M(args));
+}
+
+/***********************************************************************
+ * Call implementations with 8 args
+ **********************************************************************/
+template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7>
+ReturnType Callable::x(const std::string &name, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2, const Arg3 &a3, const Arg4 &a4, const Arg5 &a5, const Arg6 &a6, const Arg7 &a7)
+{
+    PMCList args(8);
+    args[0] = PMC_M(a0);
+    args[1] = PMC_M(a1);
+    args[2] = PMC_M(a2);
+    args[3] = PMC_M(a3);
+    args[4] = PMC_M(a4);
+    args[5] = PMC_M(a5);
+    args[6] = PMC_M(a6);
+    args[7] = PMC_M(a7);
+    PMCC r = _handle_call(name, PMC_M(args));
+    return r.safe_as<ReturnType>();
+}
+
+template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7>
+void Callable::x(const std::string &name, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2, const Arg3 &a3, const Arg4 &a4, const Arg5 &a5, const Arg6 &a6, const Arg7 &a7)
+{
+    PMCList args(8);
+    args[0] = PMC_M(a0);
+    args[1] = PMC_M(a1);
+    args[2] = PMC_M(a2);
+    args[3] = PMC_M(a3);
+    args[4] = PMC_M(a4);
+    args[5] = PMC_M(a5);
+    args[6] = PMC_M(a6);
+    args[7] = PMC_M(a7);
+    _handle_call(name, PMC_M(args));
+}
+
+/***********************************************************************
+ * Call implementations with 9 args
+ **********************************************************************/
+template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8>
+ReturnType Callable::x(const std::string &name, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2, const Arg3 &a3, const Arg4 &a4, const Arg5 &a5, const Arg6 &a6, const Arg7 &a7, const Arg8 &a8)
+{
+    PMCList args(9);
+    args[0] = PMC_M(a0);
+    args[1] = PMC_M(a1);
+    args[2] = PMC_M(a2);
+    args[3] = PMC_M(a3);
+    args[4] = PMC_M(a4);
+    args[5] = PMC_M(a5);
+    args[6] = PMC_M(a6);
+    args[7] = PMC_M(a7);
+    args[8] = PMC_M(a8);
+    PMCC r = _handle_call(name, PMC_M(args));
+    return r.safe_as<ReturnType>();
+}
+
+template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8>
+void Callable::x(const std::string &name, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2, const Arg3 &a3, const Arg4 &a4, const Arg5 &a5, const Arg6 &a6, const Arg7 &a7, const Arg8 &a8)
+{
+    PMCList args(9);
+    args[0] = PMC_M(a0);
+    args[1] = PMC_M(a1);
+    args[2] = PMC_M(a2);
+    args[3] = PMC_M(a3);
+    args[4] = PMC_M(a4);
+    args[5] = PMC_M(a5);
+    args[6] = PMC_M(a6);
+    args[7] = PMC_M(a7);
+    args[8] = PMC_M(a8);
+    _handle_call(name, PMC_M(args));
+}
+
+/***********************************************************************
+ * Call implementations with 10 args
+ **********************************************************************/
+template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8, typename Arg9>
+ReturnType Callable::x(const std::string &name, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2, const Arg3 &a3, const Arg4 &a4, const Arg5 &a5, const Arg6 &a6, const Arg7 &a7, const Arg8 &a8, const Arg9 &a9)
+{
+    PMCList args(10);
+    args[0] = PMC_M(a0);
+    args[1] = PMC_M(a1);
+    args[2] = PMC_M(a2);
+    args[3] = PMC_M(a3);
+    args[4] = PMC_M(a4);
+    args[5] = PMC_M(a5);
+    args[6] = PMC_M(a6);
+    args[7] = PMC_M(a7);
+    args[8] = PMC_M(a8);
+    args[9] = PMC_M(a9);
+    PMCC r = _handle_call(name, PMC_M(args));
+    return r.safe_as<ReturnType>();
+}
+
+template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8, typename Arg9>
+void Callable::x(const std::string &name, const Arg0 &a0, const Arg1 &a1, const Arg2 &a2, const Arg3 &a3, const Arg4 &a4, const Arg5 &a5, const Arg6 &a6, const Arg7 &a7, const Arg8 &a8, const Arg9 &a9)
+{
+    PMCList args(10);
+    args[0] = PMC_M(a0);
+    args[1] = PMC_M(a1);
+    args[2] = PMC_M(a2);
+    args[3] = PMC_M(a3);
+    args[4] = PMC_M(a4);
+    args[5] = PMC_M(a5);
+    args[6] = PMC_M(a6);
+    args[7] = PMC_M(a7);
+    args[8] = PMC_M(a8);
+    args[9] = PMC_M(a9);
     _handle_call(name, PMC_M(args));
 }
 

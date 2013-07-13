@@ -57,10 +57,10 @@ protected:
      ******************************************************************/
 protected:
     template <typename ClassType, typename ReturnType>
-    void register_call(const std::string &name, ReturnType(ClassType::*fcn)(void));
+    void register_call(const std::string &name, ReturnType(ClassType::*fcn)());
 
     template <typename ClassType>
-    void register_call(const std::string &name, void(ClassType::*fcn)(void));
+    void register_call(const std::string &name, void(ClassType::*fcn)());
 
     template <typename ClassType, typename ReturnType, typename Arg0>
     void register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &));
@@ -79,6 +79,48 @@ protected:
 
     template <typename ClassType, typename Arg0, typename Arg1, typename Arg2>
     void register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &));
+
+    template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3>
+    void register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &));
+
+    template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3>
+    void register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &));
+
+    template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+    void register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &));
+
+    template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+    void register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &));
+
+    template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
+    void register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &));
+
+    template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
+    void register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &));
+
+    template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6>
+    void register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &));
+
+    template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6>
+    void register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &));
+
+    template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7>
+    void register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &));
+
+    template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7>
+    void register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &));
+
+    template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8>
+    void register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &));
+
+    template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8>
+    void register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &));
+
+    template <typename ClassType, typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8, typename Arg9>
+    void register_call(const std::string &name, ReturnType(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &, const Arg9 &));
+
+    template <typename ClassType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8, typename Arg9>
+    void register_call(const std::string &name, void(ClassType::*fcn)(const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &, const Arg9 &));
 
     /*******************************************************************
      * Call API - don't look here, template magic, not helpful
@@ -107,6 +149,48 @@ public:
 
     template <typename Arg0, typename Arg1, typename Arg2>
     void x(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &);
+
+    template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3>
+    ReturnType x(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &);
+
+    template <typename Arg0, typename Arg1, typename Arg2, typename Arg3>
+    void x(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &);
+
+    template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+    ReturnType x(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &);
+
+    template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+    void x(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &);
+
+    template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
+    ReturnType x(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &);
+
+    template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
+    void x(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &);
+
+    template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6>
+    ReturnType x(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &);
+
+    template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6>
+    void x(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &);
+
+    template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7>
+    ReturnType x(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &);
+
+    template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7>
+    void x(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &);
+
+    template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8>
+    ReturnType x(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &);
+
+    template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8>
+    void x(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &);
+
+    template <typename ReturnType, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8, typename Arg9>
+    ReturnType x(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &, const Arg9 &);
+
+    template <typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8, typename Arg9>
+    void x(const std::string &name, const Arg0 &, const Arg1 &, const Arg2 &, const Arg3 &, const Arg4 &, const Arg5 &, const Arg6 &, const Arg7 &, const Arg8 &, const Arg9 &);
 
     /*******************************************************************
      * Private registration hooks
