@@ -106,8 +106,6 @@ CircularBuffer::CircularBuffer(const size_t num_bytes):
     buff_addr(NULL),
     actual_length(round_up_to_ipc_page(num_bytes))
 {
-    boost::mutex::scoped_lock lock(alloc_mutex);
-
     ////////////////////////////////////////////////////////////////
     // Step 0) Find an address that can be mapped across 2x length:
     ////////////////////////////////////////////////////////////////
@@ -175,11 +173,13 @@ CircularBuffer::CircularBuffer(const size_t num_bytes):
 
 static void circular_buffer_delete(SBuffer &buff, CircularBuffer *circ_buff)
 {
+    boost::mutex::scoped_lock lock(alloc_mutex);
     delete circ_buff;
 }
 
 SBuffer make_circular_buffer(const size_t num_bytes)
 {
+    boost::mutex::scoped_lock lock(alloc_mutex);
     CircularBuffer *circ_buff = NULL;
     size_t trial_count = 0;
     while (circ_buff == NULL)
