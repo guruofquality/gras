@@ -19,6 +19,7 @@ set(test_sources
     block_calls_test.cpp
     factory_test.cpp
     serialize_tags_test.cpp
+    live_connect_test.cpp
 )
 
 include_directories(${GRAS_INCLUDE_DIRS})

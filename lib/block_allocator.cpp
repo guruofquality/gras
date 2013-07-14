@@ -81,10 +81,6 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
         data->output_queues.set_buffer_queue(i, queue);
 
         InputAllocMessage message;
-        //new token for the downstream allocator
-        //so when the downstream overrides, old token gets reset
-        token = SBufferToken(new SBufferDeleter(deleter));
-        config.token = token;
         message.config = config;
         message.token = token;
         worker->post_downstream(i, message);

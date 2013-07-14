@@ -93,9 +93,16 @@ void BlockActor::handle_input_alloc(const InputAllocMessage &message, const Ther
     MESSAGE_TRACER();
     const size_t index = message.index;
 
+    //new token for this downstream allocator
+    //so if the downstream overrides, it has a unique token
+    SBufferDeleter deleter = *(message.token);
+    SBufferToken token = SBufferToken(new SBufferDeleter(deleter));
+    SBufferConfig config = message.config;
+    config.token = token;
+
     //handle the upstream block allocation request
     OutputAllocMessage new_msg;
-    new_msg.queue = data->block->input_buffer_allocator(index, message.config);
+    new_msg.queue = data->block->input_buffer_allocator(index, config);
     if (new_msg.queue) worker->post_upstream(index, new_msg);
 }
 
