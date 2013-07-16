@@ -9,6 +9,8 @@
 #include <gras/sbuffer.hpp>
 #include <gras_impl/token.hpp>
 #include <gras_impl/stats.hpp>
+#include <gras/block_config.hpp>
+#include <gras_impl/interruptible_thread.hpp>
 
 namespace gras
 {
@@ -20,12 +22,12 @@ namespace gras
 
 struct TopAllocMessage
 {
-    //empty
+    Token prio_token;
 };
 
 struct TopActiveMessage
 {
-    //empty
+    Token prio_token;
 };
 
 struct TopInertMessage
@@ -36,6 +38,19 @@ struct TopInertMessage
 struct TopTokenMessage
 {
     Token token;
+    Token prio_token;
+};
+
+struct TopConfigMessage
+{
+    GlobalBlockConfig config;
+    Token prio_token;
+};
+
+struct TopThreadMessage
+{
+    SharedThreadGroup thread_group;
+    Token prio_token;
 };
 
 //----------------------------------------------------------------------
@@ -156,16 +171,13 @@ struct GetStatsMessage
 } //namespace gras
 
 #include <Theron/Register.h>
-#include <gras/top_block.hpp>
-#include <gras_impl/messages.hpp>
-#include <gras_impl/interruptible_thread.hpp>
 
 THERON_DECLARE_REGISTERED_MESSAGE(gras::TopAllocMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::TopActiveMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::TopInertMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::TopTokenMessage);
-THERON_DECLARE_REGISTERED_MESSAGE(gras::GlobalBlockConfig);
-THERON_DECLARE_REGISTERED_MESSAGE(gras::SharedThreadGroup);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::TopConfigMessage);
+THERON_DECLARE_REGISTERED_MESSAGE(gras::TopThreadMessage);
 
 THERON_DECLARE_REGISTERED_MESSAGE(gras::InputTagMessage);
 THERON_DECLARE_REGISTERED_MESSAGE(gras::InputMsgMessage);

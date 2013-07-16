@@ -22,7 +22,9 @@ void BlockActor::handle_top_active(
 
     this->Send(0, from); //ACK
 
-    this->task_kicker();
+    //work could have been skipped by a high prio msg
+    //forcefully kick the task to recheck in a new call
+    this->Send(SelfKickMessage(), this->GetAddress());
 }
 
 void BlockActor::handle_top_inert(
@@ -77,37 +79,38 @@ void BlockActor::handle_top_token(
 }
 
 void BlockActor::handle_top_config(
-    const GlobalBlockConfig &message,
+    const TopConfigMessage &message,
     const Theron::Address from
 ){
     MESSAGE_TRACER();
+    const GlobalBlockConfig &config = message.config;
 
     //overwrite with global config only if maxium_items is not set (zero)
     for (size_t i = 0; i < data->output_configs.size(); i++)
     {
         if (data->output_configs[i].maximum_items == 0)
         {
-            data->output_configs[i].maximum_items = message.maximum_output_items;
+            data->output_configs[i].maximum_items = config.maximum_output_items;
         }
     }
 
     //overwrite with global node affinity setting for buffers if not set
     if (data->global_config.buffer_affinity == -1)
     {
-        data->global_config.buffer_affinity = message.buffer_affinity;
+        data->global_config.buffer_affinity = config.buffer_affinity;
     }
 
     //overwrite with global interruptable setting for work if not set
     if (data->global_config.interruptible_work == false)
     {
-        data->global_config.interruptible_work = message.interruptible_work;
+        data->global_config.interruptible_work = config.interruptible_work;
     }
 
     this->Send(0, from); //ACK
 }
 
 void BlockActor::handle_top_thread_group(
-    const SharedThreadGroup &message,
+    const TopThreadMessage &message,
     const Theron::Address from
 ){
     MESSAGE_TRACER();
@@ -115,7 +118,7 @@ void BlockActor::handle_top_thread_group(
     //store the topology's thread group
     //erase any potentially old lingering threads
     //spawn a new thread if this block is a source
-    data->thread_group = message;
+    data->thread_group = message.thread_group;
     data->interruptible_thread.reset(); //erase old one
     if (data->global_config.interruptible_work)
     {

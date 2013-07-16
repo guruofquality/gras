@@ -61,7 +61,7 @@ static void sleep_rand(void)
 
 BOOST_AUTO_TEST_CASE(test_live_connect)
 {
-    MySink my_sink;
+    MySink my_sink(false);
     MySource my_source;
     gras::TopBlock tb("Top");
 

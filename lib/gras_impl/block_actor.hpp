@@ -64,8 +64,8 @@ struct BlockActor : Theron::Actor
     void handle_top_active(const TopActiveMessage &, const Theron::Address);
     void handle_top_inert(const TopInertMessage &, const Theron::Address);
     void handle_top_token(const TopTokenMessage &, const Theron::Address);
-    void handle_top_config(const GlobalBlockConfig &, const Theron::Address);
-    void handle_top_thread_group(const SharedThreadGroup &, const Theron::Address);
+    void handle_top_config(const TopConfigMessage &, const Theron::Address);
+    void handle_top_thread_group(const TopThreadMessage &, const Theron::Address);
 
     void handle_input_tag(const InputTagMessage &, const Theron::Address);
     void handle_input_msg(const InputMsgMessage &, const Theron::Address);

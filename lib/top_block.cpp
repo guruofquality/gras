@@ -50,22 +50,26 @@ void TopBlock::start(void)
 {
     (*this)->executor->commit();
     {
-        (*this)->executor->post_all((*this)->thread_group);
+        TopThreadMessage message;
+        message.thread_group = (*this)->thread_group;
+        (*this)->bcast_prio_msg(message);
     }
     {
         TopTokenMessage message;
         message.token = (*this)->token;
-        (*this)->executor->post_all(message);
+        (*this)->bcast_prio_msg(message);
     }
     {
         //send the global block config before alloc
-        (*this)->executor->post_all((*this)->top_config);
+        TopConfigMessage message;
+        message.config = (*this)->top_config;
+        (*this)->bcast_prio_msg(message);
     }
     {
-        (*this)->executor->post_all(TopAllocMessage());
+        (*this)->bcast_prio_msg(TopAllocMessage());
     }
     {
-        (*this)->executor->post_all(TopActiveMessage());
+        (*this)->bcast_prio_msg(TopActiveMessage());
     }
 }
 
