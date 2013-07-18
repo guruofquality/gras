@@ -28,19 +28,21 @@ namespace fs = boost::filesystem;
 
 static void load_all_modules_in_path(const fs::path &path)
 {
-    if (not fs::exists(fs::path(path))) return;
-    if (not fs::is_directory(fs::path(path))) return;
-    for(
-        fs::directory_iterator dir_itr(path);
-        dir_itr != fs::directory_iterator();
-        ++dir_itr
-    ){
-        const std::string mod_path = dir_itr->path().string();
+    if (not fs::exists(path)) return;
+    if (fs::is_regular_file(path))
+    {
+        const std::string mod_path = path.string();
         if (not load_module_in_path(mod_path.c_str()))
         {
             std::cerr << "GRAS Module loader fail: " << mod_path << std::endl;
         }
+        return;
     }
+    if (fs::is_directory(path)) for(
+        fs::directory_iterator dir_itr(path);
+        dir_itr != fs::directory_iterator();
+        ++dir_itr
+    ) load_all_modules_in_path(dir_itr->path());
 }
 
 GRAS_STATIC_BLOCK(gras_module_loader)

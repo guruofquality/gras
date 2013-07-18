@@ -58,10 +58,10 @@ GR_ADD_TEST(time_tags_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/time
 add_library(example_module MODULE example_module.cpp)
 target_link_libraries(example_module ${GRAS_LIBRARIES})
 
-set(CURRENT_LIBRARY_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
-if(WIN32)
-set(CURRENT_LIBRARY_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE})
-endif()
-file(TO_NATIVE_PATH "${CURRENT_LIBRARY_BUILD_DIR}" CURRENT_LIBRARY_BUILD_DIR)
-list(APPEND GR_TEST_ENVIRONS "GRAS_MODULE_PATH=${CURRENT_LIBRARY_BUILD_DIR}")
+get_target_property(example_module_location example_module LOCATION)
+string(REPLACE "$(Configuration)" ${CMAKE_BUILD_TYPE} example_module_location ${example_module_location})
+file(TO_NATIVE_PATH "${example_module_location}" example_module_location)
+message(STATUS "example_module_location: ${example_module_location}")
+
+list(APPEND GR_TEST_ENVIRONS "GRAS_MODULE_PATH=${example_module_location}")
 GR_ADD_TEST(module_loader_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/module_loader_test.py)
