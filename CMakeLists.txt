@@ -97,6 +97,7 @@ add_subdirectory(PMC)
 add_subdirectory(python/gras)
 add_subdirectory(tests)
 add_subdirectory(query)
+add_subdirectory(tool)
 
 ########################################################################
 # add gnuradio as sub-project
