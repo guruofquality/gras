@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
         ("print-library-mod-dir", "print the GRAS library module directory")
         ("print-cmake-mod-dir", "print the GRAS cmake module directory")
         ("print-grc-blocks-dir", "print the GRC blocks directory")
-        ("action", po::value(&process_args.action), "configure, build, clean, install, uninstall the sources")
+        ("action", po::value(&process_args.action), "build, clean, install, uninstall the sources")
         ("project", po::value(&process_args.project), "unique project name")
         ("sources", po::value(&process_args.sources), "list of grc, python, c++ sources")
     ;

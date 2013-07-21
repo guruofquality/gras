@@ -120,36 +120,67 @@ int gras::process(const ProcessArgs &args)
         return EXIT_FAILURE;
     }
 
-    //ensure that build dir exists
+    //source and build directories
+    const fs::path source_dir = args.get_source_dir();
     const fs::path build_dir = args.get_build_dir();
-    if (ensure_directory(build_dir) == EXIT_FAILURE) return EXIT_FAILURE;
 
-    if (args.action == "configure")
+    //build the cmake project and build directory
+    if (args.action == "build")
     {
-        const fs::path source_dir = args.get_source_dir();
+        if (ensure_directory(build_dir) == EXIT_FAILURE) return EXIT_FAILURE;
         fs::current_path(build_dir);
-        return system("cmake", source_dir.string());
-    }
-    else if (args.action == "build")
-    {
-        fs::current_path(build_dir);
+        std::cout << "Configuring " << args.project  << "..." << std::endl;
+        if (system("cmake", source_dir.string()) == EXIT_FAILURE) return EXIT_FAILURE;
+        std::cout << "Building " << args.project  << "..." << std::endl;
         return system("make");
     }
+
+    //remove the build directory
     else if (args.action == "clean")
     {
-        fs::current_path(build_dir);
-        return system("make", "clean");
+        std::cout << "Cleaning " << args.project  << "..." << std::endl;
+        const size_t num_removed = fs::remove_all(build_dir);
+        if (num_removed == 0)
+        {
+            std::cerr << "Failed to clean " << build_dir << std::endl;
+            return EXIT_FAILURE;
+        }
     }
+
+    //install build products
     else if (args.action == "install")
     {
+        std::cout << "Installing " << args.project  << "..." << std::endl;
         fs::current_path(build_dir);
         return system("make", "install");
     }
+
+    //uninstall build products
     else if (args.action == "uninstall")
     {
-        fs::current_path(build_dir);
-        return system("make", "uninstall");
+        std::cout << "Uninstalling " << args.project  << "..." << std::endl;
+        const fs::path installed_mod_path = gras::get_library_module_install_path() / args.project;
+        const fs::path installed_grc_path = gras::get_grc_blocks_install_path() / args.project;
+        size_t num_removed = 0;
+        std::cout << "Removing " << installed_mod_path.string() << std::endl;
+        std::cout << "Removing " << installed_grc_path.string() << std::endl;
+        num_removed += fs::remove_all(installed_mod_path);
+        num_removed += fs::remove_all(installed_grc_path);
+        if (num_removed == 0)
+        {
+            std::cerr << "Failed to uninstall!" << std::endl;
+            return EXIT_FAILURE;
+        }
+        std::cout << "Removed " << num_removed << " files." << std::endl;
     }
+
+    else
+    {
+        std::cerr << "Unknown action " << args.action << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    std::cout << "sucess!" << std::endl;
 
     return EXIT_SUCCESS;
 }

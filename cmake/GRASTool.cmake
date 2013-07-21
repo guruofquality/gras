@@ -59,6 +59,10 @@ function(GRAS_TOOL)
     GRAS_TOOL_GET_PATH(GRAS_TOOL_MOD_DEST "print-library-mod-dir")
     GRAS_TOOL_GET_PATH(GRAS_TOOL_GRC_DEST "print-grc-blocks-dir")
 
+    #suffix install path for project name
+    set(GRAS_TOOL_MOD_DEST ${GRAS_TOOL_MOD_DEST}/${GRAS_TOOL_PROJECT})
+    set(GRAS_TOOL_GRC_DEST ${GRAS_TOOL_GRC_DEST}/${GRAS_TOOL_PROJECT})
+
     #locate PMC and GRAS includes
     find_path(
         GRAS_INCLUDE_DIRS
