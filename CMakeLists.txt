@@ -98,6 +98,7 @@ add_subdirectory(python/gras)
 add_subdirectory(tests)
 add_subdirectory(query)
 add_subdirectory(tool)
+add_subdirectory(cmake)
 
 ########################################################################
 # add gnuradio as sub-project

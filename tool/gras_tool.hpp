@@ -22,6 +22,16 @@ struct ProcessArgs
     std::string action;
     std::string project;
     std::vector<std::string> sources;
+    fs::path get_source_dir(void) const
+    {
+        //TODO its CWD for now
+        return fs::current_path();
+    }
+    fs::path get_build_dir(void) const
+    {
+        //TODO its CWD for now
+        return fs::current_path() / "build";
+    }
 };
 
 int process(const ProcessArgs &);

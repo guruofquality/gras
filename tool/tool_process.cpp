@@ -14,13 +14,13 @@ static int system(const std::vector<std::string> &args)
         cmd += arg;
         cmd += " ";
     }
+    std::cout << "Executing " << cmd << std::endl;
     return std::system(cmd.c_str());
 }
 
-static int cmake(const std::string &a0 = "", const std::string &a1 = "", const std::string &a2 = "", const std::string &a3 = "")
+static int system(const std::string &a0 = "", const std::string &a1 = "", const std::string &a2 = "", const std::string &a3 = "")
 {
     std::vector<std::string> args;
-    args.push_back("cmake"); //TODO make more portable
     args.push_back(a0);
     args.push_back(a1);
     args.push_back(a2);
@@ -28,23 +28,29 @@ static int cmake(const std::string &a0 = "", const std::string &a1 = "", const s
     return system(args);
 }
 
+static int ensure_directory(const fs::path &path)
+{
+    if (fs::exists(path) and not fs::is_directory(path))
+    {
+        std::cerr << "The specified directory is a file " << path.string() << std::endl;
+        return EXIT_FAILURE;
+    }
+    else if (not fs::exists(path) and not fs::create_directory(path))
+    {
+        std::cerr << "Failed to create the directory " << path.string() << std::endl;
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+}
+
 static int write_cmake_file(const gras::ProcessArgs &args)
 {
-    const fs::path source_dir = fs::current_path();
+    const fs::path source_dir = args.get_source_dir();
     const fs::path cmakelists_path = source_dir / "CMakeLists.txt";
     std::cout << "Creating file " << cmakelists_path << "..." << std::endl;
 
     //ensure that the directory exists
-    if (fs::exists(source_dir) and not fs::is_directory(source_dir))
-    {
-        std::cerr << "The specified source directory is a file " << source_dir.string() << std::endl;
-        return EXIT_FAILURE;
-    }
-    else if (not fs::exists(source_dir) and not fs::create_directory(source_dir))
-    {
-        std::cerr << "Failed to create the source directory " << source_dir.string() << std::endl;
-        return EXIT_FAILURE;
-    }
+    if (ensure_directory(source_dir) == EXIT_FAILURE) return EXIT_FAILURE;
 
     //open cmakelists for writing
     std::ofstream cmakelists(cmakelists_path.string().c_str());
@@ -59,6 +65,8 @@ static int write_cmake_file(const gras::ProcessArgs &args)
         << "cmake_minimum_required(VERSION 2.8)" << std::endl
         << "project(" << args.project << " CXX C)" << std::endl
         << "enable_testing()" << std::endl
+        << std::endl
+        << "list(APPEND CMAKE_MODULE_PATH " << gras::get_cmake_module_install_path().string() << ")" << std::endl
         << "include(GRASTool)" << std::endl
         << std::endl
         << "GRAS_TOOL(" << std::endl
@@ -71,6 +79,7 @@ static int write_cmake_file(const gras::ProcessArgs &args)
     }
 
     cmakelists
+        << "    PROJECT " << args.project << std::endl
         << ")" << std::endl
         << std::endl
     ;
@@ -104,32 +113,42 @@ int gras::process(const ProcessArgs &args)
         return EXIT_FAILURE;
     }
 
-
-    if (args.action == "configure")
-    {
-        
-    }
-    else if (args.action == "build")
-    {
-        
-    }
-    else if (args.action == "clean")
-    {
-        
-    }
-    else if (args.action == "install")
-    {
-        
-    }
-    else if (args.action == "uninstall")
-    {
-        
-    }
-
-    if (write_cmake_file(args) == EXIT_FAILURE)
+    //write a new cmakelists if sources are specified
+    if (not args.sources.empty() and write_cmake_file(args) == EXIT_FAILURE)
     {
         std::cerr << "Failed to write the CMakeLists.txt!" << std::endl;
         return EXIT_FAILURE;
+    }
+
+    //ensure that build dir exists
+    const fs::path build_dir = args.get_build_dir();
+    if (ensure_directory(build_dir) == EXIT_FAILURE) return EXIT_FAILURE;
+
+    if (args.action == "configure")
+    {
+        const fs::path source_dir = args.get_source_dir();
+        fs::current_path(build_dir);
+        return system("cmake", source_dir.string());
+    }
+    else if (args.action == "build")
+    {
+        fs::current_path(build_dir);
+        return system("make");
+    }
+    else if (args.action == "clean")
+    {
+        fs::current_path(build_dir);
+        return system("make", "clean");
+    }
+    else if (args.action == "install")
+    {
+        fs::current_path(build_dir);
+        return system("make", "install");
+    }
+    else if (args.action == "uninstall")
+    {
+        fs::current_path(build_dir);
+        return system("make", "uninstall");
     }
 
     return EXIT_SUCCESS;
