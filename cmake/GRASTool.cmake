@@ -4,20 +4,21 @@ endif()
 set(__INCLUDED_GRAS_TOOL_CMAKE TRUE)
 
 ########################################################################
-## GRAS_TOOL_GET_PATH - query the GRAS tool for paths
-## Query the options set by OPT
-## Set the resulting path to VAR
+## Set installation constants
+## The GRAS_ROOT can be set via arg or environment variable
 ########################################################################
-function(GRAS_TOOL_GET_PATH VAR OPT)
-    find_program(GRAS_TOOL_EXECUTABLE gras_tool)
-    execute_process(
-        COMMAND ${GRAS_TOOL_EXECUTABLE} --${OPT}
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-        OUTPUT_VARIABLE GRAS_TOOL_VAR_OUT
-    )
-    message(STATUS "${OPT} = ${GRAS_TOOL_VAR_OUT}")
-    set(${VAR} ${GRAS_TOOL_VAR_OUT} PARENT_SCOPE)
-endfunction(GRAS_TOOL_GET_PATH)
+if(GRAS_ROOT)
+    #its already set
+elseif($ENV{GRAS_ROOT})
+    set(GRAS_ROOT $ENV{GRAS_ROOT})
+else()
+    set(GRAS_ROOT "@CMAKE_INSTALL_PREFIX@")
+endif()
+
+set(GRAS_TOOL_MOD_DIR ${GRAS_ROOT}/lib@LIBSUFFIX@/gras/modules)
+set(GRAS_TOOL_GRC_DIR ${GRAS_ROOT}/share/gnuradio/grc/blocks)
+set(GRAS_TOOL_INCLUDE_DIR ${GRAS_ROOT}/include)
+set(GRAS_TOOL_LIBRARY_DIR ${GRAS_ROOT}/lib@LIBSUFFIX@)
 
 ########################################################################
 ## GRAS_TOOL cmake function - the swiss army knife for GRAS users
@@ -54,20 +55,15 @@ function(GRAS_TOOL)
         endif()
     endforeach(source)
 
-    #extract install directories
-    GRAS_TOOL_GET_PATH(GRAS_ROOT "print-gras-root-dir")
-    GRAS_TOOL_GET_PATH(GRAS_TOOL_MOD_DEST "print-library-mod-dir")
-    GRAS_TOOL_GET_PATH(GRAS_TOOL_GRC_DEST "print-grc-blocks-dir")
-
     #suffix install path for project name
-    set(GRAS_TOOL_MOD_DEST ${GRAS_TOOL_MOD_DEST}/${GRAS_TOOL_PROJECT})
-    set(GRAS_TOOL_GRC_DEST ${GRAS_TOOL_GRC_DEST}/${GRAS_TOOL_PROJECT})
+    set(GRAS_TOOL_MOD_DIR ${GRAS_TOOL_MOD_DIR}/${GRAS_TOOL_PROJECT})
+    set(GRAS_TOOL_GRC_DIR ${GRAS_TOOL_GRC_DIR}/${GRAS_TOOL_PROJECT})
 
     #locate PMC and GRAS includes
     find_path(
         GRAS_INCLUDE_DIRS
         NAMES gras/gras.hpp
-        PATHS ${GRAS_ROOT}/include
+        PATHS ${GRAS_TOOL_INCLUDE_DIR}
     )
     include_directories(${GRAS_INCLUDE_DIRS})
 
@@ -75,12 +71,12 @@ function(GRAS_TOOL)
     find_library(
         PMC_LIBRARIES
         NAMES pmc
-        PATHS ${GRAS_ROOT}/lib ${GRAS_ROOT}/lib64
+        PATHS ${GRAS_TOOL_LIBRARY_DIR}
     )
     find_library(
         GRAS_LIBRARIES
         NAMES gras
-        PATHS ${GRAS_ROOT}/lib ${GRAS_ROOT}/lib64
+        PATHS ${GRAS_TOOL_LIBRARY_DIR}
     )
 
     #and boost includes as well
@@ -91,9 +87,9 @@ function(GRAS_TOOL)
     add_library(${GRAS_TOOL_PROJECT} MODULE ${GRAS_TOOL_CPP_SOURCES})
     target_link_libraries(${GRAS_TOOL_PROJECT} ${PMC_LIBRARIES} ${GRAS_LIBRARIES})
     install(TARGETS ${GRAS_TOOL_PROJECT}
-        LIBRARY DESTINATION ${GRAS_TOOL_MOD_DEST} COMPONENT ${GRAS_TOOL_COMPONENT} # .so file
-        ARCHIVE DESTINATION ${GRAS_TOOL_MOD_DEST} COMPONENT ${GRAS_TOOL_COMPONENT} # .lib file
-        RUNTIME DESTINATION ${GRAS_TOOL_MOD_DEST} COMPONENT ${GRAS_TOOL_COMPONENT} # .dll file
+        LIBRARY DESTINATION ${GRAS_TOOL_MOD_DIR} COMPONENT ${GRAS_TOOL_COMPONENT} # .so file
+        ARCHIVE DESTINATION ${GRAS_TOOL_MOD_DIR} COMPONENT ${GRAS_TOOL_COMPONENT} # .lib file
+        RUNTIME DESTINATION ${GRAS_TOOL_MOD_DIR} COMPONENT ${GRAS_TOOL_COMPONENT} # .dll file
     )
 
     #TODO python module install
@@ -101,8 +97,14 @@ function(GRAS_TOOL)
     #install GRC files
     install(
         FILES ${GRAS_TOOL_GRC_SOURCES}
-        DESTINATION ${GRAS_TOOL_GRC_DEST}
+        DESTINATION ${GRAS_TOOL_GRC_DIR}
         COMPONENT ${GRAS_TOOL_COMPONENT}
+    )
+
+    #create uninstall rule for this project
+    add_custom_target(uninstall_${GRAS_TOOL_PROJECT}
+        COMMAND ${CMAKE_COMMAND} -E remove_directory ${GRAS_TOOL_MOD_DIR}
+        COMMAND ${CMAKE_COMMAND} -E remove_directory ${GRAS_TOOL_GRC_DIR}
     )
 
 endfunction(GRAS_TOOL)

@@ -13,8 +13,6 @@ namespace gras
 {
 
 fs::path get_gras_root_path(void);
-fs::path get_library_module_install_path(void);
-fs::path get_grc_blocks_install_path(void);
 fs::path get_cmake_module_install_path(void);
 
 struct ProcessArgs
@@ -34,7 +32,7 @@ struct ProcessArgs
     }
 };
 
-int process(const ProcessArgs &);
+int handle(const ProcessArgs &);
 
 } //namespace gras
 

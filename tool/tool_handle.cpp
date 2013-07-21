@@ -88,7 +88,7 @@ static int write_cmake_file(const gras::ProcessArgs &args)
     return EXIT_SUCCESS;
 }
 
-int gras::process(const ProcessArgs &args)
+int gras::handle(const ProcessArgs &args)
 {
     //check that sources exist
     BOOST_FOREACH(const std::string &source, args.sources)
@@ -159,19 +159,8 @@ int gras::process(const ProcessArgs &args)
     else if (args.action == "uninstall")
     {
         std::cout << "Uninstalling " << args.project  << "..." << std::endl;
-        const fs::path installed_mod_path = gras::get_library_module_install_path() / args.project;
-        const fs::path installed_grc_path = gras::get_grc_blocks_install_path() / args.project;
-        size_t num_removed = 0;
-        std::cout << "Removing " << installed_mod_path.string() << std::endl;
-        std::cout << "Removing " << installed_grc_path.string() << std::endl;
-        num_removed += fs::remove_all(installed_mod_path);
-        num_removed += fs::remove_all(installed_grc_path);
-        if (num_removed == 0)
-        {
-            std::cerr << "Failed to uninstall!" << std::endl;
-            return EXIT_FAILURE;
-        }
-        std::cout << "Removed " << num_removed << " files." << std::endl;
+        fs::current_path(build_dir);
+        return system("make", "uninstall_"+args.project);
     }
 
     else

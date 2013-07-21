@@ -17,9 +17,7 @@ int main(int argc, char *argv[])
     desc.add_options()
         ("help", "help message")
         ("print-gras-root-dir", "print the GRAS root install directory")
-        ("print-library-mod-dir", "print the GRAS library module directory")
-        ("print-cmake-mod-dir", "print the GRAS cmake module directory")
-        ("print-grc-blocks-dir", "print the GRC blocks directory")
+        ("print-cmake-dir", "print the GRAS CMake module directory")
         ("action", po::value(&process_args.action), "build, clean, install, uninstall the sources")
         ("project", po::value(&process_args.project), "unique project name")
         ("sources", po::value(&process_args.sources), "list of grc, python, c++ sources")
@@ -44,12 +42,10 @@ int main(int argc, char *argv[])
 
     //print directories if queried for by the args
     if (vm.count("print-gras-root-dir")) {std::cout << gras::get_gras_root_path().string() << std::endl; return EXIT_SUCCESS;}
-    if (vm.count("print-library-mod-dir")) {std::cout << gras::get_library_module_install_path().string() << std::endl; return EXIT_SUCCESS;}
-    if (vm.count("print-cmake-mod-dir")) {std::cout << gras::get_cmake_module_install_path().string() << std::endl; return EXIT_SUCCESS;}
-    if (vm.count("print-grc-blocks-dir")) {std::cout << gras::get_grc_blocks_install_path().string() << std::endl; return EXIT_SUCCESS;}
+    if (vm.count("print-cmake-dir")) {std::cout << gras::get_cmake_module_install_path().string() << std::endl; return EXIT_SUCCESS;}
 
     //call into the action processor
-    if (vm.count("action")) return gras::process(process_args);
+    if (vm.count("action")) return gras::handle(process_args);
 
     return EXIT_SUCCESS;
 }

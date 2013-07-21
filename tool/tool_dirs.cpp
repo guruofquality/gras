@@ -10,18 +10,6 @@ fs::path gras::get_gras_root_path(void)
     return fs::path("@CMAKE_INSTALL_PREFIX@");
 }
 
-fs::path gras::get_library_module_install_path(void)
-{
-    const fs::path root = gras::get_gras_root_path();
-    return root / ("lib@LIB_SUFFIX@") / "gras" / "modules";
-}
-
-fs::path gras::get_grc_blocks_install_path(void)
-{
-    const fs::path root = gras::get_gras_root_path();
-    return root / "share" / "gnuradio" / "grc" / "blocks";
-}
-
 fs::path gras::get_cmake_module_install_path(void)
 {
     const fs::path root = gras::get_gras_root_path();
