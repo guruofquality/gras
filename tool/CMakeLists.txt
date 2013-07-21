@@ -3,6 +3,7 @@
 ########################################################################
 list(APPEND GRAS_TOOL_SOURCES
     gras_tool.cpp
+    tool_misc.cpp
     tool_handle.cpp
 )
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
