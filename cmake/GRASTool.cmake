@@ -19,6 +19,7 @@ set(GRAS_TOOL_MOD_DIR ${GRAS_ROOT}/lib@LIBSUFFIX@/gras/modules)
 set(GRAS_TOOL_GRC_DIR ${GRAS_ROOT}/share/gnuradio/grc/blocks)
 set(GRAS_TOOL_INCLUDE_DIR ${GRAS_ROOT}/include)
 set(GRAS_TOOL_LIBRARY_DIR ${GRAS_ROOT}/lib@LIBSUFFIX@)
+set(GRAS_TOOL_PYTHON_DIR ${GRAS_ROOT}/@GR_PYTHON_DIR@/gras/modules)
 
 ########################################################################
 ## GRAS_TOOL cmake function - the swiss army knife for GRAS users
@@ -41,7 +42,13 @@ function(GRAS_TOOL)
         if ("${source_ext}" STREQUAL ".cpp")
             list(APPEND GRAS_TOOL_CPP_SOURCES ${source})
         endif()
+        if ("${source_ext}" STREQUAL ".cxx")
+            list(APPEND GRAS_TOOL_CPP_SOURCES ${source})
+        endif()
         if ("${source_ext}" STREQUAL ".cc")
+            list(APPEND GRAS_TOOL_CPP_SOURCES ${source})
+        endif()
+        if ("${source_ext}" STREQUAL ".c")
             list(APPEND GRAS_TOOL_CPP_SOURCES ${source})
         endif()
         if ("${source_ext}" STREQUAL ".py")
@@ -58,6 +65,7 @@ function(GRAS_TOOL)
     #suffix install path for project name
     set(GRAS_TOOL_MOD_DIR ${GRAS_TOOL_MOD_DIR}/${GRAS_TOOL_PROJECT})
     set(GRAS_TOOL_GRC_DIR ${GRAS_TOOL_GRC_DIR}/${GRAS_TOOL_PROJECT})
+    set(GRAS_TOOL_PYTHON_DIR ${GRAS_TOOL_PYTHON_DIR}/${GRAS_TOOL_PROJECT})
 
     #locate PMC and GRAS includes
     find_path(
@@ -84,22 +92,33 @@ function(GRAS_TOOL)
     include_directories(${Boost_INCLUDE_DIRS})
 
     #build and install module to path
-    add_library(${GRAS_TOOL_PROJECT} MODULE ${GRAS_TOOL_CPP_SOURCES})
-    target_link_libraries(${GRAS_TOOL_PROJECT} ${PMC_LIBRARIES} ${GRAS_LIBRARIES})
-    install(TARGETS ${GRAS_TOOL_PROJECT}
-        LIBRARY DESTINATION ${GRAS_TOOL_MOD_DIR} COMPONENT ${GRAS_TOOL_COMPONENT} # .so file
-        ARCHIVE DESTINATION ${GRAS_TOOL_MOD_DIR} COMPONENT ${GRAS_TOOL_COMPONENT} # .lib file
-        RUNTIME DESTINATION ${GRAS_TOOL_MOD_DIR} COMPONENT ${GRAS_TOOL_COMPONENT} # .dll file
-    )
+    if (GRAS_TOOL_CPP_SOURCES)
+        add_library(${GRAS_TOOL_PROJECT} MODULE ${GRAS_TOOL_CPP_SOURCES})
+        target_link_libraries(${GRAS_TOOL_PROJECT} ${PMC_LIBRARIES} ${GRAS_LIBRARIES})
+        install(TARGETS ${GRAS_TOOL_PROJECT}
+            LIBRARY DESTINATION ${GRAS_TOOL_MOD_DIR} COMPONENT ${GRAS_TOOL_COMPONENT} # .so file
+            ARCHIVE DESTINATION ${GRAS_TOOL_MOD_DIR} COMPONENT ${GRAS_TOOL_COMPONENT} # .lib file
+            RUNTIME DESTINATION ${GRAS_TOOL_MOD_DIR} COMPONENT ${GRAS_TOOL_COMPONENT} # .dll file
+        )
+    endif()
 
-    #TODO python module install
+    #python module install
+    if (GRAS_TOOL_PY_SOURCES)
+        install(
+            FILES ${GRAS_TOOL_PY_SOURCES}
+            DESTINATION ${GRAS_TOOL_PYTHON_DIR}
+            COMPONENT ${GRAS_TOOL_COMPONENT}
+        )
+    endif()
 
     #install GRC files
-    install(
-        FILES ${GRAS_TOOL_GRC_SOURCES}
-        DESTINATION ${GRAS_TOOL_GRC_DIR}
-        COMPONENT ${GRAS_TOOL_COMPONENT}
-    )
+    if (GRAS_TOOL_GRC_SOURCES)
+        install(
+            FILES ${GRAS_TOOL_GRC_SOURCES}
+            DESTINATION ${GRAS_TOOL_GRC_DIR}
+            COMPONENT ${GRAS_TOOL_COMPONENT}
+        )
+    endif()
 
     #create uninstall rule for this project
     add_custom_target(uninstall_${GRAS_TOOL_PROJECT}

@@ -1,6 +1,8 @@
 ########################################################################
 # Install cmake modules to known location
 ########################################################################
+include(GrPython)
+
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/GRASTool.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/GRASTool.cmake
