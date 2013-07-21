@@ -3,17 +3,14 @@
 #include "gras_tool.hpp"
 #include <iostream>
 #include <boost/format.hpp>
-#include <boost/foreach.hpp>
 #include <boost/program_options.hpp>
-#include <vector>
-#include <string>
 
 namespace po = boost::program_options;
 
 int main(int argc, char *argv[])
 {
     //variables to be set by po
-    std::vector<std::string> sources;
+    gras::ProcessArgs process_args;
 
     //setup the program options
     po::options_description desc("Allowed options");
@@ -23,7 +20,9 @@ int main(int argc, char *argv[])
         ("print-library-mod-dir", "print the GRAS library module directory")
         ("print-cmake-mod-dir", "print the GRAS cmake module directory")
         ("print-grc-blocks-dir", "print the GRC blocks directory")
-        ("sources", po::value(&sources), "list of grc, python, c++ sources" )
+        ("action", po::value(&process_args.action), "configure, build, clean, install, uninstall the sources")
+        ("project", po::value(&process_args.project), "unique project name")
+        ("sources", po::value(&process_args.sources), "list of grc, python, c++ sources")
     ;
 
     //setup positional program options
@@ -44,15 +43,13 @@ int main(int argc, char *argv[])
     }
 
     //print directories if queried for by the args
-    if (vm.count("print-gras-root-dir")) std::cout << gras::get_gras_root_path().string() << std::endl;
-    if (vm.count("print-library-mod-dir")) std::cout << gras::get_library_module_install_path().string() << std::endl;
-    if (vm.count("print-cmake-mod-dir")) std::cout << gras::get_cmake_module_install_path().string() << std::endl;
-    if (vm.count("print-grc-blocks-dir")) std::cout << gras::get_grc_blocks_install_path().string() << std::endl;
+    if (vm.count("print-gras-root-dir")) {std::cout << gras::get_gras_root_path().string() << std::endl; return EXIT_SUCCESS;}
+    if (vm.count("print-library-mod-dir")) {std::cout << gras::get_library_module_install_path().string() << std::endl; return EXIT_SUCCESS;}
+    if (vm.count("print-cmake-mod-dir")) {std::cout << gras::get_cmake_module_install_path().string() << std::endl; return EXIT_SUCCESS;}
+    if (vm.count("print-grc-blocks-dir")) {std::cout << gras::get_grc_blocks_install_path().string() << std::endl; return EXIT_SUCCESS;}
 
-    BOOST_FOREACH( const std::string& i, sources )
-    {
-        std::cout << i << std::endl;
-    }
+    //call into the action processor
+    if (vm.count("action")) return gras::process(process_args);
 
     return EXIT_SUCCESS;
 }

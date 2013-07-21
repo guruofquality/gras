@@ -3,6 +3,9 @@
 #ifndef INCLUDED_GRAS_TOOL_HPP
 #define INCLUDED_GRAS_TOOL_HPP
 
+#include <vector>
+#include <string>
+
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
 
@@ -13,6 +16,15 @@ fs::path get_gras_root_path(void);
 fs::path get_library_module_install_path(void);
 fs::path get_grc_blocks_install_path(void);
 fs::path get_cmake_module_install_path(void);
+
+struct ProcessArgs
+{
+    std::string action;
+    std::string project;
+    std::vector<std::string> sources;
+};
+
+int process(const ProcessArgs &);
 
 } //namespace gras
 
