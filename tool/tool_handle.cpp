@@ -59,12 +59,23 @@ int gras::handle(const HandlerArgs &args)
     const fs::path make_path = gras::get_make_executable_path();
 
     //build the cmake project and build directory
-    if (args.action == "build")
+    if (args.action == "configure")
     {
         if (ensure_directory(build_dir) == EXIT_FAILURE) return EXIT_FAILURE;
         fs::current_path(build_dir);
         std::cout << "Configuring " << args.project  << "..." << std::endl;
         if (gras::system(cmake_path.string(), source_dir.string()) == EXIT_FAILURE) return EXIT_FAILURE;
+    }
+
+    //compile into the build directory
+    else if (args.action == "build")
+    {
+        if (not fs::exists(build_dir / "CMakeCache.txt"))
+        {
+            std::cerr << "No project has been configured!" << std::endl;
+            return EXIT_FAILURE;
+        }
+        fs::current_path(build_dir);
         std::cout << "Building " << args.project  << "..." << std::endl;
         return gras::system(make_path.string());
     }
