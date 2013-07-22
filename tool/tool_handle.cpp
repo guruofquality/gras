@@ -20,10 +20,12 @@ static int ensure_directory(const fs::path &path)
     return EXIT_SUCCESS;
 }
 
-int gras::handle(const HandlerArgs &args)
+int gras::handle_action(void)
 {
+    if (gras::get_action().empty()) return EXIT_SUCCESS;
+
     //check that sources exist
-    BOOST_FOREACH(const std::string &source, args.sources)
+    BOOST_FOREACH(const std::string &source, gras::get_sources())
     {
         const fs::path path(source);
         if (not fs::exists(path))
@@ -39,14 +41,14 @@ int gras::handle(const HandlerArgs &args)
     }
 
     //validate input
-    if (args.project.empty())
+    if (gras::get_project().empty())
     {
         std::cerr << "The user must specify a project name with --project" << std::endl;
         return EXIT_FAILURE;
     }
 
     //write a new cmakelists if sources are specified
-    if (not args.sources.empty() and gras::write_cmake_file(args) == EXIT_FAILURE)
+    if (not gras::get_sources().empty() and gras::write_cmake_file() == EXIT_FAILURE)
     {
         std::cerr << "Failed to write the CMakeLists.txt!" << std::endl;
         return EXIT_FAILURE;
@@ -59,16 +61,16 @@ int gras::handle(const HandlerArgs &args)
     const fs::path make_path = gras::get_make_executable_path();
 
     //build the cmake project and build directory
-    if (args.action == "configure")
+    if (gras::get_action() == "configure")
     {
         if (ensure_directory(build_dir) == EXIT_FAILURE) return EXIT_FAILURE;
         fs::current_path(build_dir);
-        std::cout << "Configuring " << args.project  << "..." << std::endl;
+        std::cout << "Configuring " << gras::get_project()  << "..." << std::endl;
         if (gras::system(cmake_path.string(), source_dir.string()) == EXIT_FAILURE) return EXIT_FAILURE;
     }
 
     //compile into the build directory
-    else if (args.action == "build")
+    else if (gras::get_action() == "build")
     {
         if (not fs::exists(build_dir / "CMakeCache.txt"))
         {
@@ -76,14 +78,14 @@ int gras::handle(const HandlerArgs &args)
             return EXIT_FAILURE;
         }
         fs::current_path(build_dir);
-        std::cout << "Building " << args.project  << "..." << std::endl;
+        std::cout << "Building " << gras::get_project()  << "..." << std::endl;
         return gras::system(make_path.string());
     }
 
     //remove the build directory
-    else if (args.action == "clean")
+    else if (gras::get_action() == "clean")
     {
-        std::cout << "Cleaning " << args.project  << "..." << std::endl;
+        std::cout << "Cleaning " << gras::get_project()  << "..." << std::endl;
         const size_t num_removed = fs::remove_all(build_dir);
         if (num_removed == 0)
         {
@@ -93,24 +95,24 @@ int gras::handle(const HandlerArgs &args)
     }
 
     //install build products
-    else if (args.action == "install")
+    else if (gras::get_action() == "install")
     {
-        std::cout << "Installing " << args.project  << "..." << std::endl;
+        std::cout << "Installing " << gras::get_project()  << "..." << std::endl;
         fs::current_path(build_dir);
         return gras::system(make_path.string(), "install");
     }
 
     //uninstall build products
-    else if (args.action == "uninstall")
+    else if (gras::get_action() == "uninstall")
     {
-        std::cout << "Uninstalling " << args.project  << "..." << std::endl;
+        std::cout << "Uninstalling " << gras::get_project()  << "..." << std::endl;
         fs::current_path(build_dir);
-        return gras::system(make_path.string(), "uninstall_"+args.project);
+        return gras::system(make_path.string(), "uninstall_"+gras::get_project());
     }
 
     else
     {
-        std::cerr << "Unknown action " << args.action << std::endl;
+        std::cerr << "Unknown action " << gras::get_action() << std::endl;
         return EXIT_FAILURE;
     }
 

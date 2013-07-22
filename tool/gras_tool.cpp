@@ -10,29 +10,26 @@ namespace po = boost::program_options;
 int main(int argc, char *argv[])
 {
     //variables to be set by po
-    gras::HandlerArgs process_args;
-    gras::CustomArgs custom_args;
+    gras::CustomArgs args;
 
     //setup the program options
     po::options_description visible("");
     visible.add_options()
         ("help", "help message")
-        ("project", po::value(&process_args.project), "unique project and install target name")
-        ("source-dir", po::value(&custom_args.source_dir), "set the source directory [default is cwd]")
-        ("build-dir", po::value(&custom_args.build_dir), "set the build directory [default is cwd/build]")
-        ("cmake-path", po::value(&custom_args.cmake_path), "override path to the cmake exectuable")
-        ("make-path", po::value(&custom_args.make_path), "override path to the make exectuable")
+        ("project", po::value(&args.project), "unique project and install target name")
+        ("source-dir", po::value(&args.source_dir), "set the source directory [default is cwd]")
+        ("build-dir", po::value(&args.build_dir), "set the build directory [default is cwd/build]")
+        ("cmake-path", po::value(&args.cmake_path), "override path to the cmake exectuable")
+        ("make-path", po::value(&args.make_path), "override path to the make exectuable")
         ("print-root-dir", "print the GRAS root install directory")
         ("print-cmake-dir", "print the GRAS CMake module directory")
     ;
 
     //hidden and position options
     po::options_description hidden("Hidden options");
-    hidden.add_options()
-        ("sources", po::value(&process_args.sources), "list of grc, python, c++ sources")
-    ;
+    hidden.add_options()("other", po::value(&args.other));
     po::positional_options_description p;
-    p.add("sources", -1);
+    p.add("other", -1);
 
     //for real description has hidden and visible
     po::options_description desc;
@@ -67,17 +64,12 @@ int main(int argc, char *argv[])
     }
 
     //inject custom args if provided
-    gras::customize(custom_args);
+    gras::inject_args(args);
 
     //print directories if queried for by the args
     if (vm.count("print-root-dir")) {std::cout << gras::get_gras_root_dir().string() << std::endl; return EXIT_SUCCESS;}
     if (vm.count("print-cmake-dir")) {std::cout << gras::get_cmake_module_install_dir().string() << std::endl; return EXIT_SUCCESS;}
 
     //call into the action processor
-    if (process_args.project.empty()) process_args.project = gras::get_source_dir().stem().string();
-    if (not process_args.sources.empty()) process_args.action = process_args.sources[0];
-    if (not process_args.sources.empty()) process_args.sources.erase(process_args.sources.begin());
-    if (not process_args.action.empty()) return gras::handle(process_args);
-
-    return EXIT_SUCCESS;
+    return gras::handle_action();
 }

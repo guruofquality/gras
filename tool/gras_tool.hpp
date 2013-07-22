@@ -18,6 +18,9 @@ fs::path get_source_dir(void);
 fs::path get_build_dir(void);
 fs::path get_cmake_executable_path(void);
 fs::path get_make_executable_path(void);
+std::string get_action(void);
+std::string get_project(void);
+std::vector<std::string> get_sources(void);
 
 struct CustomArgs
 {
@@ -25,18 +28,13 @@ struct CustomArgs
     std::string make_path;
     std::string source_dir;
     std::string build_dir;
-};
-
-void customize(const CustomArgs &);
-
-struct HandlerArgs
-{
-    std::string action;
     std::string project;
-    std::vector<std::string> sources;
+    std::vector<std::string> other;
 };
 
-int handle(const HandlerArgs &);
+void inject_args(const CustomArgs &);
+
+int handle_action(void);
 
 int system(const std::vector<std::string> &args);
 inline int system(const std::string &a0 = "", const std::string &a1 = "", const std::string &a2 = "", const std::string &a3 = "")
@@ -49,7 +47,7 @@ inline int system(const std::string &a0 = "", const std::string &a1 = "", const 
     return system(args);
 }
 
-int write_cmake_file(const gras::HandlerArgs &args);
+int write_cmake_file(void);
 
 } //namespace gras
 

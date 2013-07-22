@@ -5,7 +5,7 @@
 
 static gras::CustomArgs args;
 
-void gras::customize(const CustomArgs &a)
+void gras::inject_args(const CustomArgs &a)
 {
     args = a;
 }
@@ -49,4 +49,23 @@ fs::path gras::get_make_executable_path(void)
     const fs::path path(args.make_path);
     if (not path.empty()) return path;
     return "make";
+}
+
+std::string gras::get_action(void)
+{
+    if (args.other.empty()) return "";
+    return args.other.front();
+}
+
+std::string gras::get_project(void)
+{
+    if (not args.project.empty()) return args.project;
+    return gras::get_source_dir().stem().string();
+}
+
+std::vector<std::string> gras::get_sources(void)
+{
+    std::vector<std::string> sources = args.other;
+    if (not sources.empty()) sources.erase(sources.begin());
+    return sources;
 }

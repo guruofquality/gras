@@ -18,7 +18,7 @@ int gras::system(const std::vector<std::string> &args)
     return std::system(cmd.c_str());
 }
 
-int gras::write_cmake_file(const gras::HandlerArgs &args)
+int gras::write_cmake_file(void)
 {
     const fs::path source_dir = gras::get_source_dir();
     const fs::path cmakelists_path = source_dir / "CMakeLists.txt";
@@ -35,7 +35,7 @@ int gras::write_cmake_file(const gras::HandlerArgs &args)
     //write the cmakelists
     cmakelists
         << "cmake_minimum_required(VERSION 2.8)" << std::endl
-        << "project(" << args.project << " CXX C)" << std::endl
+        << "project(" << gras::get_project() << " CXX C)" << std::endl
         << "enable_testing()" << std::endl
         << std::endl
         << "list(APPEND CMAKE_MODULE_PATH " << gras::get_cmake_module_install_dir().string() << ")" << std::endl
@@ -45,13 +45,13 @@ int gras::write_cmake_file(const gras::HandlerArgs &args)
         << "    SOURCES" << std::endl
     ;
 
-    BOOST_FOREACH(const std::string &source, args.sources)
+    BOOST_FOREACH(const std::string &source, gras::get_sources())
     {
         cmakelists << "    " << source << std::endl;
     }
 
     cmakelists
-        << "    PROJECT " << args.project << std::endl
+        << "    PROJECT " << gras::get_project() << std::endl
         << ")" << std::endl
         << std::endl
     ;
