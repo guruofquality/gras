@@ -66,7 +66,9 @@ int gras::handle_action(void)
         if (ensure_directory(build_dir) == EXIT_FAILURE) return EXIT_FAILURE;
         fs::current_path(build_dir);
         std::cout << "Configuring " << gras::get_project()  << "..." << std::endl;
-        if (gras::system(cmake_path.string(), source_dir.string()) == EXIT_FAILURE) return EXIT_FAILURE;
+        if (gras::system(cmake_path.string(), source_dir.string(),
+            "-DCMAKE_INSTALL_PREFIX="+gras::get_gras_root_dir().string()
+        ) == EXIT_FAILURE) return EXIT_FAILURE;
     }
 
     //compile into the build directory
