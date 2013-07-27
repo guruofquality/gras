@@ -39,8 +39,6 @@ list(APPEND GRAS_SOURCES ${apology_sources})
 ########################################################################
 # Setup Module Loader
 ########################################################################
-file(TO_NATIVE_PATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/gras/modules" GRAS_MODULE_PATH)
-STRING(REPLACE "\\" "\\\\" GRAS_MODULE_PATH ${GRAS_MODULE_PATH})
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/module_loader.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/module_loader.cpp
@@ -83,13 +81,27 @@ list(APPEND GRAS_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/output_handlers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/hier_block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/top_block.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/top_block_query.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/json_parser.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/pmc_to_ptree.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/register_messages.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/weak_container.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/serialize_types.cpp
 )
+
+if (${Boost_VERSION} LESS 104100)
+
+    message(WARNING "Boost library version < 104100 does not support property tree - GRAS will be compiled without query interface")
+    list(APPEND GRAS_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/top_block_query_no_ptree.cpp
+    )
+
+else()
+
+    list(APPEND GRAS_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/top_block_query.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/json_parser.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/pmc_to_ptree.cpp
+    )
+
+endif()
 
 ########################################################################
 # Build library

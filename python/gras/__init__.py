@@ -18,3 +18,4 @@ from GRAS_PyBlock import PyBlock as Block
 from GRAS_PyHierBlocks import PyHierBlock as HierBlock
 from GRAS_PyHierBlocks import PyTopBlock as TopBlock
 from GRAS_ThreadPool import ThreadPoolConfig, ThreadPool
+import GRAS_Loader

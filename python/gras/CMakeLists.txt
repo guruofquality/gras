@@ -79,8 +79,16 @@ endforeach(gras_swig_module)
 ########################################################################
 # install other python files
 ########################################################################
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/GRAS_Loader.py
+    ${CMAKE_CURRENT_BINARY_DIR}/GRAS_Loader.py
+@ONLY)
+
 GR_PYTHON_INSTALL(
-    FILES __init__.py GRAS_Utils.py
+    FILES
+    __init__.py
+    GRAS_Utils.py
+    ${CMAKE_CURRENT_BINARY_DIR}/GRAS_Loader.py
     DESTINATION ${GR_PYTHON_DIR}/gras
     COMPONENT ${GRAS_COMP_PYTHON}
 )

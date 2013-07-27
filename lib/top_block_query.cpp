@@ -1,10 +1,9 @@
 // Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
-#include "element_impl.hpp"
 #include "gras_impl/query_common.hpp"
+#include "element_impl.hpp"
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
-#include <boost/property_tree/ptree.hpp>
 #include <Theron/DefaultAllocator.h>
 #include <algorithm>
 #include <set>

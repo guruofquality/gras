@@ -45,6 +45,9 @@ if(MSVC)
     add_definitions(-DBOOST_ALL_DYN_LINK) #setup boost auto-linking in msvc
 endif(MSVC)
 
+file(TO_NATIVE_PATH "${CMAKE_INSTALL_PREFIX}" GRAS_ROOT)
+STRING(REPLACE "\\" "\\\\" GRAS_ROOT ${GRAS_ROOT})
+
 ########################################################################
 # Component names for install rules
 ########################################################################
