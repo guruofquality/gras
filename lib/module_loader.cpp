@@ -45,19 +45,30 @@ static void load_all_modules_in_path(const fs::path &path)
     ) load_all_modules_in_path(dir_itr->path());
 }
 
-GRAS_STATIC_BLOCK(gras_module_loader)
+static void load_modules_from_paths(const std::string &paths, const fs::path &suffix)
 {
-    std::string search_paths = "@GRAS_MODULE_PATH@";
-    const char *module_path_env = std::getenv("GRAS_MODULE_PATH");
-    if (module_path_env != NULL)
-    {
-        search_paths += SEP;
-        search_paths += module_path_env;
-    }
-    if (search_paths.empty()) return;
-    BOOST_FOREACH(const std::string &path, boost::tokenizer<boost::char_separator<char> > (search_paths, boost::char_separator<char>(SEP)))
+    if (paths.empty()) return;
+    BOOST_FOREACH(const std::string &path, boost::tokenizer<boost::char_separator<char> > (paths, boost::char_separator<char>(SEP)))
     {
         if (path.empty()) continue;
-        load_all_modules_in_path(fs::path(path));
+        load_all_modules_in_path(fs::path(path) / suffix);
     }
+}
+
+static std::string my_get_env(const std::string &name, const std::string &defalt)
+{
+    const char *env_var = std::getenv(name.c_str());
+    return (env_var != NULL)? env_var : defalt;
+}
+
+GRAS_STATIC_BLOCK(gras_module_loader)
+{
+    //!search the GRAS_ROOT directory for this install
+    load_modules_from_paths(my_get_env("GRAS_ROOT", "@GRAS_ROOT@"), fs::path("") / "lib@LIB_SUFFIX@" / "gras" / "modules");
+
+    //!search the GRAS_PATH search directories for modules
+    load_modules_from_paths(my_get_env("GRAS_PATH", ""), fs::path("") / "lib@LIB_SUFFIX@" / "gras" / "modules");
+
+    //!search the explicit module paths
+    load_modules_from_paths(my_get_env("GRAS_MODULE_PATH", ""), fs::path(""));
 }

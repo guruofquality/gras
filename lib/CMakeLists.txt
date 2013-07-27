@@ -39,8 +39,6 @@ list(APPEND GRAS_SOURCES ${apology_sources})
 ########################################################################
 # Setup Module Loader
 ########################################################################
-file(TO_NATIVE_PATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/gras/modules" GRAS_MODULE_PATH)
-STRING(REPLACE "\\" "\\\\" GRAS_MODULE_PATH ${GRAS_MODULE_PATH})
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/module_loader.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/module_loader.cpp

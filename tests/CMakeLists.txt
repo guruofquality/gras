@@ -4,6 +4,10 @@
 
 include(GrTest)
 
+#define these blank so they dont interfere with tests
+list(APPEND GR_TEST_ENVIRONS "GRAS_ROOT=")
+list(APPEND GR_TEST_ENVIRONS "GRAS_PATH=")
+
 ########################################################################
 # unit test suite
 ########################################################################
@@ -64,4 +68,5 @@ file(TO_NATIVE_PATH "${example_module_location}" example_module_location)
 message(STATUS "example_module_location: ${example_module_location}")
 
 list(APPEND GR_TEST_ENVIRONS "GRAS_MODULE_PATH=${example_module_location}")
+list(APPEND GR_TEST_ENVIRONS "GRAS_PYTHON_PATH=${CMAKE_CURRENT_SOURCE_DIR}/example_module.py")
 GR_ADD_TEST(module_loader_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/module_loader_test.py)

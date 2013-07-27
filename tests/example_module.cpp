@@ -31,4 +31,4 @@ gras::Block *make_my_block(void)
     return new MyBlock();
 }
 
-GRAS_REGISTER_FACTORY("/tests/my_block", make_my_block)
+GRAS_REGISTER_FACTORY("/tests/my_block0", make_my_block)
