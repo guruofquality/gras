@@ -23,7 +23,7 @@ FactoryRegistryEntry::~FactoryRegistryEntry(void)
 void FactoryRegistryEntry::arg_check(const PMCList &args, const size_t nargs)
 {
     if (args.size() != nargs) throw std::runtime_error(str(boost::format(
-        "factory expected %u arguments but for %u") % nargs % args.size()));
+        "factory expected %u arguments but got %u") % nargs % args.size()));
 }
 
 typedef std::map<std::string, boost::shared_ptr<FactoryRegistryEntry> > FactoryRegistryType;
