@@ -26,10 +26,10 @@ namespace gras
  *  - Call make() to create element from global factory.
  *
  * Example register a factory function:
- *  gras::Factory::register_make("make_my_block", &make_my_block);
+ *  gras::Factory::register_make("/proj/my_block", &make_my_block);
  *
  * Example call into the factory:
- *  gras::Element *my_block = gras::Factory::make("make_my_block", arg0, arg1);
+ *  gras::Element *my_block = gras::Factory::make("/proj/my_block", arg0, arg1);
  */
 struct GRAS_API Factory
 {
