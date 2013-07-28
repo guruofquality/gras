@@ -64,7 +64,6 @@ target_link_libraries(example_module ${GRAS_LIBRARIES})
 
 get_target_property(example_module_location example_module LOCATION)
 string(REPLACE "$(Configuration)" ${CMAKE_BUILD_TYPE} example_module_location ${example_module_location})
-file(TO_NATIVE_PATH "${example_module_location}" example_module_location)
 message(STATUS "example_module_location: ${example_module_location}")
 
 list(APPEND GR_TEST_ENVIRONS "GRAS_MODULE_PATH=${example_module_location}")
