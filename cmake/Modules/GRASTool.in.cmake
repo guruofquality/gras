@@ -4,6 +4,17 @@ endif()
 set(__INCLUDED_GRAS_TOOL_CMAKE TRUE)
 
 ########################################################################
+## Define GRAS_TOOL_PATH_SEP for utility purposes
+########################################################################
+if(UNIX)
+    set(GRAS_TOOL_PATH_SEP ":")
+elseif(WIN32)
+    set(GRAS_TOOL_PATH_SEP "\\;")
+else()
+    set(GRAS_TOOL_PATH_SEP ":")
+endif()
+
+########################################################################
 ## Set installation constants
 ## The GRAS_ROOT can be set via arg or environment variable
 ########################################################################
@@ -137,7 +148,7 @@ function(GRAS_TOOL)
         )
 
         get_target_property(module_location ${GRAS_TOOL_TARGET} LOCATION)
-        string(REPLACE "$(Configuration)" ${CMAKE_BUILD_TYPE} module_location ${module_location})
+        string(REGEX REPLACE "\\$\\(.*\\)" ${CMAKE_BUILD_TYPE} module_location ${module_location})
         set(${GRAS_TOOL_TARGET}_LOCATION ${module_location} PARENT_SCOPE)
 
     endif()
