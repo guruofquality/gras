@@ -21,12 +21,26 @@ endif()
 ## Options:
 ## SOURCES - list of C++, Python, and GRC sources
 ## TARGET - project name, used for library, and install prefix
-## COMPONENT - optional component name for cmake INSTALL function
+## DIRECTORY - name of installation directory or ${TARGET}
+## COMPONENT - name of installation component or ${TARGET}
+##
+## External vars:
+## GRAS_TOOL_LIBRARIES - list of additional libraries to link to
 ########################################################################
 function(GRAS_TOOL)
 
     include(CMakeParseArguments)
-    cmake_parse_arguments(GRAS_TOOL "" "TARGET;COMPONENT" "SOURCES" ${ARGN})
+    cmake_parse_arguments(GRAS_TOOL "" "TARGET;DIRECTORY;COMPONENT" "SOURCES" ${ARGN})
+
+    #give an install directory if not specified
+    if(NOT GRAS_TOOL_DIRECTORY)
+        set(GRAS_TOOL_DIRECTORY ${GRAS_TOOL_TARGET})
+    endif()
+
+    #give the target a component name if not specified
+    if(NOT GRAS_TOOL_COMPONENT)
+        set(GRAS_TOOL_COMPONENT ${GRAS_TOOL_TARGET})
+    endif()
 
     unset(GRAS_TOOL_CPP_SOURCES)
     unset(GRAS_TOOL_PY_SOURCES)
@@ -57,9 +71,9 @@ function(GRAS_TOOL)
     endforeach(source)
 
     #suffix install path for project name
-    set(GRAS_TOOL_MOD_DIR lib@LIBSUFFIX@/gras/modules/${GRAS_TOOL_TARGET})
-    set(GRAS_TOOL_GRC_DIR share/gnuradio/grc/blocks/${GRAS_TOOL_TARGET})
-    set(GRAS_TOOL_PYTHON_DIR @GR_PYTHON_DIR@/gras/modules/${GRAS_TOOL_TARGET})
+    set(GRAS_TOOL_MOD_DIR lib@LIBSUFFIX@/gras/modules/${GRAS_TOOL_DIRECTORY})
+    set(GRAS_TOOL_GRC_DIR share/gnuradio/grc/blocks/${GRAS_TOOL_DIRECTORY})
+    set(GRAS_TOOL_PYTHON_DIR @GR_PYTHON_DIR@/gras/modules/${GRAS_TOOL_DIRECTORY})
 
     #were to look for development files
     set(GRAS_TOOL_INCLUDE_DIR ${GRAS_ROOT}/include)
@@ -93,6 +107,7 @@ function(GRAS_TOOL)
             PATHS ${GRAS_TOOL_LIBRARY_DIR}
         )
     endif()
+    list(APPEND GRAS_TOOL_LIBRARIES ${PMC_LIBRARIES})
     if (NOT GRAS_LIBRARIES)
         find_library(
             GRAS_LIBRARIES
@@ -100,6 +115,7 @@ function(GRAS_TOOL)
             PATHS ${GRAS_TOOL_LIBRARY_DIR}
         )
     endif()
+    list(APPEND GRAS_TOOL_LIBRARIES ${GRAS_LIBRARIES})
 
     #and boost includes as well
     if (NOT Boost_FOUND)
@@ -113,7 +129,7 @@ function(GRAS_TOOL)
     #build and install module to path
     if (GRAS_TOOL_CPP_SOURCES)
         add_library(${GRAS_TOOL_TARGET} MODULE ${GRAS_TOOL_CPP_SOURCES})
-        target_link_libraries(${GRAS_TOOL_TARGET} ${PMC_LIBRARIES} ${GRAS_LIBRARIES})
+        target_link_libraries(${GRAS_TOOL_TARGET} ${GRAS_TOOL_LIBRARIES})
         install(TARGETS ${GRAS_TOOL_TARGET}
             LIBRARY DESTINATION ${GRAS_TOOL_MOD_DIR} COMPONENT ${GRAS_TOOL_COMPONENT} # .so file
             ARCHIVE DESTINATION ${GRAS_TOOL_MOD_DIR} COMPONENT ${GRAS_TOOL_COMPONENT} # .lib file
@@ -138,11 +154,5 @@ function(GRAS_TOOL)
             COMPONENT ${GRAS_TOOL_COMPONENT}
         )
     endif()
-
-    #create uninstall rule for this project
-    add_custom_target(uninstall_${GRAS_TOOL_TARGET}
-        COMMAND ${CMAKE_COMMAND} -E remove_directory ${GRAS_TOOL_MOD_DIR}
-        COMMAND ${CMAKE_COMMAND} -E remove_directory ${GRAS_TOOL_GRC_DIR}
-    )
 
 endfunction(GRAS_TOOL)

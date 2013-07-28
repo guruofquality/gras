@@ -45,9 +45,6 @@ if(MSVC)
     add_definitions(-DBOOST_ALL_DYN_LINK) #setup boost auto-linking in msvc
 endif(MSVC)
 
-file(TO_NATIVE_PATH "${CMAKE_INSTALL_PREFIX}" GRAS_ROOT)
-STRING(REPLACE "\\" "\\\\" GRAS_ROOT ${GRAS_ROOT})
-
 ########################################################################
 # Component names for install rules
 ########################################################################
@@ -207,7 +204,7 @@ add_subdirectory(grextras)
 # add GrExtras to gnuradio cpack registry
 # this must come after the submodule
 ########################################################################
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR}/cmake/Modules)
 include(GrPackage)
 
 CPACK_SET(CPACK_COMPONENT_GROUP_GREXTRAS_DESCRIPTION "GNU Radio Extras")
