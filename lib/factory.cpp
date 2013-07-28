@@ -1,6 +1,7 @@
 // Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
 #include <gras/factory.hpp>
+#include <boost/format.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
 #include <stdexcept>
@@ -16,6 +17,12 @@ FactoryRegistryEntry::FactoryRegistryEntry(void)
 FactoryRegistryEntry::~FactoryRegistryEntry(void)
 {
     //NOP
+}
+
+void FactoryRegistryEntry::arg_check(const PMCList &args, const size_t nargs)
+{
+    if (args.size() != nargs) throw std::runtime_error(str(boost::format(
+        "factory expected %u arguments but for %u") % nargs % args.size()));
 }
 
 typedef std::map<std::string, boost::shared_ptr<FactoryRegistryEntry> > FactoryRegistryType;

@@ -16,6 +16,7 @@ struct GRAS_API CallableRegistryEntry
     CallableRegistryEntry(void);
     virtual ~CallableRegistryEntry(void);
     virtual PMCC call(const PMCC &args) = 0;
+    void arg_check(const PMCList &args, const size_t nargs);
 };
 
 /***********************************************************************
@@ -30,7 +31,7 @@ struct CallableRegistryEntryImpl0 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 0) throw a;
+        this->arg_check(a, 0);
         return PMC_M((_obj->*_fcn)());
     }
     ClassType *_obj; Fcn _fcn;
@@ -53,7 +54,7 @@ struct CallableRegistryEntryImplVoid0 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 0) throw a;
+        this->arg_check(a, 0);
         (_obj->*_fcn)(); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
@@ -79,7 +80,7 @@ struct CallableRegistryEntryImpl1 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 1) throw a;
+        this->arg_check(a, 1);
         return PMC_M((_obj->*_fcn)(a[0].safe_as<A0>()));
     }
     ClassType *_obj; Fcn _fcn;
@@ -102,7 +103,7 @@ struct CallableRegistryEntryImplVoid1 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 1) throw a;
+        this->arg_check(a, 1);
         (_obj->*_fcn)(a[0].safe_as<A0>()); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
@@ -128,7 +129,7 @@ struct CallableRegistryEntryImpl2 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 2) throw a;
+        this->arg_check(a, 2);
         return PMC_M((_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>()));
     }
     ClassType *_obj; Fcn _fcn;
@@ -151,7 +152,7 @@ struct CallableRegistryEntryImplVoid2 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 2) throw a;
+        this->arg_check(a, 2);
         (_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>()); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
@@ -177,7 +178,7 @@ struct CallableRegistryEntryImpl3 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 3) throw a;
+        this->arg_check(a, 3);
         return PMC_M((_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>()));
     }
     ClassType *_obj; Fcn _fcn;
@@ -200,7 +201,7 @@ struct CallableRegistryEntryImplVoid3 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 3) throw a;
+        this->arg_check(a, 3);
         (_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>()); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
@@ -226,7 +227,7 @@ struct CallableRegistryEntryImpl4 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 4) throw a;
+        this->arg_check(a, 4);
         return PMC_M((_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>()));
     }
     ClassType *_obj; Fcn _fcn;
@@ -249,7 +250,7 @@ struct CallableRegistryEntryImplVoid4 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 4) throw a;
+        this->arg_check(a, 4);
         (_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>()); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
@@ -275,7 +276,7 @@ struct CallableRegistryEntryImpl5 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 5) throw a;
+        this->arg_check(a, 5);
         return PMC_M((_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>()));
     }
     ClassType *_obj; Fcn _fcn;
@@ -298,7 +299,7 @@ struct CallableRegistryEntryImplVoid5 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 5) throw a;
+        this->arg_check(a, 5);
         (_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>()); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
@@ -324,7 +325,7 @@ struct CallableRegistryEntryImpl6 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 6) throw a;
+        this->arg_check(a, 6);
         return PMC_M((_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>(), a[5].safe_as<A5>()));
     }
     ClassType *_obj; Fcn _fcn;
@@ -347,7 +348,7 @@ struct CallableRegistryEntryImplVoid6 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 6) throw a;
+        this->arg_check(a, 6);
         (_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>(), a[5].safe_as<A5>()); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
@@ -373,7 +374,7 @@ struct CallableRegistryEntryImpl7 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 7) throw a;
+        this->arg_check(a, 7);
         return PMC_M((_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>(), a[5].safe_as<A5>(), a[6].safe_as<A6>()));
     }
     ClassType *_obj; Fcn _fcn;
@@ -396,7 +397,7 @@ struct CallableRegistryEntryImplVoid7 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 7) throw a;
+        this->arg_check(a, 7);
         (_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>(), a[5].safe_as<A5>(), a[6].safe_as<A6>()); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
@@ -422,7 +423,7 @@ struct CallableRegistryEntryImpl8 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 8) throw a;
+        this->arg_check(a, 8);
         return PMC_M((_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>(), a[5].safe_as<A5>(), a[6].safe_as<A6>(), a[7].safe_as<A7>()));
     }
     ClassType *_obj; Fcn _fcn;
@@ -445,7 +446,7 @@ struct CallableRegistryEntryImplVoid8 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 8) throw a;
+        this->arg_check(a, 8);
         (_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>(), a[5].safe_as<A5>(), a[6].safe_as<A6>(), a[7].safe_as<A7>()); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
@@ -471,7 +472,7 @@ struct CallableRegistryEntryImpl9 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 9) throw a;
+        this->arg_check(a, 9);
         return PMC_M((_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>(), a[5].safe_as<A5>(), a[6].safe_as<A6>(), a[7].safe_as<A7>(), a[8].safe_as<A8>()));
     }
     ClassType *_obj; Fcn _fcn;
@@ -494,7 +495,7 @@ struct CallableRegistryEntryImplVoid9 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 9) throw a;
+        this->arg_check(a, 9);
         (_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>(), a[5].safe_as<A5>(), a[6].safe_as<A6>(), a[7].safe_as<A7>(), a[8].safe_as<A8>()); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;
@@ -520,7 +521,7 @@ struct CallableRegistryEntryImpl10 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 10) throw a;
+        this->arg_check(a, 10);
         return PMC_M((_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>(), a[5].safe_as<A5>(), a[6].safe_as<A6>(), a[7].safe_as<A7>(), a[8].safe_as<A8>(), a[9].safe_as<A9>()));
     }
     ClassType *_obj; Fcn _fcn;
@@ -543,7 +544,7 @@ struct CallableRegistryEntryImplVoid10 : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 10) throw a;
+        this->arg_check(a, 10);
         (_obj->*_fcn)(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>(), a[5].safe_as<A5>(), a[6].safe_as<A6>(), a[7].safe_as<A7>(), a[8].safe_as<A8>(), a[9].safe_as<A9>()); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;

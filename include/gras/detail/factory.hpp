@@ -16,6 +16,7 @@ struct GRAS_API FactoryRegistryEntry
     FactoryRegistryEntry(void);
     virtual ~FactoryRegistryEntry(void);
     virtual Element *make(const PMCC &args) = 0;
+    void arg_check(const PMCList &args, const size_t nargs);
 };
 
 /***********************************************************************
@@ -29,7 +30,7 @@ struct FactoryRegistryEntryImpl0 : FactoryRegistryEntry
     Element *make(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 0) throw a;
+        this->arg_check(a, 0);
         return _fcn();
     }
     Fcn _fcn;
@@ -53,7 +54,7 @@ struct FactoryRegistryEntryImpl1 : FactoryRegistryEntry
     Element *make(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 1) throw a;
+        this->arg_check(a, 1);
         return _fcn(a[0].safe_as<A0>());
     }
     Fcn _fcn;
@@ -77,7 +78,7 @@ struct FactoryRegistryEntryImpl2 : FactoryRegistryEntry
     Element *make(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 2) throw a;
+        this->arg_check(a, 2);
         return _fcn(a[0].safe_as<A0>(), a[1].safe_as<A1>());
     }
     Fcn _fcn;
@@ -101,7 +102,7 @@ struct FactoryRegistryEntryImpl3 : FactoryRegistryEntry
     Element *make(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 3) throw a;
+        this->arg_check(a, 3);
         return _fcn(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>());
     }
     Fcn _fcn;
@@ -125,7 +126,7 @@ struct FactoryRegistryEntryImpl4 : FactoryRegistryEntry
     Element *make(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 4) throw a;
+        this->arg_check(a, 4);
         return _fcn(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>());
     }
     Fcn _fcn;
@@ -149,7 +150,7 @@ struct FactoryRegistryEntryImpl5 : FactoryRegistryEntry
     Element *make(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 5) throw a;
+        this->arg_check(a, 5);
         return _fcn(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>());
     }
     Fcn _fcn;
@@ -173,7 +174,7 @@ struct FactoryRegistryEntryImpl6 : FactoryRegistryEntry
     Element *make(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 6) throw a;
+        this->arg_check(a, 6);
         return _fcn(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>(), a[5].safe_as<A5>());
     }
     Fcn _fcn;
@@ -197,7 +198,7 @@ struct FactoryRegistryEntryImpl7 : FactoryRegistryEntry
     Element *make(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 7) throw a;
+        this->arg_check(a, 7);
         return _fcn(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>(), a[5].safe_as<A5>(), a[6].safe_as<A6>());
     }
     Fcn _fcn;
@@ -221,7 +222,7 @@ struct FactoryRegistryEntryImpl8 : FactoryRegistryEntry
     Element *make(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 8) throw a;
+        this->arg_check(a, 8);
         return _fcn(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>(), a[5].safe_as<A5>(), a[6].safe_as<A6>(), a[7].safe_as<A7>());
     }
     Fcn _fcn;
@@ -245,7 +246,7 @@ struct FactoryRegistryEntryImpl9 : FactoryRegistryEntry
     Element *make(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 9) throw a;
+        this->arg_check(a, 9);
         return _fcn(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>(), a[5].safe_as<A5>(), a[6].safe_as<A6>(), a[7].safe_as<A7>(), a[8].safe_as<A8>());
     }
     Fcn _fcn;
@@ -269,7 +270,7 @@ struct FactoryRegistryEntryImpl10 : FactoryRegistryEntry
     Element *make(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < 10) throw a;
+        this->arg_check(a, 10);
         return _fcn(a[0].safe_as<A0>(), a[1].safe_as<A1>(), a[2].safe_as<A2>(), a[3].safe_as<A3>(), a[4].safe_as<A4>(), a[5].safe_as<A5>(), a[6].safe_as<A6>(), a[7].safe_as<A7>(), a[8].safe_as<A8>(), a[9].safe_as<A9>());
     }
     Fcn _fcn;

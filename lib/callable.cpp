@@ -3,6 +3,7 @@
 #include <gras/callable.hpp>
 #include <boost/foreach.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/format.hpp>
 #include <stdexcept>
 #include <map>
 
@@ -61,4 +62,10 @@ CallableRegistryEntry::CallableRegistryEntry(void)
 CallableRegistryEntry::~CallableRegistryEntry(void)
 {
     //NOP
+}
+
+void CallableRegistryEntry::arg_check(const PMCList &args, const size_t nargs)
+{
+    if (args.size() != nargs) throw std::runtime_error(str(boost::format(
+        "callable expected %u arguments but for %u") % nargs % args.size()));
 }

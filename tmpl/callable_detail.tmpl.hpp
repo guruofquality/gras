@@ -16,6 +16,7 @@ struct GRAS_API CallableRegistryEntry
     CallableRegistryEntry(void);
     virtual ~CallableRegistryEntry(void);
     virtual PMCC call(const PMCC &args) = 0;
+    void arg_check(const PMCList &args, const size_t nargs);
 };
 
 #for $NARGS in range($MAX_ARGS)
@@ -31,7 +32,7 @@ struct CallableRegistryEntryImpl$(NARGS) : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < $NARGS) throw a;
+        this->arg_check(a, $NARGS);
         return PMC_M((_obj->*_fcn)($expand('a[%d].safe_as<A%d>()', $NARGS)));
     }
     ClassType *_obj; Fcn _fcn;
@@ -54,7 +55,7 @@ struct CallableRegistryEntryImplVoid$(NARGS) : CallableRegistryEntry
     PMCC call(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < $NARGS) throw a;
+        this->arg_check(a, $NARGS);
         (_obj->*_fcn)($expand('a[%d].safe_as<A%d>()', $NARGS)); return PMCC();
     }
     ClassType *_obj; Fcn _fcn;

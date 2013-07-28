@@ -16,6 +16,7 @@ struct GRAS_API FactoryRegistryEntry
     FactoryRegistryEntry(void);
     virtual ~FactoryRegistryEntry(void);
     virtual Element *make(const PMCC &args) = 0;
+    void arg_check(const PMCList &args, const size_t nargs);
 };
 
 #for $NARGS in range($MAX_ARGS)
@@ -30,7 +31,7 @@ struct FactoryRegistryEntryImpl$(NARGS) : FactoryRegistryEntry
     Element *make(const PMCC &args)
     {
         const PMCList &a = args.as<PMCList>();
-        if (a.size() < $NARGS) throw a;
+        this->arg_check(a, $NARGS);
         return _fcn($expand('a[%d].safe_as<A%d>()', $NARGS));
     }
     Fcn _fcn;
