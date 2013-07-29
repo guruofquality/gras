@@ -146,7 +146,7 @@ function(GRAS_TOOL)
 
         get_target_property(module_location ${GRAS_TOOL_TARGET} LOCATION)
         string(REGEX REPLACE "\\$\\(.*\\)" ${CMAKE_BUILD_TYPE} module_location ${module_location})
-        set(${GRAS_TOOL_TARGET}_LOCATION ${module_location} PARENT_SCOPE)
+        set(${GRAS_TOOL_TARGET}_LOCATION ${module_location} CACHE INTERNAL "")
 
     endif()
 
