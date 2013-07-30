@@ -13,4 +13,4 @@ class MyBlock(gras.Block):
     def get_num(self):
         return 42
 
-gras.Factory.register_make("/tests/my_block1", MyBlock)
+gras.register_make("/tests/my_block1", MyBlock)
