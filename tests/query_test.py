@@ -3,7 +3,7 @@
 import unittest
 import gras
 import numpy
-from demo_blocks import *
+from gras import TestUtils
 
 class MyBlock(gras.Block):
     def __init__(self):
@@ -44,13 +44,13 @@ class QueryTest(unittest.TestCase):
         self.tb = None
 
     def test_simple(self):
-        vec_source = VectorSource(numpy.uint32, [0, 9, 8, 7, 6])
-        vec_sink = VectorSink(numpy.uint32)
+        vec_source = TestUtils.VectorSource(numpy.uint32, [0, 9, 8, 7, 6])
+        vec_sink = TestUtils.VectorSink(numpy.uint32)
 
         self.tb.connect(vec_source, vec_sink)
         self.tb.run()
 
-        self.assertEqual(vec_sink.get_vector(), (0, 9, 8, 7, 6))
+        self.assertEqual(vec_sink.data(), (0, 9, 8, 7, 6))
 
         #query the block list
         blocks_result = self.tb.query(dict(path="/blocks.json"))
@@ -71,8 +71,8 @@ class QueryTest(unittest.TestCase):
         self.assertTrue(block_id in stats_result['blocks'])
 
     def test_numeric_query(self):
-        vec_source = VectorSource(numpy.uint32, [0, 9, 8, 7, 6])
-        vec_sink = VectorSink(numpy.uint32)
+        vec_source = TestUtils.VectorSource(numpy.uint32, [0, 9, 8, 7, 6])
+        vec_sink = TestUtils.VectorSink(numpy.uint32)
         block = MyBlock()
         block.set_uid("test_numeric_query")
         self.tb.connect(vec_source, block, vec_sink)
@@ -120,8 +120,8 @@ class QueryTest(unittest.TestCase):
         self.assertEqual(result['value'], '(0,21)')
 
     def test_vector_query(self):
-        vec_source = VectorSource(numpy.uint32, [0, 9, 8, 7, 6])
-        vec_sink = VectorSink(numpy.uint32)
+        vec_source = TestUtils.VectorSource(numpy.uint32, [0, 9, 8, 7, 6])
+        vec_sink = TestUtils.VectorSink(numpy.uint32)
         block = MyBlock()
         block.set_uid("test_vector_query")
         self.tb.connect(vec_source, block, vec_sink)

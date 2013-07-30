@@ -88,6 +88,7 @@ GR_PYTHON_INSTALL(
     FILES
     __init__.py
     GRAS_Utils.py
+    GRAS_TestUtils.py
     ${CMAKE_CURRENT_BINARY_DIR}/GRAS_Loader.py
     DESTINATION ${GR_PYTHON_DIR}/gras
     COMPONENT ${GRAS_COMP_PYTHON}
