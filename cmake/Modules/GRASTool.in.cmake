@@ -81,7 +81,7 @@ endif()
 function(GRAS_TOOL)
 
     include(CMakeParseArguments)
-    cmake_parse_arguments(GRAS_TOOL "" "TARGET;DIRECTORY;COMPONENT" "SOURCES" ${ARGN})
+    CMAKE_PARSE_ARGUMENTS(GRAS_TOOL "" "TARGET;DIRECTORY;COMPONENT" "SOURCES" ${ARGN})
 
     #give an install directory if not specified
     if(NOT GRAS_TOOL_DIRECTORY)
@@ -198,7 +198,7 @@ function(GRAS_SWIG_TOOL)
     endif()
 
     include(CMakeParseArguments)
-    cmake_parse_arguments(GRAS_SWIG_TOOL "" "SOURCE;TARGET;DIRECTORY;COMPONENT" "" ${ARGN})
+    CMAKE_PARSE_ARGUMENTS(GRAS_SWIG_TOOL "" "SOURCE;TARGET;DIRECTORY;COMPONENT" "" ${ARGN})
 
     #give an install directory if not specified
     if(NOT GRAS_SWIG_TOOL_DIRECTORY)
