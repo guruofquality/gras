@@ -3,6 +3,8 @@ if(DEFINED __INCLUDED_GRAS_TOOL_CMAKE)
 endif()
 set(__INCLUDED_GRAS_TOOL_CMAKE TRUE)
 
+include(GRASCommon)
+
 ########################################################################
 ## Define GRAS_TOOL_PATH_SEP for utility purposes
 ########################################################################

@@ -27,7 +27,9 @@ GRAS_CHECK_SUBMODULE(gnuradio)
 GRAS_CHECK_SUBMODULE(grextras)
 
 list(APPEND CMAKE_MODULE_PATH ${GRAS_SOURCE_DIR}/PMC/cmake/Modules)
-include(CMakeDefsHelper)
+list(APPEND CMAKE_MODULE_PATH ${GRAS_SOURCE_DIR}/cmake/Modules)
+list(APPEND CMAKE_MODULE_PATH ${GRAS_BINARY_DIR}/cmake/Modules)
+include(GRASCommon)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DGRAS_DEBUG)
