@@ -36,22 +36,22 @@ static FactoryRegistryType &get_factory_registry(void)
 
 static boost::mutex mutex;
 
-void Factory::_register_make(const std::string &name, void *entry)
+void Factory::_register_factory(const std::string &path, void *entry)
 {
     boost::mutex::scoped_lock l(mutex);
-    if (get_factory_registry().count(name) != 0)
+    if (get_factory_registry().count(path) != 0)
     {
-        std::cerr << "Warning: Factory - function already registered for name: " + name << std::endl;
+        std::cerr << "Warning: Factory - function already registered for path: " + path << std::endl;
     }
-    get_factory_registry()[name].reset(reinterpret_cast<FactoryRegistryEntry *>(entry));
+    get_factory_registry()[path].reset(reinterpret_cast<FactoryRegistryEntry *>(entry));
 }
 
-Element *Factory::_handle_make(const std::string &name, const PMCC &args)
+Element *Factory::_handle_make(const std::string &path, const PMCC &args)
 {
     boost::mutex::scoped_lock l(mutex);
-    if (get_factory_registry().count(name) == 0)
+    if (get_factory_registry().count(path) == 0)
     {
-        throw std::invalid_argument("Factory - no function registered for name: " + name);
+        throw std::invalid_argument("Factory - no function registered for path: " + path);
     }
-    return get_factory_registry()[name]->make(args);
+    return get_factory_registry()[path]->make(args);
 }
