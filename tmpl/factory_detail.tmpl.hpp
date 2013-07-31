@@ -38,10 +38,10 @@ struct FactoryRegistryEntryImpl$(NARGS) : FactoryRegistryEntry
 };
 
 template <typename ReturnType, $expand('typename A%d', $NARGS)>
-void Factory::register_make(const std::string &name, ReturnType(*fcn)($expand('const A%d &', $NARGS)))
+void register_factory(const std::string &path, ReturnType(*fcn)($expand('const A%d &', $NARGS)))
 {
     void *r = new FactoryRegistryEntryImpl$(NARGS)<ReturnType, $expand('A%d', $NARGS)>(fcn);
-    Factory::_register_make(name, r);
+    Factory::_register_factory(path, r);
 }
 
 #end for
@@ -50,13 +50,13 @@ void Factory::register_make(const std::string &name, ReturnType(*fcn)($expand('c
  **********************************************************************/
 #for $NARGS in range($MAX_ARGS)
 template <$expand('typename A%d', $NARGS)>
-Element *Factory::make(const std::string &name, $expand('const A%d &a%d', $NARGS))
+Element *make(const std::string &path, $expand('const A%d &a%d', $NARGS))
 {
     PMCList args($NARGS);
     #for $i in range($NARGS):
     args[$i] = PMC_M(a$i);
     #end for
-    return Factory::_handle_make(name, PMC_M(args));
+    return Factory::_handle_make(path, PMC_M(args));
 }
 
 #end for

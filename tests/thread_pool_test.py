@@ -2,7 +2,8 @@
 
 import unittest
 import gras
-from demo_blocks import *
+from gras import TestUtils
+import numpy
 
 class ThreadPoolTest(unittest.TestCase):
 
@@ -26,8 +27,8 @@ class ThreadPoolTest(unittest.TestCase):
 
     def test_migrate_to_thread_pool(self):
         tb = gras.TopBlock()
-        vec_source = VectorSource(numpy.uint32, [0, 9, 8, 7, 6])
-        vec_sink = VectorSink(numpy.uint32)
+        vec_source = TestUtils.VectorSource(numpy.uint32, [0, 9, 8, 7, 6])
+        vec_sink = TestUtils.VectorSink(numpy.uint32)
 
         c = gras.ThreadPoolConfig()
         tp = gras.ThreadPool(c)
@@ -36,7 +37,7 @@ class ThreadPoolTest(unittest.TestCase):
         tb.connect(vec_source, vec_sink)
         tb.run()
 
-        self.assertEqual(vec_sink.get_vector(), (0, 9, 8, 7, 6))
+        self.assertEqual(vec_sink.data(), (0, 9, 8, 7, 6))
 
 if __name__ == '__main__':
     unittest.main()

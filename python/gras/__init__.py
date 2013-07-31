@@ -10,7 +10,7 @@ from GRAS_SBuffer import SBufferConfig, SBuffer
 from GRAS_Tags import Tag, StreamTag, PacketMsg
 from GRAS_TimeTag import TimeTag
 from GRAS_Element import Element
-from GRAS_Factory import Factory
+from GRAS_Factory import make, register_factory
 import GRAS_Block
 import GRAS_HierBlock
 import GRAS_TopBlock
@@ -19,3 +19,4 @@ from GRAS_PyHierBlocks import PyHierBlock as HierBlock
 from GRAS_PyHierBlocks import PyTopBlock as TopBlock
 from GRAS_ThreadPool import ThreadPoolConfig, ThreadPool
 import GRAS_Loader
+import GRAS_TestUtils as TestUtils

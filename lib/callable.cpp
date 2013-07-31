@@ -67,5 +67,5 @@ CallableRegistryEntry::~CallableRegistryEntry(void)
 void CallableRegistryEntry::arg_check(const PMCList &args, const size_t nargs)
 {
     if (args.size() != nargs) throw std::runtime_error(str(boost::format(
-        "callable expected %u arguments but for %u") % nargs % args.size()));
+        "callable expected %u arguments but got %u") % nargs % args.size()));
 }

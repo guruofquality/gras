@@ -51,25 +51,25 @@ GRAS_REGISTER_FACTORY("/tests/my_block_args3", make_my_block_args3)
 
 BOOST_AUTO_TEST_CASE(test_register_and_make)
 {
-    gras::Element *my_block0 = gras::Factory::make("/tests/my_block_args0");
+    gras::Element *my_block0 = gras::make("/tests/my_block_args0");
     BOOST_CHECK(dynamic_cast<MyBlock *>(my_block0) != NULL);
     BOOST_CHECK_EQUAL(dynamic_cast<MyBlock *>(my_block0)->a0, 0);
     BOOST_CHECK_EQUAL(dynamic_cast<MyBlock *>(my_block0)->a1, "");
     BOOST_CHECK_EQUAL(dynamic_cast<MyBlock *>(my_block0)->a2, false);
 
-    gras::Element *my_block1 = gras::Factory::make("/tests/my_block_args1", 42);
+    gras::Element *my_block1 = gras::make("/tests/my_block_args1", 42);
     BOOST_CHECK(dynamic_cast<MyBlock *>(my_block1) != NULL);
     BOOST_CHECK_EQUAL(dynamic_cast<MyBlock *>(my_block1)->a0, 42);
     BOOST_CHECK_EQUAL(dynamic_cast<MyBlock *>(my_block1)->a1, "");
     BOOST_CHECK_EQUAL(dynamic_cast<MyBlock *>(my_block1)->a2, false);
 
-    gras::Element *my_block2 = gras::Factory::make("/tests/my_block_args2", 1, "foo");
+    gras::Element *my_block2 = gras::make("/tests/my_block_args2", 1, "foo");
     BOOST_CHECK(dynamic_cast<MyBlock *>(my_block2) != NULL);
     BOOST_CHECK_EQUAL(dynamic_cast<MyBlock *>(my_block2)->a0, 1);
     BOOST_CHECK_EQUAL(dynamic_cast<MyBlock *>(my_block2)->a1, "foo");
     BOOST_CHECK_EQUAL(dynamic_cast<MyBlock *>(my_block2)->a2, false);
 
-    gras::Element *my_block3 = gras::Factory::make("/tests/my_block_args3", -2, "bar", true);
+    gras::Element *my_block3 = gras::make("/tests/my_block_args3", -2, "bar", true);
     BOOST_CHECK(dynamic_cast<MyBlock *>(my_block3) != NULL);
     BOOST_CHECK_EQUAL(dynamic_cast<MyBlock *>(my_block3)->a0, -2);
     BOOST_CHECK_EQUAL(dynamic_cast<MyBlock *>(my_block3)->a1, "bar");

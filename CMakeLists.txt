@@ -27,7 +27,9 @@ GRAS_CHECK_SUBMODULE(gnuradio)
 GRAS_CHECK_SUBMODULE(grextras)
 
 list(APPEND CMAKE_MODULE_PATH ${GRAS_SOURCE_DIR}/PMC/cmake/Modules)
-include(CMakeDefsHelper)
+list(APPEND CMAKE_MODULE_PATH ${GRAS_SOURCE_DIR}/cmake/Modules)
+list(APPEND CMAKE_MODULE_PATH ${GRAS_BINARY_DIR}/cmake/Modules)
+include(GRASCommon)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DGRAS_DEBUG)
@@ -99,6 +101,7 @@ add_subdirectory(PMC)
 add_subdirectory(python/gras)
 add_subdirectory(tests)
 add_subdirectory(query)
+add_subdirectory(cmake/Modules)
 
 ########################################################################
 # add gnuradio as sub-project
@@ -147,6 +150,10 @@ CPACK_COMPONENT("${GRAS_COMP_PYTHON}"
 ########################################################################
 # GNU Radio Extras as sub-project
 ########################################################################
+list(APPEND CMAKE_MODULE_PATH ${GRAS_SOURCE_DIR}/cmake/Modules)
+list(APPEND CMAKE_MODULE_PATH ${GRAS_BINARY_DIR}/cmake/Modules)
+set(GRAS_ROOT ${GRAS_SOURCE_DIR})
+list(APPEND GR_TEST_ENVIRONS "GRAS_ROOT=${GRAS_SOURCE_DIR}")
 set(CMAKE_SOURCE_DIR ${GRAS_SOURCE_DIR}/grextras)
 set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/grextras)
 
@@ -154,6 +161,7 @@ set(GRAS_FOUND TRUE)
 #GRAS_INCLUDE_DIRS, GRAS_LIBRARIES set above
 
 set(PMC_FOUND TRUE)
+set(PMC_INCLUDE_DIRS ${GRAS_SOURCE_DIR}/PMC/include)
 set(PMC_LIBRARIES pmc)
 
 set(VOLK_FOUND ${ENABLE_VOLK})

@@ -2,6 +2,7 @@
 
 import os
 import sys
+import traceback
 
 #try to import module
 #http://effbot.org/zone/import-string.htm
@@ -15,6 +16,7 @@ def __try_module_import(filename):
         module = __import__(module_name)
     except Exception as ex:
         print 'Could not import', filename, ex
+        print traceback.format_exc()
     finally:
         sys.path[:] = path # restore
 

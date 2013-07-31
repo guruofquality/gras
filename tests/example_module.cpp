@@ -26,9 +26,4 @@ struct MyBlock : gras::Block
     void work(const InputItems &, const OutputItems &){}
 };
 
-gras::Block *make_my_block(void)
-{
-    return new MyBlock();
-}
-
-GRAS_REGISTER_FACTORY("/tests/my_block0", make_my_block)
+GRAS_REGISTER_FACTORY0("/tests/my_block0", MyBlock)
