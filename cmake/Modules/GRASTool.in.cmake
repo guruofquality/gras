@@ -146,10 +146,14 @@ function(GRAS_TOOL)
             RUNTIME DESTINATION ${GRAS_TOOL_MOD_DIR} COMPONENT ${GRAS_TOOL_COMPONENT} # .dll file
         )
 
+        #export global variables for help locating build targets
         get_target_property(module_location ${GRAS_TOOL_TARGET} LOCATION)
         string(REGEX REPLACE "\\$\\(.*\\)" ${CMAKE_BUILD_TYPE} module_location ${module_location})
+        list(APPEND GRAS_TOOL_MODULE_LOCATIONS ${module_location})
+        set(GRAS_TOOL_MODULE_LOCATIONS ${GRAS_TOOL_MODULE_LOCATIONS} CACHE INTERNAL "")
+        string(REPLACE ";" "${GRAS_TOOL_PATH_SEP}" GRAS_TOOL_MODULE_PATH "${GRAS_TOOL_MODULE_LOCATIONS}")
+        set(GRAS_TOOL_MODULE_PATH ${GRAS_TOOL_MODULE_PATH} CACHE INTERNAL "")
         set(${GRAS_TOOL_TARGET}_LOCATION ${module_location} CACHE INTERNAL "")
-
     endif()
 
     #python module install
