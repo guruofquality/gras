@@ -5,16 +5,18 @@ configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/GRASTool.in.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/GRASTool.cmake
 @ONLY)
-list(APPEND GRAS_TOOL_SOURCES
-    ${CMAKE_CURRENT_BINARY_DIR}/GRASTool.cmake
-)
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/GRASSwig.in.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/GRASSwig.cmake
+@ONLY)
 
 install(
     FILES
         ${CMAKE_CURRENT_BINARY_DIR}/GRASTool.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/GRASSwig.cmake
         GRASCommon.cmake
-        GrTest.cmake
-        GrPython.cmake
+        GRASTest.cmake
+        GRASPython.cmake
     DESTINATION share/gras/cmake/Modules
     COMPONENT ${GRAS_COMP_DEVEL}
 )

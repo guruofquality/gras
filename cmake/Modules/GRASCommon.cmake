@@ -4,6 +4,17 @@ endif()
 set(__INCLUDED_GRAS_COMMON_CMAKE TRUE)
 
 ########################################################################
+## Define ENV_VAR_PATH_SEP for utility purposes
+########################################################################
+if(UNIX)
+    set(ENV_VAR_PATH_SEP ":")
+elseif(WIN32)
+    set(ENV_VAR_PATH_SEP "\\;")
+else()
+    set(ENV_VAR_PATH_SEP ":")
+endif()
+
+########################################################################
 # select the release build type by default to get optimization flags
 ########################################################################
 if(NOT CMAKE_BUILD_TYPE)

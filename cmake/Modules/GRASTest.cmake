@@ -17,36 +17,40 @@
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
 
-if(DEFINED __INCLUDED_GR_TEST_CMAKE)
+if(DEFINED __INCLUDED_GRAS_TEST_CMAKE)
     return()
 endif()
-set(__INCLUDED_GR_TEST_CMAKE TRUE)
+set(__INCLUDED_GRAS_TEST_CMAKE TRUE)
+
+#set GRAS_TEST_PYEXE as PYTHON_EXECUTABLE with the -B for convenience
+include(GRASPython)
+set(GRAS_TEST_PYEXE ${PYTHON_EXECUTABLE} ${PYTHON_DASH_B})
 
 ########################################################################
 # Add a unit test and setup the environment for a unit test.
 # Takes the same arguments as the ADD_TEST function.
 #
 # Before calling set the following variables:
-# GR_TEST_TARGET_DEPS  - built targets for the library path
-# GR_TEST_LIBRARY_DIRS - directories for the library path
-# GR_TEST_PYTHON_DIRS  - directories for the python path
-# GR_TEST_ENVIRONS  - other environment key/value pairs
+# GRAS_TEST_TARGET_DEPS  - built targets for the library path
+# GRAS_TEST_LIBRARY_DIRS - directories for the library path
+# GRAS_TEST_PYTHON_DIRS  - directories for the python path
+# GRAS_TEST_ENVIRONS  - other environment key/value pairs
 ########################################################################
-function(GR_ADD_TEST test_name)
+function(GRAS_ADD_TEST test_name)
 
         #Ensure that the build exe also appears in the PATH.
-        list(APPEND GR_TEST_TARGET_DEPS ${ARGN})
+        list(APPEND GRAS_TEST_TARGET_DEPS ${ARGN})
 
         #In the land of windows, all libraries must be in the PATH.
         #Since the dependent libraries are not yet installed,
         #we must manually set them in the PATH to run tests.
         #The following appends the path of a target dependency.
-        foreach(target ${GR_TEST_TARGET_DEPS})
+        foreach(target ${GRAS_TEST_TARGET_DEPS})
             get_target_property(location ${target} LOCATION)
             if(location)
                 get_filename_component(path ${location} PATH)
                 string(REGEX REPLACE "\\$\\(.*\\)" ${CMAKE_BUILD_TYPE} path ${path})
-                list(APPEND GR_TEST_LIBRARY_DIRS ${path})
+                list(APPEND GRAS_TEST_LIBRARY_DIRS ${path})
             endif(location)
         endforeach(target)
 
@@ -54,20 +58,18 @@ function(GR_ADD_TEST test_name)
         #SWIG generates the python library files into a subdirectory.
         #Therefore, we must append this subdirectory into PYTHONPATH.
         #Only do this for the python directories matching the following:
-        foreach(pydir ${GR_TEST_PYTHON_DIRS})
+        foreach(pydir ${GRAS_TEST_PYTHON_DIRS})
             get_filename_component(name ${pydir} NAME)
             if(name MATCHES "^(swig|lib|src)$")
-                list(APPEND GR_TEST_PYTHON_DIRS ${pydir}/${CMAKE_BUILD_TYPE})
+                list(APPEND GRAS_TEST_PYTHON_DIRS ${pydir}/${CMAKE_BUILD_TYPE})
             endif()
         endforeach(pydir)
     endif(WIN32)
 
-    file(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR} srcdir)
-    file(TO_NATIVE_PATH "${GR_TEST_LIBRARY_DIRS}" libpath) #ok to use on dir list?
-    file(TO_NATIVE_PATH "${GR_TEST_PYTHON_DIRS}" pypath) #ok to use on dir list?
-
-    set(environs "GR_DONT_LOAD_PREFS=1" "srcdir=${srcdir}")
-    list(APPEND environs ${GR_TEST_ENVIRONS})
+    file(TO_NATIVE_PATH "${GRAS_TEST_LIBRARY_DIRS}" libpath) #ok to use on dir list?
+    file(TO_NATIVE_PATH "${GRAS_TEST_PYTHON_DIRS}" pypath) #ok to use on dir list?
+    file(TO_NATIVE_PATH "${GRAS_TOOL_MODULE_LOCATIONS}" modpath) #ok to use on dir list?
+    list(APPEND environs "${GRAS_TEST_ENVIRONS}")
 
     #http://www.cmake.org/pipermail/cmake/2009-May/029464.html
     #Replaced this add test + set environs code with the shell script generation.
@@ -88,7 +90,8 @@ function(GR_ADD_TEST test_name)
         #replace list separator with the path separator
         string(REPLACE ";" ":" libpath "${libpath}")
         string(REPLACE ";" ":" pypath "${pypath}")
-        list(APPEND environs "PATH=${binpath}" "${LD_PATH_VAR}=${libpath}" "PYTHONPATH=${pypath}")
+        string(REPLACE ";" ":" modpath "${modpath}")
+        list(APPEND environs "PATH=${binpath}" "${LD_PATH_VAR}=${libpath}" "PYTHONPATH=${pypath}" "GRAS_MODULE_PATH=${modpath}")
 
         #generate a bat file that sets the environment and runs the test
         find_program(SHELL sh)
@@ -118,7 +121,8 @@ function(GR_ADD_TEST test_name)
         #replace list separator with the path separator (escaped)
         string(REPLACE ";" "\\;" libpath "${libpath}")
         string(REPLACE ";" "\\;" pypath "${pypath}")
-        list(APPEND environs "PATH=${libpath}" "PYTHONPATH=${pypath}")
+        string(REPLACE ";" "\\;" modpath "${modpath}")
+        list(APPEND environs "PATH=${libpath}" "PYTHONPATH=${pypath}" "GRAS_MODULE_PATH=${modpath}")
 
         #generate a bat file that sets the environment and runs the test
         set(bat_file ${CMAKE_CURRENT_BINARY_DIR}/${test_name}_test.bat)
@@ -136,4 +140,4 @@ function(GR_ADD_TEST test_name)
         add_test(${test_name} ${bat_file})
     endif(WIN32)
 
-endfunction(GR_ADD_TEST)
+endfunction(GRAS_ADD_TEST)

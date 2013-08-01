@@ -17,10 +17,10 @@
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
 
-if(DEFINED __INCLUDED_GR_PYTHON_CMAKE)
+if(DEFINED __INCLUDED_GRAS_PYTHON_CMAKE)
     return()
 endif()
-set(__INCLUDED_GR_PYTHON_CMAKE TRUE)
+set(__INCLUDED_GRAS_PYTHON_CMAKE TRUE)
 
 ########################################################################
 # Setup the python interpreter:
