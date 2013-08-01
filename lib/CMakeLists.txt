@@ -57,6 +57,7 @@ list(APPEND GRAS_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/element.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/element_uid.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/jit_factory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sbuffer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/circular_buffer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer_queue_circ.cpp
@@ -101,6 +102,35 @@ else()
         ${CMAKE_CURRENT_SOURCE_DIR}/pmc_to_ptree.cpp
     )
 
+endif()
+
+########################################################################
+# Setup factory compiler
+########################################################################
+find_program(LLVM_CONFIG_EXECUTABLE llvm-config DOC "llvm-config executable")
+if(LLVM_CONFIG_EXECUTABLE)
+    find_package(LLVM)
+endif()
+if(LLVM_FOUND)
+    find_program(CLANG_EXECUTABLE clang DOC "clang executable")
+    set(CLANG_FOUND ${CLANG_EXECUTABLE})
+else()
+    message(WARNING "LLVM library not found - optional for factory compiler")
+endif()
+if(NOT CLANG_FOUND)
+    message(WARNING "Clang executable not found - optional for factory compiler")
+endif()
+
+if(CLANG_FOUND)
+    add_definitions(${LLVM_CFLAGS})
+    link_directories(${LLVM_LIBRARY_DIRS})
+    include_directories(${LLVM_INCLUDE_DIRS})
+    list(APPEND GRAS_LIBRARIES ${LLVM_MODULE_LIBS})
+    list(APPEND GRAS_LIBRARIES ${LLVM_LDFLAGS})
+    SET_SOURCE_FILES_PROPERTIES(
+        ${CMAKE_CURRENT_SOURCE_DIR}/jit_factory.cpp
+        PROPERTIES COMPILE_DEFINITIONS "CLANG_EXECUTABLE=${CLANG_EXECUTABLE}"
+    )
 endif()
 
 ########################################################################

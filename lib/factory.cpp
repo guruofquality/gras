@@ -36,7 +36,7 @@ static FactoryRegistryType &get_factory_registry(void)
 
 static boost::mutex mutex;
 
-void Factory::_register_factory(const std::string &path, void *entry)
+void gras::_register_factory(const std::string &path, void *entry)
 {
     boost::mutex::scoped_lock l(mutex);
     if (get_factory_registry().count(path) != 0)
@@ -46,7 +46,7 @@ void Factory::_register_factory(const std::string &path, void *entry)
     get_factory_registry()[path].reset(reinterpret_cast<FactoryRegistryEntry *>(entry));
 }
 
-Element *Factory::_handle_make(const std::string &path, const PMCC &args)
+Element *gras::_handle_make(const std::string &path, const PMCC &args)
 {
     boost::mutex::scoped_lock l(mutex);
     if (get_factory_registry().count(path) == 0)

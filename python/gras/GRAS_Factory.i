@@ -7,18 +7,16 @@
 #include <gras/factory.hpp>
 %}
 
-namespace gras
-{
-    %ignore Factory::register_factory;
-    %ignore Factory::make;
-}
-
-%newobject gras::Factory::_handle_make;
+%newobject gras::_handle_make;
 
 ////////////////////////////////////////////////////////////////////////
 // Export swig element comprehension
 ////////////////////////////////////////////////////////////////////////
 %include <std_string.i>
+%include <std_vector.i>
+
+%template (StringVector) std::vector<std::string>;
+
 %import <PMC/PMC.i>
 %import <gras/element.i>
 %include <gras/gras.hpp>
@@ -42,6 +40,18 @@ def make(path, *args, **kwargs):
 
     from PMC import PMC_M
     pmcargs = PMC_M(list(args))
-    return Factory._handle_make(path, pmcargs)
+    return _handle_make(path, pmcargs)
 
+def try_load_dll(name):
+    import ctypes
+    import ctypes.util
+    dll_path = ctypes.util.find_library(name)
+    if not dll_path: dll_path = 'lib'+name+'.so'
+    ctypes.CDLL(dll_path, ctypes.RTLD_GLOBAL)
+
+def py_jit_factory(*args):
+    #load the dlls with ctypes for the JIT factory
+    try_load_dll("gras")
+    try_load_dll("pmc")
+    jit_factory(*args)
 %}

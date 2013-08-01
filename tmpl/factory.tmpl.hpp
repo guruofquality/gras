@@ -6,24 +6,28 @@
 #include <gras/gras.hpp>
 #include <gras/element.hpp>
 #include <PMC/PMC.hpp>
+#include <vector>
 #include <string>
 
 namespace gras
 {
 
 /*!
- * Element factory:
- *  - Register factory functions into the global factory.
- *  - Call make() to create element from global factory.
+ * The just in time factory:
+ * Compile a C++ source and load it into the element factory.
+ *
+ * Flags are an optional list of compiler flags.
+ * See the man page for clang for possible options.
+ * Example: flags.push_back("-O3")
+ *
+ * Include directories control the header file search path.
+ * Users may leave this empty unless headers
+ * are installed into non-standard directories.
+ *
+ * \param source C++ source code in a string
+ * \param flags optional compiler flags
  */
-struct GRAS_API Factory
-{
-    /*******************************************************************
-     * Private registration hooks
-     ******************************************************************/
-    static void _register_factory(const std::string &, void *);
-    static Element *_handle_make(const std::string &, const PMCC &);
-};
+GRAS_API void jit_factory(const std::string &source, const std::vector<std::string> &flags);
 
 /***********************************************************************
  * Register API - don't look here, template magic, not helpful
@@ -45,6 +49,12 @@ template <$expand('typename A%d', $NARGS)>
 static Element *make(const std::string &path, $expand('const A%d &', $NARGS));
 
 #end for
+
+//! Register factory functions into the global factory.
+GRAS_API void _register_factory(const std::string &, void *);
+
+//! Call make() to create element from global factory.
+GRAS_API Element *_handle_make(const std::string &, const PMCC &);
 }
 
 /*!

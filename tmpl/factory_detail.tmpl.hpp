@@ -41,7 +41,7 @@ template <typename ReturnType, $expand('typename A%d', $NARGS)>
 void register_factory(const std::string &path, ReturnType(*fcn)($expand('const A%d &', $NARGS)))
 {
     void *r = new FactoryRegistryEntryImpl$(NARGS)<ReturnType, $expand('A%d', $NARGS)>(fcn);
-    Factory::_register_factory(path, r);
+    _register_factory(path, r);
 }
 
 #end for
@@ -56,7 +56,7 @@ Element *make(const std::string &path, $expand('const A%d &a%d', $NARGS))
     #for $i in range($NARGS):
     args[$i] = PMC_M(a$i);
     #end for
-    return Factory::_handle_make(path, PMC_M(args));
+    return _handle_make(path, PMC_M(args));
 }
 
 #end for
