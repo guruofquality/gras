@@ -15,12 +15,6 @@ namespace gras
  * Element factory:
  *  - Register factory functions into the global factory.
  *  - Call make() to create element from global factory.
- *
- * Example register a factory function:
- *  gras::Factory::register_factory("/proj/my_block", &make_my_block);
- *
- * Example call into the factory:
- *  gras::Element *my_block = gras::Factory::make("/proj/my_block", arg0, arg1);
  */
 struct GRAS_API Factory
 {
@@ -33,6 +27,8 @@ struct GRAS_API Factory
 
 /***********************************************************************
  * Register API - don't look here, template magic, not helpful
+ * Example register a factory function:
+ *   gras::register_factory("/proj/my_block", &make_my_block);
  **********************************************************************/
 template <typename ReturnType>
 static void register_factory(const std::string &path, ReturnType(*fcn)());
@@ -69,6 +65,8 @@ static void register_factory(const std::string &path, ReturnType(*fcn)(const A0 
 
 /***********************************************************************
  * Make API - don't look here, template magic, not helpful
+ * Example call into the factory:
+ *   gras::Element *my_block = gras::make("/proj/my_block", arg0, arg1);
  **********************************************************************/
 inline
 static Element *make(const std::string &path);
