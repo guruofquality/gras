@@ -28,7 +28,7 @@ Element::Element(const std::string &name)
             this->set_uid(uid);
             break;
         }
-        catch(const std::invalid_argument &ex)
+        catch(const std::invalid_argument &)
         {
             which++;
         }

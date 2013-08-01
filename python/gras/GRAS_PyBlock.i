@@ -25,7 +25,7 @@
     {
         $action
     }
-    catch (const Swig::DirectorException &e)
+    catch (const Swig::DirectorException &)
     {
         SWIG_fail;
     }
