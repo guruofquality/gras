@@ -210,8 +210,8 @@ static llvm::Module *call_clang_api(const std::string &source_file, const std::v
 void gras::jit_factory(const std::string &source, const std::vector<std::string> &flags_)
 {
     //write source to tmp file
-    char source_file[L_tmpnam];\
-    if (std::tmpnam(source_file) == NULL) throw std::runtime_error("GRAS compiler: tmp source file path failed");\
+    char source_file[L_tmpnam];
+    if (std::tmpnam(source_file) == NULL) throw std::runtime_error("GRAS compiler: tmp source file path failed");
     std::ofstream source_fstream(source_file);
     source_fstream << source;
     source_fstream.close();
