@@ -23,6 +23,9 @@
 #include <fstream>
 #include <map>
 
+//defined in module loader
+std::string get_gras_runtime_include_path(void);
+
 /***********************************************************************
  * Helper function to call a clang compliation
  **********************************************************************/
@@ -59,6 +62,9 @@ static std::string call_clang(const std::string &source, const std::vector<std::
     {
         cmd.push_back(flag.c_str());
     }
+
+    //root include path
+    cmd.push_back("-I"+get_gras_runtime_include_path());
 
     //format command string
     std::string command;

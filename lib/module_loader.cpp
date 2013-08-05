@@ -61,6 +61,14 @@ static std::string my_get_env(const std::string &name, const std::string &defalt
     return (env_var != NULL)? env_var : defalt;
 }
 
+//used by jit factory, but defined here for lazyness
+std::string get_gras_runtime_include_path(void)
+{
+    const std::string root = my_get_env("GRAS_ROOT", "@GRAS_ROOT@");
+    const fs::path inc_path = fs::path(root) / "include";
+    return inc_path.string();
+}
+
 GRAS_STATIC_BLOCK(gras_module_loader)
 {
     //!search the GRAS_ROOT directory for this install
