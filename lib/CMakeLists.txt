@@ -132,15 +132,6 @@ if(CLANG_FOUND)
     list(APPEND GRAS_LIBRARIES ${CLANG_LIBS})
 endif()
 
-#step 4) find clang executable as backup (found llvm but not clang dev)
-find_program(CLANG_EXECUTABLE clang DOC "clang executable")
-if(CLANG_EXECUTABLE)
-    SET_SOURCE_FILES_PROPERTIES(
-        ${CMAKE_CURRENT_SOURCE_DIR}/jit_factory.cpp
-        PROPERTIES COMPILE_DEFINITIONS "CLANG_EXECUTABLE=${CLANG_EXECUTABLE}"
-    )
-endif()
-
 ########################################################################
 # Build library
 ########################################################################

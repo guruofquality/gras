@@ -85,18 +85,18 @@ static ExecutionEngineMonitor &get_eemon(void)
 /***********************************************************************
  * Helper function to call a clang compliation -- execs clang
  **********************************************************************/
-#ifdef CLANG_EXECUTABLE
 static llvm::Module *call_clang_exe(const std::string &source_file, const std::vector<std::string> &flags)
 {
     std::cout << "GRAS compiler: compile source into bitcode..." << std::endl;
 
     //make up bitcode file path
     char bitcode_file[L_tmpnam];
-    std::tmpnam(bitcode_file);
+    if (std::tmpnam(bitcode_file) == NULL) throw std::runtime_error("GRAS compiler: tmp bitcode file path failed");
 
     //begin command setup
     std::vector<std::string> cmd;
-    cmd.push_back(BOOST_STRINGIZE(CLANG_EXECUTABLE));
+    llvm::sys::Path clangPath = llvm::sys::Program::FindProgramByName("clang");
+    cmd.push_back(clangPath.str());
     cmd.push_back("-emit-llvm");
 
     //inject source
@@ -141,7 +141,6 @@ static llvm::Module *call_clang_exe(const std::string &source_file, const std::v
     if (not error.empty()) throw std::runtime_error("GRAS compiler: ParseBitcodeFile " + error);
     return module;
 }
-#endif //CLANG_EXECUTABLE
 
 /***********************************************************************
  * Helper function to call a clang compliation -- uses clang API
@@ -211,8 +210,8 @@ static llvm::Module *call_clang_api(const std::string &source_file, const std::v
 void gras::jit_factory(const std::string &source, const std::vector<std::string> &flags_)
 {
     //write source to tmp file
-    char source_file[L_tmpnam];
-    std::tmpnam(source_file);
+    char source_file[L_tmpnam];\
+    if (std::tmpnam(source_file) == NULL) throw std::runtime_error("GRAS compiler: tmp source file path failed");\
     std::ofstream source_fstream(source_file);
     source_fstream << source;
     source_fstream.close();
