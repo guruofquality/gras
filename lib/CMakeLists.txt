@@ -107,26 +107,34 @@ endif()
 ########################################################################
 # Setup factory compiler
 ########################################################################
+
+#step 1) call into the LLVM find package
 find_program(LLVM_CONFIG_EXECUTABLE llvm-config DOC "llvm-config executable")
 if(LLVM_CONFIG_EXECUTABLE)
     find_package(LLVM)
 endif()
-if(LLVM_FOUND)
-    find_program(CLANG_EXECUTABLE clang DOC "clang executable")
-    set(CLANG_FOUND ${CLANG_EXECUTABLE})
-else()
-    message(WARNING "LLVM library not found - optional for factory compiler")
-endif()
-if(NOT CLANG_FOUND)
-    message(WARNING "Clang executable not found - optional for factory compiler")
-endif()
 
-if(CLANG_FOUND)
+#step 2) setup LLVM if found and find Clang
+if(LLVM_FOUND)
+    add_definitions(-DHAVE_LLVM)
     add_definitions(${LLVM_CFLAGS})
     link_directories(${LLVM_LIBRARY_DIRS})
     include_directories(${LLVM_INCLUDE_DIRS})
     list(APPEND GRAS_LIBRARIES ${LLVM_MODULE_LIBS})
     list(APPEND GRAS_LIBRARIES ${LLVM_LDFLAGS})
+    find_package(Clang)
+endif()
+
+#step 3) setup Clang if found
+if(CLANG_FOUND)
+    add_definitions(-DHAVE_CLANG)
+    include_directories(${CLANG_INCLUDE_DIRS})
+    list(APPEND GRAS_LIBRARIES ${CLANG_LIBS})
+endif()
+
+#step 4) find clang executable as backup (found llvm but not clang dev)
+find_program(CLANG_EXECUTABLE clang DOC "clang executable")
+if(CLANG_EXECUTABLE)
     SET_SOURCE_FILES_PROPERTIES(
         ${CMAKE_CURRENT_SOURCE_DIR}/jit_factory.cpp
         PROPERTIES COMPILE_DEFINITIONS "CLANG_EXECUTABLE=${CLANG_EXECUTABLE}"
