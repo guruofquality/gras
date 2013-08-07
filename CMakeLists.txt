@@ -37,6 +37,7 @@ endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     add_definitions(-Wall)
+    add_definitions(-Wunused)
     add_definitions(-fvisibility=hidden)
     add_definitions(-fvisibility-inlines-hidden)
 endif()
