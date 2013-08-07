@@ -85,6 +85,7 @@ static ExecutionEngineMonitor &get_eemon(void)
 /***********************************************************************
  * Helper function to call a clang compliation -- execs clang
  **********************************************************************/
+#ifdef HAVE_LLVM
 static llvm::Module *call_clang_exe(const std::string &source_file, const std::vector<std::string> &flags)
 {
     std::cout << "GRAS compiler: compile source into bitcode..." << std::endl;
@@ -141,6 +142,7 @@ static llvm::Module *call_clang_exe(const std::string &source_file, const std::v
     if (not error.empty()) throw std::runtime_error("GRAS compiler: ParseBitcodeFile " + error);
     return module;
 }
+#endif //HAVE_LLVM
 
 /***********************************************************************
  * Helper function to call a clang compliation -- uses clang API
