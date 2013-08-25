@@ -237,7 +237,7 @@ void gras::jit_factory(const std::string &source, const std::vector<std::string>
 
 #else //HAVE_LLVM
 
-void Factory::compile(const std::string &, const std::vector<std::string> &)
+void gras::jit_factory(const std::string &, const std::vector<std::string> &)
 {
     throw std::runtime_error("GRAS compiler not built with Clang support!");
 }
