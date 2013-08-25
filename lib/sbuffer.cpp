@@ -1,7 +1,7 @@
 // Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
 #include <gras/sbuffer.hpp>
-#include "alloc_on_node.hpp"
+#include <Theron/Detail/Threading/Utils.h>
 #include <boost/bind.hpp>
 
 using namespace gras;
@@ -16,7 +16,7 @@ SBufferConfig::SBufferConfig(void)
 
 static void numa_mem_deleter(SBuffer &buff)
 {
-    FreeOnNode(buff.get_actual_memory(), buff.get_actual_length());
+    Theron::Detail::Utils::FreeOnNode(buff.get_actual_memory(), buff.get_actual_length());
 }
 
 static void default_allocator_deleter(SBuffer &, char *m)
@@ -36,7 +36,7 @@ static void default_allocator(SBufferConfig &config)
     }
     else
     {
-        config.memory = AllocOnNode(config.affinity, config.length);
+        config.memory = Theron::Detail::Utils::AllocOnNode(config.affinity, config.length);
         config.deleter = boost::bind(&numa_mem_deleter, _1);
         //deal with numa failue case //TODO print warning message
         if (config.memory == NULL)
