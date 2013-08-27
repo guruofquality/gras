@@ -1,24 +1,20 @@
 # Copyright (C) by Josh Blum. See LICENSE.txt for licensing information.
 
 import os
-import sys
+import imp
 import traceback
 
 #try to import module
-#http://effbot.org/zone/import-string.htm
 def __try_module_import(filename):
     directory, module_name = os.path.split(filename)
     module_name = os.path.splitext(module_name)[0]
 
-    path = list(sys.path)
-    sys.path.insert(0, directory)
     try:
-        module = __import__(module_name)
+        fp, pathname, description = imp.find_module(module_name, [directory])
+        module = imp.load_module(module_name, fp, pathname, description)
     except Exception as ex:
         print 'Could not import', filename, ex
         print traceback.format_exc()
-    finally:
-        sys.path[:] = path # restore
 
 #recursive search for modules in path
 def __module_import(p):
