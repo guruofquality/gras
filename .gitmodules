@@ -10,6 +10,6 @@
 [submodule "gnuradio"]
 	path = gnuradio
 	url = http://github.com/guruofquality/gnuradio.git
-[submodule "grextras"]
-	path = grextras
-	url = http://github.com/guruofquality/grextras.git
+[submodule "grex"]
+	path = grex
+	url = http://github.com/guruofquality/grex.git

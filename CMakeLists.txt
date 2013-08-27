@@ -24,7 +24,7 @@ GRAS_CHECK_SUBMODULE(Theron)
 GRAS_CHECK_SUBMODULE(Apology)
 GRAS_CHECK_SUBMODULE(PMC)
 GRAS_CHECK_SUBMODULE(gnuradio)
-GRAS_CHECK_SUBMODULE(grextras)
+GRAS_CHECK_SUBMODULE(grex)
 
 list(APPEND CMAKE_MODULE_PATH ${GRAS_SOURCE_DIR}/PMC/cmake/Modules)
 list(APPEND CMAKE_MODULE_PATH ${GRAS_SOURCE_DIR}/cmake/Modules)
@@ -155,8 +155,8 @@ list(APPEND CMAKE_MODULE_PATH ${GRAS_SOURCE_DIR}/cmake/Modules)
 list(APPEND CMAKE_MODULE_PATH ${GRAS_BINARY_DIR}/cmake/Modules)
 set(GRAS_ROOT ${GRAS_SOURCE_DIR})
 list(APPEND GRAS_TEST_ENVIRONS "GRAS_ROOT=${GRAS_SOURCE_DIR}")
-set(CMAKE_SOURCE_DIR ${GRAS_SOURCE_DIR}/grextras)
-set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/grextras)
+set(CMAKE_SOURCE_DIR ${GRAS_SOURCE_DIR}/grex)
+set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/grex)
 
 set(GRAS_FOUND TRUE)
 #GRAS_INCLUDE_DIRS, GRAS_LIBRARIES set above
@@ -208,34 +208,20 @@ list(APPEND GRAS_TEST_TARGET_DEPS "${GR_TEST_TARGET_DEPS}")
 list(APPEND GRAS_TEST_LIBRARY_DIRS "${GR_TEST_LIBRARY_DIRS}")
 list(APPEND GRAS_TEST_PYTHON_DIRS "${GR_TEST_PYTHON_DIRS}")
 
-add_subdirectory(grextras)
+add_subdirectory(grex)
 
 ########################################################################
-# add GrExtras to gnuradio cpack registry
+# add GrEx to gnuradio cpack registry
 # this must come after the submodule
 ########################################################################
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 include(GrPackage)
 
-CPACK_SET(CPACK_COMPONENT_GROUP_GREXTRAS_DESCRIPTION "GNU Radio Extras")
+CPACK_SET(CPACK_COMPONENT_GROUP_GREXTRAS_DESCRIPTION "GrEx")
 
-CPACK_COMPONENT("extras_runtime"
-    GROUP        "GrExtras"
+CPACK_COMPONENT("grex"
+    GROUP        "GrEx"
     DISPLAY_NAME "Runtime"
     DESCRIPTION  "Runtime"
     DEPENDS      "${GRAS_RUNTIME}"
-)
-
-CPACK_COMPONENT("extras_devel"
-    GROUP        "GrExtras"
-    DISPLAY_NAME "Development"
-    DESCRIPTION  "C++ headers and import libraries"
-    DEPENDS      "${GRAS_COMP_DEVEL}"
-)
-
-CPACK_COMPONENT("extras_python"
-    GROUP        "GrExtras"
-    DISPLAY_NAME "Python"
-    DESCRIPTION  "Python modules for runtime"
-    DEPENDS      "extras_runtime;${GRAS_COMP_PYTHON}"
 )
