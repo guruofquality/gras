@@ -34,6 +34,9 @@ struct GRAS_API SBufferConfig
     //! Default constructor zeros out buffer config
     SBufferConfig(void);
 
+    //! Destructor
+    ~SBufferConfig(void);
+
     //! pointer to the memory start
     void *memory;
 
@@ -93,6 +96,9 @@ struct GRAS_API SBuffer : boost::intrusive_ptr<SBufferImpl>
      * or instructions for the default allocator.
      */
     SBuffer(const SBufferConfig &config);
+
+    //! Destructor
+    ~SBuffer(void);
 
     /*!
      * Get a pointer to the start of the underlying memory

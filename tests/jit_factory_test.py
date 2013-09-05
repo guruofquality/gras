@@ -146,5 +146,30 @@ class JITFactoryTest(unittest.TestCase):
 
         self.assertEqual(expected_result, actual_result)
 
+    def test_jit_compile_special(self):
+        SOURCE = """
+#include <gras/block.hpp>
+#include <gras/factory.hpp>
+#include <iostream>
+
+struct FooBar : gras::Block
+{
+    FooBar(void):
+        gras::Block("FooBar")
+    {
+    }
+
+    void work(const InputItems &ins, const OutputItems &outs)
+    {
+        gras::SBufferConfig c0;
+        gras::SBuffer b0 = gras::SBuffer(c0);
+        gras::SBuffer i0 = this->get_input_buffer(0);
+    }
+};
+
+GRAS_REGISTER_FACTORY0("/tests/my_foo_bar", FooBar)
+"""
+        gras.jit_factory(SOURCE, ["-O3", "-I"+gras_inc, "-I"+pmc_inc])
+
 if __name__ == '__main__':
     unittest.main()

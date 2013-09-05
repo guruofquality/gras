@@ -8,56 +8,15 @@
 namespace gras
 {
 
+extern GRAS_API void intrusive_ptr_add_ref(SBufferImpl *impl);
+extern GRAS_API void intrusive_ptr_release(SBufferImpl *impl);
+
 struct SBufferImpl
 {
-    SBufferImpl(const SBufferConfig &config):
-        count(0),
-        config(config)
-    {
-        //NOP
-    }
-
+    SBufferImpl(const SBufferConfig &config);
     boost::detail::atomic_count count;
     SBufferConfig config;
 };
-
-GRAS_FORCE_INLINE void intrusive_ptr_add_ref(SBufferImpl *impl)
-{
-    ++impl->count;
-}
-
-GRAS_FORCE_INLINE void intrusive_ptr_release(SBufferImpl *impl)
-{
-    if GRAS_LIKELY(--impl->count) return;
-
-    //call the deleter if possible
-    boost::shared_ptr<SBufferDeleter> token_deleter = impl->config.token.lock();
-    if GRAS_LIKELY(token_deleter)
-    {
-        SBuffer buff;
-        buff.reset(impl);
-        (*token_deleter)(buff);
-    }
-    else if (impl->config.deleter)
-    {
-        SBuffer buff;
-        buff.reset(impl);
-        impl->config.deleter(buff);
-        impl->config.deleter = SBufferDeleter(); //reset deleter, so we dont double delete
-    }
-    else
-    {
-        delete impl; //its really dead now
-    }
-}
-
-GRAS_FORCE_INLINE SBuffer::SBuffer(void):
-    offset(0),
-    length(0),
-    last(NULL)
-{
-    //NOP
-}
 
 GRAS_FORCE_INLINE const void *SBuffer::get_actual_memory(void) const
 {

@@ -6,12 +6,54 @@
 
 using namespace gras;
 
+void gras::intrusive_ptr_add_ref(SBufferImpl *impl)
+{
+    ++impl->count;
+}
+
+void gras::intrusive_ptr_release(SBufferImpl *impl)
+{
+    if GRAS_LIKELY(--impl->count) return;
+
+    //call the deleter if possible
+    boost::shared_ptr<SBufferDeleter> token_deleter = impl->config.token.lock();
+    if GRAS_LIKELY(token_deleter)
+    {
+        SBuffer buff;
+        buff.reset(impl);
+        (*token_deleter)(buff);
+    }
+    else if (impl->config.deleter)
+    {
+        SBuffer buff;
+        buff.reset(impl);
+        impl->config.deleter(buff);
+        impl->config.deleter = SBufferDeleter(); //reset deleter, so we dont double delete
+    }
+    else
+    {
+        delete impl; //its really dead now
+    }
+}
+
+SBufferImpl::SBufferImpl(const SBufferConfig &config):
+    count(0),
+    config(config)
+{
+    //NOP
+}
+
 SBufferConfig::SBufferConfig(void)
 {
     memory = NULL;
     length = 0;
     affinity = -1;
     user_index = ~0;
+}
+
+SBufferConfig::~SBufferConfig(void)
+{
+    //NOP
 }
 
 static void numa_mem_deleter(SBuffer &buff)
@@ -47,6 +89,14 @@ static void default_allocator(SBufferConfig &config)
     }
 }
 
+SBuffer::SBuffer(void):
+    offset(0),
+    length(0),
+    last(NULL)
+{
+    //NOP
+}
+
 SBuffer::SBuffer(const SBufferConfig &config):
     offset(0),
     length(0)
@@ -57,4 +107,9 @@ SBuffer::SBuffer(const SBufferConfig &config):
         default_allocator((*this)->config);
     }
     this->length = this->get_actual_length();
+}
+
+SBuffer::~SBuffer(void)
+{
+    //NOP
 }
