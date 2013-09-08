@@ -149,7 +149,7 @@ CPACK_COMPONENT("${GRAS_COMP_PYTHON}"
 )
 
 ########################################################################
-# GNU Radio Extras as sub-project
+# GREX as sub-project
 ########################################################################
 list(APPEND CMAKE_MODULE_PATH ${GRAS_SOURCE_DIR}/cmake/Modules)
 list(APPEND CMAKE_MODULE_PATH ${GRAS_BINARY_DIR}/cmake/Modules)
@@ -211,16 +211,16 @@ list(APPEND GRAS_TEST_PYTHON_DIRS "${GR_TEST_PYTHON_DIRS}")
 add_subdirectory(grex)
 
 ########################################################################
-# add GrEx to gnuradio cpack registry
+# add GREX to gnuradio cpack registry
 # this must come after the submodule
 ########################################################################
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 include(GrPackage)
 
-CPACK_SET(CPACK_COMPONENT_GROUP_GREXTRAS_DESCRIPTION "GrEx")
+CPACK_SET(CPACK_COMPONENT_GROUP_GREXTRAS_DESCRIPTION "GREX")
 
 CPACK_COMPONENT("grex"
-    GROUP        "GrEx"
+    GROUP        "GREX"
     DISPLAY_NAME "Runtime"
     DESCRIPTION  "Runtime"
     DEPENDS      "${GRAS_RUNTIME}"
