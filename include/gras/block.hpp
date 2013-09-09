@@ -38,12 +38,6 @@ struct GRAS_API Block : Element
      */
     void set_thread_pool(const ThreadPool &thread_pool);
 
-    //! Get the global block config settings
-    const GlobalBlockConfig &global_config(void) const;
-
-    //! Get the global block config settings
-    GlobalBlockConfig &global_config(void);
-
     //! Get the configuration rules of an input port
     const InputPortConfig &input_config(const size_t which_input) const;
 

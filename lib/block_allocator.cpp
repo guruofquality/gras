@@ -61,11 +61,15 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
     const size_t num_outputs = worker->get_num_outputs();
     for (size_t i = 0; i < num_outputs; i++)
     {
+        size_t reserve_items = data->output_configs[i].reserve_items;
+        size_t maximum_items = data->output_configs[i].maximum_items;
+        if (maximum_items == 0) maximum_items = data->block->global_config().maximum_output_items;
+
         const size_t bytes = recommend_length(
             data->output_allocation_hints[i],
             my_round_up_mult(AT_LEAST_BYTES, data->output_configs[i].item_size),
-            data->output_configs[i].reserve_items*data->output_configs[i].item_size,
-            data->output_configs[i].maximum_items*data->output_configs[i].item_size
+            reserve_items*data->output_configs[i].item_size,
+            maximum_items*data->output_configs[i].item_size
         );
 
         SBufferDeleter deleter = boost::bind(&buffer_returner, this->thread_pool, this->GetAddress(), i, _1);
@@ -74,7 +78,7 @@ void BlockActor::handle_top_alloc(const TopAllocMessage &, const Theron::Address
         SBufferConfig config;
         config.memory = NULL;
         config.length = bytes;
-        config.affinity = data->global_config.buffer_affinity;
+        config.affinity = data->block->global_config().buffer_affinity;
         config.token = token;
 
         BufferQueueSptr queue = data->block->output_buffer_allocator(i, config);

@@ -16,6 +16,12 @@ struct GRAS_API HierBlock : Element
 
     virtual ~HierBlock(void);
 
+    /*!
+     * Commit changes to the global configuration.
+     * Must be call to apply changes to the global config.
+     */
+    void commit_config(void);
+
     /*******************************************************************
      * connection flow interface
      ******************************************************************/

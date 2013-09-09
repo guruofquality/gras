@@ -69,7 +69,6 @@ struct BlockData
 
     //is the fg running?
     BlockState block_state;
-    GlobalBlockConfig global_config;
 
     std::vector<std::vector<OutputHintMessage> > output_allocation_hints;
 

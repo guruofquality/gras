@@ -83,27 +83,17 @@ void BlockActor::handle_top_config(
     const Theron::Address from
 ){
     MESSAGE_TRACER();
-    const GlobalBlockConfig &config = message.config;
+
+    //merge in the non-defaults
+    data->block->global_config().merge(message.config);
 
     //overwrite with global config only if maxium_items is not set (zero)
     for (size_t i = 0; i < data->output_configs.size(); i++)
     {
         if (data->output_configs[i].maximum_items == 0)
         {
-            data->output_configs[i].maximum_items = config.maximum_output_items;
+            data->output_configs[i].maximum_items = data->block->global_config().maximum_output_items;
         }
-    }
-
-    //overwrite with global node affinity setting for buffers if not set
-    if (data->global_config.buffer_affinity == -1)
-    {
-        data->global_config.buffer_affinity = config.buffer_affinity;
-    }
-
-    //overwrite with global interruptable setting for work if not set
-    if (data->global_config.interruptible_work == false)
-    {
-        data->global_config.interruptible_work = config.interruptible_work;
     }
 
     this->Send(0, from); //ACK
@@ -120,7 +110,7 @@ void BlockActor::handle_top_thread_group(
     //spawn a new thread if this block is a source
     data->thread_group = message.thread_group;
     data->interruptible_thread.reset(); //erase old one
-    if (data->global_config.interruptible_work)
+    if (data->block->global_config().interruptible_work)
     {
         data->interruptible_thread = boost::make_shared<InterruptibleThread>(
             data->thread_group, boost::bind(&BlockActor::task_work, this)

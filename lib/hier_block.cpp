@@ -3,6 +3,7 @@
 #include "element_impl.hpp"
 #include <gras/hier_block.hpp>
 #include <boost/format.hpp>
+#include <boost/foreach.hpp>
 #include <exception>
 
 using namespace gras;
@@ -21,6 +22,15 @@ HierBlock::HierBlock(const std::string &name):
 HierBlock::~HierBlock(void)
 {
     //NOP
+}
+
+void HierBlock::commit_config(void)
+{
+    BOOST_FOREACH(Apology::Worker *w, (*this)->topology->get_workers())
+    {
+        BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
+        actor->data->block->global_config().merge((*this)->global_config);
+    }
 }
 
 void ElementImpl::hier_block_cleanup(void)

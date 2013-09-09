@@ -10,6 +10,7 @@
 
 #include <gras/gras.hpp>
 #include <gras/callable.hpp>
+#include <gras/block_config.hpp>
 #include <gras/weak_container.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -64,6 +65,16 @@ struct GRAS_API Element : Callable, boost::shared_ptr<ElementImpl>
      * \return a canonical string representation
      */
     std::string to_string(void) const;
+
+    /*******************************************************************
+     * config interface
+     ******************************************************************/
+
+    //! Get the global block config settings
+    const GlobalBlockConfig &global_config(void) const;
+
+    //! Get the global block config settings
+    GlobalBlockConfig &global_config(void);
 
     /*******************************************************************
      * identification interface

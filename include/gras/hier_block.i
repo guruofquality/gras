@@ -9,6 +9,7 @@
 #include <gras/hier_block.hpp>
 %}
 
+%include <gras/gras.hpp>
 %import <gras/element.i>
 %include <gras/hier_block.hpp>
 

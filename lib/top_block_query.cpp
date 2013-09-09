@@ -31,7 +31,7 @@ static ptree query_blocks(ElementImpl *self, const ptree &)
 {
     ptree root;
     ptree e;
-    BOOST_FOREACH(Apology::Worker *w, self->executor->get_workers())
+    BOOST_FOREACH(Apology::Worker *w, self->topology->get_workers())
     {
         BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
         ptree prop_e;
@@ -61,7 +61,7 @@ static ptree query_stats(ElementImpl *self, const ptree &query)
     //get stats with custom receiver and set high prio
     GetStatsReceiver receiver;
     size_t outstandingCount(0);
-    BOOST_FOREACH(Apology::Worker *w, self->executor->get_workers())
+    BOOST_FOREACH(Apology::Worker *w, self->topology->get_workers())
     {
         BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
 
@@ -93,7 +93,7 @@ static ptree query_stats(ElementImpl *self, const ptree &query)
 
     //thread pool counts
     std::set<ThreadPool> thread_pools;
-    BOOST_FOREACH(Apology::Worker *w, self->executor->get_workers())
+    BOOST_FOREACH(Apology::Worker *w, self->topology->get_workers())
     {
         BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
         thread_pools.insert(actor->thread_pool);
@@ -161,7 +161,7 @@ static ptree query_calls(ElementImpl *self, const ptree &query)
     ptree root;
     const std::string block_id = query.get<std::string>("block");
     const std::string call_name = query.get<std::string>("name");
-    BOOST_FOREACH(Apology::Worker *w, self->executor->get_workers())
+    BOOST_FOREACH(Apology::Worker *w, self->topology->get_workers())
     {
         BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
         if (actor->data->block->get_uid() != block_id) continue;
@@ -189,7 +189,7 @@ static std::string query_topology(ElementImpl *self, const ptree &query)
     buff += "rankdir=LR;\n";
     buff += "node [shape=record, fontsize=10];\n";
 
-    BOOST_FOREACH(Apology::Worker *w, self->executor->get_workers())
+    BOOST_FOREACH(Apology::Worker *w, self->topology->get_workers())
     {
         BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
         std::string in_ports_str, out_ports_str;
@@ -222,7 +222,7 @@ static std::string query_topology(ElementImpl *self, const ptree &query)
         );
     }
 
-    BOOST_FOREACH(const Apology::Flow &flow, self->executor->get_flat_flows())
+    BOOST_FOREACH(const Apology::Flow &flow, self->topology->get_flat_flows())
     {
         buff += str(boost::format("%u:out%u -> %u:in%u;\n")
             % dynamic_cast<const Apology::Worker *>(flow.src.elem)->get_actor()->GetAddress().AsInteger()

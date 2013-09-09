@@ -106,7 +106,7 @@ void BlockActor::task_main(void)
             buff.unique() and
             data->input_configs[i].inline_buffer and
             output_inline_index < num_outputs and
-            buff.get_affinity() == data->global_config.buffer_affinity
+            buff.get_affinity() == data->block->global_config().buffer_affinity
         ){
             data->output_queues.set_inline(output_inline_index++, buff);
         }

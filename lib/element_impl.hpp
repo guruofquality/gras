@@ -38,7 +38,7 @@ struct ElementImpl
     //top block stuff
     SharedThreadGroup thread_group;
     Token token;
-    GlobalBlockConfig top_config;
+    GlobalBlockConfig global_config;
 
     //element tree stuff
     Element parent;
@@ -63,14 +63,14 @@ struct ElementImpl
     void bcast_prio_msg(const MessageType &msg)
     {
         Theron::Receiver receiver;
-        BOOST_FOREACH(Apology::Worker *w, this->executor->get_workers())
+        BOOST_FOREACH(Apology::Worker *w, this->topology->get_workers())
         {
             BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
             MessageType message = msg;
             message.prio_token = actor->prio_token;
             actor->GetFramework().Send(message, receiver.GetAddress(), actor->GetAddress());
         }
-        size_t outstandingCount(this->executor->get_workers().size());
+        size_t outstandingCount(this->topology->get_workers().size());
         while (outstandingCount != 0)
         {
             outstandingCount -= receiver.Wait(outstandingCount);

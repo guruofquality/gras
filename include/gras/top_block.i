@@ -10,7 +10,6 @@
 %}
 
 %include <gras/gras.hpp>
-%include <gras/block_config.hpp>
 %import <gras/element.i>
 %import <gras/hier_block.i>
 %include <gras/top_block.hpp>

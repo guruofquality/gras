@@ -3,7 +3,6 @@
 #ifndef INCLUDED_GRAS_TOP_BLOCK_HPP
 #define INCLUDED_GRAS_TOP_BLOCK_HPP
 
-#include <gras/block_config.hpp>
 #include <gras/hier_block.hpp>
 
 namespace gras
@@ -16,12 +15,6 @@ struct GRAS_API TopBlock : HierBlock
     TopBlock(const std::string &name);
 
     virtual ~TopBlock(void);
-
-    //! Get the global block config settings
-    const GlobalBlockConfig &global_config(void) const;
-
-    //! Get the global block config settings
-    GlobalBlockConfig &global_config(void);
 
     /*!
      * Commit changes to the overall flow graph.

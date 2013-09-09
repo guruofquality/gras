@@ -15,6 +15,13 @@ struct GRAS_API GlobalBlockConfig
     GlobalBlockConfig(void);
 
     /*!
+     * Merge the settings from another config.
+     * Non-defaults on this config stay,
+     * defaults will be overwritten.
+     */
+    void merge(const GlobalBlockConfig &config);
+
+    /*!
      * Constrain the maximum number of items that
      * work can be called with for all output ports.
      *

@@ -121,16 +121,6 @@ typename V::value_type &vector_get_resize(V &v, const size_t index)
     return v[index];
 }
 
-const GlobalBlockConfig &Block::global_config(void) const
-{
-    return (*this)->block_data->global_config;
-}
-
-GlobalBlockConfig &Block::global_config(void)
-{
-    return (*this)->block_data->global_config;
-}
-
 InputPortConfig &Block::input_config(const size_t which_input)
 {
     return vector_get_resize((*this)->block_data->input_configs, which_input);
