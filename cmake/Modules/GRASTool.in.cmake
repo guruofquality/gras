@@ -68,6 +68,7 @@ endif()
 ## COMPONENT - name of installation component or ${TARGET}
 ##
 ## External vars:
+## GRAS_TOOL_INCLUDES - list of additional include directories
 ## GRAS_TOOL_LIBRARIES - list of additional libraries to link to
 ########################################################################
 function(GRAS_TOOL)
@@ -119,14 +120,17 @@ function(GRAS_TOOL)
     set(GRAS_TOOL_GRC_DIR share/gnuradio/grc/blocks/${GRAS_TOOL_DIRECTORY})
 
     #development and framework directories
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-    include_directories(${PMC_INCLUDE_DIRS})
-    include_directories(${GRAS_INCLUDE_DIRS})
+    list(APPEND GRAS_TOOL_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR})
+    list(APPEND GRAS_TOOL_INCLUDES ${PMC_INCLUDE_DIRS})
+    list(APPEND GRAS_TOOL_INCLUDES ${GRAS_INCLUDE_DIRS})
     list(APPEND GRAS_TOOL_LIBRARIES ${PMC_LIBRARIES})
     list(APPEND GRAS_TOOL_LIBRARIES ${GRAS_LIBRARIES})
 
     #and boost includes as well
     include_directories(${Boost_INCLUDE_DIRS})
+
+    #required directories for compiling
+    include_directories(${GRAS_TOOL_INCLUDES})
 
     #build and install module to path
     if (GRAS_TOOL_CPP_SOURCES)

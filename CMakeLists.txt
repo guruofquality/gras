@@ -165,6 +165,10 @@ set(PMC_FOUND TRUE)
 set(PMC_INCLUDE_DIRS ${GRAS_SOURCE_DIR}/PMC/include)
 set(PMC_LIBRARIES pmc)
 
+#call include to force local include precedence
+include_directories(${GRAS_INCLUDE_DIRS})
+include_directories(${PMC_INCLUDE_DIRS})
+
 set(VOLK_FOUND ${ENABLE_VOLK})
 set(VOLK_INCLUDE_DIRS
     ${GRAS_SOURCE_DIR}/gnuradio/volk/include
