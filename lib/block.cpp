@@ -144,6 +144,18 @@ const OutputPortConfig &Block::output_config(const size_t which_output) const
 void Block::commit_config(void)
 {
     Theron::Actor &actor = *((*this)->block_actor);
+
+    //handle thread pool migration
+    const ThreadPool &thread_pool = this->global_config().thread_pool;
+    if (thread_pool and thread_pool != (*this)->block_actor->thread_pool)
+    {
+        boost::shared_ptr<BlockActor> old_actor = (*this)->block_actor;
+        (*this)->block_actor.reset(BlockActor::make(thread_pool));
+        (*this)->setup_actor();
+        wait_actor_idle((*this)->repr, *old_actor);
+    }
+
+    //update messages for in and out ports
     for (size_t i = 0; i < (*this)->worker->get_num_inputs(); i++)
     {
         InputUpdateMessage message;
@@ -156,7 +168,6 @@ void Block::commit_config(void)
         message.index = i;
         actor.GetFramework().Send(message, Theron::Address::Null(), actor.GetAddress());
     }
-
 }
 
 void Block::notify_active(void)

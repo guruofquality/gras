@@ -30,6 +30,7 @@ void HierBlock::commit_config(void)
     {
         BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
         actor->data->block->global_config().merge((*this)->global_config);
+        actor->data->block->commit_config();
     }
 }
 

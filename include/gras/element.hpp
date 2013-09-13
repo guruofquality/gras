@@ -76,6 +76,13 @@ struct GRAS_API Element : Callable, boost::shared_ptr<ElementImpl>
     //! Get the global block config settings
     GlobalBlockConfig &global_config(void);
 
+    /*!
+     * Commit changes to the global configuration.
+     * Call this after modifying the global config.
+     * Must be call to apply changes to the global config.
+     */
+    virtual void commit_config(void);
+
     /*******************************************************************
      * identification interface
      ******************************************************************/

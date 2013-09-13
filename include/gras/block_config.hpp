@@ -4,6 +4,7 @@
 #define INCLUDED_GRAS_BLOCK_CONFIG_HPP
 
 #include <gras/gras.hpp>
+#include <gras/thread_pool.hpp>
 #include <cstddef>
 
 namespace gras
@@ -53,6 +54,14 @@ struct GRAS_API GlobalBlockConfig
      * Default = false.
      */
     bool interruptible_work;
+
+    /*!
+     * This member sets the thread pool for the block.
+     * The block's actor will migrate to the new pool.
+     *
+     * Default = null thread pool.
+     */
+    ThreadPool thread_pool;
 };
 
 //! Configuration parameters for an input port

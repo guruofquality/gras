@@ -27,6 +27,7 @@ namespace gras
 %include <std_string.i>
 %import <PMC/PMC.i>
 %include <gras/gras.hpp>
+%include <gras/thread_pool.hpp>
 %include <gras/block_config.hpp>
 %include <gras/callable.hpp>
 %include <gras/element.hpp>

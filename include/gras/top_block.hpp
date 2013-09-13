@@ -17,6 +17,13 @@ struct GRAS_API TopBlock : HierBlock
     virtual ~TopBlock(void);
 
     /*!
+     * Commit changes to the global configuration.
+     * Call this after modifying the global config.
+     * Commit config is called automatically by start/stop/run.
+     */
+    void commit_config(void);
+
+    /*!
      * Commit changes to the overall flow graph.
      * Call this after modifying connections.
      * Commit is called automatically by start/stop/run.

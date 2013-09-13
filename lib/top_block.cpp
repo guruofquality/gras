@@ -31,8 +31,14 @@ void ElementImpl::top_block_cleanup(void)
     this->executor->commit();
 }
 
+void TopBlock::commit_config(void)
+{
+    HierBlock::commit_config();
+}
+
 void TopBlock::commit(void)
 {
+    this->commit_config();
     this->start(); //ok to re-start, means update
 }
 

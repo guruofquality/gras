@@ -18,6 +18,7 @@ struct GRAS_API HierBlock : Element
 
     /*!
      * Commit changes to the global configuration.
+     * Call this after modifying the global config.
      * Must be call to apply changes to the global config.
      */
     void commit_config(void);

@@ -33,7 +33,8 @@ class ThreadPoolTest(unittest.TestCase):
         c = gras.ThreadPoolConfig()
         tp = gras.ThreadPool(c)
 
-        vec_source.set_thread_pool(tp)
+        vec_source.global_config().thread_pool = tp
+        vec_source.commit_config()
         tb.connect(vec_source, vec_sink)
         tb.run()
 
