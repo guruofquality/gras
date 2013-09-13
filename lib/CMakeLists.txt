@@ -116,6 +116,7 @@ endif()
 
 #step 2) setup LLVM if found and find Clang
 if(LLVM_FOUND)
+    set(HAVE_JIT_FACTORY TRUE PARENT_SCOPE)
     add_definitions(-DHAVE_LLVM)
     add_definitions(${LLVM_CFLAGS})
     link_directories(${LLVM_LIBRARY_DIRS})

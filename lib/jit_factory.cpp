@@ -88,8 +88,6 @@ static ExecutionEngineMonitor &get_eemon(void)
 #ifdef HAVE_LLVM
 static llvm::Module *call_clang_exe(const std::string &source_file, const std::vector<std::string> &flags)
 {
-    std::cout << "GRAS compiler: compile source into bitcode..." << std::endl;
-
     //make up bitcode file path
     char bitcode_file[L_tmpnam];
     if (std::tmpnam(bitcode_file) == NULL) throw std::runtime_error("GRAS compiler: tmp bitcode file path failed");

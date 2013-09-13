@@ -55,7 +55,9 @@ GR_ADD_TEST(sbuffer_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/sbuffe
 GR_ADD_TEST(query_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/query_test.py)
 GR_ADD_TEST(block_calls_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/block_calls_test.py)
 GR_ADD_TEST(time_tags_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/time_tags_test.py)
+if(HAVE_JIT_FACTORY)
 GR_ADD_TEST(jit_factory_test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/jit_factory_test.py)
+endif()
 
 ########################################################################
 # Build an example loadable module
