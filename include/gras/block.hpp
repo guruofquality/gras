@@ -31,13 +31,6 @@ struct GRAS_API Block : Element
      * Deal with block configuration configuration
      ******************************************************************/
 
-    /*!
-     * Set the thread pool of this block.
-     * Every block is created in the default active thread pool.
-     * This call will migrate the block to a new specified pool.
-     */
-    void set_thread_pool(const ThreadPool &thread_pool);
-
     //! Get the configuration rules of an input port
     const InputPortConfig &input_config(const size_t which_input) const;
 

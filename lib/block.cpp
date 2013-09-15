@@ -184,11 +184,3 @@ void Block::notify_topology(const size_t, const size_t)
 {
     return;
 }
-
-void Block::set_thread_pool(const ThreadPool &thread_pool)
-{
-    boost::shared_ptr<BlockActor> old_actor = (*this)->block_actor;
-    (*this)->block_actor.reset(BlockActor::make(thread_pool));
-    (*this)->setup_actor();
-    wait_actor_idle((*this)->repr, *old_actor);
-}
