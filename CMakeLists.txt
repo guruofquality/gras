@@ -23,7 +23,8 @@ endfunction(GRAS_CHECK_SUBMODULE)
 GRAS_CHECK_SUBMODULE(Theron)
 GRAS_CHECK_SUBMODULE(Apology)
 GRAS_CHECK_SUBMODULE(PMC)
-GRAS_CHECK_SUBMODULE(gnuradio)
+GRAS_CHECK_SUBMODULE(gr36)
+GRAS_CHECK_SUBMODULE(gr37)
 GRAS_CHECK_SUBMODULE(grex)
 
 list(APPEND CMAKE_MODULE_PATH ${GRAS_SOURCE_DIR}/PMC/cmake/Modules)
@@ -107,8 +108,9 @@ add_subdirectory(cmake/Modules)
 ########################################################################
 # add gnuradio as sub-project
 ########################################################################
-set(CMAKE_SOURCE_DIR ${GRAS_SOURCE_DIR}/gnuradio)
-set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/gnuradio)
+set(GRDIR gr36)
+set(CMAKE_SOURCE_DIR ${GRAS_SOURCE_DIR}/${GRDIR})
+set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/${GRDIR})
 
 #Theron isnt affected by boost thread issues.
 #So we allow the gr black listed versions.
@@ -118,7 +120,7 @@ set(CMAKE_PROJECT_NAME gnuradio) #for submodule vars
 
 set(GR_MOAR_LIBRARIES ${GRAS_LIBRARIES})
 
-add_subdirectory(gnuradio)
+add_subdirectory(${GRDIR})
 
 ########################################################################
 # add GRAS to gnuradio cpack registry
@@ -171,12 +173,12 @@ include_directories(${PMC_INCLUDE_DIRS})
 
 set(VOLK_FOUND ${ENABLE_VOLK})
 set(VOLK_INCLUDE_DIRS
-    ${GRAS_SOURCE_DIR}/gnuradio/volk/include
-    ${GRAS_BINARY_DIR}/gnuradio/volk/include
+    ${GRAS_SOURCE_DIR}/${GRDIR}/volk/include
+    ${GRAS_BINARY_DIR}/${GRDIR}/volk/include
 )
 if(MSVC)
     #add compatibility includes for stdint types
-    list(APPEND VOLK_INCLUDE_DIRS ${GRAS_SOURCE_DIR}/gnuradio/volk/cmake/msvc)
+    list(APPEND VOLK_INCLUDE_DIRS ${GRAS_SOURCE_DIR}/${GRDIR}/volk/cmake/msvc)
 endif()
 set(VOLK_LIBRARIES volk)
 if(ENABLE_VOLK)
@@ -188,22 +190,22 @@ set(GNURADIO_CORE_FOUND ${ENABLE_GR_CORE})
 set(GNURADIO_CORE_LIBRARIES gnuradio-core)
 if(ENABLE_GR_CORE)
     list(APPEND GR_TEST_PYTHON_DIRS
-        ${GRAS_SOURCE_DIR}/gnuradio/gruel/src/python
-        ${GRAS_BINARY_DIR}/gnuradio/gruel/src/swig
-        ${GRAS_SOURCE_DIR}/gnuradio/gnuradio-core/src/python
-        ${GRAS_BINARY_DIR}/gnuradio/gnuradio-core/src/lib/swig
+        ${GRAS_SOURCE_DIR}/${GRDIR}/gruel/src/python
+        ${GRAS_BINARY_DIR}/${GRDIR}/gruel/src/swig
+        ${GRAS_SOURCE_DIR}/${GRDIR}/gnuradio-core/src/python
+        ${GRAS_BINARY_DIR}/${GRDIR}/gnuradio-core/src/lib/swig
     )
 endif(ENABLE_GR_CORE)
 
 #packet stuffs uses gr-digtal:
 if(ENABLE_GR_DIGITAL)
     list(APPEND GR_TEST_PYTHON_DIRS
-        ${GRAS_BINARY_DIR}/gnuradio/gr-digital/python
-        ${GRAS_BINARY_DIR}/gnuradio/gr-digital/swig
-        ${GRAS_BINARY_DIR}/gnuradio/gr-filter/python
-        ${GRAS_BINARY_DIR}/gnuradio/gr-filter/swig
-        ${GRAS_BINARY_DIR}/gnuradio/gr-analog/python
-        ${GRAS_BINARY_DIR}/gnuradio/gr-analog/swig
+        ${GRAS_BINARY_DIR}/${GRDIR}/gr-digital/python
+        ${GRAS_BINARY_DIR}/${GRDIR}/gr-digital/swig
+        ${GRAS_BINARY_DIR}/${GRDIR}/gr-filter/python
+        ${GRAS_BINARY_DIR}/${GRDIR}/gr-filter/swig
+        ${GRAS_BINARY_DIR}/${GRDIR}/gr-analog/python
+        ${GRAS_BINARY_DIR}/${GRDIR}/gr-analog/swig
     )
     list(APPEND GR_TEST_TARGET_DEPS gnuradio-digital gnuradio-filter gnuradio-fft gnuradio-analog)
 endif(ENABLE_GR_DIGITAL)

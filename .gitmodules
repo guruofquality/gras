@@ -7,9 +7,12 @@
 [submodule "PMC"]
 	path = PMC
 	url = http://github.com/guruofquality/PMC.git
-[submodule "gnuradio"]
-	path = gnuradio
-	url = http://github.com/guruofquality/gnuradio.git
 [submodule "grex"]
 	path = grex
 	url = http://github.com/guruofquality/grex.git
+[submodule "gr36"]
+	path = gr36
+	url = http://github.com/guruofquality/gnuradio.git
+[submodule "gr37"]
+	path = gr37
+	url = http://github.com/guruofquality/gnuradio.git
