@@ -108,9 +108,15 @@ add_subdirectory(cmake/Modules)
 ########################################################################
 # add gnuradio as sub-project
 ########################################################################
-set(GRDIR gr36)
+set(GRDIR gr37)
 set(CMAKE_SOURCE_DIR ${GRAS_SOURCE_DIR}/${GRDIR})
 set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/${GRDIR})
+
+set(GRAS_FOUND TRUE)
+#GRAS_INCLUDE_DIRS, GRAS_LIBRARIES set above
+set(PMC_FOUND TRUE)
+set(PMC_INCLUDE_DIRS ${GRAS_SOURCE_DIR}/PMC/include)
+set(PMC_LIBRARIES pmc)
 
 #Theron isnt affected by boost thread issues.
 #So we allow the gr black listed versions.
@@ -159,13 +165,6 @@ set(GRAS_ROOT ${GRAS_SOURCE_DIR})
 list(APPEND GRAS_TEST_ENVIRONS "GRAS_ROOT=${GRAS_SOURCE_DIR}")
 set(CMAKE_SOURCE_DIR ${GRAS_SOURCE_DIR}/grex)
 set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/grex)
-
-set(GRAS_FOUND TRUE)
-#GRAS_INCLUDE_DIRS, GRAS_LIBRARIES set above
-
-set(PMC_FOUND TRUE)
-set(PMC_INCLUDE_DIRS ${GRAS_SOURCE_DIR}/PMC/include)
-set(PMC_LIBRARIES pmc)
 
 #call include to force local include precedence
 include_directories(${GRAS_INCLUDE_DIRS})
