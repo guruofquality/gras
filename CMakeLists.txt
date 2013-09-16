@@ -108,7 +108,9 @@ add_subdirectory(cmake/Modules)
 ########################################################################
 # add gnuradio as sub-project
 ########################################################################
-set(GRDIR gr36)
+if(NOT GRDIR)
+    set(GRDIR gr36)
+endif()
 set(CMAKE_SOURCE_DIR ${GRAS_SOURCE_DIR}/${GRDIR})
 set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/${GRDIR})
 
