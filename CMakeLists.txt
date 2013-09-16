@@ -108,7 +108,7 @@ add_subdirectory(cmake/Modules)
 ########################################################################
 # add gnuradio as sub-project
 ########################################################################
-set(GRDIR gr37)
+set(GRDIR gr36)
 set(CMAKE_SOURCE_DIR ${GRAS_SOURCE_DIR}/${GRDIR})
 set(CMAKE_BINARY_DIR ${GRAS_BINARY_DIR}/${GRDIR})
 
@@ -184,27 +184,21 @@ if(ENABLE_VOLK)
     list(APPEND GR_TEST_TARGET_DEPS volk)
 endif(ENABLE_VOLK)
 
-set(GNURADIO_CORE_FOUND ${ENABLE_GR_CORE})
-#GNURADIO_CORE_INCLUDE_DIRS set global by gnuradio
-set(GNURADIO_CORE_LIBRARIES gnuradio-core)
-if(ENABLE_GR_CORE)
-    list(APPEND GR_TEST_PYTHON_DIRS
-        ${GRAS_SOURCE_DIR}/${GRDIR}/gruel/src/python
-        ${GRAS_BINARY_DIR}/${GRDIR}/gruel/src/swig
-        ${GRAS_SOURCE_DIR}/${GRDIR}/gnuradio-core/src/python
-        ${GRAS_BINARY_DIR}/${GRDIR}/gnuradio-core/src/lib/swig
-    )
-endif(ENABLE_GR_CORE)
-
 #packet stuffs uses gr-digtal:
 if(ENABLE_GR_DIGITAL)
     list(APPEND GR_TEST_PYTHON_DIRS
-        ${GRAS_BINARY_DIR}/${GRDIR}/gr-digital/python
-        ${GRAS_BINARY_DIR}/${GRDIR}/gr-digital/swig
-        ${GRAS_BINARY_DIR}/${GRDIR}/gr-filter/python
-        ${GRAS_BINARY_DIR}/${GRDIR}/gr-filter/swig
-        ${GRAS_BINARY_DIR}/${GRDIR}/gr-analog/python
-        ${GRAS_BINARY_DIR}/${GRDIR}/gr-analog/swig
+        ${GRAS_BINARY_DIR}/${GRDIR}/gnuradio-runtime/python #3.7
+        ${GRAS_BINARY_DIR}/${GRDIR}/gr-digital/python/digital #3.7
+        ${GRAS_SOURCE_DIR}/${GRDIR}/gruel/src/python #3.6
+        ${GRAS_BINARY_DIR}/${GRDIR}/gruel/src/swig #3.6
+        ${GRAS_SOURCE_DIR}/${GRDIR}/gnuradio-core/src/python #3.6
+        ${GRAS_BINARY_DIR}/${GRDIR}/gnuradio-core/src/lib/swig #3.6
+        ${GRAS_BINARY_DIR}/${GRDIR}/gr-digital/python #3.6
+        ${GRAS_BINARY_DIR}/${GRDIR}/gr-digital/swig #3.6
+        ${GRAS_BINARY_DIR}/${GRDIR}/gr-filter/python #3.6
+        ${GRAS_BINARY_DIR}/${GRDIR}/gr-filter/swig #3.6
+        ${GRAS_BINARY_DIR}/${GRDIR}/gr-analog/python #3.6
+        ${GRAS_BINARY_DIR}/${GRDIR}/gr-analog/swig #3.6
     )
     list(APPEND GR_TEST_TARGET_DEPS gnuradio-digital gnuradio-filter gnuradio-fft gnuradio-analog)
 endif(ENABLE_GR_DIGITAL)
