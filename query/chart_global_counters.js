@@ -10,7 +10,7 @@ function GrasChartGlobalCounts(args, panel)
     //settings
     this.div = $('<div />').attr({class:'chart_total_counts'});
     $(panel).append(this.div);
-    this.title = "Global Counters"
+    this.title = "Global Counters";
 
     this.counts_ul = $('<ul />');
     this.div.append(this.counts_ul);

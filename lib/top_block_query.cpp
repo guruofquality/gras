@@ -184,14 +184,31 @@ static ptree query_calls(ElementImpl *self, const ptree &query)
 
 static std::string query_topology(ElementImpl *self, const ptree &query)
 {
+    //parse list of block ids needed in this query
+    std::vector<std::string> block_ids;
+    if (query.count("blocks") != 0)
+    {
+        BOOST_FOREACH(const ptree::value_type &v, query.get_child("blocks"))
+        {
+            block_ids.push_back(v.second.get_value<std::string>());
+        }
+    }
+
     std::string buff;
     buff += "digraph flat_flows {\n";
     buff += "rankdir=LR;\n";
     buff += "node [shape=record, fontsize=10];\n";
 
+    std::vector<long long> worker_ids_mentioned;
     BOOST_FOREACH(Apology::Worker *w, self->topology->get_workers())
     {
         BlockActor *actor = dynamic_cast<BlockActor *>(w->get_actor());
+
+        //filter workers not needed in query, empty block list means all blocks
+        const std::string id = actor->data->block->get_uid();
+        if (not block_ids.empty() and std::find(block_ids.begin(), block_ids.end(), id) == block_ids.end()) continue;
+        worker_ids_mentioned.push_back(actor->GetAddress().AsInteger());
+
         std::string in_ports_str, out_ports_str;
         const bool done = actor->data->block_state == BLOCK_STATE_DONE;
         for (size_t i = 0; i < w->get_num_inputs(); i++)
@@ -224,10 +241,17 @@ static std::string query_topology(ElementImpl *self, const ptree &query)
 
     BOOST_FOREACH(const Apology::Flow &flow, self->topology->get_flat_flows())
     {
+        //filter out flows that do not have mentioned workers
+        const long long src_id = dynamic_cast<const Apology::Worker *>(flow.src.elem)->get_actor()->GetAddress().AsInteger();
+        const long long dst_id = dynamic_cast<const Apology::Worker *>(flow.dst.elem)->get_actor()->GetAddress().AsInteger();
+        if (std::find(worker_ids_mentioned.begin(), worker_ids_mentioned.end(), src_id) == worker_ids_mentioned.end()) continue;
+        if (std::find(worker_ids_mentioned.begin(), worker_ids_mentioned.end(), dst_id) == worker_ids_mentioned.end()) continue;
+
+        //create a dot connection for the flow
         buff += str(boost::format("%u:out%u -> %u:in%u;\n")
-            % dynamic_cast<const Apology::Worker *>(flow.src.elem)->get_actor()->GetAddress().AsInteger()
+            % src_id
             % flow.src.index
-            % dynamic_cast<const Apology::Worker *>(flow.dst.elem)->get_actor()->GetAddress().AsInteger()
+            % dst_id
             % flow.dst.index
         );
     }

@@ -15,6 +15,7 @@ var gras_chart_get_registry = function()
         {key:'port_counters', name:'Port Counters', factory:GrasChartPortCounts},
         {key:'global_counters', name:'Global Counters', factory:GrasChartGlobalCounts},
         {key:'port_downtime', name:'Port downtime', factory:GrasChartPortDowntime},
+        {key:'topology_display', name:'Topology Display', factory:GrasChartTopologyDisplay},
     ];
 }
 

@@ -26,12 +26,16 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         args = server_registry[s.server]
         path = o.path
 
+        query_args = dict([(k,v) for k,v in urlparse.parse_qs(o.query).iteritems()])
+
         #generate the topology png
-        if path == "/topology.png":
+        if path.endswith('dot.png'):
             s.send_response(200)
             s.send_header("Content-type", "image/png")
             s.end_headers()
-            dot_markup = args['top_block'].query(json.dumps(dict(path='/topology.dot')))
+            query_args['path'] = os.path.splitext(path)[0]
+            json_args = json.dumps(query_args)
+            dot_markup = args['top_block'].query(json_args)
             import subprocess
             dot_exe = os.environ.get("DOT_EXECUTABLE", "dot")
             p = subprocess.Popen(args=[dot_exe, "-T", "png"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -48,7 +52,6 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 arg_strs = dict((str(k), str(v)) for k, v in args.iteritems())
                 s.wfile.write(json.dumps(arg_strs))
             else:
-                query_args = dict([(k,v) for k,v in urlparse.parse_qs(o.query).iteritems()])
                 query_args['path'] = path
                 json_args = json.dumps(query_args)
                 s.wfile.write(args['top_block'].query(json_args))
