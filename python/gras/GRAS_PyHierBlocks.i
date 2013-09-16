@@ -139,6 +139,14 @@ struct HierBlockPython : HierBlock
 
 def to_element(obj):
     try:
+
+        #BEGIN basic block support:
+        if not hasattr(obj, 'to_element') and hasattr(obj, 'to_basic_block'):
+            elem = obj.to_basic_block().to_element()
+            set_weak_py_self(elem, obj)
+            return elem
+        #END basic block support.
+
         elem = obj.to_element()
         set_weak_py_self(elem, obj)
         return elem
