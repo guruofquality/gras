@@ -2,6 +2,7 @@
 
 #include "gras_impl/query_common.hpp"
 #include "element_impl.hpp"
+#include "colors.hpp" //for rgb scaling
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <Theron/DefaultAllocator.h>
