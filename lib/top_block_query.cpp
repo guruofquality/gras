@@ -232,7 +232,7 @@ static std::string query_topology(ElementImpl *self, const ptree &query)
         case BLOCK_STATE_LIVE: color = "azure"; break;
         case BLOCK_STATE_DONE: color = "grey"; break;
         }
-        buff += str(boost::format("%u [shape=record, label=\"{ %s %s %s }\", style=filled, fillcolor=%s];\n")
+        buff += str(boost::format("%u [shape=record, label=\"{ %s %s %s }\", style=filled, fillcolor=\"%s\"];\n")
             % actor->GetAddress().AsInteger() % in_ports_str
             % actor->data->block->to_string() % out_ports_str
             % color
